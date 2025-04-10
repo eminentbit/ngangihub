@@ -47,7 +47,10 @@ To set up the project locally, follow these steps:
    ```bash
    git clone https://github.com/eminentbit/ngangihub.git
    ```
+<<<<<<< HEAD
 
+=======
+>>>>>>> c8a126cb3e37b4897b55bd32acff17dd2d2762c8
 2. Install dependencies for both frontend and backend:
    ```bash
    cd frontend
