@@ -45,34 +45,31 @@ To set up the project locally, follow these steps:
 ### Steps
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/njangi-group-project.git
+   git clone https://github.com/eminentbit/ngangihub.git
    ```
-2. Navigate to the project directory:
-   ```bash
-   cd njangi-group-project
-   ```
-3. Install dependencies for both frontend and backend:
+
+2. Install dependencies for both frontend and backend:
    ```bash
    cd frontend
    npm install
-   cd ../backend
+   cd backend
    npm install
    ```
-4. Start the development servers:
+3. Start the development servers:
    - Frontend:
      ```bash
      cd frontend
-     npm start
+     npm run dev
      ```
    - Backend:
      ```bash
      cd backend
-     npm start
+     npm run serve
      ```
 
 ## Usage
 
-1. Open the frontend in your browser (usually at `http://localhost:3000`).
+1. Open the frontend in your browser (usually at `http://localhost:5173`).
 2. Register or log in to your account.
 3. Create or join a Njangi group.
 4. Track contributions, view payout schedules, and manage your group.
@@ -98,17 +95,7 @@ Contributions are welcome! To contribute:
 
 ## License
 
-This project is licensed under the MIT License. See the `LICENSE` file for details.
+This project is licensed under the GPT-3.0 License.
 
-## Contact
-
-For questions or feedback, feel free to reach out:
-
-- **Email**: your-email@example.com
-- **GitHub**: [your-username](https://github.com/your-username)
-
-## Screenshots
-
-*(Include screenshots or a link to a live demo if available.)*
 
 ---
