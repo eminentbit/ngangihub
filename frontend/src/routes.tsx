@@ -1,12 +1,13 @@
 import { createBrowserRouter } from "react-router-dom";
+import WelcomePage from "./pages/welcome.page";
+import NotFoundPage from "./pages/not-found";
 
 
-export const routes = createBrowserRouter([
+export const router = createBrowserRouter([
     {
         path: "/",
-        element: <h1 className="text-3xl font-bold underline">Hello world!</h1>,
-        errorElement: <h1 className="text-3xl font-bold underline">Error</h1>,
-
+        element: <WelcomePage/>,
+        errorElement: <NotFoundPage/>
     }
     
 ])
