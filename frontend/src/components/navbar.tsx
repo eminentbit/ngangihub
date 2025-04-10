@@ -21,7 +21,7 @@ export default function Navbar() {
         />
         {/* Desktop navigation */}
         <nav className="md:flex items-center gap-4 hidden">
-          <ul className="flex items-center gap-4">
+          <ul className="flex items-center">
             <li>
               <Link to="/about" className="li-style">
                 About
@@ -35,13 +35,13 @@ export default function Navbar() {
           </ul>
           <div className="flex items-center gap-4">
             <button
-              className="bg-gray-200 text-sm font-semibold text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300 transition duration-300"
+              className="bg-gray-200 text-sm font-semibold text-gray-700 px-6 py-2 rounded-md hover:bg-gray-300 transition duration-300"
               onClick={() => navigate("/signup")}
             >
               Sign Up
             </button>
             <button
-              className="bg-blue-600 px-4 py-2 text-sm font-semibold transition-colors duration-300 text-white rounded-md hover:bg-blue-500"
+              className="bg-blue-600 px-6 py-2 text-sm font-semibold transition-colors duration-300 text-white rounded-md hover:bg-blue-500"
               onClick={() => navigate("/login")}
             >
               Login
