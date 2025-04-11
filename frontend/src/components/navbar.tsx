@@ -33,7 +33,7 @@ export default function Navbar() {
               </Link>
             </li>
           </ul>
-          <div className="flex items-center gap-4">
+           {/*<div className="flex items-center gap-4">
             <button
               className="bg-gray-200 text-sm font-semibold text-gray-700 px-6 py-2 rounded-md hover:bg-gray-300 transition duration-300"
               onClick={() => navigate("/signup")}
@@ -45,8 +45,8 @@ export default function Navbar() {
               onClick={() => navigate("/login")}
             >
               Login
-            </button>
-          </div>
+            </button> 
+          </div>*/}
         </nav>
 
         {/* Hamburger icon for mobile navigation */}
