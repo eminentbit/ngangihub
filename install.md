@@ -46,7 +46,11 @@ To set up the project locally, follow these steps:
 1. Clone the repository:
    ```bash
    git clone https://github.com/eminentbit/ngangihub.git
-  
+   ```
+<<<<<<< HEAD
+
+=======
+>>>>>>> c8a126cb3e37b4897b55bd32acff17dd2d2762c8
 2. Install dependencies for both frontend and backend:
    ```bash
    cd frontend
@@ -68,7 +72,7 @@ To set up the project locally, follow these steps:
 
 ## Usage
 
-1. Open the frontend in your browser (usually at `http://localhost:3000`).
+1. Open the frontend in your browser (usually at `http://localhost:5173`).
 2. Register or log in to your account.
 3. Create or join a Njangi group.
 4. Track contributions, view payout schedules, and manage your group.
@@ -94,7 +98,7 @@ Contributions are welcome! To contribute:
 
 ## License
 
-This project is licensed under the GPL-3.0 License.
+This project is licensed under the GPT-3.0 License.
 
 
 ---
