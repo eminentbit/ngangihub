@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FAQItemProps } from '../types';
+import { FAQItemProps } from '../types/welcome.page.index.type';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
 const FAQItem: React.FC<FAQItemProps> = ({ question, answer }) => {
