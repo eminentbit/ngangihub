@@ -26,7 +26,7 @@ const CTA: React.FC = () => {
               variant="outline" 
               className="text-white border-white hover:bg-blue-800"
             >
-              Schedule a Demo
+              Start Your Njangi
             </Button>
           </div>
           <p className="mt-6 text-blue-200 text-sm">

@@ -65,9 +65,10 @@ const Header: React.FC = () => {
             <Button variant="outline" size="sm">
               Log in
             </Button>
-            <Button variant="primary" size="sm">
+            {/* <Button variant="primary" size="sm"> 
               Sign up
-            </Button>
+            </Button> */}
+            {/* This signup btn will only be visisble when the user is unbale to join group via the link in the email */}
           </div>
 
           {/* Mobile Menu Button */}
@@ -101,9 +102,10 @@ const Header: React.FC = () => {
                 <Button variant="outline" fullWidth>
                   Log in
                 </Button>
-                <Button variant="primary" fullWidth>
+                {/* <Button variant="primary" fullWidth>
                   Sign up
-                </Button>
+                </Button> */}
+                {/* This signup btn will only be visisble when the user is unbale to join group via the link in the email */}
               </div>
             </nav>
           </Container>
