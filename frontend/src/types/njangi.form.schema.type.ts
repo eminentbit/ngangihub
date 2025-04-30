@@ -81,9 +81,13 @@ export const groupDetailsSchema = z.object({
     .refine((value) => Number(value) > 0, {
       message: "Contribution amount must be greater than 0",
     }),
-  contributionFrequency: z.enum(["Weekly", "Monthly", "Bi-weekly"], {
-    required_error: "Please select a contribution frequency",
-  }),
+    contributionFrequency: z
+      .enum(["Weekly", "Monthly", "Bi-weekly"], {
+        required_error: "Please select a contribution frequency",
+      })
+      .refine((value) => !!value, {
+        message: "Please select a contribution frequency",
+      }),
   payoutMethod: z.enum(["Rotation", "Lottery", "Bidding"], {
     required_error: "Please select a payout method",
   }),

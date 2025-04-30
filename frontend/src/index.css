@@ -7,6 +7,19 @@
     Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 }
 
+/* Hide default date picker */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0;
+}
+
+input[type="date"]::-moz-calendar-picker {
+  opacity: 0;
+}
+
+input[type="date"]::-ms-clear {
+  opacity: 0;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -73,7 +86,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   padding-top: 0.625rem /* 10px */ !important;
   padding-bottom: 0.625rem /* 10px */ !important;
   padding-left: 3rem !important;
-  padding-right: .75rem !important;
+  padding-right: 0.75rem !important;
   background-color: white !important;
   height: 42px !important;
 }
