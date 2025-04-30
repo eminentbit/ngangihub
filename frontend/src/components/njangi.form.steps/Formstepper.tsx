@@ -8,7 +8,7 @@ import Step4Review from "./step4Review";
 
 const FormStepper: React.FC = () => {
   const { state, goToStep } = useFormContext();
-  const { currentStep } = state;
+  const { currentStep, isSubmitting, isSubmitted } = state;
 
   const steps = [
     "Account Setup",
@@ -44,6 +44,8 @@ const FormStepper: React.FC = () => {
         steps={steps}
         currentStep={currentStep}
         onStepClick={handleStepClick}
+        disabled={isSubmitting}
+        submitted={isSubmitted}
       />
 
       <div className="mt-8">{renderStep()}</div>

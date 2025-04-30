@@ -6,21 +6,29 @@ interface StepperProps {
   steps: string[];
   currentStep: number;
   onStepClick?: (step: number) => void;
+  disabled?: boolean;
+  submitted?: boolean;
 }
 
 const Stepper: React.FC<StepperProps> = ({
   steps,
   currentStep,
   onStepClick,
+  disabled = false,
+  submitted = false,
 }) => {
+  if (submitted) {
+    return null;
+  }
+
   return (
     <div className="w-full py-6 overflow-x-auto">
       <div className="flex items-center justify-between min-w-[640px] px-4 md:px-0 md:min-w-0">
         {steps.map((step, index) => {
           const stepNumber = index + 1;
-          const isCompleted = currentStep > stepNumber;
+          const isCompleted = currentStep >= stepNumber;
           const isActive = currentStep === stepNumber;
-          const isClickable = isCompleted && onStepClick;
+          const isClickable = !disabled && isCompleted && onStepClick;
 
           return (
             <React.Fragment key={step}>
