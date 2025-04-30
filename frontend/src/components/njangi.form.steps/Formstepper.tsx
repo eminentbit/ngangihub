@@ -1,10 +1,10 @@
 import React from "react";
-import { useFormContext } from ".././context/njangi.form.context";
-import Stepper from "../components/njangi.form.ui/stepper";
-import Step1AccountInfo from "../components/njangi.form.steps/step1AccountInfo";
-import Step2GroupDetails from "../components/njangi.form.steps/step2GroupDetails";
-import Step3InviteMembers from "../components/njangi.form.steps/step3InviteMember";
-import Step4Review from "../components/njangi.form.steps/step4Review";
+import { useFormContext } from "../../context/njangi.form.context";
+import Stepper from "../njangi.form.ui/stepper";
+import Step1AccountInfo from "./step1AccountInfo";
+import Step2GroupDetails from "./step2GroupDetails";
+import Step3InviteMembers from "./step3InviteMember";
+import Step4Review from "./step4Review";
 
 const FormStepper: React.FC = () => {
   const { state, goToStep } = useFormContext();

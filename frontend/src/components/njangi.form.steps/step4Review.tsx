@@ -4,7 +4,7 @@ import { useFormContext } from "../../context/njangi.form.context";
 import Button from "../ExtraButton";
 
 const Step4Review: React.FC = () => {
-  const { state, prevStep, submitForm } = useFormContext();
+  const { state, prevStep, submitForm, goToStep } = useFormContext();
   const {
     accountSetup,
     groupDetails,
@@ -62,7 +62,7 @@ const Step4Review: React.FC = () => {
                 type="button"
                 variant="outline"
                 size="sm"
-                onClick={() => state.goToStep?.(1)}
+                onClick={() => goToStep(1)}
                 rightIcon={<ChevronRight size={16} />}
               >
                 Edit
@@ -115,7 +115,7 @@ const Step4Review: React.FC = () => {
                 type="button"
                 variant="outline"
                 size="sm"
-                onClick={() => state.goToStep?.(2)}
+                onClick={() => goToStep(2)}
                 rightIcon={<ChevronRight size={16} />}
               >
                 Edit
@@ -201,7 +201,7 @@ const Step4Review: React.FC = () => {
                 type="button"
                 variant="outline"
                 size="sm"
-                onClick={() => state.goToStep?.(3)}
+                onClick={() => goToStep(3)}
                 rightIcon={<ChevronRight size={16} />}
               >
                 Edit
@@ -218,7 +218,7 @@ const Step4Review: React.FC = () => {
             </div>
           </section>
 
-          <div className="border-t pt-6 mt-6 flex justify-between">
+          <div className="border-t pt-6 mt-6 flex max-sm:flex-col max-sm:gap-y-3 justify-between">
             <Button
               type="button"
               variant="outline"

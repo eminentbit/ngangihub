@@ -29,14 +29,14 @@ const Stepper: React.FC<StepperProps> = ({
                 <div
                   className={clsx(
                     "w-10 h-10 rounded-full flex items-center justify-center z-10 transition-all duration-300",
-                    isCompleted ? "bg-purple-600 text-white" : "",
+                    isCompleted ? "bg-blue-600 text-white" : "",
                     isActive
-                      ? "bg-purple-100 border-2 border-purple-600 text-purple-600"
+                      ? "bg-blue-100 border-2 border-blue-600 text-blue-600"
                       : "",
                     !isActive && !isCompleted
                       ? "bg-gray-100 border-2 border-gray-300 text-gray-500"
                       : "",
-                    isClickable ? "cursor-pointer hover:bg-purple-700" : ""
+                    isClickable ? "cursor-pointer hover:bg-blue-700" : ""
                   )}
                   onClick={() => {
                     if (isClickable && onStepClick) {
@@ -54,8 +54,8 @@ const Stepper: React.FC<StepperProps> = ({
                   <span
                     className={clsx(
                       "line-clamp-2",
-                      isActive ? "text-purple-600" : "",
-                      isCompleted ? "text-purple-600" : "",
+                      isActive ? "text-blue-600" : "",
+                      isCompleted ? "text-blue-600" : "",
                       !isActive && !isCompleted ? "text-gray-500" : ""
                     )}
                   >
@@ -70,7 +70,7 @@ const Stepper: React.FC<StepperProps> = ({
                   className={clsx(
                     "flex-grow border-t-2 mx-4 transition-colors duration-300",
                     currentStep > index + 1
-                      ? "border-purple-600"
+                      ? "border-blue-600"
                       : "border-gray-300"
                   )}
                 />

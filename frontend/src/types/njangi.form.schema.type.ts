@@ -151,7 +151,7 @@ export const inviteMembersSchema = z.object({
       z.object({
         contact: z
           .string()
-          .min(1, "Contact is required")
+          .min(1, "Email or Phone number is required")
           .refine(
             (val) => {
               // Check if it's a valid email

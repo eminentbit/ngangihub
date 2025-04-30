@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { describe, it, expect, vi } from 'vitest';
 import Step1AccountInfo from './step1AccountInfo';
-import { FormContextProvider } from '../../context/njangi.form.context';
+import { FormProvider } from '../../context/njangi.form.context';
 
 describe('Step1AccountInfo Component', () => {
     const mockContextValue = {
@@ -24,9 +24,9 @@ describe('Step1AccountInfo Component', () => {
 
     const renderWithContext = () =>
         render(
-            <FormContextProvider value={mockContextValue}>
+            <FormProvider>
                 <Step1AccountInfo />
-            </FormContextProvider>
+            </FormProvider>
         );
 
     it('renders the form fields correctly', () => {

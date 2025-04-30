@@ -37,7 +37,7 @@ const Step2GroupDetails: React.FC = () => {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="form-label">
               Group Name
             </label>
             <div className="relative mt-1">
@@ -45,12 +45,12 @@ const Step2GroupDetails: React.FC = () => {
               <input
                 type="text"
                 {...register("groupName")}
-                className={`block w-full pl-10 pr-3 py-2 border ${
-                  errors.groupName ? "border-red-500" : "border-gray-300"
-                } rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500`}
+                className={`form-input ${
+                  errors.groupName ? "form-input-error" : ""
+                }`}
               />
               {errors.groupName && (
-                <p className="text-red-500 text-sm mt-1">
+                <p className="form-error">
                   {errors.groupName.message}
                 </p>
               )}
@@ -59,7 +59,7 @@ const Step2GroupDetails: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="form-label">
                 Contribution Amount
               </label>
               <div className="relative mt-1">
@@ -67,14 +67,14 @@ const Step2GroupDetails: React.FC = () => {
                 <input
                   type="number"
                   {...register("contributionAmount")}
-                  className={`block w-full pl-10 pr-3 py-2 border ${
-                    errors.contributionAmount ? "border-red-500" : "border-gray-300"
-                  } rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500`}
+                  className={`form-input ${
+                    errors.contributionAmount ? "form-input-error" : ""
+                  }`}
                   min="0"
                   step="0.01"
                 />
                 {errors.contributionAmount && (
-                  <p className="text-red-500 text-sm mt-1">
+                  <p className="form-error">
                     {errors.contributionAmount.message}
                   </p>
                 )}
@@ -82,14 +82,14 @@ const Step2GroupDetails: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="form-label">
                 Contribution Frequency
               </label>
               <select
                 {...register("contributionFrequency")}
-                className={`block w-full pl-3 pr-3 py-2 border ${
-                  errors.contributionFrequency ? "border-red-500" : "border-gray-300"
-                } rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500`}
+                className={`form-input ${
+                  errors.contributionFrequency ? "form-input-error" : ""
+                }`}
               >
                 <option value="">Select Frequency</option>
                 {frequencyOptions.map((option) => (
@@ -182,26 +182,26 @@ const Step2GroupDetails: React.FC = () => {
             <input
               type="number"
               {...register("numOfMembers")}
-              className={`block w-full pl-3 pr-3 py-2 border ${
-                errors.numOfMembers ? "border-red-500" : "border-gray-300"
-              } rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500`}
+              className={`form-input ${
+                errors.numOfMembers ? "form-input-error" : ""
+              }`}
               min="1"
               step="1"
             />
             {errors.numOfMembers && (
-              <p className="text-red-500 text-sm mt-1">
+              <p className="form-error">
                 {errors.numOfMembers.message}
               </p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="form-label">
               Group Rules (Optional)
             </label>
             <textarea
               {...register("rules")}
-              className={`block w-full pl-3 pr-3 py-2 border ${
+              className={`form-input ${
                 errors.rules ? "border-red-500" : "border-gray-300"
               } rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500`}
               placeholder="Describe the rules and expectations for your Njangi group..."

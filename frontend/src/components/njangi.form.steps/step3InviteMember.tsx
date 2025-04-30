@@ -48,23 +48,23 @@ const Step3InviteMembers: React.FC = () => {
           {fields.map((field, index) => (
             <div key={field.id} className="flex items-start gap-2">
               <div className="flex-grow">
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="form-label">
                   Member {index + 1}
                 </label>
                 <div className="relative mt-1">
-                  <Mail size={18} className="absolute left-3 top-2.5 text-gray-400" />
+                  <Mail size={18} className="absolute left-3 top-3.5 text-gray-400" />
                   <input
                     type="text"
                     {...register(`invites.${index}.contact`)}
                     placeholder="Email or phone number"
-                    className={`block w-full pl-10 pr-3 py-2 border ${
+                    className={`form-input ${
                       errors.invites?.[index]?.contact
-                        ? "border-red-500"
-                        : "border-gray-300"
-                    } rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500`}
+                        ? "form-input-error"
+                        : ""
+                    }`}
                   />
                   {errors.invites?.[index]?.contact && (
-                    <p className="text-red-500 text-sm mt-1">
+                    <p className="form-error">
                       {errors.invites[index].contact?.message}
                     </p>
                   )}
@@ -87,7 +87,7 @@ const Step3InviteMembers: React.FC = () => {
             <button
               type="button"
               onClick={() => append({ contact: "" })}
-              className="text-purple-600 hover:bg-purple-50 px-4 py-2 rounded-md transition-transform hover:scale-105 flex items-center gap-2"
+              className="text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-md transition-transform hover:scale-105 flex items-center gap-2"
             >
               <Plus size={18} />
               Add Another Member

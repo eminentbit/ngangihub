@@ -90,8 +90,8 @@ const FormFileInput = forwardRef<HTMLInputElement, FormFileInputProps>(
           className={clsx(
             "relative border-2 border-dashed rounded-md p-6 flex flex-col items-center justify-center transition-all duration-200",
             isDragging
-              ? "border-purple-500 bg-purple-50"
-              : "border-gray-300 hover:border-purple-400",
+              ? "border-blue-500 bg-blue-50"
+              : "border-gray-300 hover:border-blue-400",
             error ? "border-red-300" : "",
             className
           )}
@@ -129,11 +129,11 @@ const FormFileInput = forwardRef<HTMLInputElement, FormFileInputProps>(
             </div>
           ) : (
             <>
-              <div className="mx-auto flex justify-center items-center w-12 h-12 rounded-full bg-purple-100 mb-3">
-                <Upload className="h-6 w-6 text-purple-600" />
+              <div className="mx-auto flex justify-center items-center w-12 h-12 rounded-full bg-blue-100 mb-3">
+                <Upload className="h-6 w-6 text-blue-600" />
               </div>
               <div className="flex text-sm text-gray-600">
-                <span className="relative cursor-pointer rounded-md font-medium text-purple-600 hover:text-purple-500">
+                <span className="relative cursor-pointer rounded-md font-medium text-blue-600 hover:text-blue-500">
                   Upload a file
                 </span>
                 <p className="pl-1">or drag and drop</p>

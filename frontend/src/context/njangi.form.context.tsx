@@ -38,6 +38,7 @@ type FormAction =
   | { type: "SUBMIT_SUCCESS" }
   | { type: "SUBMIT_ERROR" };
 
+
 // Reducer function
 const formReducer = (state: FormState, action: FormAction): FormState => {
   switch (action.type) {
@@ -142,11 +143,18 @@ export const FormProvider: React.FC<{ children: ReactNode }> = ({
   const submitForm = async () => {
     dispatch({ type: "SUBMIT_FORM" });
 
+    // Log the form data
+    console.log("Form data:", state);
+
+    console.log("Account setup data:", state.accountSetup);
+    console.log("Group details data:", state.groupDetails);
+    console.log("Invite members data:", state.inviteMembers);
+
     // Simulate API call
     try {
       await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate network delay
       dispatch({ type: "SUBMIT_SUCCESS" });
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       dispatch({ type: "SUBMIT_ERROR" });
     }

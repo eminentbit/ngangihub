@@ -1,5 +1,5 @@
 import { FormProvider } from "../context/njangi.form.context";
-import FormStepper from "../components/Formstepper";
+import FormStepper from "../components/njangi.form.steps/Formstepper";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
