@@ -40,7 +40,7 @@ const LandingSections: React.FC = () => (
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <RootLayout />,
+    element: <RootLayout  />,
     children: [
       { index: true, element: <LandingSections /> },       
       { path: "about", element: <AboutPage /> },           
@@ -48,5 +48,13 @@ export const router = createBrowserRouter([
       { path: "admindashboard", element: <AdminDashboardPage /> }, 
       { path: "*", element: <NotFoundPage /> },             
     ],
+  },
+  {
+    path: "*",
+    element: <NotFoundPage />,
+  },
+  {
+    path: "/njangi-form",
+    element: <NjangiForm />,
   },
 ]);
