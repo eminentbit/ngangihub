@@ -1,5 +1,5 @@
 import React from 'react';
-import { PricingTierProps } from '../types';
+import { PricingTierProps } from '../types/welcome.page.index.type';
 import Button from './Button';
 import { Check } from 'lucide-react';
 

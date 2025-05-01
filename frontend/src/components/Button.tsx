@@ -1,5 +1,5 @@
 import React from 'react';
-import { ButtonProps } from '../types';
+import { ButtonProps } from '../types/welcome.page.index.type';
 
 const Button: React.FC<ButtonProps> = ({
   variant = 'primary',
