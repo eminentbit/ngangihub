@@ -1,11 +1,23 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const ContactPage: React.FC = () => {
+  const navigate = useNavigate();
   return (
-    <main className="flex flex-col min-h-screen bg-gray-50">
-
-      <section className="flex-grow py-12 px-4 sm:px-6 lg:px-8">
+    <main className="flex relative flex-col min-h-screen bg-gray-50">
+      <div
+        className="absolute left-4 top-4 text-sm flex items-center gap-1 cursor-pointer hover:bg-blue-100 hover:text-blue-600 py-2 px-4 hover:rounded-md transition-colors duration-300 group"
+        onClick={() => navigate("/")}
+      >
+        <ArrowLeft
+          size={16}
+          className="group-hover:-translate-x-1 transition-all duration-300"
+        />
+        Back to Home
+      </div>
+      <section className="flex-grow py-12 px-4 sm:px-6 lg:px-8 max-sm:pt-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -13,7 +25,7 @@ const ContactPage: React.FC = () => {
           className="max-w-2xl mx-auto bg-white p-8 sm:p-12 rounded-2xl shadow-md"
         >
           <h2 className="text-3xl font-semibold text-indigo-600 mb-8 text-center">
-            Get in Touch with Us
+            Get in Touch with NAAS  
           </h2>
 
           <form className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -29,7 +41,7 @@ const ContactPage: React.FC = () => {
                 placeholder="Enter your name"
                 required
                 className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-shadow"
-              /> 
+              />
             </div>
 
             {/* Email */}
@@ -76,8 +88,10 @@ const ContactPage: React.FC = () => {
       </section>
 
       {/* Footer Component */}
-      <footer className="bg-gray-800 text-white py-4 text-center">
-        <p className="text-sm">&copy; {new Date().getFullYear()} Your Company. All rights reserved.</p>
+      <footer className="py-4 text-center">
+        <p className="text-sm">
+          &copy; {new Date().getFullYear()} NAAS. All rights reserved.
+        </p>
       </footer>
     </main>
   );
