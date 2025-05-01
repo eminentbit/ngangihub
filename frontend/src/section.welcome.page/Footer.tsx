@@ -77,7 +77,13 @@ const Footer: React.FC = () => {
         <div className="border-t border-gray-800 mt-12 pt-8 text-center md:text-left md:flex md:items-center md:justify-between">
           <p>&copy; {currentYear} NAAS. All rights reserved.</p>
           <div className="mt-4 md:mt-0">
-            <select className="bg-gray-800 text-gray-300 rounded p-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
+            <label htmlFor="language-select" className="sr-only">
+              Select Language
+            </label>
+            <select
+              id="language-select"
+              className="bg-gray-800 text-gray-300 rounded p-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+            >
               <option value="en">English</option>
               <option value="fr">Français</option>
               <option value="es">Español</option>

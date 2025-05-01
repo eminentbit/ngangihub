@@ -3,11 +3,8 @@ import { motion } from "framer-motion";
 import njangiComImage from "../assets/njangicom.jpg";
 import njangi1 from "../assets/njangi1.jpg";
 import njangi2 from "../assets/njangi2.jpg";
-import Footer from "../components/footer";
-
 
 const AboutPage: React.FC = () => {
-  // now galleryImages is an array of imported modules
   const galleryImages = [njangi1, njangiComImage, njangi2];
 
   return (
@@ -89,8 +86,13 @@ const AboutPage: React.FC = () => {
     ))}
   </div>
 </section>
-
-      <Footer />
+  
+        {/* Footer Section */}
+        <footer className="px-6 py-16 bg-gray-50 text-center">
+          <p className="text-gray-700">
+            &copy; {new Date().getFullYear()} NjangiHub. All rights reserved.
+          </p>
+        </footer>
     </main>
   );
 };

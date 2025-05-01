@@ -1,6 +1,5 @@
 import React from "react";
 import { motion } from "framer-motion";
-import Footer from "../components/footer";
 
 const ContactPage: React.FC = () => {
   return (
@@ -76,7 +75,10 @@ const ContactPage: React.FC = () => {
         </motion.div>
       </section>
 
-      <Footer />
+      {/* Footer Component */}
+      <footer className="bg-gray-800 text-white py-4 text-center">
+        <p className="text-sm">&copy; {new Date().getFullYear()} Your Company. All rights reserved.</p>
+      </footer>
     </main>
   );
 };

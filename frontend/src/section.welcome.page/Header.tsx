@@ -1,28 +1,38 @@
 import React, { useState, useEffect } from "react";
 import { Link as ScrollLink } from "react-scroll";
+import { Link, useNavigate } from "react-router-dom";
 import Container from "../components/Container";
 import Button from "../components/Button";
 import { Menu, X } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+
+interface NavLinkItem {
+  label: string;
+  to: string;
+  scroll: boolean;
+}
+
+const navLinks: NavLinkItem[] = [
+  // In-page scroll sections
+  { label: "Features", to: "features", scroll: true },
+  { label: "How It Works", to: "how-it-works", scroll: true },
+  { label: "Pricing", to: "pricing", scroll: true },
+  { label: "Testimonials", to: "testimonials", scroll: true },
+  { label: "FAQ", to: "faq", scroll: true },
+
+  // Route-based pages
+  { label: "About Us", to: "/about", scroll: false },
+  { label: "Contact Us", to: "/contact", scroll: false },
+];
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
 
-  const navLinks = [
-    { label: "Features", to: "features" },
-    { label: "How It Works", to: "how-it-works" },
-    { label: "Pricing", to: "pricing" },
-    { label: "Testimonials", to: "testimonials" },
-    { label: "FAQ", to: "faq" },
-  ];
-
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
     };
-
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -35,6 +45,7 @@ const Header: React.FC = () => {
     >
       <Container>
         <div className="flex items-center justify-between py-4">
+          {/* Logo and Home nav */}
           <div
             className="flex items-center cursor-pointer"
             onClick={() => {
@@ -47,31 +58,38 @@ const Header: React.FC = () => {
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            {navLinks.map((link, index) => (
-              <ScrollLink
-                key={index}
-                to={link.to}
-                smooth={true}
-                duration={500}
-                className="text-gray-600 cursor-pointer hover:text-blue-700 font-medium"
-              >
-                {link.label}
-              </ScrollLink>
-            ))}
+          <nav className="hidden md:flex items-center space-x-6">
+            {navLinks.map((link, index) =>
+              link.scroll ? (
+                <ScrollLink
+                  key={index}
+                  to={link.to}
+                  smooth
+                  duration={500}
+                  className="text-gray-600 hover:text-blue-700 font-medium cursor-pointer"
+                >
+                  {link.label}
+                </ScrollLink>
+              ) : (
+                <Link
+                  key={index}
+                  to={link.to}
+                  className="text-gray-600 hover:text-blue-700 font-medium"
+                >
+                  {link.label}
+                </Link>
+              )
+            )}
           </nav>
 
+          {/* Desktop Buttons */}
           <div className="hidden md:flex items-center space-x-4">
             <Button variant="outline" size="sm">
               Log in
             </Button>
-            {/* <Button variant="primary" size="sm"> 
-              Sign up
-            </Button> */}
-            {/* This signup btn will only be visisble when the user is unbale to join group via the link in the email */}
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Toggle */}
           <button
             className="md:hidden text-gray-600"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -86,27 +104,32 @@ const Header: React.FC = () => {
         <div className="md:hidden bg-white shadow-lg border-t">
           <Container>
             <nav className="flex flex-col py-4 space-y-4">
-              {navLinks.map((link, index) => (
-                <ScrollLink
-                  key={index}
-                  to={link.to}
-                  smooth={true}
-                  duration={500}
-                  className="text-gray-600 cursor-pointer hover:text-blue-700 font-medium py-2"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {link.label}
-                </ScrollLink>
-              ))}
-              <div className="flex flex-col space-y-3 pt-3 border-t border-gray-200">
-                <Button variant="outline" fullWidth>
-                  Log in
-                </Button>
-                {/* <Button variant="primary" fullWidth>
-                  Sign up
-                </Button> */}
-                {/* This signup btn will only be visisble when the user is unbale to join group via the link in the email */}
-              </div>
+              {navLinks.map((link, index) =>
+                link.scroll ? (
+                  <ScrollLink
+                    key={index}
+                    to={link.to}
+                    smooth
+                    duration={500}
+                    className="text-gray-600 hover:text-blue-700 font-medium cursor-pointer py-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {link.label}
+                  </ScrollLink>
+                ) : (
+                  <Link
+                    key={index}
+                    to={link.to}
+                    className="text-gray-600 hover:text-blue-700 font-medium py-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {link.label}
+                  </Link>
+                )
+              )}
+              <Button variant="outline" fullWidth>
+                Log in
+              </Button>
             </nav>
           </Container>
         </div>
