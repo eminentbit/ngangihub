@@ -36,7 +36,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   onClose,
 }) => {
   const containerClasses = `
-    fixed inset-y-0 left-0 z-30 w-64 bg-indigo-700 text-white
+    fixed inset-y-0 overflow-y-auto left-0 z-30 w-64 bg-indigo-700 text-white
     transform transition-transform duration-300 ease-in-out
     ${isOpen ? 'translate-x-0' : '-translate-x-full'}
   `;
@@ -68,7 +68,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       />
 
       <div className="pt-4 pb-2">
-        <h3 className="font-medium text-indigo-200 mb-2">MY GROUPS</h3>
+        <h3 className="font-bold text-indigo-200 mb-2 ml-3">MY GROUPS</h3>
         <SidebarItem
           icon={<FaUsers />}
           label="Groups Overview"
@@ -96,7 +96,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       <div className="pt-4 pb-2">
-        <h3 className="font-medium text-indigo-200 mb-2">SETTINGS</h3>
+        <h3 className="font-bold text-indigo-200 mb-2 ml-3">SETTINGS</h3>
         <SidebarItem
           icon={<FaCog />}
           label="Settings"

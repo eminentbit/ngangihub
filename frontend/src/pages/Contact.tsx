@@ -1,5 +1,4 @@
 import React from "react";
-import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -8,7 +7,7 @@ const ContactPage: React.FC = () => {
   return (
     <main className="flex relative flex-col min-h-screen bg-gray-50">
       <div
-        className="absolute left-4 top-4 text-sm flex items-center gap-1 cursor-pointer hover:bg-blue-100 hover:text-blue-600 py-2 px-4 hover:rounded-md transition-colors duration-300 group"
+        className="absolute left-4 top-6 text-sm flex items-center gap-1 cursor-pointer hover:bg-blue-100 hover:text-blue-600 py-2 px-4 hover:rounded-md transition-colors duration-300 group"
         onClick={() => navigate("/")}
       >
         <ArrowLeft
@@ -18,14 +17,9 @@ const ContactPage: React.FC = () => {
         Back to Home
       </div>
       <section className="flex-grow py-12 px-4 sm:px-6 lg:px-8 max-sm:pt-20">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="max-w-2xl mx-auto bg-white p-8 sm:p-12 rounded-2xl shadow-md"
-        >
+        <div className="max-w-2xl mx-auto bg-white p-8 sm:p-12 rounded-2xl shadow-md">
           <h2 className="text-3xl font-semibold text-indigo-600 mb-8 text-center">
-            Get in Touch with NAAS  
+            Get in Touch with NAAS
           </h2>
 
           <form className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -84,7 +78,7 @@ const ContactPage: React.FC = () => {
               </button>
             </div>
           </form>
-        </motion.div>
+        </div>
       </section>
 
       {/* Footer Component */}

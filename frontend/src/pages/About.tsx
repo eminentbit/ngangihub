@@ -3,12 +3,25 @@ import { motion } from "framer-motion";
 import njangiComImage from "../assets/njangicom.jpg";
 import njangi1 from "../assets/njangi1.jpg";
 import njangi2 from "../assets/njangi2.jpg";
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 
 const AboutPage: React.FC = () => {
   const galleryImages = [njangi1, njangiComImage, njangi2];
+  const navigate = useNavigate();
 
   return (
-    <main className="bg-white text-gray-800">
+    <main className="bg-white text-gray-800 relative">
+      <div
+        className="absolute left-4 top-4 text-sm flex items-center gap-1 cursor-pointer hover:bg-blue-100 hover:text-blue-600 py-2 px-4 hover:rounded-md transition-colors duration-300 group"
+        onClick={() => navigate("/")}
+      >
+        <ArrowLeft
+          size={16}
+          className="group-hover:-translate-x-1 transition-all duration-300"
+        />
+        Back to Home
+      </div>
       {/* Hero Section */}
       <section className="px-6 py-16 bg-gray-50 text-center">
         <motion.div
@@ -17,9 +30,7 @@ const AboutPage: React.FC = () => {
           transition={{ duration: 0.7 }}
           className="max-w-4xl mx-auto"
         >
-          <h1 className="text-4xl font-bold text-blue-600 mb-4">
-            About NjangiHub
-          </h1>
+          <h1 className="text-4xl font-bold text-blue-600 mb-4">About NAAS</h1>
           <p className="text-lg text-gray-700">
             Empowering communities with modern tools for traditional rotating
             savings systems.
@@ -45,8 +56,8 @@ const AboutPage: React.FC = () => {
             <p className="text-gray-700 text-lg">
               We aim to modernize traditional njangi systems using digital tools
               while preserving their cultural and communal value. Whether you're
-              forming a group with friends, family, or colleagues, NjangiHub
-              makes contribution tracking, communication, and payout management
+              forming a group with friends, family, or colleagues, NAAS makes
+              contribution tracking, communication, and payout management
               seamless.
             </p>
           </div>
@@ -103,9 +114,9 @@ const AboutPage: React.FC = () => {
       </section>
 
       {/* Footer Section */}
-      <footer className="px-6 py-16 bg-gray-50 text-center">
+      <footer className="bg-gray-50 text-center text-sm py-4">
         <p className="text-gray-700">
-          &copy; {new Date().getFullYear()} NjangiHub. All rights reserved.
+          &copy; {new Date().getFullYear()} NAAS. All rights reserved.
         </p>
       </footer>
     </main>
