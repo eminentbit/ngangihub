@@ -90,7 +90,7 @@ const ManageMembersPage: React.FC = () => {
         <FaBars size={20} />
       </button>
       {/*main content*/}
-      <div className={`fixed inset-0 bg-black bg-opacity-50 transition-opacity duration-200 ${isSidebarOpen ? 'opacity-0' : 'opacity-100'}`} onClick={toggleSidebar} />
+      <div className={`fixed inset-0 bg-black bg-opacity-50  transition-opacity duration-200 ${isSidebarOpen ? 'opacity-0' : 'opacity-100'}`} onClick={toggleSidebar} />
       {/* Header */}
       <header className={`fixed top-0 left-0 right-0  bg-white dark:bg-gray-800 shadow-md transition-transform duration-200 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 z-20`}>
         <div className="flex items-center justify-between p-4 h-10 max-w-5xl mx-auto">
@@ -109,13 +109,13 @@ const ManageMembersPage: React.FC = () => {
       </button>
 
       <main
-        className={`flex-1 p-6 md:p-12 transition-all duration-200 ${isSidebarOpen ? 'lg:ml-64' : 'lg:ml-20'}`}
+        className={`flex-1 p-4 md:p-12 transition-all duration-200 ${isSidebarOpen ? 'lg:ml-64' : 'lg:ml-20'}`}
       >
         <div className="max-w-5xl mx-auto">
           <header className="mb-6 flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-blue-900 dark:text-gray-100">Manage Members</h1>
-              <p className="text-blue-700 dark:text-gray-300">Add, edit, or remove members from your Njangi circle</p>
+              <h1 className="text-2xl font-bold text-blue-700 dark:text-gray-100">Manage Members</h1>
+              <p className="text-black dark:text-gray-300">Add, edit, or remove members from your Njangi circle</p>
             </div>
           </header>
 
