@@ -85,9 +85,9 @@ const Step2GroupDetails: React.FC = () => {
               <label className="form-label">Contribution Frequency</label>
               <select
                 {...register("contributionFrequency")}
-                className={`form-input ${
+                className={`block w-full pl-3 pr-3 py-2 border ${
                   errors.contributionFrequency ? "form-input-error" : ""
-                }`}
+                } rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500`}
               >
                 <option value="">Select Frequency</option>
                 {frequencyOptions.map((option) => (
@@ -177,27 +177,33 @@ const Step2GroupDetails: React.FC = () => {
             <label className="block text-sm font-medium text-gray-700">
               Number of Members (Optional)
             </label>
-            <input
-              type="number"
-              {...register("numOfMembers")}
-              className={`form-input ${
-                errors.numOfMembers ? "form-input-error" : ""
-              }`}
-              min="1"
-              step="1"
-            />
-            {errors.numOfMembers && (
-              <p className="form-error">{errors.numOfMembers.message}</p>
-            )}
+            <div className="relative mt-1">
+              <Users
+                size={18}
+                className="absolute left-3 top-2.5 text-gray-400"
+              />
+              <input
+                type="number"
+                {...register("numOfMembers")}
+                className={`form-input ${
+                  errors.numOfMembers ? "form-input-error" : ""
+                }`}
+                min="1"
+                step="1"
+              />
+              {errors.numOfMembers && (
+                <p className="form-error">{errors.numOfMembers.message}</p>
+              )}
+            </div>
           </div>
 
           <div>
             <label className="form-label">Group Rules (Optional)</label>
             <textarea
               {...register("rules")}
-              className={`form-input ${
+              className={`form-textarea ${
                 errors.rules ? "border-red-500" : "border-gray-300"
-              } rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500`}
+              }`}
               placeholder="Describe the rules and expectations for your Njangi group..."
             />
             {errors.rules && (

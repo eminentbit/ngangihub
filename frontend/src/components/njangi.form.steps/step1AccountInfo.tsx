@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Mail, User, Lock, EyeOff, Eye, Upload } from "lucide-react";
+import { Mail, User, Lock, EyeOff, Eye } from "lucide-react";
 import {
   accountSetupSchema,
   AccountSetupFormData,
@@ -220,26 +220,6 @@ const Step1AccountInfo: React.FC = () => {
             registration={register("profilePic")}
             accept="image/jpeg, image/png, image/jpg"
           />
-          {/* 
-          <div className="pt-2">
-            <label className="form-label">Profile Picture (Optional)</label>
-            <div className="relative mt-1 rounded-lg border border-dashed border-slate-300 dark:border-slate-700 p-4 bg-slate-50 dark:bg-slate-800/50">
-              <Upload
-                size={18}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-              />
-              <input
-                type="file"
-                {...register("profilePic")}
-                accept="image/jpeg, image/png, image/jpg"
-                className="form-file-input pl-10"
-              />
-              {errors.profilePic && (
-                <p className="form-error mt-2">{errors.profilePic.message}</p>
-              )}
-            </div>
-          </div> */}
-
           <div className="flex justify-end pt-5">
             <button
               type="submit"

@@ -13,6 +13,7 @@ interface FormFileInputProps {
 
 const FormFileInput = forwardRef<HTMLInputElement, FormFileInputProps>(
   (
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     { label, error, registration, accept = "image/*", className, ...props },
     ref
   ) => {
@@ -105,8 +106,7 @@ const FormFileInput = forwardRef<HTMLInputElement, FormFileInputProps>(
               registration?.onChange(e);
               handleFileChange(e);
             }}
-            ref={ref}
-            {...props}
+            // {...props}
           />
 
           {preview ? (
@@ -136,7 +136,7 @@ const FormFileInput = forwardRef<HTMLInputElement, FormFileInputProps>(
                 <span className="relative cursor-pointer rounded-md font-medium text-blue-600 hover:text-blue-500">
                   Upload a file
                 </span>
-                <p className="pl-1">or drag and drop</p>
+                {/* <p className="pl-1">or drag and drop</p> */}
               </div>
               <p className="text-xs text-gray-500 mt-1">
                 PNG, JPG, JPEG up to 5MB

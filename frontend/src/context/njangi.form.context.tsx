@@ -145,10 +145,7 @@ export const FormProvider: React.FC<{ children: ReactNode }> = ({
 
     // Log the form data
     console.log("Form data:", state);
-
-    console.log("Account setup data:", state.accountSetup);
-    console.log("Group details data:", state.groupDetails);
-    console.log("Invite members data:", state.inviteMembers);
+    
 
     // Simulate API call
     try {

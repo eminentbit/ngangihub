@@ -84,7 +84,11 @@ const Header: React.FC = () => {
 
           {/* Desktop Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button variant="outline" size="sm">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate("/login")}
+            >
               Log in
             </Button>
           </div>
@@ -127,7 +131,11 @@ const Header: React.FC = () => {
                   </Link>
                 )
               )}
-              <Button variant="outline" fullWidth>
+              <Button
+                variant="outline"
+                fullWidth
+                onClick={() => navigate("/login")}
+              >
                 Log in
               </Button>
             </nav>

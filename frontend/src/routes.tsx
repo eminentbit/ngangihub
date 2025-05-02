@@ -8,6 +8,7 @@ import NotFoundPage from "./pages/not-found";
 import { AdminDashboardPage } from "./pages/dashboard.admin.pages/AdminDashboardPage";
 import App from "./App";
 import NjangiForm from "./pages/njangi.form.page";
+import Login from "./pages/login";
 
 // eslint-disable-next-line react-refresh/only-export-components
 const LandingSections: React.FC = () => <App />;
@@ -30,5 +31,9 @@ export const router = createBrowserRouter([
   {
     path: "/njangi-form",
     element: <NjangiForm />,
+  },
+  {
+    path: "/login",
+    element: <Login />,
   },
 ]);
