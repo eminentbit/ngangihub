@@ -5,11 +5,13 @@ interface Notification {
   message: string;
   time: string;
   isRead: boolean;
+  showLabels: boolean; 
 }
 
 interface NotificationsPreviewProps {
   notifications: Notification[];
   onViewAll: () => void;
+  showLabels: boolean;  
 }
 
 const NotificationsPreview: React.FC<NotificationsPreviewProps> = ({

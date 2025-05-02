@@ -32,7 +32,7 @@ export const AdminDashboardPage: React.FC = () => {
   const notificationRef = useRef<HTMLDivElement | null>(null);
 
   const toggleSidebar = () => setIsOpen((prev) => !prev);
-  const handleTabChange = (tab: string) => setActiveTab(tab);
+  
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add("dark");
@@ -61,6 +61,10 @@ export const AdminDashboardPage: React.FC = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showNotifications]);
 
+  const setSidebarOpen = (updateFn: (prevState: boolean) => boolean) => {
+    setIsOpen((prevState) => updateFn(prevState));
+  };
+
   return (
     <div
       className={`flex h-screen overflow-hidden bg-gray-50 dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-800 transition-colors`}
@@ -75,14 +79,12 @@ export const AdminDashboardPage: React.FC = () => {
         <FaBars size={24} />
       </button>
 
-      <Sidebar
-        isOpen={isOpen}
-        activeTab={activeTab}
-        onTabChange={handleTabChange}
-        notifications={notifications}
-        onClose={() => setIsOpen(true)}
-      />
-
+       <Sidebar
+              isOpen={isOpen}
+              activeTab={activeTab}
+              onToggle={() => setSidebarOpen(o => !o)}
+              onTabChange={setActiveTab}
+            />
       {/* Main Content */}
       <main
         className={`flex-1 transition-all duration-300 min-h-screen bg-gray-50 dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-800 overflow-auto 

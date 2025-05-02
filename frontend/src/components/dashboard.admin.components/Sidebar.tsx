@@ -1,5 +1,5 @@
-// Sidebar.tsx
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import SidebarItem from './SidebarItem';
 import NotificationsPreview from './NotificationsPreview';
 import {
@@ -10,112 +10,142 @@ import {
   FaChartBar,
   FaUserPlus,
   FaCog,
-  FaSlidersH
+  FaSlidersH,
+  FaBars,
 } from 'react-icons/fa';
 
-interface Notification {
-  id: number;
-  message: string;
-  time: string;
-  isRead: boolean;
-}
 
 interface SidebarProps {
   isOpen: boolean;
   activeTab: string;
-  onTabChange: (tab: string) => void;
-  notifications: Notification[];
-  onClose: () => void;
+  onToggle: () => void;
+  onTabChange?: (tab: string) => void;
+  notifications?: never[]; 
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
   isOpen,
   activeTab,
-  onTabChange,
-  notifications,
-  onClose,
+  onToggle,
 }) => {
-  const containerClasses = `
-    fixed inset-y-0 overflow-y-auto left-0 z-30 w-64 bg-indigo-700 text-white
-    transform transition-transform duration-300 ease-in-out
-    ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-  `;
+  const navigate = useNavigate();
+
+  const handleNav = (path: string) => {
+    navigate(path);
+  };
 
   return (
-    <div className={containerClasses}>
-      <div className="flex items-center justify-between p-4 border-b border-indigo-600">
-        <img src="/logo3.png" alt="Logo" className="w-15 h-12" />
+    <>
+      {/* Toggle button (visible when collapsed) */}
+      {!isOpen && (
         <button
-          onClick={onClose}
-          className="text-white focus:outline-none lg:hidden"
-          aria-label={isOpen ? 'Close sidebar' : 'Open sidebar'}
+          onClick={onToggle}
+          className="fixed top-4 left-4 z-40 text-white bg-blue-800 p-2 rounded-full shadow focus:outline-none"
+          title="Expand sidebar"
+          aria-label="Expand sidebar"
+          type="button"
         >
-          {isOpen ? 'Close' : 'Open'}
+          <FaBars size={20} />
         </button>
-      </div>
-      
-      <SidebarItem
-        icon={<FaUserShield />}
-        label="Admin Dashboard"
-        active={activeTab === 'admin'}
-        onClick={() => onTabChange('admin')}
-      />
-      <SidebarItem
-        icon={<FaUsersCog />}
-        label="Manage Members"
-        active={activeTab === 'manage-members'}
-        onClick={() => onTabChange('manage-members')}
-      />
+      )}
 
-      <div className="pt-4 pb-2">
-        <h3 className="font-bold text-indigo-200 mb-2 ml-3">MY GROUPS</h3>
-        <SidebarItem
-          icon={<FaUsers />}
-          label="Groups Overview"
-          active={activeTab === 'my-groups'}
-          onClick={() => onTabChange('my-groups')}
-        />
-        <SidebarItem
-          icon={<FaInfoCircle />}
-          label="Group Info"
-          active={activeTab === 'group-info'}
-          onClick={() => onTabChange('group-info')}
-        />
-        <SidebarItem
-          icon={<FaChartBar />}
-          label="My Statistics"
-          active={activeTab === 'user-stats'}
-          onClick={() => onTabChange('user-stats')}
-        />
-        <SidebarItem
-          icon={<FaUserPlus />}
-          label="Add Member"
-          active={activeTab === 'add-member'}
-          onClick={() => onTabChange('add-member')}
-        />
-      </div>
+      {/* Sidebar */}
+      <div
+        className={`
+          fixed inset-y-0 left-0 z-30
+          bg-blue-700 text-white border-r
+          transform transition-transform duration-300 ease-in-out
+          ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+          w-64 flex flex-col
+        `}
+      >
+        {/* Logo and Collapse button */}
+        <div className="flex items-center h-16 px-4 border-b border-blue-800 relative">
+          <img
+            src="/logo3.png"
+            alt="Logo"
+            className="h-8 w-auto"
+          />
+          {isOpen && (
+            <button
+              onClick={onToggle}
+              className="absolute top-1/2 right-4 -translate-y-1/2 text-white hover:text-blue-200 focus:outline-none"
+              title="Collapse sidebar"
+              aria-label="Collapse sidebar"
+              type="button"
+            >
+              <FaBars size={20} />
+            </button>
+          )}
+        </div>
 
-      <div className="pt-4 pb-2">
-        <h3 className="font-bold text-indigo-200 mb-2 ml-3">SETTINGS</h3>
-        <SidebarItem
-          icon={<FaCog />}
-          label="Settings"
-          active={activeTab === 'settings'}
-          onClick={() => onTabChange('settings')}
-        />
-        <SidebarItem
-          icon={<FaSlidersH />}
-          label="Group Settings"
-          active={activeTab === 'group-settings'}
-          onClick={() => onTabChange('group-settings')}
-        />
-      </div>
+        {/* Menu Items */}
+        <nav className="mt-2 flex-1 overflow-y-auto">
+          {[
+            { icon: <FaUserShield />, label: 'Admin Dashboard', path: '/admindashboard' },
+            { icon: <FaUsersCog />, label: 'Manage Members', path: '/manage' },
+          ].map(({ icon, label, path }) => (
+            <SidebarItem
+              key={path}
+              icon={icon}
+              label={label}
+              active={activeTab === path}
+              showLabels={isOpen}
+              onClick={() => handleNav(path)}
+            />
+          ))}
 
-      <NotificationsPreview
-        notifications={notifications}
-        onViewAll={() => onTabChange('notifications')}
-      />
-    </div>
+          <div className="mt-6 px-2">
+            <p className="uppercase text-xs text-blue-200 mb-2 px-2 transition-opacity duration-200">
+              My Groups
+            </p>
+            {[
+              { icon: <FaUsers />, label: 'Groups Overview', path: '/groups' },
+              { icon: <FaInfoCircle />, label: 'Group Info', path: '/group-info' },
+              { icon: <FaChartBar />, label: 'My Statistics', path: '/user-stats' },
+              { icon: <FaUserPlus />, label: 'Add Member', path: '/add-member' },
+            ].map(({ icon, label, path }) => (
+              <SidebarItem
+                key={path}
+                icon={icon}
+                label={label}
+                active={activeTab === path}
+                showLabels={isOpen}
+                onClick={() => handleNav(path)}
+              />
+            ))}
+          </div>
+
+          <div className="mt-6 px-2">
+            <p className="uppercase text-xs text-blue-200 mb-2 px-2 transition-opacity duration-200">
+              Settings
+            </p>
+            {[
+              { icon: <FaCog />, label: 'Settings', path: '/settings' },
+              { icon: <FaSlidersH />, label: 'Group Settings', path: '/group-settings' },
+            ].map(({ icon, label, path }) => (
+              <SidebarItem
+                key={path}
+                icon={icon}
+                label={label}
+                active={activeTab === path}
+                showLabels={isOpen}
+                onClick={() => handleNav(path)}
+              />
+            ))}
+          </div>
+        </nav>
+
+        {/* Notifications preview */}
+        <div className="mt-auto mb-4 px-2">
+          <NotificationsPreview
+            notifications={[] /* pass real notifications */}
+            onViewAll={() => handleNav('/notifications')}
+            showLabels={isOpen}
+          />
+        </div>
+      </div>
+    </>
   );
 };
 

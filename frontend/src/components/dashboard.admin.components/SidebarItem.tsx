@@ -5,6 +5,7 @@ interface SidebarItemProps {
   label: string;
   active: boolean;
   onClick: () => void;
+  showLabels?: boolean; // Optional prop to control label visibility
 }
 
 const SidebarItem: React.FC<SidebarItemProps> = ({ icon, label, active, onClick }) => {
