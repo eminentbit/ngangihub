@@ -90,7 +90,7 @@ const ManageMembersPage: React.FC = () => {
         <FaBars size={20} />
       </button>
       {/*main content*/}
-      <div className={`fixed inset-0 bg-black bg-opacity-50  transition-opacity duration-200 ${isSidebarOpen ? 'opacity-0' : 'opacity-100'}`} onClick={toggleSidebar} />
+      <div className={`fixed inset-0 bg-black bg-opacity-50  transition-opacity duration-200 ${!isSidebarOpen ? 'opacity-100' : 'opacity-0'} lg:hidden z-20`} onClick={toggleSidebar} />
       {/* Header */}
       <header className={`fixed top-0 left-0 right-0  bg-white dark:bg-gray-800 shadow-md transition-transform duration-200 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 z-20`}>
         <div className="flex items-center justify-between p-4 h-10 max-w-5xl mx-auto">
