@@ -19,9 +19,6 @@ const navLinks: NavLinkItem[] = [
   { label: "Testimonials", to: "testimonials", scroll: true },
   { label: "FAQ", to: "faq", scroll: true },
 
-  // Route-based pages
-  { label: "About Us", to: "/about", scroll: false },
-  { label: "Contact Us", to: "/contact", scroll: false },
 ];
 
 const Header: React.FC = () => {

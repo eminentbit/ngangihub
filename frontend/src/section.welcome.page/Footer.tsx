@@ -58,6 +58,7 @@ const Footer: React.FC = () => {
                         className="text-gray-400 hover:text-blue-500 transition-colors cursor-pointer"
                       >
                         {link.label}
+                        
                       </ScrollLink>
                     ) : (
                       <RouterLink

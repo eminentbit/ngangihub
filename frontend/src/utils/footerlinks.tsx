@@ -20,10 +20,10 @@ export  const quickLinks = [
     {
       title: "Company",
       links: [
-        { label: "About", to: "#" },
+        { label: "About", to: "/about" },
         { label: "Blog", to: "#" },
         { label: "Careers", to: "#" },
-        { label: "Contact", to: "#" },
+        { label: "Contact", to: "/contact" },
       ],
     },
     {
