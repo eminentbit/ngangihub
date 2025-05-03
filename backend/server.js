@@ -3,7 +3,7 @@ import ConnectDB from "./config/db.js";
 import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import CreateNjangi from "./routes/create.njangi.route.js"
+import createNjangi from "./routes/create.njangi.route.js"
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
@@ -15,7 +15,7 @@ app.use(cookieParser()); // allow cookie parsing
 
 
 //routes
-app.use("/api/create-njangi", CreateNjangi)
+app.use("/api/create-njangi", createNjangi)
 
 const startServer = async () => {
   try {
