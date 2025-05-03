@@ -1,7 +1,5 @@
 import React from "react";
 import { createBrowserRouter } from "react-router-dom";
-
-// Import your routed pages:
 import AboutPage from "./pages/About";
 import ContactPage from "./pages/Contact";
 import NotFoundPage from "./pages/not-found";
