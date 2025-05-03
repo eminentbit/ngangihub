@@ -10,6 +10,11 @@ import App from "./App";
 import NjangiForm from "./pages/njangi.form.page";
 import Login from "./pages/login";
 import MemberManagement from "./pages/dashboard.admin.pages/Manage";
+import GroupOverviewPage from "./pages/dashboard.admin.pages/GroupOverview";
+import GroupInfoPage from "./pages/dashboard.admin.pages/GroupInfo";
+import StatisticsPage from "./pages/dashboard.admin.pages/MyStatistics";
+import AddMemberPage from "./pages/dashboard.admin.pages/AddMember";
+
 
 // eslint-disable-next-line react-refresh/only-export-components
 const LandingSections: React.FC = () => <App />;
@@ -41,4 +46,21 @@ export const router = createBrowserRouter([
     path: "/manage",
     element: <MemberManagement />,
   },
+  {
+    path: "/groups-admin",
+    element: <GroupOverviewPage />,
+  },
+  {
+    path: "/group-info-admin",
+    element: <GroupInfoPage />,
+  },
+  {
+    path: "/stats-admin",
+    element: <StatisticsPage />,
+  },
+  {
+    path: "/add-member-admin",
+    element: <AddMemberPage />,
+  },
+  
 ]);

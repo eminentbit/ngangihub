@@ -68,7 +68,7 @@ export const AdminDashboardPage: React.FC = () => {
   return (
     <div
       className={`flex h-screen overflow-hidden bg-gray-50 dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-800 transition-colors`}
-    >
+    > 
       {/* Sidebar toggle button (only for mobile) */}
       <button
         type="button"
@@ -79,12 +79,12 @@ export const AdminDashboardPage: React.FC = () => {
         <FaBars size={24} />
       </button>
 
-       <Sidebar
-              isOpen={isOpen}
-              activeTab={activeTab}
-              onToggle={() => setSidebarOpen(o => !o)}
-              onTabChange={setActiveTab}
-            />
+      <Sidebar
+        isOpen={isOpen}
+        activeTab={activeTab}
+        onToggle={() => setSidebarOpen(o => !o)}
+        onTabChange={setActiveTab}
+      />
       {/* Main Content */}
       <main
         className={`flex-1 transition-all duration-300 min-h-screen bg-gray-50 dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-800 overflow-auto 

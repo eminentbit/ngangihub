@@ -10,7 +10,6 @@ import {
   FaChartBar,
   FaUserPlus,
   FaCog,
-  FaSlidersH,
   FaBars,
 } from 'react-icons/fa';
 
@@ -100,10 +99,10 @@ const Sidebar: React.FC<SidebarProps> = ({
               My Groups
             </p>
             {[
-              { icon: <FaUsers />, label: 'Groups Overview', path: '/groups' },
-              { icon: <FaInfoCircle />, label: 'Group Info', path: '/group-info' },
-              { icon: <FaChartBar />, label: 'My Statistics', path: '/user-stats' },
-              { icon: <FaUserPlus />, label: 'Add Member', path: '/add-member' },
+              { icon: <FaUsers />, label: 'Groups Overview', path: '/groups-admin' },
+              { icon: <FaInfoCircle />, label: 'Group Info', path: '/group-info-admin' },
+              { icon: <FaChartBar />, label: 'My Statistics', path: '/stats-admin' },
+              { icon: <FaUserPlus />, label: 'Add Member', path: '/add-member-admin' },
             ].map(({ icon, label, path }) => (
               <SidebarItem
                 key={path}
@@ -121,8 +120,8 @@ const Sidebar: React.FC<SidebarProps> = ({
               Settings
             </p>
             {[
-              { icon: <FaCog />, label: 'Settings', path: '/settings' },
-              { icon: <FaSlidersH />, label: 'Group Settings', path: '/group-settings' },
+              { icon: <FaCog />, label: 'Group Settings', path: '/group-settings-admin' },
+              
             ].map(({ icon, label, path }) => (
               <SidebarItem
                 key={path}
