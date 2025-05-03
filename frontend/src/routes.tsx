@@ -52,7 +52,29 @@ export const router = createBrowserRouter([
     element: <Login />,
   },
   {
-    path: "/manage",
+    path: "/manage-admin",
     element: <MemberManagement />,
   },
+  {
+    path: "/groups-admin",
+    element: <GroupOverviewPage />,
+  },
+  {
+    path: "/group-info-admin",
+    element: <GroupInfoPage />,
+
+  },
+  {
+    path: "/stats-admin",
+    element: <StatisticsPage />,
+  },
+  {
+    path: "/add-member-admin",
+    element: <AddMemberPage />,
+  },
+  {
+    path: "/group-settings-admin",
+    element: <AddMemberPage />,
+  },
+  
 ]);
