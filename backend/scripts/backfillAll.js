@@ -1,22 +1,29 @@
+/**
+ * This script backfills missing fields in multiple models in the database.
+ * It connects to the MongoDB database, updates the specified fields in each model,
+ * and logs the number of documents updated for each model.
+ * Usage: node scripts/backfillAll.js or npm run backfillAll
 
+ * Make sure to set the MONGODB_URL environment variable before running the script.
+ */
 
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
-import User from '../models/user.model.js';
-import Invite from '../models/invite.model.js';
-import NjangiGroup from '../models/njangigroup.model.js';
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import User from "../models/user.model.js";
+import Invite from "../models/invite.model.js";
+import NjangiGroup from "../models/njangigroup.model.js";
 
 dotenv.config();
 
 const backfillAll = async () => {
   try {
     await mongoose.connect(process.env.MONGODB_URL);
-    console.log('✅ Connected to DB');
+    console.log("✅ Connected to DB");
 
     // 1. Add "bio" to User if missing
     const userResult = await User.updateMany(
       { bio: { $exists: false } },
-      { $set: { bio: '' } }
+      { $set: { bio: "" } }
     );
     console.log(`👤 Users updated: ${userResult.modifiedCount}`);
 
@@ -33,9 +40,8 @@ const backfillAll = async () => {
       { $set: { approvedBy: null } }
     );
     console.log(`👥 Njangi Groups updated: ${groupResult.modifiedCount}`);
-
   } catch (error) {
-    console.error('❌ Error during multi-model backfill:', error);
+    console.error("❌ Error during multi-model backfill:", error);
   } finally {
     mongoose.connection.close();
   }
