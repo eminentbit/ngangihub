@@ -1,11 +1,19 @@
-import { User } from "../models/user.model.js";
-import bcryptjs from "bcryptjs";
-import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
+// controllers/createNjangi.controller.js
+import { createNjangiFlow } from "../services/createNjangiFlow";
 
-export const createNjangi = async (res, req) => {
-
-    //Logic goes here
-
-}
-
-
+export const createNjangi = async (req, res) => {
+  try {
+    const result = await createNjangiFlow(req.body);
+    res.status(201).json({
+      success: true,
+      message: "Njangi created successfully",
+      ...result,
+    });
+  } catch (error) {
+    console.log("Error creating Njangi:", error);
+    res.status(500).json({
+      success: false,
+      error: "Something went wrong during Njangi creation.",
+    });
+  }
+};
