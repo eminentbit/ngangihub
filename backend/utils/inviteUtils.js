@@ -1,6 +1,6 @@
 import crypto from "crypto";
 
-export const generateToken = () => crypto.randomBytes(16).toString("hex");
+export const generateToken = () => crypto.randomBytes(20).toString("hex");
 
 export const sendInvite = async (contact, token, groupName) => {
   //  use Twilio, SendGrid, etc.
