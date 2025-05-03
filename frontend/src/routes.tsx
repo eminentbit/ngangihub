@@ -1,7 +1,7 @@
 import React from "react";
 import { createBrowserRouter } from "react-router-dom";
 
-// And your routed pages:
+// Import your routed pages:
 import AboutPage from "./pages/About";
 import ContactPage from "./pages/Contact";
 import NotFoundPage from "./pages/not-found";
@@ -21,15 +21,24 @@ const LandingSections: React.FC = () => <App />;
 
 // ----- Build the router -----
 export const router = createBrowserRouter([
+  // Public routes
   {
+    path: "/",
     children: [
       { index: true, element: <LandingSections /> },
       { path: "about", element: <AboutPage /> },
       { path: "contact", element: <ContactPage /> },
-      { path: "admindashboard", element: <AdminDashboardPage /> },
+      { path: "login", element: <Login /> },
+      { path: "njangi-form", element: <NjangiForm /> },
       { path: "*", element: <NotFoundPage /> },
     ],
   },
+
+  // Admin routes
+  { path: "/admindashboard", element: <AdminDashboardPage /> },
+  { path: "/admin-manage-members", element: <MemberManagement /> },
+
+  // Catch-all route for 404
   {
     path: "*",
     element: <NotFoundPage />,
@@ -46,21 +55,4 @@ export const router = createBrowserRouter([
     path: "/manage",
     element: <MemberManagement />,
   },
-  {
-    path: "/groups-admin",
-    element: <GroupOverviewPage />,
-  },
-  {
-    path: "/group-info-admin",
-    element: <GroupInfoPage />,
-  },
-  {
-    path: "/stats-admin",
-    element: <StatisticsPage />,
-  },
-  {
-    path: "/add-member-admin",
-    element: <AddMemberPage />,
-  },
-  
 ]);

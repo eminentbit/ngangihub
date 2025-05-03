@@ -82,7 +82,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         <nav className="mt-2 flex-1 overflow-y-auto">
           {[
             { icon: <FaUserShield />, label: 'Admin Dashboard', path: '/admindashboard' },
-            { icon: <FaUsersCog />, label: 'Manage Members', path: '/manage' },
+            { icon: <FaUsersCog />, label: 'Manage Members', path: '/admin-manage-members' },
           ].map(({ icon, label, path }) => (
             <SidebarItem
               key={path}

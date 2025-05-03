@@ -18,7 +18,7 @@ const getInitials = (name: string): string =>
 
 const ManageMembersPage: React.FC = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(true);
-  const [activeTab, setActiveTab] = useState('/manage');
+  const [activeTab, setActiveTab] = useState('/admin-manage-members');
   const [isDarkMode, setDarkMode] = useState(false);
 
   useEffect(() => {

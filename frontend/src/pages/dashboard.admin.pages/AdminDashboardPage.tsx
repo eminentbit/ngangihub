@@ -32,7 +32,7 @@ export const AdminDashboardPage: React.FC = () => {
   const notificationRef = useRef<HTMLDivElement | null>(null);
 
   const toggleSidebar = () => setIsOpen((prev) => !prev);
-  
+
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add("dark");
@@ -82,9 +82,10 @@ export const AdminDashboardPage: React.FC = () => {
       <Sidebar
         isOpen={isOpen}
         activeTab={activeTab}
-        onToggle={() => setSidebarOpen(o => !o)}
+        onToggle={() => setSidebarOpen((o) => !o)}
         onTabChange={setActiveTab}
       />
+
       {/* Main Content */}
       <main
         className={`flex-1 transition-all duration-300 min-h-screen bg-gray-50 dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-800 overflow-auto 
