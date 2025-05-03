@@ -15,7 +15,6 @@ import GroupInfoPage from "./pages/dashboard.admin.pages/GroupInfo";
 import StatisticsPage from "./pages/dashboard.admin.pages/MyStatistics";
 import AddMemberPage from "./pages/dashboard.admin.pages/AddMember";
 
-
 // eslint-disable-next-line react-refresh/only-export-components
 const LandingSections: React.FC = () => <App />;
 
@@ -37,44 +36,18 @@ export const router = createBrowserRouter([
   // Admin routes
   { path: "/admindashboard", element: <AdminDashboardPage /> },
   { path: "/admin-manage-members", element: <MemberManagement /> },
+  { path: "/njangi-form", element: <NjangiForm /> },
+  { path: "/login", element: <Login /> },
+  { path: "/manage-admin", element: <MemberManagement /> },
+  { path: "/groups-admin", element: <GroupOverviewPage /> },
+  { path: "/group-info-admin", element: <GroupInfoPage /> },
+  { path: "/stats-admin", element: <StatisticsPage /> },
+  { path: "/add-member-admin", element: <AddMemberPage /> },
+  { path: "/group-settings-admin", element: <AddMemberPage /> },
 
   // Catch-all route for 404
   {
     path: "*",
     element: <NotFoundPage />,
   },
-  {
-    path: "/njangi-form",
-    element: <NjangiForm />,
-  },
-  {
-    path: "/login",
-    element: <Login />,
-  },
-  {
-    path: "/manage-admin",
-    element: <MemberManagement />,
-  },
-  {
-    path: "/groups-admin",
-    element: <GroupOverviewPage />,
-  },
-  {
-    path: "/group-info-admin",
-    element: <GroupInfoPage />,
-
-  },
-  {
-    path: "/stats-admin",
-    element: <StatisticsPage />,
-  },
-  {
-    path: "/add-member-admin",
-    element: <AddMemberPage />,
-  },
-  {
-    path: "/group-settings-admin",
-    element: <AddMemberPage />,
-  },
-  
 ]);
