@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
+import { profanityList } from "../utils/profanityList";
 
 // Step 1: Account Setup Schema
 export const accountSetupSchema = z
@@ -65,12 +66,14 @@ export const groupDetailsSchema = z.object({
     .max(50, "Group name cannot exceed 50 characters")
     .refine(
       (name) => {
-        const profanityList = ["badword1", "badword2"]; // Replace with actual profanity list or API
         return !profanityList.some((word) =>
           name.toLowerCase().includes(word.toLowerCase())
         );
       },
-      { message: "Group name contains inappropriate language" }
+      {
+        message:
+          "Group name contains inappropriate language! Please choose another name",
+      }
     ),
   contributionAmount: z
     .string()
@@ -81,13 +84,13 @@ export const groupDetailsSchema = z.object({
     .refine((value) => Number(value) > 0, {
       message: "Contribution amount must be greater than 0",
     }),
-    contributionFrequency: z
-      .enum(["Weekly", "Monthly", "Bi-weekly"], {
-        required_error: "Please select a contribution frequency",
-      })
-      .refine((value) => !!value, {
-        message: "Please select a contribution frequency",
-      }),
+  contributionFrequency: z
+    .enum(["Weekly", "Monthly", "Bi-weekly"], {
+      required_error: "Please select a contribution frequency",
+    })
+    .refine((value) => !!value, {
+      message: "Please select a contribution frequency",
+    }),
   payoutMethod: z.enum(["Rotation", "Lottery", "Bidding"], {
     required_error: "Please select a payout method",
   }),
