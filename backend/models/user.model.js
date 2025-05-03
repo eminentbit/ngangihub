@@ -17,6 +17,18 @@ const userSchema = new mongoose.Schema(
       enum: ["active", "pending", "invited"],
       default: "pending",
     },
+    lastlogin: {
+      type: Date,
+      default: Date.now,
+    },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    resetPasswordToken: String,
+    resetPasswordExpireAt: Date,
+    verificationToken: String,
+    verificationTokenExpireAt: Date,
   },
   { timestamps: true }
 );
