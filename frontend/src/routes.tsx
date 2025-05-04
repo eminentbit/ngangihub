@@ -12,6 +12,9 @@ import GroupOverviewPage from "./pages/dashboard.admin.pages/GroupOverview";
 import GroupInfoPage from "./pages/dashboard.admin.pages/GroupInfo";
 import StatisticsPage from "./pages/dashboard.admin.pages/MyStatistics";
 import AddMemberPage from "./pages/dashboard.admin.pages/AddMember";
+import GroupSettingsPage from "./pages/dashboard.admin.pages/GroupSetting";
+import NotificationsPage from "./pages/dashboard.admin.pages/Notification";
+
 
 // eslint-disable-next-line react-refresh/only-export-components
 const LandingSections: React.FC = () => <App />;
@@ -41,7 +44,9 @@ export const router = createBrowserRouter([
   { path: "/group-info-admin", element: <GroupInfoPage /> },
   { path: "/stats-admin", element: <StatisticsPage /> },
   { path: "/add-member-admin", element: <AddMemberPage /> },
-  { path: "/group-settings-admin", element: <AddMemberPage /> },
+  { path: "/add-member-admin", element: <AddMemberPage /> },
+  {path: "/group-settings-admin", element: <GroupSettingsPage /> },
+  {path: "/notifications", element: <NotificationsPage /> },
 
   // Catch-all route for 404
   {

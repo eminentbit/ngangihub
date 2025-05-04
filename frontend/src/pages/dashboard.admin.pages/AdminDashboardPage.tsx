@@ -84,6 +84,7 @@ export const AdminDashboardPage: React.FC = () => {
         activeTab={activeTab}
         onToggle={() => setSidebarOpen((o) => !o)}
         onTabChange={setActiveTab}
+        onClose={() => setIsOpen(false)}
       />
 
       {/* Main Content */}

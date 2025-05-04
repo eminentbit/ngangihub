@@ -60,6 +60,7 @@ const GroupInfoPage: React.FC = () => {
         activeTab={activeTab}
         onToggle={toggleSidebar}
         onTabChange={setActiveTab}
+        onClose={() => setSidebarOpen(false)}
       />
 
       {/* Mobile toggles */}
