@@ -11,6 +11,8 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import Loader from "../loader";
 import FormFileInput from "../njangi.form.ui/file.input";
+import { useValidateEmail } from "../../hooks/useValidateEmail";
+import { useDebounce } from "../../hooks/useDebounce";
 
 const Step1AccountInfo: React.FC = () => {
   const { state, updateAccountSetup, nextStep } = useFormContext();
@@ -31,15 +33,36 @@ const Step1AccountInfo: React.FC = () => {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
     trigger,
     setValue,
+    setError,
+    clearErrors,
     reset,
   } = useForm<AccountSetupFormData>({
     resolver: zodResolver(accountSetupSchema),
     defaultValues: state.accountSetup,
     mode: "onChange",
   });
+
+  const email = watch("email");
+  const debouncedEmail = useDebounce(email, 500);
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { data: isValid, isFetching } = useValidateEmail(debouncedEmail);
+
+  useEffect(() => {
+    if (!debouncedEmail) return;
+    if (isValid === false) {
+      setError("email", {
+        type: "manual",
+        message: "Email already in use",
+      });
+    } else {
+      clearErrors("email");
+    }
+  }, [isValid, debouncedEmail, setError, clearErrors]);
 
   useEffect(() => {
     reset(state.accountSetup);
@@ -155,6 +178,7 @@ const Step1AccountInfo: React.FC = () => {
                 placeholder="your.email@example.com"
                 required
               />
+              {/* {isFetching && <span>Checking...</span>} */}
               {errors.email && (
                 <p className="form-error">{errors.email.message}</p>
               )}
