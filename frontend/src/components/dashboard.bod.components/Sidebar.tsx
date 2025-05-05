@@ -8,6 +8,22 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ style, isOpen, toggleSidebar }) => {
+  const currentPath = window.location.pathname; // Simulate active tab based on current route
+
+  const getLinkStyle = (path: string) => ({
+    display: 'block',
+    padding: '8px',
+    backgroundColor: currentPath === path ? '#7c3aed' : (isOpen ? 'transparent' : 'none'),
+    borderRadius: '4px',
+    textDecoration: 'none',
+    color: currentPath === path ? 'white' : (isOpen ? 'white' : 'transparent'),
+    transition: 'background-color 0.3s ease, color 0.3s ease',
+    ':hover': {
+      backgroundColor: '#9333ea',
+      color: 'white'
+    }
+  });
+
   return (
     <aside style={{
       backgroundColor: '#5b1a89',
@@ -27,28 +43,28 @@ const Sidebar: React.FC<SidebarProps> = ({ style, isOpen, toggleSidebar }) => {
       </div>
       <nav style={{ display: isOpen ? 'block' : 'none' }}>
         <ul style={{ marginBottom: '24px', listStyle: 'none', padding: 0 }}>
-          <li><Link to="/board/dashboard" style={{ display: 'block', padding: '8px', backgroundColor: '#7c3aed', borderRadius: '4px', textDecoration: 'none', color: 'white' }}>📊 Board Dashboard</Link></li>
-          <li><Link to="/board/resolutions" style={{ display: 'block', padding: '8px', borderRadius: '4px', textDecoration: 'none', color: 'white' }}>📋 Resolutions</Link></li>
+          <li><Link to="/board/dashboard" style={getLinkStyle('/board/dashboard')}>📊 Board Dashboard</Link></li>
+          <li><Link to="/board/resolutions" style={getLinkStyle('/board/resolutions')}>📋 Resolutions</Link></li>
         </ul>
         <h3 style={{ fontSize: '18px', marginBottom: '16px', marginTop: '24px' }}>MEETINGS</h3>
         <ul style={{ marginBottom: '24px', listStyle: 'none', padding: 0 }}>
-          <li><Link to="/board/schedule" style={{ display: 'block', padding: '8px', borderRadius: '4px', textDecoration: 'none', color: 'white' }}>📅 Meeting Schedule</Link></li>
-          <li><Link to="/board/minutes" style={{ display: 'block', padding: '8px', borderRadius: '4px', textDecoration: 'none', color: 'white' }}>📝 Meeting Minutes</Link></li>
-          <li><Link to="/board/attendance" style={{ display: 'block', padding: '8px', borderRadius: '4px', textDecoration: 'none', color: 'white' }}>👥 Attendance</Link></li>
+          <li><Link to="/board/schedule" style={getLinkStyle('/board/schedule')}>📅 Meeting Schedule</Link></li>
+          <li><Link to="/board/minutes" style={getLinkStyle('/board/minutes')}>📝 Meeting Minutes</Link></li>
+          <li><Link to="/board/attendance" style={getLinkStyle('/board/attendance')}>👥 Attendance</Link></li>
         </ul>
         <h3 style={{ fontSize: '18px', marginBottom: '16px', marginTop: '24px' }}>DOCUMENTS</h3>
         <ul style={{ marginBottom: '24px', listStyle: 'none', padding: 0 }}>
-          <li><Link to="/board/documents" style={{ display: 'block', padding: '8px', borderRadius: '4px', textDecoration: 'none', color: 'white' }}>📑 Documents</Link></li>
-          <li><Link to="/board/policies" style={{ display: 'block', padding: '8px', borderRadius: '4px', textDecoration: 'none', color: 'white' }}>📜 Policies</Link></li>
+          <li><Link to="/board/documents" style={getLinkStyle('/board/documents')}>📑 Documents</Link></li>
+          <li><Link to="/board/policies" style={getLinkStyle('/board/policies')}>📜 Policies</Link></li>
         </ul>
         <h3 style={{ fontSize: '18px', marginBottom: '16px', marginTop: '24px' }}>REPORTS</h3>
         <ul style={{ marginBottom: '24px', listStyle: 'none', padding: 0 }}>
-          <li><Link to="/board/reports" style={{ display: 'block', padding: '8px', borderRadius: '4px', textDecoration: 'none', color: 'white' }}>📊 Reports</Link></li>
+          <li><Link to="/board/reports" style={getLinkStyle('/board/reports')}>📊 Reports</Link></li>
         </ul>
         <div style={{ marginTop: '24px' }}>
           <h3 style={{ fontSize: '18px', marginBottom: '8px' }}>NOTIFICATIONS</h3>
           <ul style={{ listStyle: 'none', padding: 0 }}>
-            <li><Link to="/board/notifications" style={{ display: 'block', backgroundColor: '#7c3aed', padding: '8px', borderRadius: '4px', textDecoration: 'none', color: 'white' }}>🔔 View Notifications</Link></li>
+            <li><Link to="/board/notifications" style={getLinkStyle('/board/notifications')}>🔔 View Notifications</Link></li>
           </ul>
         </div>
       </nav>
