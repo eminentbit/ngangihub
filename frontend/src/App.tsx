@@ -11,7 +11,6 @@ import Footer from './section.welcome.page/Footer';
 function App() {
   return (
     <div className="font-sans antialiased">
-
       <Header />
       <main>
         <Hero />
@@ -24,9 +23,7 @@ function App() {
       </main>
       <Footer />
     </div>
-    
   );
-  
 }
 
 export default App;
