@@ -21,22 +21,29 @@ const Sidebar: React.FC<SidebarProps> = ({ style, isOpen, toggleSidebar }) => {
     transition: 'background-color 0.3s ease, color 0.3s ease'
   });
 
+  // Ensure the sidebar fully closes
+  const handleToggle = () => {
+    if (isOpen) {
+      toggleSidebar(); // Close the sidebar
+    }
+  };
+
   return (
     <aside style={{
       backgroundColor: '#5b1a89',
       color: 'white',
       width: isOpen ? '256px' : '0',
-      height: '100vh', // Ensure full viewport height
-      minHeight: '100%', // Ensure it fills the container height
+      height: '100vh',
+      minHeight: '100%',
       padding: isOpen ? '16px' : '0',
       overflow: 'hidden',
       transition: 'width 0.3s ease, padding 0.3s ease',
-      position: 'relative', // Ensure it respects parent layout
+      position: 'relative',
       ...style
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
         <h3 style={{ fontSize: '18px', display: isOpen ? 'block' : 'none' }}>BOARD MENU</h3>
-        <button onClick={toggleSidebar} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', fontSize: '24px' }}>
+        <button onClick={handleToggle} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', fontSize: '24px' }}>
           {isOpen ? '✖' : '☰'}
         </button>
       </div>
