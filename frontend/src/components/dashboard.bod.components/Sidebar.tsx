@@ -21,23 +21,22 @@ const Sidebar: React.FC<SidebarProps> = ({ style, isOpen, toggleSidebar }) => {
     transition: 'background-color 0.3s ease, color 0.3s ease'
   });
 
-  // Ensure the sidebar fully closes
   const handleToggle = () => {
     if (isOpen) {
-      toggleSidebar(); // Close the sidebar
+      toggleSidebar();
     }
   };
 
   return (
     <aside style={{
-      backgroundColor: '#5b1a89',
+      backgroundColor: isOpen ? '#5b1a89' : 'transparent', // Background disappears when closed
       color: 'white',
       width: isOpen ? '256px' : '0',
       height: '100vh',
       minHeight: '100%',
       padding: isOpen ? '16px' : '0',
       overflow: 'hidden',
-      transition: 'width 0.3s ease, padding 0.3s ease',
+      transition: 'width 0.3s ease, padding 0.3s ease, background-color 0.3s ease', // Smooth transition for background
       position: 'relative',
       ...style
     }}>
