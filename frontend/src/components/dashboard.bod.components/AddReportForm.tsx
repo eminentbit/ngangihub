@@ -119,7 +119,7 @@ const AddReportForm: React.FC<AddReportFormProps> = ({ isDarkMode }) => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <input
             type="text"
-            placeholder="Revenue (e.g., $10M)"
+            placeholder="Revenue (e.g., 10M XAF)"
             value={metrics.revenue}
             onChange={(e) => setMetrics({ ...metrics, revenue: e.target.value })}
             style={{
@@ -134,7 +134,7 @@ const AddReportForm: React.FC<AddReportFormProps> = ({ isDarkMode }) => {
           />
           <input
             type="text"
-            placeholder="Expenses (e.g., $7M)"
+            placeholder="Expenses (e.g., 7M XAF)"
             value={metrics.expenses}
             onChange={(e) => setMetrics({ ...metrics, expenses: e.target.value })}
             style={{
@@ -149,7 +149,7 @@ const AddReportForm: React.FC<AddReportFormProps> = ({ isDarkMode }) => {
           />
           <input
             type="text"
-            placeholder="Profit (e.g., $3M)"
+            placeholder="Profit (e.g., 3M XAF)"
             value={metrics.profit}
             onChange={(e) => setMetrics({ ...metrics, profit: e.target.value })}
             style={{
