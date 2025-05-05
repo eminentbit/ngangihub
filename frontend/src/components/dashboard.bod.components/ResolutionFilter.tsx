@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useTheme } from '../ThemeContext'; // Adjust path as needed
+import { useTheme } from '../../pages/dashboard.bod.pages/ThemeContext';
 
 const ResolutionFilter: React.FC = () => {
   const { isDarkMode } = useTheme();
@@ -7,7 +7,7 @@ const ResolutionFilter: React.FC = () => {
 
   const handleFilterChange = (newFilter: string) => {
     setFilter(newFilter);
-    // In a real app, this would update the ResolutionList via props or context
+    
   };
 
   const filters = ['All', 'Approved', 'Pending', 'Rejected'];
