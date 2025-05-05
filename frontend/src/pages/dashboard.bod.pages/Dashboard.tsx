@@ -93,11 +93,11 @@ const Dashboard: React.FC = () => {
               <span role="img" aria-label="calendar">📅</span> Schedule Meeting
             </button>
           </div>
-          <BoardOverview style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }} />
+          <BoardOverview style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }} isDarkMode={isDarkMode} />
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginTop: '24px' }}>
-            <ResolutionVoting style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }} />
-            <AttendanceRate style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }} />
-            <RecentResolutions style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }} />
+            <ResolutionVoting style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }} isDarkMode={isDarkMode} />
+            <AttendanceRate style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }} isDarkMode={isDarkMode} />
+            <RecentResolutions style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }} isDarkMode={isDarkMode} />
           </div>
         </main>
       </div>
