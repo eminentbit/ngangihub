@@ -1,15 +1,21 @@
 import React from 'react';
 
-const RecentResolutions: React.FC = () => {
+interface ResolutionVotingProps {
+  style?: React.CSSProperties;
+}
+
+const ResolutionVoting: React.FC<ResolutionVotingProps> = ({ style }) => {
   return (
-    <div className="bg-white p-4 rounded shadow">
-      <h3>Recent Resolutions</h3>
-      <input type="text" placeholder="Search resolutions..." className="w-full p-2 mb-2 rounded" />
-      <ul>
-        <li>Strategic Plan - Apr 25, 2025 - <span className="text-green-500">Approved</span></li>
-      </ul>
+    <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '4px', ...style }}>
+      <h3>Resolution Voting</h3>
+      <div style={{ width: '160px', height: '160px', margin: '0 auto', position: 'relative' }}>
+        <div style={{ width: '100%', height: '100%', backgroundColor: '#3b82f6', borderRadius: '50%', clipPath: 'circle(50% at 50% 50%)', position: 'absolute' }}></div>
+        <div style={{ width: '100%', height: '100%', backgroundColor: '#22c55e', borderRadius: '50%', clipPath: 'circle(30% at 50% 50%)', position: 'absolute' }}></div>
+        <div style={{ width: '100%', height: '100%', backgroundColor: '#eab308', borderRadius: '50%', clipPath: 'circle(20% at 50% 50%)', position: 'absolute' }}></div>
+      </div>
+      <p style={{ textAlign: 'center' }}>Approve | Reject | Abstain</p>
     </div>
   );
 };
 
-export default RecentResolutions;
+export default ResolutionVoting;
