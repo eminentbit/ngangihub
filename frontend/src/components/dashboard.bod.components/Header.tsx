@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 interface HeaderProps {
@@ -9,6 +9,16 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ style, toggleTheme, isDarkMode }) => {
   const [showNotifications, setShowNotifications] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
+
+  // Simulate fetching notifications (in a real app, this would come from Notifications.tsx or an API)
+  useEffect(() => {
+    const notifications = [
+      '🚨 Board meeting scheduled for next week (2 hours ago)',
+      '🚨 Annual report review pending (5 hours ago)'
+    ];
+    setNotificationCount(notifications.length);
+  }, []);
 
   return (
     <header style={{
@@ -18,6 +28,7 @@ const Header: React.FC<HeaderProps> = ({ style, toggleTheme, isDarkMode }) => {
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
+      position: 'relative',
       ...style
     }}>
       <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -34,14 +45,28 @@ const Header: React.FC<HeaderProps> = ({ style, toggleTheme, isDarkMode }) => {
           }}
         />
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-        <button onClick={toggleTheme} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', fontSize: '24px' }}>
-          {isDarkMode ? '☀️' : '🌙'}
-        </button>
-        <span style={{ marginRight: '8px' }}>👤 Robert Johnson</span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', position: 'relative' }}>
         <div style={{ position: 'relative' }}>
-          <button onClick={() => setShowNotifications(!showNotifications)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', fontSize: '24px' }}>
+          <button onClick={() => setShowNotifications(!showNotifications)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', fontSize: '24px', position: 'relative' }}>
             🔔
+            {notificationCount > 0 && (
+              <span style={{
+                backgroundColor: '#ef4444',
+                color: 'white',
+                borderRadius: '50%',
+                width: '20px',
+                height: '20px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                position: 'absolute',
+                top: '-10px',
+                right: '-10px',
+                fontSize: '12px'
+              }}>
+                {notificationCount}
+              </span>
+            )}
           </button>
           {showNotifications && (
             <div style={{
@@ -69,8 +94,10 @@ const Header: React.FC<HeaderProps> = ({ style, toggleTheme, isDarkMode }) => {
             </div>
           )}
         </div>
-        
-        <span style={{ backgroundColor: '#ef4444', color: 'white', borderRadius: '50%', width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>2</span>
+        <button onClick={toggleTheme} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', fontSize: '24px' }}>
+          {isDarkMode ? '☀️' : '🌙'}
+        </button>
+        <span style={{ marginRight: '8px' }}>👤 Robert Johnson</span>
       </div>
     </header>
   );
