@@ -8,22 +8,26 @@ import RecentResolutions from '../../components/dashboard.bod.components/RecentR
 
 const Dashboard: React.FC = () => {
   return (
-    <div className="flex flex-col h-screen">
-      <Header />
-      <div className="flex flex-1">
-        <Sidebar />
-        <main className="flex-1 p-6 bg-gray-100">
-          <h1 className="text-2xl font-bold mb-4">Board Dashboard</h1>
-          <p className="text-gray-600 mb-4">Monitor board activities and make informed decisions.</p>
-          <div className="flex space-x-4">
-            <button className="bg-purple-600 text-white p-2 rounded">+ New Resolution</button>
-            <button className="bg-purple-600 text-white p-2 rounded">📅 Schedule Meeting</button>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+      <Header style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }} />
+      <div style={{ display: 'flex', flex: '1' }}>
+        <Sidebar style={{ boxShadow: '2px 0 4px rgba(0, 0, 0, 0.1)' }} />
+        <main style={{ flex: '1', padding: '20px', backgroundColor: '#f3f4f6', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }}>
+          <h1 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '16px', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', padding: '8px', backgroundColor: '#ffffff', borderRadius: '4px', display: 'inline-block' }}>Board Dashboard <span style={{ color: '#10b981' }}>📊</span></h1>
+          <p style={{ color: '#6b7280', marginBottom: '16px', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', padding: '8px', backgroundColor: '#ffffff', borderRadius: '4px', display: 'inline-block' }}>Monitor board activities and make informed decisions.</p>
+          <div style={{ display: 'flex', gap: '16px', marginBottom: '16px' }}>
+            <button style={{ backgroundColor: '#9333ea', color: 'white', padding: '8px 16px', border: 'none', borderRadius: '4px', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }}>
+              <span role="img" aria-label="plus">➕</span> New Resolution
+            </button>
+            <button style={{ backgroundColor: '#9333ea', color: 'white', padding: '8px 16px', border: 'none', borderRadius: '4px', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }}>
+              <span role="img" aria-label="calendar">📅</span> Schedule Meeting
+            </button>
           </div>
-          <BoardOverview />
-          <div className="grid grid-cols-3 gap-4 mt-6">
-            <ResolutionVoting />
-            <AttendanceRate />
-            <RecentResolutions />
+          <BoardOverview style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }} />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginTop: '24px' }}>
+            <ResolutionVoting style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }} />
+            <AttendanceRate style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }} />
+            <RecentResolutions style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }} />
           </div>
         </main>
       </div>
