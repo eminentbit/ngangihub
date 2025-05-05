@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useTheme } from './ThemeContext'; 
+import { useTheme } from './ThemeContext'; // Adjust path as needed
 import Header from '../../components/dashboard.bod.components/Header';
 import Sidebar from '../../components/dashboard.bod.components/Sidebar';
 import MeetingList from '../../components/dashboard.bod.components/MeetingList';
@@ -15,21 +15,19 @@ const MeetingSchedule: React.FC = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  // Sync sidebar state with window width for mobile
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 768) {
-        setIsSidebarOpen(false); // Auto-close sidebar on mobile
+        setIsSidebarOpen(false);
       } else {
-        setIsSidebarOpen(true); // Open sidebar on desktop
+        setIsSidebarOpen(true);
       }
     };
-    handleResize(); // Initial call
+    handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Sample notification count for Header
   const notifications = [
     '🚨 Board meeting scheduled for next week (2 hours ago)',
     '🚨 Annual report review pending (5 hours ago)'
@@ -46,22 +44,19 @@ const MeetingSchedule: React.FC = () => {
         isDarkMode={isDarkMode}
         notificationCount={notificationCount}
       />
-      <div style={{ display: 'flex', flex: '1', flexDirection: isMobile ? 'column' : 'row' }}>
+      <div style={{ display: 'flex', flex: '1', flexDirection: isMobile ? 'column' : 'row', transition: 'all 0.3s ease' }}>
         <Sidebar
-          style={{
-            boxShadow: '2px 0 4px rgba(0, 0, 0, 0.1)',
-            width: isMobile && !isSidebarOpen ? '0' : (isMobile ? '100%' : '256px'),
-            minWidth: isMobile && isSidebarOpen ? '100%' : undefined
-          }}
+          style={{ boxShadow: '2px 0 4px rgba(0, 0, 0, 0.1)' }}
           isOpen={isSidebarOpen}
           toggleSidebar={toggleSidebar}
         />
         <main style={{
-          flex: '1',
-          padding: isMobile ? '16px' : '24px',
+          flex: isSidebarOpen ? '1' : '100%', // Expand to full width when sidebar is closed
+          padding: isMobile ? '16px' : (isSidebarOpen ? '24px' : '24px 0'), // Adjust padding when sidebar closes
           backgroundColor: isDarkMode ? '#374151' : '#f3f4f6',
           color: isDarkMode ? 'white' : 'black',
-          overflowY: 'auto'
+          overflowY: 'auto',
+          transition: 'flex 0.3s ease, padding 0.3s ease' // Smooth adjustment
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
             {!isSidebarOpen && (

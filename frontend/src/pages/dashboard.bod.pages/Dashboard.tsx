@@ -28,7 +28,6 @@ const Dashboard: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Sample notification count for Header
   const notifications = [
     '🚨 Board meeting scheduled for next week (2 hours ago)',
     '🚨 Annual report review pending (5 hours ago)'
@@ -45,22 +44,20 @@ const Dashboard: React.FC = () => {
         isDarkMode={isDarkMode}
         notificationCount={notificationCount}
       />
-      <div style={{ display: 'flex', flex: '1', flexDirection: isMobile ? 'column' : 'row' }}>
+      <div style={{ display: 'flex', flex: '1', flexDirection: isMobile ? 'column' : 'row', transition: 'all 0.3s ease' }}>
         <Sidebar
-          style={{
-            boxShadow: '2px 0 4px rgba(0, 0, 0, 0.1)',
-            width: isMobile && !isSidebarOpen ? '0' : (isMobile ? '100%' : '256px'),
-            minWidth: isMobile && isSidebarOpen ? '100%' : undefined
-          }}
+          style={{ boxShadow: '2px 0 4px rgba(0, 0, 0, 0.1)' }}
           isOpen={isSidebarOpen}
           toggleSidebar={toggleSidebar}
         />
         <main style={{
-          flex: '1',
-          padding: isMobile ? '16px' : '20px',
+          flex: isSidebarOpen ? '1' : '100%', // Expand to full width when sidebar is closed
+          padding: isMobile ? '16px' : (isSidebarOpen ? '20px' : '20px 0'), // Adjust padding when sidebar closes
           backgroundColor: isDarkMode ? '#374151' : '#f3f4f6',
           boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-          color: isDarkMode ? 'white' : 'black'
+          color: isDarkMode ? 'white' : 'black',
+          transition: 'flex 0.3s ease, padding 0.3s ease', // Smooth adjustment
+          width: isSidebarOpen ? 'auto' : '100%' // Ensure full width when sidebar is closed
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             {!isSidebarOpen && (
