@@ -21,6 +21,7 @@ import Resolutions from "./pages/dashboard.bod.pages/Resolutions";
 import MeetingSchedule from "./pages/dashboard.bod.pages/MeetingSchedule";
 import MeetingMinutes from "./pages/dashboard.bod.pages/MeetingMinutes";
 import Attendance from "./pages/dashboard.bod.pages/Attendance";
+import Documents from "./pages/dashboard.bod.pages/Documents";
 
 // eslint-disable-next-line react-refresh/only-export-components
 const LandingSections: React.FC = () => <App />;
@@ -63,7 +64,8 @@ export const router = createBrowserRouter([
       { path: "resolutions", element: <Resolutions/>},
       { path: "schedule", element: <MeetingSchedule/>},
       { path: "minutes", element: <MeetingMinutes/>},
-      { path: "attendance", element: <Attendance/>}
+      { path: "attendance", element: <Attendance/>},
+      { path: "document", element: <Documents/>},
     ],
   },
   // Catch-all route for 404
