@@ -1,24 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 interface HeaderProps {
   style?: React.CSSProperties;
   toggleTheme: () => void;
   isDarkMode: boolean;
+  notificationCount: number;
 }
 
-const Header: React.FC<HeaderProps> = ({ style, toggleTheme, isDarkMode }) => {
+const Header: React.FC<HeaderProps> = ({ style, toggleTheme, isDarkMode, notificationCount }) => {
   const [showNotifications, setShowNotifications] = useState(false);
-  const [notificationCount, setNotificationCount] = useState(0);
-
-  // Simulate fetching notifications (in a real app, this would come from Notifications.tsx or an API)
-  useEffect(() => {
-    const notifications = [
-      '🚨 Board meeting scheduled for next week (2 hours ago)',
-      '🚨 Annual report review pending (5 hours ago)'
-    ];
-    setNotificationCount(notifications.length);
-  }, []);
 
   return (
     <header style={{
