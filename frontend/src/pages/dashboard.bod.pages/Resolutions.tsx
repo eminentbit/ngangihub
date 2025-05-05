@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useTheme } from './ThemeContext'; 
+import { useTheme } from './ThemeContext'; // Adjust path as needed
 import Header from '../../components/dashboard.bod.components/Header';
 import Sidebar from '../../components/dashboard.bod.components/Sidebar';
 import ResolutionList from '../../components/dashboard.bod.components/ResolutionList';
@@ -9,6 +9,7 @@ import NewResolutionModal from '../../components/dashboard.bod.components/NewRes
 const Resolutions: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [filter, setFilter] = useState('All'); // Add filter state
   const { isDarkMode, toggleTheme } = useTheme();
 
   const toggleSidebar = () => {
@@ -65,7 +66,7 @@ const Resolutions: React.FC = () => {
             </h1>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <ResolutionFilter />
+            <ResolutionFilter filter={filter} setFilter={setFilter} />
             <button
               onClick={toggleModal}
               style={{
@@ -81,7 +82,7 @@ const Resolutions: React.FC = () => {
               <span role="img" aria-label="plus">➕</span> New Resolution
             </button>
           </div>
-          <ResolutionList isDarkMode={isDarkMode} />
+          <ResolutionList isDarkMode={isDarkMode} filter={filter} />
           {isModalOpen && <NewResolutionModal isDarkMode={isDarkMode} onClose={toggleModal} />}
         </main>
       </div>

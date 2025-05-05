@@ -1,14 +1,13 @@
-import React, { useState } from 'react';
-import { useTheme } from '../../pages/dashboard.bod.pages/ThemeContext';
+import React from 'react';
+import { useTheme } from '../../pages/dashboard.bod.pages/ThemeContext'; // Adjust path as needed
 
-const ResolutionFilter: React.FC = () => {
+interface ResolutionFilterProps {
+  filter: string;
+  setFilter: (newFilter: string) => void;
+}
+
+const ResolutionFilter: React.FC<ResolutionFilterProps> = ({ filter, setFilter }) => {
   const { isDarkMode } = useTheme();
-  const [filter, setFilter] = useState('All');
-
-  const handleFilterChange = (newFilter: string) => {
-    setFilter(newFilter);
-    
-  };
 
   const filters = ['All', 'Approved', 'Pending', 'Rejected'];
 
@@ -17,7 +16,7 @@ const ResolutionFilter: React.FC = () => {
       {filters.map(f => (
         <button
           key={f}
-          onClick={() => handleFilterChange(f)}
+          onClick={() => setFilter(f)}
           style={{
             padding: '4px 12px',
             backgroundColor: filter === f ? '#9333ea' : (isDarkMode ? '#4b5563' : '#e5e7eb'),
