@@ -21,28 +21,21 @@ const Sidebar: React.FC<SidebarProps> = ({ style, isOpen, toggleSidebar }) => {
     transition: 'background-color 0.3s ease, color 0.3s ease'
   });
 
-  const handleToggle = () => {
-    if (isOpen) {
-      toggleSidebar();
-    }
-  };
-
   return (
     <aside style={{
-      backgroundColor: isOpen ? '#5b1a89' : 'transparent', // Background disappears when closed
+      backgroundColor: isOpen ? '#5b1a89' : 'transparent',
       color: 'white',
-      width: isOpen ? '256px' : '0',
       height: '100vh',
       minHeight: '100%',
       padding: isOpen ? '16px' : '0',
       overflow: 'hidden',
-      transition: 'width 0.3s ease, padding 0.3s ease, background-color 0.3s ease', // Smooth transition for background
       position: 'relative',
+      display: isOpen ? 'block' : 'none', // Toggle visibility
       ...style
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
         <h3 style={{ fontSize: '18px', display: isOpen ? 'block' : 'none' }}>BOARD MENU</h3>
-        <button onClick={handleToggle} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', fontSize: '24px' }}>
+        <button onClick={toggleSidebar} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', fontSize: '24px' }}>
           {isOpen ? '✖' : '☰'}
         </button>
       </div>
