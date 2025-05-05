@@ -17,6 +17,7 @@ import NotificationsPage from "./pages/dashboard.admin.pages/Notification";
 //BOD
 import Dashboard from './pages/dashboard.bod.pages/Dashboard';
 import Notifications from "./pages/dashboard.bod.pages/Notifications";
+import Resolutions from "./pages/dashboard.bod.pages/Resolutions";
 
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -56,7 +57,8 @@ export const router = createBrowserRouter([
     path: "/board",
     children: [
       { path: "dashboard", element: <Dashboard /> },
-      { path: "notifications", element: <Notifications/>}
+      { path: "notifications", element: <Notifications/>},
+      { path: "resolutions", element: <Resolutions/>}
     ],
   },
   // Catch-all route for 404
