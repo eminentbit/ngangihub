@@ -68,7 +68,7 @@ const Header: React.FC<HeaderProps> = ({ style, toggleTheme, isDarkMode }) => {
         <button onClick={toggleTheme} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', fontSize: '24px' }}>
           {isDarkMode ? '☀️' : '🌙'}
         </button>
-        <span style={{ marginRight: '8px' }}>👤 Robert Johnson</span>
+        <span style={{ marginRight: '8px' }}>👤 Wepngong Shalom</span>
         <span style={{ backgroundColor: '#ef4444', color: 'white', borderRadius: '50%', width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>2</span>
       </div>
     </header>
