@@ -14,6 +14,7 @@ import StatisticsPage from "./pages/dashboard.admin.pages/MyStatistics";
 import AddMemberPage from "./pages/dashboard.admin.pages/AddMember";
 import GroupSettingsPage from "./pages/dashboard.admin.pages/GroupSetting";
 import NotificationsPage from "./pages/dashboard.admin.pages/Notification";
+import Dashboard from './pages/dashboard.bod.pages/Dashboard';
 
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -48,6 +49,13 @@ export const router = createBrowserRouter([
   {path: "/group-settings-admin", element: <GroupSettingsPage /> },
   {path: "/notifications", element: <NotificationsPage /> },
 
+  // Board of Directors routes
+  {
+    path: "/board",
+    children: [
+      { path: "dashboard", element: <Dashboard /> },
+    ],
+  },
   // Catch-all route for 404
   {
     path: "*",
