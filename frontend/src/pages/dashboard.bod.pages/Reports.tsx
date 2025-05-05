@@ -5,6 +5,7 @@ import Sidebar from '../../components/dashboard.bod.components/Sidebar';
 import ReportOverview from '../../components/dashboard.bod.components/ReportOverview';
 import ReportList from '../../components/dashboard.bod.components/ReportList';
 import ReportFilter from '../../components/dashboard.bod.components/ReportFilter';
+import AddReportForm from '../../components/dashboard.bod.components/AddReportForm';
 import ReportDetails from '../../components/dashboard.bod.components/ReportDetails';
 
 const Reports: React.FC = () => {
@@ -87,6 +88,7 @@ const Reports: React.FC = () => {
             marginBottom: '16px'
           }}>
             <ReportFilter filter={filter} setFilter={setFilter} />
+            <AddReportForm isDarkMode={isDarkMode} />
           </div>
           {selectedReportId ? (
             <ReportDetails
