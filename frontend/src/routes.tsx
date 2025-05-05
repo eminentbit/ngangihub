@@ -18,6 +18,7 @@ import NotificationsPage from "./pages/dashboard.admin.pages/Notification";
 import Dashboard from './pages/dashboard.bod.pages/Dashboard';
 import Notifications from "./pages/dashboard.bod.pages/Notifications";
 import Resolutions from "./pages/dashboard.bod.pages/Resolutions";
+import MeetingSchedule from "./pages/dashboard.bod.pages/MeetingSchedule";
 
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -58,7 +59,8 @@ export const router = createBrowserRouter([
     children: [
       { path: "dashboard", element: <Dashboard /> },
       { path: "notifications", element: <Notifications/>},
-      { path: "resolutions", element: <Resolutions/>}
+      { path: "resolutions", element: <Resolutions/>},
+      { path: "meetingschedule", element: <MeetingSchedule/>}
     ],
   },
   // Catch-all route for 404
