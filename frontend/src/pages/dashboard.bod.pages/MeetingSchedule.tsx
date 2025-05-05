@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useTheme } from './ThemeContext'; // Adjust path as needed
+import React, { useState, useEffect } from 'react';
+import { useTheme } from './ThemeContext'; 
 import Header from '../../components/dashboard.bod.components/Header';
 import Sidebar from '../../components/dashboard.bod.components/Sidebar';
 import MeetingList from '../../components/dashboard.bod.components/MeetingList';
@@ -15,6 +15,20 @@ const MeetingSchedule: React.FC = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+  // Sync sidebar state with window width for mobile
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setIsSidebarOpen(false); // Auto-close sidebar on mobile
+      } else {
+        setIsSidebarOpen(true); // Open sidebar on desktop
+      }
+    };
+    handleResize(); // Initial call
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // Sample notification count for Header
   const notifications = [
     '🚨 Board meeting scheduled for next week (2 hours ago)',
@@ -22,7 +36,6 @@ const MeetingSchedule: React.FC = () => {
   ];
   const notificationCount = notifications.length;
 
-  // For responsiveness: Check window width for layout adjustments
   const isMobile = window.innerWidth < 768;
 
   return (
@@ -35,7 +48,11 @@ const MeetingSchedule: React.FC = () => {
       />
       <div style={{ display: 'flex', flex: '1', flexDirection: isMobile ? 'column' : 'row' }}>
         <Sidebar
-          style={{ boxShadow: '2px 0 4px rgba(0, 0, 0, 0.1)', width: isMobile ? '100%' : undefined }}
+          style={{
+            boxShadow: '2px 0 4px rgba(0, 0, 0, 0.1)',
+            width: isMobile && !isSidebarOpen ? '0' : (isMobile ? '100%' : '256px'),
+            minWidth: isMobile && isSidebarOpen ? '100%' : undefined
+          }}
           isOpen={isSidebarOpen}
           toggleSidebar={toggleSidebar}
         />

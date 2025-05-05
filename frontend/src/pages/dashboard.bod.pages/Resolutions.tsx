@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTheme } from './ThemeContext'; // Adjust path as needed
 import Header from '../../components/dashboard.bod.components/Header';
 import Sidebar from '../../components/dashboard.bod.components/Sidebar';
@@ -9,7 +9,8 @@ import NewResolutionModal from '../../components/dashboard.bod.components/NewRes
 const Resolutions: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [filter, setFilter] = useState('All'); // Add filter state
+  const [filter, setFilter] = useState('All');
+
   const { isDarkMode, toggleTheme } = useTheme();
 
   const toggleSidebar = () => {
@@ -20,12 +21,27 @@ const Resolutions: React.FC = () => {
     setIsModalOpen(!isModalOpen);
   };
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setIsSidebarOpen(false);
+      } else {
+        setIsSidebarOpen(true);
+      }
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // Sample notification count for Header
   const notifications = [
     '🚨 Board meeting scheduled for next week (2 hours ago)',
     '🚨 Annual report review pending (5 hours ago)'
   ];
   const notificationCount = notifications.length;
+
+  const isMobile = window.innerWidth < 768;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
@@ -35,15 +51,19 @@ const Resolutions: React.FC = () => {
         isDarkMode={isDarkMode}
         notificationCount={notificationCount}
       />
-      <div style={{ display: 'flex', flex: '1' }}>
+      <div style={{ display: 'flex', flex: '1', flexDirection: isMobile ? 'column' : 'row' }}>
         <Sidebar
-          style={{ boxShadow: '2px 0 4px rgba(0, 0, 0, 0.1)' }}
+          style={{
+            boxShadow: '2px 0 4px rgba(0, 0, 0, 0.1)',
+            width: isMobile && !isSidebarOpen ? '0' : (isMobile ? '100%' : '256px'),
+            minWidth: isMobile && isSidebarOpen ? '100%' : undefined
+          }}
           isOpen={isSidebarOpen}
           toggleSidebar={toggleSidebar}
         />
         <main style={{
           flex: '1',
-          padding: '24px',
+          padding: isMobile ? '16px' : '24px',
           backgroundColor: isDarkMode ? '#374151' : '#f3f4f6',
           color: isDarkMode ? 'white' : 'black'
         }}>
@@ -54,7 +74,7 @@ const Resolutions: React.FC = () => {
               </button>
             )}
             <h1 style={{
-              fontSize: '24px',
+              fontSize: isMobile ? '20px' : '24px',
               fontWeight: 'bold',
               boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
               padding: '8px',
@@ -65,7 +85,14 @@ const Resolutions: React.FC = () => {
               Resolutions <span style={{ color: '#10b981' }}>📋</span>
             </h1>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <div style={{
+            display: 'flex',
+            flexDirection: isMobile ? 'column' : 'row',
+            justifyContent: 'space-between',
+            alignItems: isMobile ? 'stretch' : 'center',
+            gap: '16px',
+            marginBottom: '16px'
+          }}>
             <ResolutionFilter filter={filter} setFilter={setFilter} />
             <button
               onClick={toggleModal}
