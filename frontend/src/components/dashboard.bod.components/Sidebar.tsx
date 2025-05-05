@@ -8,7 +8,7 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ style, isOpen, toggleSidebar }) => {
-  const currentPath = window.location.pathname; // Simulate active tab based on current route
+  const currentPath = window.location.pathname;
 
   const getLinkStyle = (path: string) => ({
     display: 'block',
