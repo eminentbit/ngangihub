@@ -35,6 +35,10 @@ const Header: React.FC<HeaderProps> = ({ style, toggleTheme, isDarkMode }) => {
         />
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <button onClick={toggleTheme} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', fontSize: '24px' }}>
+          {isDarkMode ? '☀️' : '🌙'}
+        </button>
+        <span style={{ marginRight: '8px' }}>👤 Robert Johnson</span>
         <div style={{ position: 'relative' }}>
           <button onClick={() => setShowNotifications(!showNotifications)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', fontSize: '24px' }}>
             🔔
@@ -65,10 +69,7 @@ const Header: React.FC<HeaderProps> = ({ style, toggleTheme, isDarkMode }) => {
             </div>
           )}
         </div>
-        <button onClick={toggleTheme} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', fontSize: '24px' }}>
-          {isDarkMode ? '☀️' : '🌙'}
-        </button>
-        <span style={{ marginRight: '8px' }}>👤 Wepngong Shalom</span>
+        
         <span style={{ backgroundColor: '#ef4444', color: 'white', borderRadius: '50%', width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>2</span>
       </div>
     </header>
