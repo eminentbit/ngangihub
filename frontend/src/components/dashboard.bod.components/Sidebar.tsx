@@ -25,12 +25,15 @@ const Sidebar: React.FC<SidebarProps> = ({ style, isOpen, toggleSidebar }) => {
     <aside style={{
       backgroundColor: isOpen ? '#5b1a89' : 'transparent',
       color: 'white',
+      width: isOpen ? '256px' : '0',
       height: '100vh',
       minHeight: '100%',
       padding: isOpen ? '16px' : '0',
       overflow: 'hidden',
+      opacity: isOpen ? 1 : 0, // Fade in/out
+      visibility: isOpen ? 'visible' : 'hidden', // Hide when fully closed
+      transition: 'width 0.3s ease, padding 0.3s ease, opacity 0.3s ease, background-color 0.3s ease, visibility 0.3s ease', // Smooth transitions
       position: 'relative',
-      display: isOpen ? 'block' : 'none', // Toggle visibility
       ...style
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
