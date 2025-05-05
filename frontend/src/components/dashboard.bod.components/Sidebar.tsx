@@ -1,34 +1,38 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const Sidebar: React.FC = () => {
+interface SidebarProps {
+  style?: React.CSSProperties;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ style }) => {
   return (
-    <aside className="bg-purple-900 text-white w-64 h-screen p-4">
+    <aside style={{ backgroundColor: '#5b1a89', color: 'white', width: '256px', height: '100vh', padding: '16px', ...style }}>
       <nav>
-        <h3 className="text-lg mb-4">BOARD MENU</h3>
-        <ul className="space-y-2">
-          <li><Link to="/dashboard" className="block p-2 bg-purple-700 rounded">📊 Board Dashboard</Link></li>
-          <li><Link to="/resolutions" className="block p-2 hover:bg-purple-700 rounded">📋 Resolutions</Link></li>
+        <h3 style={{ fontSize: '18px', marginBottom: '16px' }}>BOARD MENU</h3>
+        <ul style={{ marginBottom: '24px', listStyle: 'none', padding: 0 }}>
+          <li><Link to="/board/dashboard" style={{ display: 'block', padding: '8px', backgroundColor: '#7c3aed', borderRadius: '4px', textDecoration: 'none', color: 'white' }}>📊 Board Dashboard</Link></li>
+          <li><Link to="/board/resolutions" style={{ display: 'block', padding: '8px', borderRadius: '4px', textDecoration: 'none', color: 'white' }}>📋 Resolutions</Link></li>
         </ul>
-        <h3 className="text-lg mb-4 mt-6">MEETINGS</h3>
-        <ul className="space-y-2">
-          <li><Link to="/schedule" className="block p-2 hover:bg-purple-700 rounded">📅 Meeting Schedule</Link></li>
-          <li><Link to="/minutes" className="block p-2 hover:bg-purple-700 rounded">📝 Meeting Minutes</Link></li>
-          <li><Link to="/attendance" className="block p-2 hover:bg-purple-700 rounded">👥 Attendance</Link></li>
+        <h3 style={{ fontSize: '18px', marginBottom: '16px', marginTop: '24px' }}>MEETINGS</h3>
+        <ul style={{ marginBottom: '24px', listStyle: 'none', padding: 0 }}>
+          <li><Link to="/board/schedule" style={{ display: 'block', padding: '8px', borderRadius: '4px', textDecoration: 'none', color: 'white' }}>📅 Meeting Schedule</Link></li>
+          <li><Link to="/board/minutes" style={{ display: 'block', padding: '8px', borderRadius: '4px', textDecoration: 'none', color: 'white' }}>📝 Meeting Minutes</Link></li>
+          <li><Link to="/board/attendance" style={{ display: 'block', padding: '8px', borderRadius: '4px', textDecoration: 'none', color: 'white' }}>👥 Attendance</Link></li>
         </ul>
-        <h3 className="text-lg mb-4 mt-6">DOCUMENTS</h3>
-        <ul className="space-y-2">
-          <li><Link to="/documents" className="block p-2 hover:bg-purple-700 rounded">📑 Documents</Link></li>
-          <li><Link to="/policies" className="block p-2 hover:bg-purple-700 rounded">📜 Policies</Link></li>
+        <h3 style={{ fontSize: '18px', marginBottom: '16px', marginTop: '24px' }}>DOCUMENTS</h3>
+        <ul style={{ marginBottom: '24px', listStyle: 'none', padding: 0 }}>
+          <li><Link to="/board/documents" style={{ display: 'block', padding: '8px', borderRadius: '4px', textDecoration: 'none', color: 'white' }}>📑 Documents</Link></li>
+          <li><Link to="/board/policies" style={{ display: 'block', padding: '8px', borderRadius: '4px', textDecoration: 'none', color: 'white' }}>📜 Policies</Link></li>
         </ul>
-        <h3 className="text-lg mb-4 mt-6">REPORTS</h3>
-        <ul className="space-y-2">
-          <li><Link to="/reports" className="block p-2 hover:bg-purple-700 rounded">📊 Reports</Link></li>
+        <h3 style={{ fontSize: '18px', marginBottom: '16px', marginTop: '24px' }}>REPORTS</h3>
+        <ul style={{ marginBottom: '24px', listStyle: 'none', padding: 0 }}>
+          <li><Link to="/board/reports" style={{ display: 'block', padding: '8px', borderRadius: '4px', textDecoration: 'none', color: 'white' }}>📊 Reports</Link></li>
         </ul>
-        <div className="mt-6">
-          <h3 className="text-lg mb-2">NOTIFICATIONS</h3>
-          <ul className="space-y-2">
-            <li><Link to="/notifications" className="block bg-purple-600 p-2 rounded">🔔 View Notifications</Link></li>
+        <div style={{ marginTop: '24px' }}>
+          <h3 style={{ fontSize: '18px', marginBottom: '8px' }}>NOTIFICATIONS</h3>
+          <ul style={{ listStyle: 'none', padding: 0 }}>
+            <li><Link to="/board/notifications" style={{ display: 'block', backgroundColor: '#7c3aed', padding: '8px', borderRadius: '4px', textDecoration: 'none', color: 'white' }}>🔔 View Notifications</Link></li>
           </ul>
         </div>
       </nav>
