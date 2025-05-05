@@ -60,7 +60,7 @@ export const router = createBrowserRouter([
       { path: "dashboard", element: <Dashboard /> },
       { path: "notifications", element: <Notifications/>},
       { path: "resolutions", element: <Resolutions/>},
-      { path: "meetingschedule", element: <MeetingSchedule/>}
+      { path: "schedule", element: <MeetingSchedule/>}
     ],
   },
   // Catch-all route for 404
