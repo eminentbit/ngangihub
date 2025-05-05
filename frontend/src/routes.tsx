@@ -20,7 +20,7 @@ import Notifications from "./pages/dashboard.bod.pages/Notifications";
 import Resolutions from "./pages/dashboard.bod.pages/Resolutions";
 import MeetingSchedule from "./pages/dashboard.bod.pages/MeetingSchedule";
 import MeetingMinutes from "./pages/dashboard.bod.pages/MeetingMinutes";
-
+import Attendance from "./pages/dashboard.bod.pages/Attendance";
 
 // eslint-disable-next-line react-refresh/only-export-components
 const LandingSections: React.FC = () => <App />;
@@ -63,6 +63,7 @@ export const router = createBrowserRouter([
       { path: "resolutions", element: <Resolutions/>},
       { path: "schedule", element: <MeetingSchedule/>},
       { path: "minutes", element: <MeetingMinutes/>},
+      { path: "attendance", element: <Attendance/>}
     ],
   },
   // Catch-all route for 404
