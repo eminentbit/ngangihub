@@ -1,15 +1,19 @@
 import React from 'react';
 
-const ResolutionVoting: React.FC = () => {
+interface ResolutionVotingProps {
+  style?: React.CSSProperties;
+}
+
+const ResolutionVoting: React.FC<ResolutionVotingProps> = ({ style }) => {
   return (
-    <div className="bg-white p-4 rounded shadow">
+    <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '4px', ...style }}>
       <h3>Resolution Voting</h3>
-      <div className="w-40 h-40 mx-auto">
-        <div className="w-full h-full bg-blue-500 rounded-full" style={{ clipPath: 'circle(50% at 50% 50%)' }}></div>
-        <div className="w-full h-full bg-green-500 rounded-full" style={{ clipPath: 'circle(30% at 50% 50%)' }}></div>
-        <div className="w-full h-full bg-yellow-500 rounded-full" style={{ clipPath: 'circle(20% at 50% 50%)' }}></div>
+      <div style={{ width: '160px', height: '160px', margin: '0 auto', position: 'relative' }}>
+        <div style={{ width: '100%', height: '100%', backgroundColor: '#3b82f6', borderRadius: '50%', clipPath: 'circle(50% at 50% 50%)', position: 'absolute' }}></div>
+        <div style={{ width: '100%', height: '100%', backgroundColor: '#22c55e', borderRadius: '50%', clipPath: 'circle(30% at 50% 50%)', position: 'absolute' }}></div>
+        <div style={{ width: '100%', height: '100%', backgroundColor: '#eab308', borderRadius: '50%', clipPath: 'circle(20% at 50% 50%)', position: 'absolute' }}></div>
       </div>
-      <p className="text-center">Approve | Reject | Abstain</p>
+      <p style={{ textAlign: 'center' }}>Approve | Reject | Abstain</p>
     </div>
   );
 };

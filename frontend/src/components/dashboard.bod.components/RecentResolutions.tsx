@@ -1,21 +1,19 @@
 import React from 'react';
 
-interface ResolutionVotingProps {
+interface RecentResolutionsProps {
   style?: React.CSSProperties;
 }
 
-const ResolutionVoting: React.FC<ResolutionVotingProps> = ({ style }) => {
+const RecentResolutions: React.FC<RecentResolutionsProps> = ({ style }) => {
   return (
     <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '4px', ...style }}>
-      <h3>Resolution Voting</h3>
-      <div style={{ width: '160px', height: '160px', margin: '0 auto', position: 'relative' }}>
-        <div style={{ width: '100%', height: '100%', backgroundColor: '#3b82f6', borderRadius: '50%', clipPath: 'circle(50% at 50% 50%)', position: 'absolute' }}></div>
-        <div style={{ width: '100%', height: '100%', backgroundColor: '#22c55e', borderRadius: '50%', clipPath: 'circle(30% at 50% 50%)', position: 'absolute' }}></div>
-        <div style={{ width: '100%', height: '100%', backgroundColor: '#eab308', borderRadius: '50%', clipPath: 'circle(20% at 50% 50%)', position: 'absolute' }}></div>
-      </div>
-      <p style={{ textAlign: 'center' }}>Approve | Reject | Abstain</p>
+      <h3>Recent Resolutions</h3>
+      <input type="text" placeholder="Search resolutions..." style={{ width: '100%', padding: '8px', marginBottom: '8px', borderRadius: '4px', border: '1px solid #ccc' }} />
+      <ul style={{ listStyle: 'none', padding: 0 }}>
+        <li>Strategic Plan - Apr 25, 2025 - <span style={{ color: '#22c55e' }}>Approved</span></li>
+      </ul>
     </div>
   );
 };
 
-export default ResolutionVoting;
+export default RecentResolutions;
