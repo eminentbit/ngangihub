@@ -21,6 +21,7 @@ interface SidebarProps {
   onTabChange?: (tab: string) => void; 
   notifications?: { id: number; message: string; time: string; isRead: boolean; }[];
   onClose: () => void;
+  
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
