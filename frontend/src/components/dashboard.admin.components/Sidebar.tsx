@@ -63,9 +63,9 @@ const Sidebar: React.FC<SidebarProps> = ({
         {/* Logo and Collapse button */}
         <div className="flex items-center h-16 px-4 border-b border-blue-800 relative">
           <img
-            src="/logo3.png"
+            src="/logo2.png"
             alt="Logo"
-            className="h-8 w-auto"
+            className="h-10 w-auto"
           />
           {isOpen && (
             <button
