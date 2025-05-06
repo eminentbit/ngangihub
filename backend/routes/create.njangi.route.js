@@ -1,5 +1,5 @@
 import express from "express";
-import { createNjangi } from "../controllers/create.njangi.controller";
+import { createNjangi } from "../controllers/create.njangi.controller.js";
 
 const router = express.Router();
 

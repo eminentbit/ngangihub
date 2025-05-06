@@ -1,9 +1,9 @@
 // controllers/createNjangi.controller.js
-import { createNjangiFlow } from "../services/createNjangiFlow";
+import { createNjangiFlow } from "../services/createNjangiFlow.js";
 
 export const createNjangi = async (req, res) => {
   try {
-    const result = await createNjangiFlow(req.body);
+    const result = await createNjangiFlow(req.body, res);
     res.status(201).json({
       success: true,
       message: "Njangi created successfully",

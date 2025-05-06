@@ -4,10 +4,10 @@ import { createNjangiGroup } from "./njangi.service.js";
 import { addAdminAsGroupMember } from "./groupMember.service.js";
 import { inviteMembersToGroup } from "./invite.service.js";
 
-export const createNjangiFlow = async (formData) => {
+export const createNjangiFlow = async (formData, res) => {
   const { accountSetup, groupDetails, inviteMembers } = formData;
 
-  const adminUser = await createUser(accountSetup);
+  const adminUser = await createUser(accountSetup, res);
   const group = await createNjangiGroup(groupDetails, adminUser._id);
   await addAdminAsGroupMember(group._id, adminUser._id);
   const invites = await inviteMembersToGroup(
