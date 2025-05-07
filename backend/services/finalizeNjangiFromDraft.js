@@ -12,6 +12,9 @@ export const finalizeNjangiFromDraft = async (draftId, res) => {
 
   const { accountSetup, groupDetails, inviteMembers } = draft;
 
+
+  // 1) accountSetup
+
   // create the user(admin or member)
   const adminUser = await createUser(accountSetup, res, "admin", "verified");
 
@@ -24,6 +27,7 @@ export const finalizeNjangiFromDraft = async (draftId, res) => {
   }
   await adminUser.save();
 
+  // 2) groupDetails
   const group = await createNjangiGroup(groupDetails, adminUser._id);
 
   // Add admin as first group member in Njangigroup model
@@ -39,6 +43,8 @@ export const finalizeNjangiFromDraft = async (draftId, res) => {
     $push: { groups: group._id },
   });
 
+
+  // 3) inviteMembers
   const invites = await inviteMembersToGroup(
     { invites: inviteMembers },
     group._id,
