@@ -3,9 +3,9 @@ import mongoose from "mongoose";
 
 const bodApprovalSchema = new mongoose.Schema(
   {
-    groupId: {
+    draftId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "NjangiGroup",
+      ref: "NjangiDraft", 
       required: true,
     },
     bodId: {

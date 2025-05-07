@@ -3,6 +3,7 @@ import { User } from "../models/user.model.js";
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
 
 export const createUser = async (accountData, res) => {
+  console.log(`Creating user with data: ${JSON.stringify(accountData)}`);
   const existing = await User.findOne({ email: accountData.email });
   if (existing) {
     return res
@@ -21,7 +22,7 @@ export const createUser = async (accountData, res) => {
     firstName: accountData.firstName,
     lastName: accountData.lastName,
     email: accountData.email,
-    phoneNumber: accountData.phoneNum,
+    phoneNumber: accountData.phoneNumber,
     passwordHash,
     role: accountData.role || "member",
     status: accountData.status || "pending",

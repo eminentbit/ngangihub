@@ -3,6 +3,6 @@ import { approveNjangi } from "../controllers/bod.approve.njangi.controller.js";
 
 const router = express.Router();
 
-router.post("/approve-njangi", approveNjangi);
+router.post("/bod", approveNjangi);
 
 export default router;

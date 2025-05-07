@@ -1,5 +1,5 @@
 // services/finalizeNjangiFromDraft.js
-import  NjangiDraft  from "../models/NjangiDraft.js";
+import  NjangiDraft  from "../models/NjangiDrafts.js";
 import { createUser } from "./user.service.js";
 import { createNjangiGroup } from "./njangi.service.js";
 import { addAdminAsGroupMember } from "./groupMember.service.js";
@@ -10,10 +10,11 @@ export const finalizeNjangiFromDraft = async (draftId, res) => {
   if (!draft) throw new Error("Draft not found");
 
   const { accountSetup, groupDetails, inviteMembers } = draft;
+  console.log(`Invite members: ${JSON.stringify(inviteMembers.invites)}`);
 
   const adminUser = await createUser(accountSetup, res);
   const group = await createNjangiGroup(groupDetails, adminUser._id);
-  await addAdminAsGroupMember(group._id, adminUser._id);
+  await addAdminAsGroupMember(group._id, adminUser._id, group.status);
   const invites = await inviteMembersToGroup(
     { invites: inviteMembers },
     group._id,

@@ -6,7 +6,7 @@ export const createNjangi = async (req, res) => {
     const result = await createNjangiFlow(req.body, res);
     res.status(201).json({
       success: true,
-      message: "Njangi created successfully and invite sent.",
+      message: "Njangi created successfully and sent for approval.",
       ...result,
     });
   } catch (error) {

@@ -13,7 +13,7 @@ export const inviteMembersToGroup = async (
       const token = generateToken();
       const newInvite = await Invite.create({
         groupId,
-        emailOrPhone: invite.contact,
+        emailOrPhone: invite.contact || invite.emailOrPhone,
         inviteToken: token,
         invitedBy: adminId,
         status: "pending",
