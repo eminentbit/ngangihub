@@ -23,8 +23,10 @@ export const createUser = async (accountData, res) => {
     email: accountData.email,
     phoneNumber: accountData.phoneNum,
     passwordHash,
-    role: "admin",
-    status: "pending",
+    role: accountData.role || "member",
+    status: accountData.status || "pending",
+    profilePicUrl: accountData.profilePicUrl || "",
+    isVerified: false,
     verificationToken,
     verificationTokenExpireAt: Date.now() + 24 * 60 * 60 * 1000, //24hrs
   });

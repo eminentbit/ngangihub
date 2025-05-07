@@ -1,25 +1,6 @@
-// services/createNjangiFlow.js
-import { createUser } from "./user.service.js";
-import { createNjangiGroup } from "./njangi.service.js";
-import { addAdminAsGroupMember } from "./groupMember.service.js";
-import { inviteMembersToGroup } from "./invite.service.js";
+import NjangiDraft from "../models/NjangiDrafts.js";
 
-export const createNjangiFlow = async (formData, res) => {
-  const { accountSetup, groupDetails, inviteMembers } = formData;
-
-  const adminUser = await createUser(accountSetup, res);
-  const group = await createNjangiGroup(groupDetails, adminUser._id);
-  await addAdminAsGroupMember(group._id, adminUser._id);
-  const invites = await inviteMembersToGroup(
-    inviteMembers,
-    group._id,
-    adminUser._id,
-    group.name
-  );
-
-  return {
-    adminUserId: adminUser._id,
-    groupId: group._id,
-    inviteCount: invites.length,
-  };
+export const createNjangiFlow = async (formData) => {
+  const draft = await NjangiDraft.create(formData);
+  return { draftId: draft._id };
 };
