@@ -31,8 +31,6 @@ export const createUser = async (accountData, res) => {
 
   const savedUser = await user.save();
 
-  console.log("savedUser:", savedUser);
-
   generateTokenAndSetCookie(res, savedUser._id);
 
   //send verification email
