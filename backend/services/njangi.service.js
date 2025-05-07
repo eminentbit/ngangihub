@@ -15,7 +15,9 @@ export const createNjangiGroup = async (groupDetails, adminId) => {
     payoutMethod: groupDetails.payoutMethod,
     startDate: new Date(groupDetails.startDate),
     endDate: groupDetails.endDate ? new Date(groupDetails.endDate) : null,
-    expectedMembers: Number(groupDetails.numOfMembers) || undefined,
+    expectedMembers: Number(groupDetails.expectedMembers) || undefined,
     rules: groupDetails.rules,
+    status: "approved",
+    createdAt: new Date(),
   });
 };

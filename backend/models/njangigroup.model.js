@@ -20,6 +20,7 @@ const njangiGroupSchema = new mongoose.Schema(
       enum: ["Rotation", "Lottery", "Bidding"],
       required: true,
     },
+    groupMembers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     startDate: { type: Date, required: true },
     endDate: { type: Date },
     expectedMembers: { type: Number },
