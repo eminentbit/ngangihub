@@ -49,7 +49,9 @@ export const finalizeNjangiFromDraft = async (draftId, res) => {
     { invites: inviteMembers },
     group._id,
     adminUser._id,
-    group.name
+    group.name,
+    adminUser.firstName,
+    adminUser.lastName
   );
 
   // delete the draft after finalizing
