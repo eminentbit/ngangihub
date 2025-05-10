@@ -11,6 +11,7 @@ const Step4Review: React.FC = () => {
     inviteMembers,
     isSubmitting,
     isSubmitted,
+    error,
   } = state;
 
   const formatDate = (dateString?: string) => {
@@ -51,6 +52,13 @@ const Step4Review: React.FC = () => {
         <h2 className="text-2xl font-bold text-gray-800 mb-6">
           Review & Submit
         </h2>
+
+        {/* Display error message if it exists */}
+        {error && (
+          <div className="bg-red-100 text-red-700 p-4 rounded-md mb-6">
+            <p>{error}</p>
+          </div>
+        )}
 
         <div className="space-y-6">
           <section>

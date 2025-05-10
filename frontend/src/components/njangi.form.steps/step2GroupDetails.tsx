@@ -50,7 +50,7 @@ const Step2GroupDetails: React.FC = () => {
     } else {
       clearErrors("groupName");
     }
-  });
+  }, [debouncedGroupName, isValid, setError, clearErrors]);
 
   const onSubmit = async (data: GroupDetailsFormData) => {
     const isValid = await trigger();
