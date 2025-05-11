@@ -1,4 +1,6 @@
 import NjangiDrafts from "../models/NjangiDrafts.js";
+import { User } from "../models/user.model.js";
+import { NjangiGroup } from "../models/njangigroup.model.js";
 
 /**
  * Validates whether an email is already used in a NjangiDraft (temporary creation).
@@ -13,7 +15,14 @@ export const validateEmail = async (req, res) => {
 
   try {
     console.log(`Validating email: ${email}`);
-    const exists = await NjangiDrafts.exists({ "accountSetup.email": email });
+
+    const [inDraft, inUsers] = await Promise.all([
+      NjangiDrafts.exists({ "accountSetup.email": email }),
+      User.exists({ email }),
+    ]);
+
+    const exists = inDraft || inUsers;
+
     res.json({ valid: !exists });
   } catch (error) {
     res
@@ -37,9 +46,22 @@ export const validateGroupName = async (req, res) => {
 
   try {
     console.log(`Validating group name: ${groupName}`);
-    const exists = await NjangiDrafts.exists({
-      "groupDetails.groupName": groupName,
-    });
+
+    // Trim and sanitize the group name
+    const sanitizedGroupName = groupName.trim();
+
+    const [inDrafts, inGroups] = await Promise.all([
+      NjangiDrafts.exists({
+        "groupDetails.groupName": {
+          $regex: new RegExp(`^${sanitizedGroupName}$`, "i"),
+        },
+      }),
+      NjangiGroup.exists({
+        name: { $regex: new RegExp(`^${sanitizedGroupName}$`, "i") },
+      }),
+    ]);
+
+    const exists = inDrafts || inGroups;
     res.json({ valid: !exists });
   } catch (error) {
     res

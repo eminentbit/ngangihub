@@ -8,7 +8,7 @@ import { User } from "../models/user.model.js";
 
 export const finalizeNjangiFromDraft = async (draftId, res) => {
   const draft = await NjangiDraft.findById(draftId);
-  if (!draft) throw new Error("Draft not found");
+  if (!draft) throw new Error("Draft not found! Please try again.");
 
   const { accountSetup, groupDetails, inviteMembers } = draft;
 

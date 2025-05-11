@@ -75,15 +75,12 @@ const Step1AccountInfo: React.FC = () => {
   };
 
   const onSubmit = async (data: AccountSetupFormData) => {
-    console.log("Submitting Step 1 form with data:", data);
     const isValid = await trigger();
-    console.log("Validation result:", isValid);
     if (!isValid || errors.email) {
       console.log("Validation failed, not proceeding to next step.");
       return;
     }
 
-    console.log("Validation passed, moving to next step.");
     updateAccountSetup(data);
     nextStep();
   };
