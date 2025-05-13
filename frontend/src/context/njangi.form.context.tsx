@@ -5,14 +5,21 @@ import {
   GroupDetailsFormData,
   InviteMembersFormData,
 } from "../types/njangi.form.schema.type";
-import {  NjangiSetup } from "../types/create-njangi-types";
+import { NjangiSetup } from "../types/create-njangi-types";
+
+type InviteMemberTypes = {
+  type: "email" | "phone";
+  value: string;
+};
 
 // Form state interface
 interface FormState {
   currentStep: number;
   accountSetup: Partial<AccountSetupFormData>;
   groupDetails: Partial<GroupDetailsFormData>;
-  inviteMembers: Partial<InviteMembersFormData>;
+  inviteMembers: {
+    invites: InviteMemberTypes[];
+  };
   isSubmitting: boolean;
   isSubmitted: boolean;
   goToStep?: (step: number) => void;
@@ -24,7 +31,9 @@ const initialState: FormState = {
   currentStep: 1,
   accountSetup: {},
   groupDetails: {},
-  inviteMembers: { invites: [{ contact: "" }] },
+  inviteMembers: {
+    invites: [],
+  },
   isSubmitting: false,
   isSubmitted: false,
   error: null,
@@ -158,9 +167,12 @@ export const FormProvider: React.FC<{ children: ReactNode }> = ({
           email: state.accountSetup.email || "",
           phoneNumber: state.accountSetup.phoneNum || "",
           password: state.accountSetup.password || "",
-          profilePicUrl: state.accountSetup.profilePic
-            ? URL.createObjectURL(state.accountSetup.profilePic[0])
-            : "",
+          profilePicUrl:
+            Array.isArray(state.accountSetup.profilePic) &&
+            state.accountSetup.profilePic.length > 0 &&
+            state.accountSetup.profilePic[0] instanceof Blob
+              ? URL.createObjectURL(state.accountSetup.profilePic[0])
+              : "",
         },
         groupDetails: {
           groupName: state.groupDetails.groupName || "",
@@ -172,13 +184,16 @@ export const FormProvider: React.FC<{ children: ReactNode }> = ({
           endDate: state.groupDetails.endDate || "",
           rules: state.groupDetails.rules || "",
         },
-        // Flatten inviteMembers to match the expected structure
-        inviteMembers: state.inviteMembers.invites || [],
+        inviteMembers: (state.inviteMembers.invites || []).map((invite) => ({
+          ...invite,
+          contact: invite.value,
+        })),
       };
       console.log("Submission Data:", submissionData);
       await createNjangi(submissionData);
       dispatch({ type: "SUBMIT_SUCCESS" });
-    } catch {
+    } catch (error) {
+      console.log("Error creating Njangi:", error);
       dispatch({
         type: "SUBMIT_ERROR",
         payload: errors || "An unknown error occurred",

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Mail, User, Lock, EyeOff, Eye } from "lucide-react";
@@ -11,8 +11,11 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import Loader from "../loader";
 import FormFileInput from "../njangi.form.ui/file.input";
-import { useValidateEmail } from "../../hooks/useValidateEmail";
-import { useDebounce } from "../../hooks/useDebounce";
+import {
+  useValidateEmail,
+  useValidatePhoneNumber,
+} from "../../hooks/useValidateEmail";
+import { useDebouncedValidation } from "../../hooks/useDebouncedValidationPhone&Email";
 
 const Step1AccountInfo: React.FC = () => {
   const { state, updateAccountSetup, nextStep } = useFormContext();
@@ -39,7 +42,6 @@ const Step1AccountInfo: React.FC = () => {
     setValue,
     setError,
     clearErrors,
-    reset,
   } = useForm<AccountSetupFormData>({
     resolver: zodResolver(accountSetupSchema),
     defaultValues: state.accountSetup,
@@ -47,25 +49,25 @@ const Step1AccountInfo: React.FC = () => {
   });
 
   const email = watch("email");
-  const debouncedEmail = useDebounce(email, 500);
+  const phoneNum = watch("phoneNum");
 
-  const { data: isValid, isFetching } = useValidateEmail(debouncedEmail);
+  const { isFetching: isEmailChecking } = useDebouncedValidation({
+    fieldName: "email",
+    value: email,
+    validateFn: useValidateEmail,
+    setError,
+    clearErrors,
+    errorMessage: "Email already in use! Please choose another.",
+  });
 
-  useEffect(() => {
-    if (!debouncedEmail) return;
-    if (isValid === false) {
-      setError("email", {
-        type: "manual",
-        message: "Email already in use! Please choose another.",
-      });
-    } else {
-      clearErrors("email");
-    }
-  }, [isValid, debouncedEmail, setError, clearErrors]);
-
-  useEffect(() => {
-    reset(state.accountSetup);
-  }, [state.accountSetup, reset]);
+  const { isFetching: isPhoneChecking } = useDebouncedValidation({
+    fieldName: "phoneNum",
+    value: phoneNum,
+    validateFn: useValidatePhoneNumber,
+    setError,
+    clearErrors,
+    errorMessage: "Phone number already in use!",
+  });
 
   // Handle phone change and update the form
   const handlePhoneChange = (value: string) => {
@@ -155,6 +157,11 @@ const Step1AccountInfo: React.FC = () => {
                 disableSearchIcon={false}
                 preferredCountries={["us", "ca", "gb", "cm"]}
               />
+              {isPhoneChecking && (
+                <span className="text-sm text-blue-600 animate-pulse">
+                  Validating your phone number...
+                </span>
+              )}
               {errors.phoneNum && (
                 <p className="form-error">{errors.phoneNum.message}</p>
               )}
@@ -174,7 +181,7 @@ const Step1AccountInfo: React.FC = () => {
                 placeholder="your.email@example.com"
                 required
               />
-              {isFetching && (
+              {isEmailChecking && (
                 <span className="text-sm text-blue-600 animate-pulse">
                   Validating your email...
                 </span>
@@ -247,9 +254,17 @@ const Step1AccountInfo: React.FC = () => {
           <div className="flex justify-end pt-5">
             <button
               type="submit"
-              disabled={isSubmitting || isFetching || !!errors.email}
+              disabled={
+                isSubmitting ||
+                isEmailChecking ||
+                !!errors.email ||
+                isPhoneChecking
+              }
               className={`form-button ${
-                isSubmitting || isFetching || !!errors.email
+                isSubmitting ||
+                isEmailChecking ||
+                !!errors.email ||
+                isPhoneChecking
                   ? "form-button-disabled"
                   : ""
               }`}

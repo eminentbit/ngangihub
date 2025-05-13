@@ -8,7 +8,7 @@ const inviteSchema = new mongoose.Schema(
       ref: "NjangiGroup",
       required: true,
     },
-    emailOrPhone: { type: String, required: true },
+    emailOrPhone: { type: String, required: true, unique: true },
     inviteToken: { type: String, required: true, unique: true },
     status: {
       type: String,

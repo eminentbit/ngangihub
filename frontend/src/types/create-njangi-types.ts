@@ -17,9 +17,11 @@ export interface GroupDetails {
     rules: string;
 }
 
-export interface InviteMember {
-    contact: string; // Can be an email or phone number
-}
+export type InviteMember = {
+  type: "email" | "phone";
+  value: string;
+};
+
 
 export interface NjangiSetup {
     accountSetup: AccountSetUp;
