@@ -1,17 +1,16 @@
 // services/finalizeNjangiFromDraft.js
 import NjangiDraft from "../models/NjangiDrafts.js";
+import User from "../models/user.model.js";
 import { createUser } from "./user.service.js";
 import { createNjangiGroup } from "./njangi.service.js";
 import { addAdminAsGroupMember } from "./groupMember.service.js";
 import { inviteMembersToGroup } from "./invite.service.js";
-import { User } from "../models/user.model.js";
 
 export const finalizeNjangiFromDraft = async (draftId, res) => {
   const draft = await NjangiDraft.findById(draftId);
   if (!draft) throw new Error("Draft not found! Please try again.");
 
   const { accountSetup, groupDetails, inviteMembers } = draft;
-
 
   // 1) accountSetup
 
@@ -42,7 +41,6 @@ export const finalizeNjangiFromDraft = async (draftId, res) => {
   await User.findByIdAndUpdate(adminUser._id, {
     $push: { groups: group._id },
   });
-
 
   // 3) inviteMembers
   const invites = await inviteMembersToGroup(

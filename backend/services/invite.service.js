@@ -1,9 +1,9 @@
 // this file is responsible for handling the logic of inviting members to a group
 // and sending them an invite link. It includes functions to create invites,
 
-import { Invite } from "../models/invite.model.js";
-import { NjangiGroup } from "../models/njangigroup.model.js";
-import { User } from "../models/user.model.js";
+import Invite from "../models/invite.model.js";
+import NjangiGroup from "../models/njangigroup.model.js";
+import User from "../models/user.model.js";
 import { generateToken, sendInvite } from "../utils/inviteUtils.js";
 
 export const inviteMembersToGroup = async (
@@ -48,7 +48,13 @@ export const inviteMembersToGroup = async (
       });
 
       // Send SMS/email invite
-      await sendInvite(contact, token, groupName, adminFirstName, adminLastName);
+      await sendInvite(
+        contact,
+        token,
+        groupName,
+        adminFirstName,
+        adminLastName
+      );
 
       return newInvite;
     })

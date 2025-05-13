@@ -1,7 +1,11 @@
 // services/groupMember.service.js
-import { GroupMember } from "../models/group.member.model.js";
+import GroupMember from "../models/group.member.model.js";
 
-export const addAdminAsGroupMember = async (groupId, userId, groupStatus = "pending") => {
+export const addAdminAsGroupMember = async (
+  groupId,
+  userId,
+  groupStatus = "pending"
+) => {
   return GroupMember.create({
     groupId,
     userId,

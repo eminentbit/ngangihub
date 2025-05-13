@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
-import  NjangiDraft  from "../models/NjangiDrafts.js";
-import {  NjangiGroup } from "../models/njangigroup.model.js";
-import { User } from "../models/user.model.js";
+import NjangiDraft from "../models/NjangiDrafts.js";
+import NjangiGroup from "../models/njangigroup.model.js";
+import User from "../models/user.model.js";
 
 /**
  * Creates a Njangi draft document from the given form data
@@ -9,7 +9,7 @@ import { User } from "../models/user.model.js";
  * @returns {Object} An object with a single property, draftId, which is the ID of the created Njangi draft document
  * @throws {Error} If validation fails or database creation fails
  */
-export const createNjangiFlow = async (formData) => {
+const createNjangiFlow = async (formData) => {
   try {
     const { accountSetup, groupDetails, inviteMembers } = formData;
 
@@ -51,3 +51,5 @@ export const createNjangiFlow = async (formData) => {
     throw error;
   }
 };
+
+export default createNjangiFlow;

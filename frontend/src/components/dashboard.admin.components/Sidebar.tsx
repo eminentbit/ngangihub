@@ -1,6 +1,7 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import SidebarItem from './SidebarItem';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import SidebarItem from "./SidebarItem";
+import NotificationsPreview from "./NotificationsPreview";
 import {
   FaUserShield,
   FaUsersCog,
@@ -10,24 +11,23 @@ import {
   FaUserPlus,
   FaCog,
   FaBars,
-} from 'react-icons/fa';
-
+} from "react-icons/fa";
 
 interface SidebarProps {
   isOpen: boolean;
   activeTab: string;
   onToggle: () => void;
-  onTabChange?: (tab: string) => void; 
-  notifications?: { id: number; message: string; time: string; isRead: boolean; }[];
+  onTabChange?: (tab: string) => void;
+  notifications?: {
+    id: number;
+    message: string;
+    time: string;
+    isRead: boolean;
+  }[];
   onClose: () => void;
-  
 }
 
-const Sidebar: React.FC<SidebarProps> = ({
-  isOpen,
-  activeTab,
-  onToggle,
-}) => {
+const Sidebar: React.FC<SidebarProps> = ({ isOpen, activeTab, onToggle }) => {
   const navigate = useNavigate();
 
   const handleNav = (path: string) => {
@@ -55,17 +55,14 @@ const Sidebar: React.FC<SidebarProps> = ({
           fixed inset-y-0 left-0 z-30
           bg-blue-700 text-white border-r
           transform transition-transform duration-300 ease-in-out
-          ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+          ${isOpen ? "translate-x-0" : "-translate-x-full"}
           w-64 flex flex-col
         `}
       >
         {/* Logo and Collapse button */}
         <div className="flex items-center h-16 px-4 border-b border-blue-800 relative">
-          <img
-            src="/logo2.png"
-            alt="Logo"
-            className="h-10 w-auto"
-          />
+          <img src="/logo2.png" alt="Logo" className="h-10 w-auto" />
+          <img src="/logo3.png" alt="Logo" className="h-8 w-auto" />
           {isOpen && (
             <button
               onClick={onToggle}
@@ -82,8 +79,16 @@ const Sidebar: React.FC<SidebarProps> = ({
         {/* Menu Items */}
         <nav className="mt-2 flex-1 overflow-y-auto">
           {[
-            { icon: <FaUserShield />, label: 'Admin Dashboard', path: '/admindashboard' },
-            { icon: <FaUsersCog />, label: 'Manage Members', path: '/admin-manage-members' },
+            {
+              icon: <FaUserShield />,
+              label: "Admin Dashboard",
+              path: "/admin/dashboard",
+            },
+            {
+              icon: <FaUsersCog />,
+              label: "Manage Members",
+              path: "/admin/manage-members",
+            },
           ].map(({ icon, label, path }) => (
             <SidebarItem
               key={path}
@@ -100,10 +105,26 @@ const Sidebar: React.FC<SidebarProps> = ({
               My Groups
             </p>
             {[
-              { icon: <FaUsers />, label: 'Groups Overview', path: '/groups-admin' },
-              { icon: <FaInfoCircle />, label: 'Group Info', path: '/group-info-admin' },
-              { icon: <FaChartBar />, label: 'My Statistics', path: '/stats-admin' },
-              { icon: <FaUserPlus />, label: 'Add Member', path: '/add-member-admin' },
+              {
+                icon: <FaUsers />,
+                label: "Groups Overview",
+                path: "/admin/groups",
+              },
+              {
+                icon: <FaInfoCircle />,
+                label: "Group Info",
+                path: "/admin/group-info",
+              },
+              {
+                icon: <FaChartBar />,
+                label: "My Statistics",
+                path: "/admin/stats",
+              },
+              {
+                icon: <FaUserPlus />,
+                label: "Add Member",
+                path: "/admin/add-member",
+              },
             ].map(({ icon, label, path }) => (
               <SidebarItem
                 key={path}
@@ -121,8 +142,11 @@ const Sidebar: React.FC<SidebarProps> = ({
               Settings
             </p>
             {[
-              { icon: <FaCog />, label: 'Group Settings', path: '/group-settings-admin' },
-              
+              {
+                icon: <FaCog />,
+                label: "Group Settings",
+                path: "/group-settings-admin",
+              },
             ].map(({ icon, label, path }) => (
               <SidebarItem
                 key={path}
@@ -136,6 +160,14 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </nav>
 
+        {/* Notifications preview */}
+        <div className="mt-auto mb-4 px-2">
+          <NotificationsPreview
+            notifications={[] /* pass real notifications */}
+            onViewAll={() => handleNav("/notifications")}
+            showLabels={isOpen}
+          />
+        </div>
       </div>
     </>
   );

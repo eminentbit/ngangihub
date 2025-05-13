@@ -1,7 +1,7 @@
 import NjangiDrafts from "../models/NjangiDrafts.js";
-import { User } from "../models/user.model.js";
-import { NjangiGroup } from "../models/njangigroup.model.js";
-import { Invite } from "../models/invite.model.js";
+import User from "../models/user.model.js";
+import NjangiGroup from "../models/njangigroup.model.js";
+import Invite from "../models/invite.model.js";
 
 const isValidEmail = (contact) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact);
 

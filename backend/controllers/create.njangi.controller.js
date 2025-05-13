@@ -1,5 +1,5 @@
 // controllers/createNjangi.controller.js
-import { createNjangiFlow } from "../services/createNjangiFlow.js";
+import createNjangiFlow from "../services/createNjangiFlow.js";
 
 export const createNjangi = async (req, res) => {
   try {
