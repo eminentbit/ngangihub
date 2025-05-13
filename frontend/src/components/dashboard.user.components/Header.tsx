@@ -1,76 +1,52 @@
+import type React from "react"
+import { FaBell, FaSearch, FaChevronDown } from "react-icons/fa"
 
-import { FC } from 'react';
-import { FaBars, FaSearch, FaBell, FaChevronDown } from 'react-icons/fa';
-
-interface HeaderProps {
-  onToggleSidebar: () => void;
-  onToggleNotifications: () => void;
-  unreadCount: number;
-}
-
-const Header: FC<HeaderProps> = ({ onToggleSidebar, onToggleNotifications, unreadCount }) => (
-  <header className="bg-white shadow-sm">
-    <div className="flex items-center justify-between px-4 py-3">
-      <div className="flex items-center">
-        {/* Sidebar toggle */}
-        <button
-          type="button"
-          onClick={onToggleSidebar}
-          aria-label="Toggle sidebar"
-          title="Toggle sidebar"
-          className="text-gray-600 hover:text-indigo-600 focus:outline-none"
-        >
-          <FaBars size={20} aria-hidden="true" />
-        </button>
-
-        {/* Search input */}
-        <div className="ml-4 relative">
-          <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-            <FaSearch className="text-gray-400" aria-hidden="true" />
-          </span>
-          <input
-            type="text"
-            placeholder="Search..."
-            aria-label="Search"
-            className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-          />
+const Header: React.FC = () => {
+  return (
+    <header className="bg-white border-b border-gray-200 px-6 py-3">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center">
+          <button className="lg:hidden mr-4">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          <div className="relative">
+            <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+              <FaSearch className="text-gray-400" />
+            </span>
+            <input
+              type="text"
+              placeholder="Search..."
+              className="pl-10 pr-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            />
+          </div>
+        </div>
+        <div className="flex items-center space-x-4">
+          <div className="relative">
+            <button className="relative p-1">
+              <FaBell className="h-6 w-6 text-gray-500" />
+              <span className="absolute top-0 right-0 h-4 w-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
+                2
+              </span>
+            </button>
+          </div>
+          <div className="flex items-center">
+            <div className="h-8 w-8 rounded-full bg-indigo-600 flex items-center justify-center text-white">JD</div>
+            <span className="ml-2 mr-1 font-medium">John Doe</span>
+            <FaChevronDown className="h-3 w-3 text-gray-500" />
+          </div>
+          <button className="bg-gray-200 px-4 py-1 rounded-md text-sm font-medium">Subscribe</button>
         </div>
       </div>
+    </header>
+  )
+}
 
-      <div className="flex items-center space-x-4">
-        {/* Notifications toggle */}
-        <button
-          type="button"
-          onClick={onToggleNotifications}
-          aria-label="Toggle notifications"
-          title="Toggle notifications"
-          className="relative text-gray-600 hover:text-indigo-600 focus:outline-none"
-        >
-          <FaBell size={20} aria-hidden="true" />
-          {unreadCount > 0 && (
-            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
-              {unreadCount}
-            </span>
-          )}
-        </button>
-
-        {/* User menu */}
-        <button
-          type="button"
-          aria-label="Open user menu"
-          title="Open user menu"
-          className="relative flex items-center space-x-2 cursor-pointer focus:outline-none"
-          onClick={() => { /* handle open menu */ }}
-        >
-          <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white">
-            JD
-          </div>
-          <span className="text-gray-700 font-medium">John Doe</span>
-          <FaChevronDown className="text-gray-500 text-xs" aria-hidden="true" />
-        </button>
-      </div>
-    </div>
-  </header>
-);
-
-export default Header;
+export default Header
