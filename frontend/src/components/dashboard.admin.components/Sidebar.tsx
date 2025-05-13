@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import SidebarItem from './SidebarItem';
-import NotificationsPreview from './NotificationsPreview';
 import {
   FaUserShield,
   FaUsersCog,
@@ -137,14 +136,6 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </nav>
 
-        {/* Notifications preview */}
-        <div className="mt-auto mb-4 px-2">
-          <NotificationsPreview
-            notifications={[] /* pass real notifications */}
-            onViewAll={() => handleNav('/notifications')}
-            showLabels={isOpen}
-          />
-        </div>
       </div>
     </>
   );
