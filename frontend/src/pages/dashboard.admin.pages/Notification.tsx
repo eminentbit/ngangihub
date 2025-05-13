@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { FaBars, FaBell, FaCheckCircle, FaTimesCircle, FaUserCircle, FaSun, FaMoon } from 'react-icons/fa';
+import { FaUserCircle, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import Sidebar from '../../components/dashboard.admin.components/Sidebar';
+import Header from '../../components/dashboard.admin.components/Header';
 
 interface UserProfile {
   name: string;
@@ -32,7 +33,6 @@ const NotificationsPage: React.FC = () => {
 
   // Toggle sidebar and dark mode
   const toggleSidebar = () => setIsOpen(prev => !prev);
-  const toggleDarkMode = () => setIsDarkMode(prev => !prev);
 
   // Apply theme class
   useEffect(() => {
@@ -71,34 +71,8 @@ const NotificationsPage: React.FC = () => {
 
       {/* Main content */}
       <div className="flex-1 flex flex-col lg:ml-50">
-        {/* Header */}
-        <header className="fixed top-0 left-0 right-0 z-20 bg-white dark:bg-gray-800 shadow-md">
-          <div className="flex items-center justify-between px-6 py-4">
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={toggleSidebar}
-                className="p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 lg:hidden"
-                aria-label="Toggle sidebar"
-              >
-                <FaBars size={20} className="text-gray-700 dark:text-gray-200" />
-              </button>
-              <h1 className="text-2xl font-semibold text-indigo-600 dark:text-indigo-400 flex items-center">
-                <FaBell className="mr-2" /> Notifications
-              </h1>
-            </div>
-            <button
-              onClick={toggleDarkMode}
-              className="p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700"
-              aria-label="Toggle dark mode"
-            >
-              {isDarkMode ? (
-                <FaSun size={20} className="text-yellow-400" />
-              ) : (
-                <FaMoon size={20} className="text-gray-700" />
-              )}
-            </button>
-          </div>
-        </header>
+        {/* App Header Component */}
+        <Header darkMode={isDarkMode} setDarkMode={setIsDarkMode} />
 
         {/* Content area */}
         <main className="pt-20 pb-8 px-6 overflow-auto">
