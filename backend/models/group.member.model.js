@@ -21,6 +21,8 @@ const groupMemberSchema = new mongoose.Schema(
     },
     inviteToken: { type: String },
     joinedAt: { type: Date },
+    tempContact: { type: String }, // for storing raw contact if user doesn't exist
+    tempName: { type: String }, // for storing name if user doesn't exist
   },
   { timestamps: true }
 );

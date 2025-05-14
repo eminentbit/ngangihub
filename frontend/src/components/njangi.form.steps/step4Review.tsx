@@ -11,6 +11,7 @@ const Step4Review: React.FC = () => {
     inviteMembers,
     isSubmitting,
     isSubmitted,
+    error,
   } = state;
 
   const formatDate = (dateString?: string) => {
@@ -32,13 +33,19 @@ const Step4Review: React.FC = () => {
           </div>
           <h2 className="text-2xl font-bold text-gray-800 mb-4">Success!</h2>
           <p className="text-gray-600 mb-6">
-            Thank you! Your Njangi Group request has been submitted and is
-            awaiting BOD approval.
+            Thank you,{" "}
+            <span className="font-semibold">{accountSetup.firstName}</span>!
+            Your Njangi group request has been submitted and is now{" "}
+            <strong>awaiting BOD approval</strong>.
           </p>
           <p className="text-gray-600 mb-6">
             We'll notify you at{" "}
-            <span className="font-semibold">{accountSetup.email}</span> once
-            your group has been approved.
+            <span className="font-semibold">{accountSetup.email}</span> once a
+            decision is made.
+          </p>
+          <p className="text-gray-500 text-sm">
+            Approvals typically take <strong>24–48 hours or less</strong>. No further
+            action is needed for now.
           </p>
         </div>
       </div>
@@ -51,6 +58,13 @@ const Step4Review: React.FC = () => {
         <h2 className="text-2xl font-bold text-gray-800 mb-6">
           Review & Submit
         </h2>
+
+        {/* Display error message if it exists */}
+        {error && (
+          <div className="bg-red-100 text-red-700 p-4 rounded-md mb-6">
+            <p>{error}</p>
+          </div>
+        )}
 
         <div className="space-y-6">
           <section>

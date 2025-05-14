@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema(
     lastName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     phoneNumber: { type: String, required: true, unique: true },
-    passwordHash: { type: String, required: true },
+    password: { type: String, required: true },
     profilePicUrl: { type: String },
     groups: [{ type: mongoose.Schema.Types.ObjectId, ref: "Group" }],
     role: { type: String, enum: ["admin", "member", "bod"], default: "member" },

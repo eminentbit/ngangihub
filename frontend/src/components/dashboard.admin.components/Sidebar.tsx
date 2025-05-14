@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import SidebarItem from './SidebarItem';
-import NotificationsPreview from './NotificationsPreview';
 import {
   FaUserShield,
   FaUsersCog,
@@ -21,6 +20,7 @@ interface SidebarProps {
   onTabChange?: (tab: string) => void; 
   notifications?: { id: number; message: string; time: string; isRead: boolean; }[];
   onClose: () => void;
+  
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
@@ -62,9 +62,9 @@ const Sidebar: React.FC<SidebarProps> = ({
         {/* Logo and Collapse button */}
         <div className="flex items-center h-16 px-4 border-b border-blue-800 relative">
           <img
-            src="/logo3.png"
+            src="/logo2.png"
             alt="Logo"
-            className="h-8 w-auto"
+            className="h-10 w-auto"
           />
           {isOpen && (
             <button
@@ -136,14 +136,6 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </nav>
 
-        {/* Notifications preview */}
-        <div className="mt-auto mb-4 px-2">
-          <NotificationsPreview
-            notifications={[] /* pass real notifications */}
-            onViewAll={() => handleNav('/notifications')}
-            showLabels={isOpen}
-          />
-        </div>
       </div>
     </>
   );

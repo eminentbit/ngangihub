@@ -49,7 +49,6 @@ const Step1AccountInfo: React.FC = () => {
   const email = watch("email");
   const debouncedEmail = useDebounce(email, 500);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { data: isValid, isFetching } = useValidateEmail(debouncedEmail);
 
   useEffect(() => {
@@ -57,7 +56,7 @@ const Step1AccountInfo: React.FC = () => {
     if (isValid === false) {
       setError("email", {
         type: "manual",
-        message: "Email already in use",
+        message: "Email already in use! Please choose another.",
       });
     } else {
       clearErrors("email");
@@ -76,16 +75,13 @@ const Step1AccountInfo: React.FC = () => {
   };
 
   const onSubmit = async (data: AccountSetupFormData) => {
-    console.log("Submitting Step 1 form with data:", data);
     const isValid = await trigger();
-    console.log("Validation result:", isValid);
-    if (!isValid) {
+    if (!isValid || errors.email) {
       console.log("Validation failed, not proceeding to next step.");
       return;
     }
 
     updateAccountSetup(data);
-    console.log("Validation passed, moving to next step.");
     nextStep();
   };
 
@@ -178,7 +174,11 @@ const Step1AccountInfo: React.FC = () => {
                 placeholder="your.email@example.com"
                 required
               />
-              {/* {isFetching && <span>Checking...</span>} */}
+              {isFetching && (
+                <span className="text-sm text-blue-600 animate-pulse">
+                  Validating your email...
+                </span>
+              )}
               {errors.email && (
                 <p className="form-error">{errors.email.message}</p>
               )}
@@ -247,9 +247,11 @@ const Step1AccountInfo: React.FC = () => {
           <div className="flex justify-end pt-5">
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || isFetching || !!errors.email}
               className={`form-button ${
-                isSubmitting ? "form-button-disabled" : ""
+                isSubmitting || isFetching || !!errors.email
+                  ? "form-button-disabled"
+                  : ""
               }`}
             >
               {isSubmitting ? (

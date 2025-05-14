@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Users, Calendar, DollarSign } from "lucide-react";
@@ -7,6 +7,10 @@ import {
   GroupDetailsFormData,
 } from "../../types/njangi.form.schema.type";
 import { useFormContext } from "../../context/njangi.form.context";
+import { useDebounce } from "../../hooks/useDebounce";
+import { useValidateGroupName } from "../../hooks/useValidateGroupName";
+import Loader from "../loader";
+import { profanityList } from "../../utils/profanityList";
 
 const Step2GroupDetails: React.FC = () => {
   const { state, updateGroupDetails, nextStep, prevStep } = useFormContext();
@@ -14,13 +18,47 @@ const Step2GroupDetails: React.FC = () => {
   const {
     register,
     handleSubmit,
+    watch,
+    setError,
+    clearErrors,
+    trigger,
     formState: { errors, isSubmitting },
   } = useForm<GroupDetailsFormData>({
     resolver: zodResolver(groupDetailsSchema),
     defaultValues: state.groupDetails,
   });
 
-  const onSubmit = (data: GroupDetailsFormData) => {
+  const groupName = watch("groupName");
+  const debouncedGroupName = useDebounce(groupName, 500);
+
+  const { data: isValid, isFetching } =
+    useValidateGroupName(debouncedGroupName);
+
+  useEffect(() => {
+    if (!debouncedGroupName) return;
+    if (isValid === false) {
+      setError("groupName", {
+        type: "manual",
+        message: "Group name already in use! Please choose another.",
+      });
+    } else if (profanityList.includes(debouncedGroupName.toLowerCase())) {
+      setError("groupName", {
+        type: "manual",
+        message:
+          "Group name contains inappropriate language. Please choose another.",
+      });
+    } else {
+      clearErrors("groupName");
+    }
+  }, [debouncedGroupName, isValid, setError, clearErrors]);
+
+  const onSubmit = async (data: GroupDetailsFormData) => {
+    const isValid = await trigger();
+    if (!isValid || errors.groupName) {
+      console.log("Form validation failed. Please check the errors.");
+      return;
+    }
+
     updateGroupDetails(data);
     nextStep();
   };
@@ -50,6 +88,11 @@ const Step2GroupDetails: React.FC = () => {
                   errors.groupName ? "form-input-error" : ""
                 }`}
               />
+              {isFetching && (
+                <span className="text-sm text-blue-600 animate-pulse">
+                  Validating your group name...
+                </span>
+              )}
               {errors.groupName && (
                 <p className="form-error">{errors.groupName.message}</p>
               )}
@@ -224,12 +267,21 @@ const Step2GroupDetails: React.FC = () => {
 
             <button
               type="submit"
-              disabled={isSubmitting}
-              className={`px-4 py-2 bg-blue-500 text-white rounded-lg transition-transform hover:scale-105 ${
-                isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+              disabled={isSubmitting || isFetching || !!errors.groupName}
+              className={`form-button ${
+                isSubmitting || isFetching || !!errors.groupName
+                  ? "form-button-disabled"
+                  : ""
               }`}
             >
-              {isSubmitting ? "Loading..." : "Next"}
+              {isSubmitting ? (
+                <span className="flex items-center">
+                  <Loader />
+                  Processing...
+                </span>
+              ) : (
+                "Next"
+              )}
             </button>
           </div>
         </form>
