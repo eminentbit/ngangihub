@@ -81,7 +81,7 @@ const AddMemberPage: React.FC = () => {
       </aside>
 
       {/* Main */}
-      <div className="flex-1 flex flex-col">
+      <div className={`flex-1 transition-all duration-300 p-6 ${isSidebarOpen ? 'lg:ml-64' : 'ml-0'}`}>
         {/* Header */}
         <Header 
         darkMode={isDarkMode} 

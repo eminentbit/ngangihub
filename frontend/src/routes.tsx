@@ -47,7 +47,7 @@ export const router = createBrowserRouter([
   { path: "/admin/group-info", element: <GroupInfoPage /> },
   { path: "/admin/stats", element: <StatisticsPage /> },
   { path: "/admin/add-member", element: <AddMemberPage /> },
-  { path: "/admin/group-settings", element: <GroupSettingsPage /> },
+  { path: "/group-settings-admin", element: <GroupSettingsPage /> },
   { path: "/notifications", element: <NotificationsPage /> },
 
   // User routes

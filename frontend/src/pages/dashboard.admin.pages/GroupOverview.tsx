@@ -73,13 +73,14 @@ const GroupOverviewPage: React.FC = () => {
       </aside>
 
       {/* Main area */}
-      <div className="flex-1 flex flex-col">
+      <div className={`flex-1 transition-all duration-300 p-6 ${isSidebarOpen ? 'lg:ml-2' : 'ml-0'}`}>
+
         {/* Header */}
         <Header darkMode={isDarkMode}
          setDarkMode={setDarkMode} />
 
         <main className="flex-1 pt-20 px-2 sm:px-4 md:px-8 lg:px-12 transition-all duration-200">
-          <div className="max-w-5xl mx-auto">
+          <div className="max-auto mx-auto">
             {/* Header */}
             <header className="mb-6 sm:mb-8">
               <h1 className="text-3xl font-bold text-blue-700 mb-2">Group Overview</h1>
