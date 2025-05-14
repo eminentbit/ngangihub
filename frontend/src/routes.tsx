@@ -16,6 +16,7 @@ import GroupSettingsPage from "./pages/dashboard.admin.pages/GroupSetting";
 import NotificationsPage from "./pages/dashboard.admin.pages/Notification";
 import VerifyEmail from "./pages/very.email";
 import ForgotPassword from "./pages/forgot.password";
+import ContributionChart from "./components/dashboard.admin.components/ContributionChart";
 
 // eslint-disable-next-line react-refresh/only-export-components
 const LandingSections: React.FC = () => <App />;
@@ -49,6 +50,7 @@ export const router = createBrowserRouter([
   { path: "/admin/add-member", element: <AddMemberPage /> },
   { path: "/group-settings-admin", element: <GroupSettingsPage /> },
   { path: "/notifications", element: <NotificationsPage /> },
+  { path: "/admin/contributions", element: <ContributionChart /> },
 
   // User routes
   // { path: '/dashboard', element: <UserDashboard/>}
