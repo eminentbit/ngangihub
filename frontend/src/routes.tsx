@@ -14,7 +14,9 @@ import StatisticsPage from "./pages/dashboard.admin.pages/MyStatistics";
 import AddMemberPage from "./pages/dashboard.admin.pages/AddMember";
 import GroupSettingsPage from "./pages/dashboard.admin.pages/GroupSetting";
 import NotificationsPage from "./pages/dashboard.admin.pages/Notification";
-import UserDashboard from "./pages/dashboard.user.pages/UserDashboardPage";
+import VerifyEmail from "./pages/very.email";
+import ForgotPassword from "./pages/forgot.password";
+// import UserDashboard from "./pages/dashboard.user.pages/UserDashboardPage";
 import UserDashboardPage from "./pages/dashboard.user.pages/UserDashboardPage";
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -31,22 +33,23 @@ export const router = createBrowserRouter([
       { path: "contact", element: <ContactPage /> },
       { path: "login", element: <Login /> },
       { path: "njangi-form", element: <NjangiForm /> },
+      { path: "verify-email", element: <VerifyEmail /> },
+      { path: "forgot-password", element: <ForgotPassword /> },
       { path: "*", element: <NotFoundPage /> },
     ],
   },
 
   // Admin routes
-  { path: "/admindashboard", element: <AdminDashboardPage /> },
-  { path: "/admin-manage-members", element: <MemberManagement /> },
+  { path: "/admin/dashboard", element: <AdminDashboardPage /> },
+  { path: "/admin/manage-members", element: <MemberManagement /> },
   { path: "/njangi-form", element: <NjangiForm /> },
   { path: "/login", element: <Login /> },
   { path: "/manage-admin", element: <MemberManagement /> },
-  { path: "/groups-admin", element: <GroupOverviewPage /> },
-  { path: "/group-info-admin", element: <GroupInfoPage /> },
-  { path: "/stats-admin", element: <StatisticsPage /> },
-  { path: "/add-member-admin", element: <AddMemberPage /> },
-  { path: "/add-member-admin", element: <AddMemberPage /> },
-  { path: "/group-settings-admin", element: <GroupSettingsPage /> },
+  { path: "/admin/groups", element: <GroupOverviewPage /> },
+  { path: "/admin/group-info", element: <GroupInfoPage /> },
+  { path: "/admin/stats", element: <StatisticsPage /> },
+  { path: "/admin/add-member", element: <AddMemberPage /> },
+  { path: "/admin/group-settings", element: <GroupSettingsPage /> },
   { path: "/notifications", element: <NotificationsPage /> },
   { path: "/userdashboard", element: <UserDashboardPage /> },
 

@@ -1,5 +1,5 @@
 import bcryptjs from "bcryptjs";
-import { User } from "../models/user.model.js";
+import User from "../models/user.model.js";
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
 
 export const createUser = async (
@@ -11,10 +11,12 @@ export const createUser = async (
   console.log(`Creating user with data: ${JSON.stringify(accountData)}`);
   const existing = await User.findOne({ email: accountData.email });
   if (existing) {
-    return res.status(400).json({
-      success: false,
-      message: "User already exists. Please try again!",
-    });
+    return res
+      .status(400)
+      .json({
+        success: false,
+        message: "User already exists. Please try again!",
+      });
   }
 
   // const passwordHash = await bcryptjs.hash(accountData.password, 12);

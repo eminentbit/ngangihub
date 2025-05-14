@@ -34,4 +34,6 @@ const njangiGroupSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export const NjangiGroup = mongoose.model("NjangiGroup", njangiGroupSchema);
+const NjangiGroup = mongoose.model("NjangiGroup", njangiGroupSchema);
+
+export default NjangiGroup;

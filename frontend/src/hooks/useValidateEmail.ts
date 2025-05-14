@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-const API_URL = "http://localhost:3000/api";
+const API_URL = import.meta.env.VITE_API_URL;
 
 /**
  *
@@ -19,6 +19,25 @@ export const useValidateEmail = (email: string) => {
       return data.valid;
     },
     enabled: !!email, // only run if email is not empty
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+};
+/**
+ *
+ * @param phoneNumber - The phone number to validate
+ * @description This hook is used to validate a phone number. It sends a GET request to the server with the phone number as a query parameter. The server responds with a boolean indicating whether the phone number is valid or not upon filling the form.
+ * @returns
+ */
+export const useValidatePhoneNumber = (phoneNumber: string) => {
+  return useQuery({
+    queryKey: ["validate-phoneNumber", phoneNumber],
+    queryFn: async () => {
+      const { data } = await axios.get(`${API_URL}/validate-phone-number`, {
+        params: { phoneNumber },
+      });
+      return data.valid;
+    },
+    enabled: !!phoneNumber, // only run if email is not empty
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 };

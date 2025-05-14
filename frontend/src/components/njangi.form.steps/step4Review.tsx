@@ -225,7 +225,7 @@ const Step4Review: React.FC = () => {
               <ul className="space-y-1">
                 {inviteMembers.invites?.map((invite, index) => (
                   <li key={index} className="text-sm text-gray-900">
-                    {invite.contact}
+                    {invite.value}
                   </li>
                 ))}
               </ul>

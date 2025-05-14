@@ -1,12 +1,14 @@
 // services/njangi.service.js
-import { NjangiGroup } from "../models/njangigroup.model.js";
+import NjangiGroup from "../models/njangigroup.model.js";
 export const createNjangiGroup = async (groupDetails, adminId) => {
-    // check if njangi group with the same name already exists
-    const existingGroup = await NjangiGroup.findOne({ name: groupDetails.groupName });
-    if (existingGroup) {
-        throw new Error("Please choose a different name for your Njangi group.");
-    }
-    
+  // check if njangi group with the same name already exists
+  const existingGroup = await NjangiGroup.findOne({
+    name: groupDetails.groupName,
+  });
+  if (existingGroup) {
+    throw new Error("Please choose a different name for your Njangi group.");
+  }
+
   return NjangiGroup.create({
     name: groupDetails.groupName,
     adminId,

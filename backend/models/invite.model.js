@@ -8,7 +8,7 @@ const inviteSchema = new mongoose.Schema(
       ref: "NjangiGroup",
       required: true,
     },
-    emailOrPhone: { type: String, required: true },
+    emailOrPhone: { type: String, required: true, unique: true },
     inviteToken: { type: String, required: true, unique: true },
     status: {
       type: String,
@@ -21,4 +21,6 @@ const inviteSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export const Invite = mongoose.model("Invite", inviteSchema);
+const Invite = mongoose.model("Invite", inviteSchema);
+
+export default Invite;

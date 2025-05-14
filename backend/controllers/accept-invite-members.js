@@ -1,7 +1,7 @@
-import { Invite } from "../models/invite.model.js";
-import { User } from "../models/user.model.js";
-import { GroupMember } from "../models/group.member.model.js";
-import { NjangiGroup } from "../models/njangigroup.model.js";
+import Invite from "../models/invite.model.js";
+import User from "../models/user.model.js";
+import GroupMember from "../models/group.member.model.js";
+import NjangiGroup from "../models/njangigroup.model.js";
 import bcrypt from "bcryptjs";
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
 

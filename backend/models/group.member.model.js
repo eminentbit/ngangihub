@@ -27,4 +27,6 @@ const groupMemberSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export const GroupMember = mongoose.model("GroupMember", groupMemberSchema);
+const GroupMember = mongoose.model("GroupMember", groupMemberSchema);
+
+export default GroupMember;

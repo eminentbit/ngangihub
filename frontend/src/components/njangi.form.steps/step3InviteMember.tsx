@@ -1,12 +1,17 @@
-import React from "react";
-import { useForm, useFieldArray } from "react-hook-form";
+import React, { useMemo } from "react";
+import { useForm, useFieldArray, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus, Trash2, Mail, Info } from "lucide-react";
+import { Plus, Trash2, Info } from "lucide-react";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 import {
   inviteMembersSchema,
   InviteMembersFormData,
 } from "../../types/njangi.form.schema.type";
 import { useFormContext } from "../../context/njangi.form.context";
+import { useDebounce } from "../../hooks/useDebounce";
+import { useBatchValidateInvites } from "../../hooks/useBatchValidateInvites";
+import Loader from "../loader";
 
 const MAX_MEMBERS = 3;
 
@@ -17,12 +22,16 @@ const Step3InviteMembers: React.FC = () => {
     register,
     control,
     handleSubmit,
+    setValue,
+    trigger,
+    clearErrors,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<InviteMembersFormData>({
     resolver: zodResolver(inviteMembersSchema),
     defaultValues: state.inviteMembers.invites?.length
       ? state.inviteMembers
-      : { invites: [{ contact: "" }] },
+      : { invites: [{ type: "email", value: "" }] },
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -31,8 +40,35 @@ const Step3InviteMembers: React.FC = () => {
   });
 
   const onSubmit = (data: InviteMembersFormData) => {
+    console.log("Submitted data for invites:", data);
     updateInviteMembers(data);
     nextStep();
+  };
+
+  const watchedInvites = useWatch({
+    control,
+    name: "invites",
+  });
+
+  const normalizedInvites = useMemo(() => {
+    return (watchedInvites ?? []).map((invite) => ({
+      type: invite?.type,
+      value: (invite?.value ?? "").trim().toLowerCase(),
+    }));
+  }, [watchedInvites]);
+
+  const debouncedInvites = useDebounce(normalizedInvites, 500);
+
+  const { isFetching } = useBatchValidateInvites(
+    debouncedInvites,
+    setError,
+    clearErrors
+  );
+
+  const handlePhoneChange = (index: number, value: string) => {
+    const formatted = `+${value.replace(/^\+/, "")}`;
+    setValue(`invites.${index}.value`, formatted);
+    trigger(`invites.${index}.value`);
   };
 
   return (
@@ -41,6 +77,7 @@ const Step3InviteMembers: React.FC = () => {
         <h2 className="text-2xl font-bold text-gray-800 mb-2">
           Invite Members
         </h2>
+
         <div className="text-sm text-blue-600 bg-blue-50 px-4 py-2 rounded-md mb-4 flex items-start gap-2">
           <Info size={16} className="mt-1 text-blue-500" />
           <span>
@@ -48,38 +85,80 @@ const Step3InviteMembers: React.FC = () => {
             more later from your dashboard.
           </span>
         </div>
+
         <p className="text-gray-600 mb-6">
           Add email addresses or phone numbers of people you'd like to invite to
           your Njangi group.
         </p>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-5"
+          noValidate
+        >
           {fields.map((field, index) => (
             <div key={field.id} className="flex items-start gap-2">
               <div className="flex-grow">
                 <label className="form-label font-medium text-gray-700">
                   Member {index + 1}
                 </label>
-                <div className="relative mt-1">
-                  <Mail
-                    size={18}
-                    className="absolute left-3 top-3.5 text-gray-400"
-                  />
-                  <input
-                    type="text"
-                    {...register(`invites.${index}.contact`)}
-                    placeholder="Email or phone number"
-                    className={`form-input pl-10 w-full rounded-md border ${
-                      errors.invites?.[index]?.contact
-                        ? "border-red-500"
-                        : "border-gray-300"
-                    } focus:outline-none focus:ring-2 focus:ring-blue-400`}
-                  />
-                  {errors.invites?.[index]?.contact && (
-                    <p className="text-sm text-red-500 mt-1">
-                      {errors.invites[index].contact?.message}
-                    </p>
+
+                <div className="flex gap-2 mt-1">
+                  <select
+                    {...register(`invites.${index}.type`)}
+                    onChange={(e) => {
+                      const selectedType = e.target.value;
+                      setValue(
+                        `invites.${index}.type`,
+                        selectedType as "email" | "phone"
+                      );
+                      clearErrors(`invites.${index}.value`);
+                    }}
+                    className="form-select rounded-md border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  >
+                    <option value="email">Email</option>
+                    <option value="phone">Phone</option>
+                  </select>
+
+                  {(watchedInvites?.[index]?.type ?? "email") === "email" ? (
+                    <input
+                      type="email"
+                      {...register(`invites.${index}.value`)}
+                      placeholder="example@email.com"
+                      className={`form-input flex-1 rounded-md border pl-3 ${
+                        errors.invites?.[index]?.value
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      } focus:outline-none focus:ring-2 focus:ring-blue-400`}
+                    />
+                  ) : (
+                    <div className="flex-1">
+                      <PhoneInput
+                        country={"us"}
+                        value={watchedInvites?.[index]?.value ?? ""}
+                        onChange={(value) => handlePhoneChange(index, value)}
+                        inputProps={{
+                          name: `invites.${index}.value`,
+                          required: true,
+                        }}
+                        enableSearch
+                        countryCodeEditable={false}
+                        preferredCountries={["us", "ca", "gb", "cm"]}
+                        inputClass="w-full !pl-10 !py-2 !border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      />
+                    </div>
                   )}
                 </div>
+                {isFetching && (
+                  <span className="text-sm text-blue-600 animate-pulse mt-1 ml-20">
+                    Validating your invites...
+                  </span>
+                )}
+                {errors.invites?.[index]?.value && (
+                  <p className="form-error mt-1 ml-20">
+                    {errors.invites[index].value?.message}
+                  </p>
+                )}
               </div>
 
               {fields.length > 1 && (
@@ -100,7 +179,7 @@ const Step3InviteMembers: React.FC = () => {
               type="button"
               onClick={() => {
                 if (fields.length < MAX_MEMBERS) {
-                  append({ contact: "" });
+                  append({ type: "email", value: "" });
                 }
               }}
               disabled={fields.length >= MAX_MEMBERS}
@@ -110,8 +189,7 @@ const Step3InviteMembers: React.FC = () => {
                   : ""
               }`}
             >
-              <Plus size={18} />
-              Add Another Member
+              <Plus size={18} /> Add Another Member
             </button>
 
             {fields.length >= MAX_MEMBERS && (
@@ -121,10 +199,7 @@ const Step3InviteMembers: React.FC = () => {
                   You can only invite {MAX_MEMBERS} members for now. You’ll be
                   able to add more from your dashboard after setup.
                 </span>
-                <div
-                  className="relative group max-sm:hidden"
-                  aria-label="After your Njangi is created, you can add more members from the dashboard."
-                >
+                <div className="relative group max-sm:hidden">
                   <Info
                     size={16}
                     className="text-gray-400 mt-0.5 cursor-pointer"
@@ -138,12 +213,6 @@ const Step3InviteMembers: React.FC = () => {
             )}
           </div>
 
-          {errors.invites && errors.invites.root && (
-            <p className="text-sm text-red-500">
-              {errors.invites.root.message}
-            </p>
-          )}
-
           <div className="flex justify-between pt-6">
             <button
               type="button"
@@ -155,12 +224,27 @@ const Step3InviteMembers: React.FC = () => {
 
             <button
               type="submit"
-              disabled={isSubmitting}
-              className={`px-4 py-2 bg-blue-500 text-white rounded-lg transition-transform hover:scale-105 ${
-                isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+              disabled={
+                isSubmitting ||
+                isFetching ||
+                fields.some((_, index) => !!errors.invites?.[index]?.value)
+              }
+              className={`form-button ${
+                isSubmitting ||
+                isFetching ||
+                fields.some((_, index) => !!errors.invites?.[index]?.value)
+                  ? "form-button-disabled"
+                  : ""
               }`}
             >
-              {isSubmitting ? "Loading..." : "Next"}
+              {isSubmitting ? (
+                <span className="flex items-center">
+                  <Loader />
+                  Processing...
+                </span>
+              ) : (
+                "Next"
+              )}
             </button>
           </div>
         </form>
