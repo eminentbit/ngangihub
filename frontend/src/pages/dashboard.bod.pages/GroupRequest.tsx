@@ -4,10 +4,14 @@ import Header from '../../components/dashboard.bod.components/Header';
 import Sidebar from '../../components/dashboard.bod.components/Sidebar';
 import GroupRequestTable from '../../components/dashboard.bod.components/GroupRequestTable';
 import GroupRequestDetails from '../../components/dashboard.bod.components/GroupRequestDetails';
+import DecisionModal from '../../components/dashboard.bod.components/DecisionModal';
 
 const GroupRequests: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [selectedRequestId, setSelectedRequestId] = useState<number | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalAction, setModalAction] = useState<'Accept' | 'Reject' | null>(null);
+  const [modalRequestId, setModalRequestId] = useState<number | null>(null);
   const { isDarkMode, toggleTheme } = useTheme();
 
   const toggleSidebar = () => {
@@ -64,14 +68,17 @@ const GroupRequests: React.FC = () => {
 
   const selectedRequest = requestsData.find(request => request.id === selectedRequestId);
 
-  const handleAccept = (id: number) => {
-    console.log(`Accepted group request with ID: ${id}`);
-    // Implement backend logic to update state
+  const handleShowModal = (action: 'Accept' | 'Reject', requestId: number) => {
+    setModalAction(action);
+    setModalRequestId(requestId);
+    setIsModalOpen(true);
   };
 
-  const handleReject = (id: number) => {
-    console.log(`Rejected group request with ID: ${id}`);
-    // Implement backend logic to update state
+  const handleModalSubmit = (reason: string) => {
+    if (modalAction && modalRequestId) {
+      console.log(`Group request with ID: ${modalRequestId} has been ${modalAction.toLowerCase()}ed. Reason: ${reason}`);
+     
+    }
   };
 
   return (
@@ -125,10 +132,16 @@ const GroupRequests: React.FC = () => {
               requests={requestsData}
               isDarkMode={isDarkMode}
               onSelectRequest={setSelectedRequestId}
-              onAccept={handleAccept}
-              onReject={handleReject}
+              onShowModal={handleShowModal}
             />
           )}
+          <DecisionModal
+            isOpen={isModalOpen}
+            action={modalAction}
+            isDarkMode={isDarkMode}
+            onClose={() => setIsModalOpen(false)}
+            onSubmit={handleModalSubmit}
+          />
         </main>
       </div>
     </div>

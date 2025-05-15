@@ -14,11 +14,10 @@ interface GroupRequestRowProps {
   isDarkMode: boolean;
   isMobile: boolean;
   onSelect: () => void;
-  onAccept: () => void;
-  onReject: () => void;
+  onShowModal: (action: 'Accept' | 'Reject', requestId: number) => void; // Add this prop
 }
 
-const GroupRequestRow: React.FC<GroupRequestRowProps> = ({ request, isDarkMode, isMobile, onSelect, onAccept, onReject }) => {
+const GroupRequestRow: React.FC<GroupRequestRowProps> = ({ request, isDarkMode, isMobile, onSelect, onShowModal }) => {
   const truncateText = (text: string, maxLength: number) => {
     if (text.length <= maxLength) return text;
     return text.substring(0, maxLength) + '...';
@@ -65,7 +64,7 @@ const GroupRequestRow: React.FC<GroupRequestRowProps> = ({ request, isDarkMode, 
       <div style={columnStyle('0 0 200px')}>
         <div style={{ display: 'flex', gap: '8px' }}>
           <button
-            onClick={onAccept}
+            onClick={() => onShowModal('Accept', request.id)}
             style={{
               padding: '4px 8px',
               backgroundColor: '#10b981',
@@ -80,7 +79,7 @@ const GroupRequestRow: React.FC<GroupRequestRowProps> = ({ request, isDarkMode, 
             Accept
           </button>
           <button
-            onClick={onReject}
+            onClick={() => onShowModal('Reject', request.id)}
             style={{
               padding: '4px 8px',
               backgroundColor: '#ef4444',

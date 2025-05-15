@@ -71,7 +71,7 @@ export const router = createBrowserRouter([
       { path: "documents", element: <Documents/>},
       { path: "policies", element: <Policies/>},
       { path: "reports", element: <Reports/>},
-      { path: "grouprequest", element: <GroupReqest/>},
+      { path: "group-requests", element: <GroupReqest/>},
     ],
   },
   // Catch-all route for 404
