@@ -14,7 +14,7 @@ interface GroupRequestRowProps {
   isDarkMode: boolean;
   isMobile: boolean;
   onSelect: () => void;
-  onShowModal: (action: 'Accept' | 'Reject', requestId: number) => void; // Add this prop
+  onShowModal: (action: 'Accept' | 'Reject', requestId: number) => void;
 }
 
 const GroupRequestRow: React.FC<GroupRequestRowProps> = ({ request, isDarkMode, isMobile, onSelect, onShowModal }) => {

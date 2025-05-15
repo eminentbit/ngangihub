@@ -14,11 +14,10 @@ interface GroupRequestTableProps {
   requests: GroupRequest[];
   isDarkMode: boolean;
   onSelectRequest: (id: number) => void;
-  onAccept: (id: number) => void;
-  onReject: (id: number) => void;
+  onShowModal: (action: 'Accept' | 'Reject', requestId: number) => void;
 }
 
-const GroupRequestTable: React.FC<GroupRequestTableProps> = ({ requests, isDarkMode, onSelectRequest, onAccept, onReject }) => {
+const GroupRequestTable: React.FC<GroupRequestTableProps> = ({ requests, isDarkMode, onSelectRequest, onShowModal }) => {
   const isMobile = window.innerWidth < 768;
 
   const headerStyle: React.CSSProperties = {
@@ -66,8 +65,7 @@ const GroupRequestTable: React.FC<GroupRequestTableProps> = ({ requests, isDarkM
             isDarkMode={isDarkMode}
             isMobile={isMobile}
             onSelect={() => onSelectRequest(request.id)}
-            onAccept={() => onAccept(request.id)}
-            onReject={() => onReject(request.id)}
+            onShowModal={onShowModal}
           />
         ))
       )}

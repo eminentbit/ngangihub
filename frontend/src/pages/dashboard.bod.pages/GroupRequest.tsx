@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useTheme } from './ThemeContext'; // Adjust path as needed
+import { useTheme } from './ThemeContext';
 import Header from '../../components/dashboard.bod.components/Header';
 import Sidebar from '../../components/dashboard.bod.components/Sidebar';
 import GroupRequestTable from '../../components/dashboard.bod.components/GroupRequestTable';
@@ -9,9 +9,15 @@ import DecisionModal from '../../components/dashboard.bod.components/DecisionMod
 const GroupRequests: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [selectedRequestId, setSelectedRequestId] = useState<number | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalAction, setModalAction] = useState<'Accept' | 'Reject' | null>(null);
-  const [modalRequestId, setModalRequestId] = useState<number | null>(null);
+  const [modalState, setModalState] = useState<{
+    isOpen: boolean;
+    action: 'Accept' | 'Reject' | null;
+    requestId: number | null;
+  }>({
+    isOpen: false,
+    action: null,
+    requestId: null,
+  });
   const { isDarkMode, toggleTheme } = useTheme();
 
   const toggleSidebar = () => {
@@ -69,16 +75,23 @@ const GroupRequests: React.FC = () => {
   const selectedRequest = requestsData.find(request => request.id === selectedRequestId);
 
   const handleShowModal = (action: 'Accept' | 'Reject', requestId: number) => {
-    setModalAction(action);
-    setModalRequestId(requestId);
-    setIsModalOpen(true);
+    setModalState({
+      isOpen: true,
+      action,
+      requestId,
+    });
   };
 
   const handleModalSubmit = (reason: string) => {
-    if (modalAction && modalRequestId) {
-      console.log(`Group request with ID: ${modalRequestId} has been ${modalAction.toLowerCase()}ed. Reason: ${reason}`);
-      // Here you can later add logic to email the reason to the group leader
+    if (modalState.action && modalState.requestId) {
+      console.log(`Group request with ID: ${modalState.requestId} has been ${modalState.action.toLowerCase()}ed. Reason: ${reason}`);
+      
     }
+    setModalState({ isOpen: false, action: null, requestId: null });
+  };
+
+  const handleModalClose = () => {
+    setModalState({ isOpen: false, action: null, requestId: null });
   };
 
   return (
@@ -100,7 +113,7 @@ const GroupRequests: React.FC = () => {
           padding: isMobile ? '16px' : (isSidebarOpen ? '24px' : '24px 0'),
           backgroundColor: isDarkMode ? '#374151' : '#f3f4f6',
           color: isDarkMode ? 'white' : 'black',
-          overflowY: 'auto', // Independent scrollbar for main content
+          overflowY: 'auto',
           transition: 'flex 0.3s ease, padding 0.3s ease',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
@@ -118,7 +131,7 @@ const GroupRequests: React.FC = () => {
               borderRadius: '4px',
               display: 'inline-block',
             }}>
-              Group Requests <span style={{ color: '#10b981' }}>👥</span>
+              Creation Of Group Requests <span style={{ color: '#10b981' }}>👥</span>
             </h1>
           </div>
           {selectedRequest ? (
@@ -136,10 +149,10 @@ const GroupRequests: React.FC = () => {
             />
           )}
           <DecisionModal
-            isOpen={isModalOpen}
-            action={modalAction}
+            isOpen={modalState.isOpen}
+            action={modalState.action}
             isDarkMode={isDarkMode}
-            onClose={() => setIsModalOpen(false)}
+            onClose={handleModalClose}
             onSubmit={handleModalSubmit}
           />
         </main>
