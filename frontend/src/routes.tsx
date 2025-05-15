@@ -24,6 +24,7 @@ import Attendance from "./pages/dashboard.bod.pages/Attendance";
 import Documents from "./pages/dashboard.bod.pages/Documents";
 import Policies from "./pages/dashboard.bod.pages/Policies";
 import Reports from "./pages/dashboard.bod.pages/Reports";
+import GroupReqest from "./pages/dashboard.bod.pages/GroupRequest";
 
 // eslint-disable-next-line react-refresh/only-export-components
 const LandingSections: React.FC = () => <App />;
@@ -70,6 +71,7 @@ export const router = createBrowserRouter([
       { path: "documents", element: <Documents/>},
       { path: "policies", element: <Policies/>},
       { path: "reports", element: <Reports/>},
+      { path: "grouprequest", element: <GroupReqest/>},
     ],
   },
   // Catch-all route for 404
