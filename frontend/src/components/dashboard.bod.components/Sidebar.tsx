@@ -1,156 +1,101 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useTheme } from '../../pages/dashboard.bod.pages/ThemeContext'; // Adjust path as needed
 import { Link } from 'react-router-dom';
 
 interface SidebarProps {
-  style?: React.CSSProperties;
   isOpen: boolean;
   toggleSidebar: () => void;
+  style?: React.CSSProperties;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ style, isOpen, toggleSidebar }) => {
-  const currentPath = window.location.pathname;
-  const [hoveredLink, setHoveredLink] = useState<string | null>(null);
+const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar, style }) => {
+  const { isDarkMode } = useTheme();
+  const isMobile = window.innerWidth < 768;
 
-  const getLinkStyle = (path: string) => ({
-    display: 'block',
-    padding: '8px',
-    backgroundColor: currentPath === path ? '#7c3aed' : (hoveredLink === path ? '#9333ea' : (isOpen ? 'transparent' : 'none')),
-    borderRadius: '4px',
+  const sidebarStyle: React.CSSProperties = {
+    width: isMobile ? (isOpen ? '100%' : '0') : (isOpen ? '250px' : '60px'),
+    backgroundColor: isDarkMode ? '#1f2937' : '#ffffff',
+    color: isDarkMode ? 'white' : 'black',
+    transition: 'width 0.3s ease',
+    overflow: 'hidden',
+    display: 'flex',
+    flexDirection: 'column',
+    boxShadow: isOpen ? '2px 0 4px rgba(0, 0, 0, 0.1)' : 'none',
+    position: isMobile ? 'absolute' : 'relative',
+    zIndex: 10,
+    height: isMobile ? 'auto' : '100%',
+    padding: isOpen ? '16px' : '16px 0',
+    ...style,
+  };
+
+  const linkStyle = (isActive: boolean): React.CSSProperties => ({
+    padding: '8px 16px',
+    color: isDarkMode ? 'white' : 'black',
     textDecoration: 'none',
-    color: currentPath === path ? 'white' : (hoveredLink === path ? 'white' : (isOpen ? 'white' : 'transparent')),
-    transition: 'background-color 0.3s ease, color 0.3s ease'
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    borderRadius: '4px',
+    backgroundColor: isActive ? (isDarkMode ? '#4b5563' : '#e9d5ff') : 'transparent',
+    margin: '4px 0',
+    transition: 'background-color 0.3s ease',
   });
 
+  const iconStyle: React.CSSProperties = {
+    fontSize: '20px',
+    minWidth: '20px',
+  };
+
   return (
-    <aside style={{
-      backgroundColor: isOpen ? '#5b1a89' : 'transparent',
-      color: 'white',
-      width: isOpen ? '256px' : '0',
-      height: '100vh',
-      minHeight: '100%',
-      padding: isOpen ? '16px' : '0',
-      overflow: 'hidden',
-      opacity: isOpen ? 1 : 0, // Fade in/out
-      visibility: isOpen ? 'visible' : 'hidden', // Hide when fully closed
-      transition: 'width 0.3s ease, padding 0.3s ease, opacity 0.3s ease, background-color 0.3s ease, visibility 0.3s ease', // Smooth transitions
-      position: 'relative',
-      ...style
-    }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-        <h3 style={{ fontSize: '18px', display: isOpen ? 'block' : 'none' }}>BOARD MENU</h3>
-        <button onClick={toggleSidebar} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', fontSize: '24px' }}>
-          {isOpen ? '✖' : '☰'}
+    <div style={sidebarStyle}>
+      {isMobile && (
+        <button onClick={toggleSidebar} style={{ background: 'none', border: 'none', color: isDarkMode ? 'white' : '#5b1a89', fontSize: '24px', cursor: 'pointer', alignSelf: 'flex-end' }}>
+          ✕
         </button>
+      )}
+      <div style={{ padding: isOpen ? '0 8px' : '0', flex: '1' }}>
+        <Link to="/board/dashboard" style={linkStyle(location.pathname === '/board/dashboard')}>
+          <span style={iconStyle}>🏠</span>
+          {isOpen && <span>Dashboard</span>}
+        </Link>
+        <Link to="/board/notifications" style={linkStyle(location.pathname === '/board/notifications')}>
+          <span style={iconStyle}>🔔</span>
+          {isOpen && <span>Notifications</span>}
+        </Link>
+        <Link to="/board/resolutions" style={linkStyle(location.pathname === '/board/resolutions')}>
+          <span style={iconStyle}>📜</span>
+          {isOpen && <span>Resolutions</span>}
+        </Link>
+        <Link to="/board/schedule" style={linkStyle(location.pathname === '/board/schedule')}>
+          <span style={iconStyle}>📅</span>
+          {isOpen && <span>Meeting Schedule</span>}
+        </Link>
+        <Link to="/board/minutes" style={linkStyle(location.pathname === '/board/minutes')}>
+          <span style={iconStyle}>📝</span>
+          {isOpen && <span>Meeting Minutes</span>}
+        </Link>
+        <Link to="/board/attendance" style={linkStyle(location.pathname === '/board/attendance')}>
+          <span style={iconStyle}>✅</span>
+          {isOpen && <span>Attendance</span>}
+        </Link>
+        <Link to="/board/documents" style={linkStyle(location.pathname === '/board/documents')}>
+          <span style={iconStyle}>📑</span>
+          {isOpen && <span>Documents</span>}
+        </Link>
+        <Link to="/board/policies" style={linkStyle(location.pathname === '/board/policies')}>
+          <span style={iconStyle}>📜</span>
+          {isOpen && <span>Policies</span>}
+        </Link>
+        <Link to="/board/reports" style={linkStyle(location.pathname === '/board/reports')}>
+          <span style={iconStyle}>📊</span>
+          {isOpen && <span>Reports</span>}
+        </Link>
+        <Link to="/board/group-requests" style={linkStyle(location.pathname === '/board/group-requests')}>
+          <span style={iconStyle}>👥</span>
+          {isOpen && <span>Group Requests</span>}
+        </Link>
       </div>
-      <nav style={{ display: isOpen ? 'block' : 'none' }}>
-        <ul style={{ marginBottom: '24px', listStyle: 'none', padding: 0 }}>
-          <li>
-            <Link
-              to="/board/dashboard"
-              onMouseEnter={() => setHoveredLink('/board/dashboard')}
-              onMouseLeave={() => setHoveredLink(null)}
-              style={getLinkStyle('/board/dashboard')}
-            >
-              📊 Board Dashboard
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/board/resolutions"
-              onMouseEnter={() => setHoveredLink('/board/resolutions')}
-              onMouseLeave={() => setHoveredLink(null)}
-              style={getLinkStyle('/board/resolutions')}
-            >
-              📋 Resolutions
-            </Link>
-          </li>
-        </ul>
-        <h3 style={{ fontSize: '18px', marginBottom: '16px', marginTop: '24px' }}>MEETINGS</h3>
-        <ul style={{ marginBottom: '24px', listStyle: 'none', padding: 0 }}>
-          <li>
-            <Link
-              to="/board/schedule"
-              onMouseEnter={() => setHoveredLink('/board/schedule')}
-              onMouseLeave={() => setHoveredLink(null)}
-              style={getLinkStyle('/board/schedule')}
-            >
-              📅 Meeting Schedule
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/board/minutes"
-              onMouseEnter={() => setHoveredLink('/board/minutes')}
-              onMouseLeave={() => setHoveredLink(null)}
-              style={getLinkStyle('/board/minutes')}
-            >
-              📝 Meeting Minutes
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/board/attendance"
-              onMouseEnter={() => setHoveredLink('/board/attendance')}
-              onMouseLeave={() => setHoveredLink(null)}
-              style={getLinkStyle('/board/attendance')}
-            >
-              👥 Attendance
-            </Link>
-          </li>
-        </ul>
-        <h3 style={{ fontSize: '18px', marginBottom: '16px', marginTop: '24px' }}>DOCUMENTS</h3>
-        <ul style={{ marginBottom: '24px', listStyle: 'none', padding: 0 }}>
-          <li>
-            <Link
-              to="/board/documents"
-              onMouseEnter={() => setHoveredLink('/board/documents')}
-              onMouseLeave={() => setHoveredLink(null)}
-              style={getLinkStyle('/board/documents')}
-            >
-              📑 Documents
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/board/policies"
-              onMouseEnter={() => setHoveredLink('/board/policies')}
-              onMouseLeave={() => setHoveredLink(null)}
-              style={getLinkStyle('/board/policies')}
-            >
-              📜 Policies
-            </Link>
-          </li>
-        </ul>
-        <h3 style={{ fontSize: '18px', marginBottom: '16px', marginTop: '24px' }}>REPORTS</h3>
-        <ul style={{ marginBottom: '24px', listStyle: 'none', padding: 0 }}>
-          <li>
-            <Link
-              to="/board/reports"
-              onMouseEnter={() => setHoveredLink('/board/reports')}
-              onMouseLeave={() => setHoveredLink(null)}
-              style={getLinkStyle('/board/reports')}
-            >
-              📊 Reports
-            </Link>
-          </li>
-        </ul>
-        <div style={{ marginTop: '24px' }}>
-          <h3 style={{ fontSize: '18px', marginBottom: '8px' }}>NOTIFICATIONS</h3>
-          <ul style={{ listStyle: 'none', padding: 0 }}>
-            <li>
-              <Link
-                to="/board/notifications"
-                onMouseEnter={() => setHoveredLink('/board/notifications')}
-                onMouseLeave={() => setHoveredLink(null)}
-                style={getLinkStyle('/board/notifications')}
-              >
-                🔔 View Notifications
-              </Link>
-            </li>
-          </ul>
-        </div>
-      </nav>
-    </aside>
+    </div>
   );
 };
 
