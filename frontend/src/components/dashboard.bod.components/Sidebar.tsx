@@ -21,15 +21,18 @@ const Sidebar: React.FC<SidebarProps> = ({ style, isOpen, toggleSidebar }) => {
     transition: 'background-color 0.3s ease, color 0.3s ease'
   });
 
+  const isMobile = window.innerWidth < 768;
+
   return (
     <aside style={{
       backgroundColor: isOpen ? '#5b1a89' : 'transparent',
       color: 'white',
-      width: isOpen ? '256px' : '0',
-      height: '100vh',
-      minHeight: '100%',
+      width: isMobile ? (isOpen ? '100%' : '0') : (isOpen ? 'auto' : '0'), // Dynamic width for desktop
+      minWidth: isMobile ? '100%' : (isOpen ? '256px' : '0'), // Ensure minimum width for readability
+      minHeight: '100vh', // At least fill the viewport, but can grow
       padding: isOpen ? '16px' : '0',
       overflow: 'hidden',
+      overflowY: 'auto', // Enable scrolling if content overflows
       opacity: isOpen ? 1 : 0, // Fade in/out
       visibility: isOpen ? 'visible' : 'hidden', // Hide when fully closed
       transition: 'width 0.3s ease, padding 0.3s ease, opacity 0.3s ease, background-color 0.3s ease, visibility 0.3s ease', // Smooth transitions

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useTheme } from './ThemeContext'; 
+import { useTheme } from './ThemeContext'; // Adjust path as needed
 import Header from '../../components/dashboard.bod.components/Header';
 import Sidebar from '../../components/dashboard.bod.components/Sidebar';
 import GroupRequestTable from '../../components/dashboard.bod.components/GroupRequestTable';
@@ -77,7 +77,7 @@ const GroupRequests: React.FC = () => {
   const handleModalSubmit = (reason: string) => {
     if (modalAction && modalRequestId) {
       console.log(`Group request with ID: ${modalRequestId} has been ${modalAction.toLowerCase()}ed. Reason: ${reason}`);
-     
+      // Here you can later add logic to email the reason to the group leader
     }
   };
 
@@ -100,7 +100,7 @@ const GroupRequests: React.FC = () => {
           padding: isMobile ? '16px' : (isSidebarOpen ? '24px' : '24px 0'),
           backgroundColor: isDarkMode ? '#374151' : '#f3f4f6',
           color: isDarkMode ? 'white' : 'black',
-          overflowY: 'auto',
+          overflowY: 'auto', // Independent scrollbar for main content
           transition: 'flex 0.3s ease, padding 0.3s ease',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
