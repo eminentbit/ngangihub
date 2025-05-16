@@ -17,7 +17,7 @@ import NotificationsPage from "./pages/dashboard.admin.pages/Notification";
 import VerifyEmail from "./pages/very.email";
 import ForgotPassword from "./pages/forgot.password";
 // import UserDashboard from "./pages/dashboard.user.pages/UserDashboardPage";
-import UserDashboardPage from "./pages/dashboard.user.pages/UserDashboardPage";
+import UserDashboardPage from "./pages/dashboard.user.pages/page";
 
 // eslint-disable-next-line react-refresh/only-export-components
 const LandingSections: React.FC = () => <App />;
