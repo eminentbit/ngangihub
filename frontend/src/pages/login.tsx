@@ -7,6 +7,8 @@ import { Mail, Lock, ArrowLeft } from "lucide-react";
 import SocialBtnLogin from "../components/social.btn.login";
 import Loader from "../components/loader";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { motion } from "framer-motion";
 
 // Define Zod schema
 const loginSchema = z.object({
@@ -30,89 +32,126 @@ export default function Login() {
     },
   });
 
-  const onSubmit = (data: LoginFormData) => {
+  const onSubmit = async (data: LoginFormData) => {
     console.log("Login Data:", data);
-    // Proceed with login logic (API call, auth, etc.)
+
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/auth/login`,
+        {
+          email: data.email,
+          password: data.password,
+        }
+      );
+      console.log("Login Response:", response);
+      if (response.status === 200) {
+        // Handle successful login
+        console.log("Login successful");
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+    }
   };
 
   return (
-    <section className="flex relative items-center justify-center min-h-screen bg-gray-50 p-6">
+    <section className="relative flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200 p-6">
       <div
-        className="absolute left-4 top-6 text-sm flex items-center gap-1 cursor-pointer hover:bg-blue-100 hover:text-blue-600 py-2 px-4 hover:rounded-md transition-colors duration-300 group"
+        className="absolute left-4 top-6 text-sm flex items-center gap-1 cursor-pointer hover:bg-blue-100 hover:text-blue-700 py-2 px-4 hover:rounded-md transition duration-300 group"
         onClick={() => navigate("/")}
       >
         <ArrowLeft
           size={16}
-          className="group-hover:-translate-x-1 transition-all duration-300"
+          className="group-hover:-translate-x-1 transition duration-300"
         />
         Back to Home
       </div>
-      <div className="w-full max-w-md p-4 rounded-md shadow-xl sm:p-8 max-sm:mt-20">
-        <h2 className="mb-3 text-3xl font-semibold text-center">
+
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="w-full max-w-md p-6 sm:p-8 bg-white rounded-xl shadow-2xl relative"
+      >
+        <h2 className="mb-3 text-3xl font-bold text-center text-blue-700">
           Welcome Back to NAAS
         </h2>
 
-        {/* Social Login */}
         <SocialBtnLogin />
 
-        <div className="flex items-center w-full my-4">
-          <hr className="w-full dark:text-gray-600" />
-          <p className="px-3 dark:text-gray-600">OR</p>
-          <hr className="w-full dark:text-gray-600" />
+        <div className="flex items-center my-6">
+          <hr className="flex-grow border-gray-300" />
+          <span className="px-3 text-gray-500 text-sm">OR</span>
+          <hr className="flex-grow border-gray-300" />
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-          <div className="space-y-4">
-            {/* Email Field */}
-            <div className="space-y-2">
-              <label htmlFor="email" className="form-label">
-                Email address
-              </label>
-              <div className="relative mt-1">
-                <Mail
-                  size={18}
-                  className="absolute left-3 top-3.5 text-gray-400"
-                />
-                <input
-                  type="email"
-                  id="email"
-                  placeholder="example@gmail.com"
-                  className="form-input pl-10"
-                  {...register("email")}
-                />
-              </div>
-              {errors.email && (
-                <p className="form-error">{errors.email.message}</p>
-              )}
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          {/* Email */}
+          <div className="space-y-2">
+            <label
+              htmlFor="email"
+              className="text-sm font-medium text-gray-700"
+            >
+              Email address
+            </label>
+            <div className="relative">
+              <Mail
+                size={18}
+                className="absolute left-3 top-3.5 text-gray-400"
+              />
+              <input
+                type="email"
+                id="email"
+                placeholder="example@gmail.com"
+                className="w-full pl-10 pr-4 py-2 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                {...register("email")}
+              />
             </div>
-
-            {/* Password Field */}
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <label htmlFor="password" className="form-label">
-                  Password
-                </label>
-                <Link to="/forget-password" className="text-xs underline text-blue-500 hover:text-blue-700">
-                  Forgot password?
-                </Link>
-              </div>
-              <div className="relative mt-1">
-                <Lock size={18} className="form-icon" />
-                <input
-                  type="password"
-                  id="password"
-                  placeholder="*********"
-                  className="form-input pl-10"
-                  {...register("password")}
-                />
-              </div>
-              {errors.password && (
-                <p className="form-error">{errors.password.message}</p>
-              )}
-            </div>
+            {errors.email && (
+              <p className="text-sm text-red-500">{errors.email.message}</p>
+            )}
           </div>
 
-          <Button type="submit" fullWidth disabled={isSubmitting}>
+          {/* Password */}
+          <div className="space-y-2">
+            <div className="flex justify-between">
+              <label
+                htmlFor="password"
+                className="text-sm font-medium text-gray-700"
+              >
+                Password
+              </label>
+              <Link
+                to="/forgot-password"
+                className="text-xs text-blue-500 hover:text-blue-700 underline"
+              >
+                Forgot password?
+              </Link>
+            </div>
+            <div className="relative">
+              <Lock
+                size={18}
+                className="absolute left-3 top-3.5 text-gray-400"
+              />
+              <input
+                type="password"
+                id="password"
+                placeholder="*********"
+                className="w-full pl-10 pr-4 py-2 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                {...register("password")}
+              />
+            </div>
+            {errors.password && (
+              <p className="text-sm text-red-500">{errors.password.message}</p>
+            )}
+          </div>
+
+          <Button
+            type="submit"
+            fullWidth
+            disabled={isSubmitting}
+            className="mb-2"
+          >
             {isSubmitting ? (
               <div className="flex items-center justify-center">
                 <Loader />
@@ -123,7 +162,19 @@ export default function Login() {
             )}
           </Button>
         </form>
-      </div>
+
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-sm text-center pt-2">
+          <p className="text-gray-600">
+            Don't have an account?{" "}
+            <Link
+              to="/register"
+              className="text-blue-600 font-semibold hover:text-blue-800"
+            >
+              Sign up
+            </Link>
+          </p>
+        </div>
+      </motion.div>
     </section>
   );
 }

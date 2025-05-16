@@ -12,6 +12,8 @@ dist
 dist-ssr
 *.local
 
+backup_backend
+
 # Environment
 .env
 .env.local

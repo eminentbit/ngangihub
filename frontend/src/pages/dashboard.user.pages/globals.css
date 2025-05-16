@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: #4f46e5;
+  --primary-dark: #4338ca;
+  --secondary: #f3f4f6;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --sidebar-bg: #38ca4b;
+  --sidebar-text: #f3f4f6;
+}
+
+@layer base {
+  body {
+    @apply text-gray-800 dark:text-gray-200;
+  }
+}
+
+@layer components {
+  .sidebar-item {
+    @apply flex items-center gap-3 px-4 py-3 text-white hover:bg-indigo-800 rounded-md transition-colors;
+  }
+
+  .sidebar-item.active {
+    @apply bg-indigo-800;
+  }
+
+  .card {
+    @apply bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 dark:border dark:border-gray-700;
+  }
+
+  .stat-card {
+    @apply flex items-center gap-3 p-4 rounded-lg;
+  }
+
+  .btn {
+    @apply px-4 py-2 rounded-md font-medium transition-colors;
+  }
+
+  .btn-primary {
+    @apply bg-indigo-600 text-white hover:bg-indigo-700 dark:bg-indigo-700 dark:hover:bg-indigo-800;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600;
+  }
+
+  .btn-disabled {
+    @apply bg-gray-300 text-gray-500 cursor-not-allowed dark:bg-gray-700 dark:text-gray-400;
+  }
+
+  .progress-bar {
+    @apply h-2 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden;
+  }
+
+  .progress-value {
+    @apply h-full bg-green-500;
+  }
+}

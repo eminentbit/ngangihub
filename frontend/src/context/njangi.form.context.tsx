@@ -1,19 +1,29 @@
 import React, { createContext, useContext, useReducer, ReactNode } from "react";
+import { useCreateNjangiStore } from "../store/create.njangi.store";
 import {
   AccountSetupFormData,
   GroupDetailsFormData,
   InviteMembersFormData,
 } from "../types/njangi.form.schema.type";
+import { NjangiSetup } from "../types/create-njangi-types";
+
+type InviteMemberTypes = {
+  type: "email" | "phone";
+  value: string;
+};
 
 // Form state interface
 interface FormState {
   currentStep: number;
   accountSetup: Partial<AccountSetupFormData>;
   groupDetails: Partial<GroupDetailsFormData>;
-  inviteMembers: Partial<InviteMembersFormData>;
+  inviteMembers: {
+    invites: InviteMemberTypes[];
+  };
   isSubmitting: boolean;
   isSubmitted: boolean;
   goToStep?: (step: number) => void;
+  error: string | null;
 }
 
 // Initial state
@@ -21,9 +31,12 @@ const initialState: FormState = {
   currentStep: 1,
   accountSetup: {},
   groupDetails: {},
-  inviteMembers: { invites: [{ contact: "" }] },
+  inviteMembers: {
+    invites: [],
+  },
   isSubmitting: false,
   isSubmitted: false,
+  error: null,
 };
 
 // Action types
@@ -36,8 +49,7 @@ type FormAction =
   | { type: "UPDATE_INVITE_MEMBERS"; payload: Partial<InviteMembersFormData> }
   | { type: "SUBMIT_FORM" }
   | { type: "SUBMIT_SUCCESS" }
-  | { type: "SUBMIT_ERROR" };
-
+  | { type: "SUBMIT_ERROR"; payload: string };
 
 // Reducer function
 const formReducer = (state: FormState, action: FormAction): FormState => {
@@ -85,17 +97,20 @@ const formReducer = (state: FormState, action: FormAction): FormState => {
       return {
         ...state,
         isSubmitting: true,
+        error: null,
       };
     case "SUBMIT_SUCCESS":
       return {
         ...state,
         isSubmitting: false,
         isSubmitted: true,
+        error: null,
       };
     case "SUBMIT_ERROR":
       return {
         ...state,
         isSubmitting: false,
+        error: action.payload,
       };
     default:
       return state;
@@ -122,6 +137,7 @@ export const FormProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [state, dispatch] = useReducer(formReducer, initialState);
+  const { errors, createNjangi } = useCreateNjangiStore();
 
   const nextStep = () => dispatch({ type: "NEXT_STEP" });
   const prevStep = () => dispatch({ type: "PREV_STEP" });
@@ -140,20 +156,49 @@ export const FormProvider: React.FC<{ children: ReactNode }> = ({
     dispatch({ type: "UPDATE_INVITE_MEMBERS", payload: data });
   };
 
+  // Function to handle form submission to the backend
   const submitForm = async () => {
     dispatch({ type: "SUBMIT_FORM" });
-
-    // Log the form data
-    console.log("Form data:", state);
-    
-
-    // Simulate API call
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate network delay
+      const submissionData: NjangiSetup = {
+        accountSetup: {
+          firstName: state.accountSetup.firstName || "",
+          lastName: state.accountSetup.lastName || "",
+          email: state.accountSetup.email || "",
+          phoneNumber: state.accountSetup.phoneNum || "",
+          password: state.accountSetup.password || "",
+          profilePicUrl:
+            Array.isArray(state.accountSetup.profilePic) &&
+            state.accountSetup.profilePic.length > 0 &&
+            state.accountSetup.profilePic[0] instanceof Blob
+              ? URL.createObjectURL(state.accountSetup.profilePic[0])
+              : "",
+        },
+        groupDetails: {
+          groupName: state.groupDetails.groupName || "",
+          contributionAmount:
+            Number(state.groupDetails.contributionAmount) || 0,
+          contributionFrequency: state.groupDetails.contributionFrequency || "",
+          payoutMethod: state.groupDetails.payoutMethod || "",
+          startDate: state.groupDetails.startDate || "",
+          endDate: state.groupDetails.endDate || "",
+          rules: state.groupDetails.rules || "",
+        },
+        inviteMembers: (state.inviteMembers.invites || []).map((invite) => ({
+          ...invite,
+          contact: invite.value,
+        })),
+      };
+      console.log("Submission Data:", submissionData);
+      await createNjangi(submissionData);
       dispatch({ type: "SUBMIT_SUCCESS" });
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      dispatch({ type: "SUBMIT_ERROR" });
+      console.log("Error creating Njangi:", error);
+      dispatch({
+        type: "SUBMIT_ERROR",
+        payload: errors || "An unknown error occurred",
+      });
+      console.log("Error submitting form:", errors);
     }
   };
 
