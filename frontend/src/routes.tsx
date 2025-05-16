@@ -16,7 +16,6 @@ import GroupSettingsPage from "./pages/dashboard.admin.pages/GroupSetting";
 import NotificationsPage from "./pages/dashboard.admin.pages/Notification";
 import VerifyEmail from "./pages/very.email";
 import ForgotPassword from "./pages/forgot.password";
-import ContributionChart from "./components/dashboard.admin.components/ContributionChart";
 // import UserDashboard from "./pages/dashboard.user.pages/UserDashboardPage";
 import UserDashboardPage from "./pages/dashboard.user.pages/page";
 
@@ -52,7 +51,7 @@ export const router = createBrowserRouter([
   { path: "/admin/add-member", element: <AddMemberPage /> },
   { path: "/group-settings-admin", element: <GroupSettingsPage /> },
   { path: "/notifications", element: <NotificationsPage /> },
-  { path: "/admin/contributions", element: <ContributionChart /> },
+
   { path: "/user/dashboard", element: <UserDashboardPage /> },
 
   // Catch-all route for 404
