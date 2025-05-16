@@ -1,41 +1,41 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useRef, useEffect } from "react"
-import { Send, X, ImageIcon, Paperclip, Smile } from "lucide-react"
-import EmojiPicker from "./emoji-picker"
+import { useState, useRef, useEffect } from "react";
+import { Send, X, ImageIcon, Paperclip, Smile } from "lucide-react";
+import EmojiPicker from "./emoji-picker";
 
 // Exchange rate: 1 USD = approximately 600 CFA
-const CFA_EXCHANGE_RATE = 600
+const CFA_EXCHANGE_RATE = 600;
 
 export interface Message {
-  id: number
-  sender: string
-  content: string
-  timestamp: Date
-  isCurrentUser: boolean
+  id: number;
+  sender: string;
+  content: string;
+  timestamp: Date;
+  isCurrentUser: boolean;
   attachment?: {
-    type: "image" | "document"
-    url: string
-    name: string
-  }
+    type: "image" | "document";
+    url: string;
+    name: string;
+  };
 }
 
 interface ChatInterfaceProps {
-  groupId: number
-  groupName: string
-  onClose: () => void
+  groupId: number;
+  groupName: string;
+  onClose: () => void;
 }
 
 const ChatInterface = ({ groupId, groupName, onClose }: ChatInterfaceProps) => {
-  const [message, setMessage] = useState("")
-  const [messages, setMessages] = useState<Message[]>([])
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false)
-  const [isUploading, setIsUploading] = useState(false)
-  const messagesEndRef = useRef<HTMLDivElement>(null)
-  const fileInputRef = useRef<HTMLInputElement>(null)
-  const imageInputRef = useRef<HTMLInputElement>(null)
+  const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
 
   // Simulate initial messages
   useEffect(() => {
@@ -57,7 +57,9 @@ const ChatInterface = ({ groupId, groupName, onClose }: ChatInterfaceProps) => {
       {
         id: 3,
         sender: "Michael Brown",
-        content: `I've sent my contribution of ${(250 * CFA_EXCHANGE_RATE).toLocaleString()} CFA.`,
+        content: `I've sent my contribution of ${(
+          250 * CFA_EXCHANGE_RATE
+        ).toLocaleString()} CFA.`,
         timestamp: new Date(Date.now() - 1800000), // 30 minutes ago
         isCurrentUser: false,
       },
@@ -92,20 +94,20 @@ const ChatInterface = ({ groupId, groupName, onClose }: ChatInterfaceProps) => {
           name: "meeting_photo.jpg",
         },
       },
-    ]
+    ];
 
-    setMessages(initialMessages)
-  }, [groupId])
+    setMessages(initialMessages);
+  }, [groupId]);
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [messages])
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   const handleSendMessage = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    if (message.trim() === "") return
+    if (message.trim() === "") return;
 
     const newMessage: Message = {
       id: messages.length + 1,
@@ -113,10 +115,10 @@ const ChatInterface = ({ groupId, groupName, onClose }: ChatInterfaceProps) => {
       content: message,
       timestamp: new Date(),
       isCurrentUser: true,
-    }
+    };
 
-    setMessages([...messages, newMessage])
-    setMessage("")
+    setMessages([...messages, newMessage]);
+    setMessage("");
 
     // Simulate response after 1 second
     if (messages.length % 3 === 0) {
@@ -127,29 +129,35 @@ const ChatInterface = ({ groupId, groupName, onClose }: ChatInterfaceProps) => {
           content: "Thanks for the update!",
           timestamp: new Date(),
           isCurrentUser: false,
-        }
-        setMessages((prev) => [...prev, responseMessage])
-      }, 1000)
+        };
+        setMessages((prev) => [...prev, responseMessage]);
+      }, 1000);
     }
-  }
+  };
 
   const handleEmojiSelect = (emoji: string) => {
-    setMessage((prev) => prev + emoji)
-  }
+    setMessage((prev) => prev + emoji);
+  };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, type: "document" | "image") => {
-    const files = e.target.files
-    if (!files || files.length === 0) return
+  const handleFileUpload = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    type: "document" | "image"
+  ) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
 
-    const file = files[0]
-    setIsUploading(true)
+    const file = files[0];
+    setIsUploading(true);
 
     // Simulate file upload
     setTimeout(() => {
       const newMessage: Message = {
         id: messages.length + 1,
         sender: "John Doe",
-        content: type === "image" ? "Shared an image:" : `Shared a document: ${file.name}`,
+        content:
+          type === "image"
+            ? "Shared an image:"
+            : `Shared a document: ${file.name}`,
         timestamp: new Date(),
         isCurrentUser: true,
         attachment: {
@@ -157,23 +165,23 @@ const ChatInterface = ({ groupId, groupName, onClose }: ChatInterfaceProps) => {
           url: type === "image" ? "/placeholder.svg?height=200&width=300" : "#",
           name: file.name,
         },
-      }
+      };
 
-      setMessages([...messages, newMessage])
-      setIsUploading(false)
+      setMessages([...messages, newMessage]);
+      setIsUploading(false);
 
       // Clear the file input
       if (type === "document" && fileInputRef.current) {
-        fileInputRef.current.value = ""
+        fileInputRef.current.value = "";
       } else if (type === "image" && imageInputRef.current) {
-        imageInputRef.current.value = ""
+        imageInputRef.current.value = "";
       }
-    }, 1500)
-  }
+    }, 1500);
+  };
 
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-  }
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -181,7 +189,10 @@ const ChatInterface = ({ groupId, groupName, onClose }: ChatInterfaceProps) => {
         {/* Chat header */}
         <div className="p-4 border-b dark:border-gray-700 flex justify-between items-center">
           <h2 className="text-lg font-semibold">{groupName} Chat</h2>
-          <button className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700" onClick={onClose}>
+          <button
+            className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
+            onClick={onClose}
+          >
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -189,7 +200,12 @@ const ChatInterface = ({ groupId, groupName, onClose }: ChatInterfaceProps) => {
         {/* Messages area */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {messages.map((msg) => (
-            <div key={msg.id} className={`flex ${msg.isCurrentUser ? "justify-end" : "justify-start"}`}>
+            <div
+              key={msg.id}
+              className={`flex ${
+                msg.isCurrentUser ? "justify-end" : "justify-start"
+              }`}
+            >
               <div
                 className={`max-w-[70%] rounded-lg p-3 ${
                   msg.isCurrentUser
@@ -198,7 +214,9 @@ const ChatInterface = ({ groupId, groupName, onClose }: ChatInterfaceProps) => {
                 }`}
               >
                 {!msg.isCurrentUser && (
-                  <p className="text-xs font-medium mb-1 text-gray-600 dark:text-gray-400">{msg.sender}</p>
+                  <p className="text-xs font-medium mb-1 text-gray-600 dark:text-gray-400">
+                    {msg.sender}
+                  </p>
                 )}
                 <p>{msg.content}</p>
 
@@ -213,13 +231,15 @@ const ChatInterface = ({ groupId, groupName, onClose }: ChatInterfaceProps) => {
                     ) : (
                       <div className="flex items-center gap-2 p-2 bg-white dark:bg-gray-600 rounded-md">
                         <Paperclip className="h-4 w-4 text-gray-500 dark:text-gray-300" />
-                        <span className="text-sm text-gray-700 dark:text-gray-300 truncate">{msg.attachment.name}</span>
+                        <span className="text-sm text-gray-700 dark:text-gray-300 truncate">
+                          {msg.attachment.name}
+                        </span>
                         <a
                           href="#"
                           className="text-xs text-indigo-600 dark:text-indigo-400 ml-auto"
                           onClick={(e) => {
-                            e.preventDefault()
-                            alert(`Downloading ${msg.attachment?.name}...`)
+                            e.preventDefault();
+                            alert(`Downloading ${msg.attachment?.name}...`);
                           }}
                         >
                           Download
@@ -230,7 +250,11 @@ const ChatInterface = ({ groupId, groupName, onClose }: ChatInterfaceProps) => {
                 )}
 
                 <p
-                  className={`text-xs mt-1 ${msg.isCurrentUser ? "text-indigo-200" : "text-gray-500 dark:text-gray-400"}`}
+                  className={`text-xs mt-1 ${
+                    msg.isCurrentUser
+                      ? "text-indigo-200"
+                      : "text-gray-500 dark:text-gray-400"
+                  }`}
                 >
                   {formatTime(msg.timestamp)}
                 </p>
@@ -251,6 +275,8 @@ const ChatInterface = ({ groupId, groupName, onClose }: ChatInterfaceProps) => {
             className="hidden"
             onChange={(e) => handleFileUpload(e, "document")}
             accept=".pdf,.doc,.docx,.txt,.xls,.xlsx"
+            aria-label="Upload document"
+            title="Upload document"
           />
           <button
             type="button"
@@ -266,6 +292,7 @@ const ChatInterface = ({ groupId, groupName, onClose }: ChatInterfaceProps) => {
             ref={imageInputRef}
             className="hidden"
             onChange={(e) => handleFileUpload(e, "image")}
+            aria-label="Image upload"
             accept="image/*"
           />
           <button
@@ -311,7 +338,7 @@ const ChatInterface = ({ groupId, groupName, onClose }: ChatInterfaceProps) => {
         </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ChatInterface
+export default ChatInterface;

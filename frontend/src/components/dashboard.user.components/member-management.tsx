@@ -1,28 +1,43 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Search, UserPlus, UserMinus, Mail, Phone, ArrowUpDown, AlertTriangle, Check, X } from "lucide-react"
+import { useState } from "react";
+import {
+  Search,
+  UserPlus,
+  UserMinus,
+  Mail,
+  Phone,
+  ArrowUpDown,
+  AlertTriangle,
+  Check,
+  X,
+} from "lucide-react";
 
 interface Member {
-  id: number
-  name: string
-  email: string
-  phone: string
-  role: string
-  joinedDate: string
-  paymentStatus: "Paid" | "Pending"
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  role: string;
+  joinedDate: string;
+  paymentStatus: "Paid" | "Pending";
 }
 
 interface MemberManagementProps {
-  groupId: number
-  groupName: string
-  isAdmin: boolean
-  onClose: () => void
+  groupId: number;
+  groupName: string;
+  isAdmin: boolean;
+  onClose: () => void;
 }
 
-const MemberManagement = ({ groupId, groupName, isAdmin, onClose }: MemberManagementProps) => {
+const MemberManagement = ({
+  // groupId,
+  groupName,
+  isAdmin,
+  onClose,
+}: MemberManagementProps) => {
   const [members, setMembers] = useState<Member[]>([
     {
       id: 1,
@@ -60,123 +75,135 @@ const MemberManagement = ({ groupId, groupName, isAdmin, onClose }: MemberManage
       joinedDate: "Mar 10, 2023",
       paymentStatus: "Pending",
     },
-  ])
+  ]);
 
-  const [searchTerm, setSearchTerm] = useState("")
-  const [sortField, setSortField] = useState<string | null>(null)
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc")
-  const [showAddMemberForm, setShowAddMemberForm] = useState(false)
-  const [showRemoveMemberConfirm, setShowRemoveMemberConfirm] = useState<number | null>(null)
-  const [showRoleChangeConfirm, setShowRoleChangeConfirm] = useState<{ id: number; role: string } | null>(null)
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortField, setSortField] = useState<string | null>(null);
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [showAddMemberForm, setShowAddMemberForm] = useState(false);
+  const [showRemoveMemberConfirm, setShowRemoveMemberConfirm] = useState<
+    number | null
+  >(null);
+  const [showRoleChangeConfirm, setShowRoleChangeConfirm] = useState<{
+    id: number;
+    role: string;
+  } | null>(null);
   const [newMember, setNewMember] = useState({
     name: "",
     email: "",
     phone: "",
     role: "Member",
-  })
-  const [isProcessing, setIsProcessing] = useState(false)
-  const [successMessage, setSuccessMessage] = useState("")
+  });
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   const handleSort = (field: string) => {
     if (sortField === field) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc")
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
-      setSortField(field)
-      setSortDirection("asc")
+      setSortField(field);
+      setSortDirection("asc");
     }
-  }
+  };
 
   const handleAddMember = (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsProcessing(true)
+    e.preventDefault();
+    setIsProcessing(true);
 
     // Simulate API call
     setTimeout(() => {
-      const newId = Math.max(...members.map((m) => m.id)) + 1
+      const newId = Math.max(...members.map((m) => m.id)) + 1;
       const memberToAdd: Member = {
         id: newId,
         name: newMember.name,
         email: newMember.email,
         phone: newMember.phone,
         role: newMember.role,
-        joinedDate: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+        joinedDate: new Date().toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        }),
         paymentStatus: "Pending",
-      }
+      };
 
-      setMembers([...members, memberToAdd])
+      setMembers([...members, memberToAdd]);
       setNewMember({
         name: "",
         email: "",
         phone: "",
         role: "Member",
-      })
-      setShowAddMemberForm(false)
-      setIsProcessing(false)
-      showSuccess(`${memberToAdd.name} has been added to the group`)
-    }, 1500)
-  }
+      });
+      setShowAddMemberForm(false);
+      setIsProcessing(false);
+      showSuccess(`${memberToAdd.name} has been added to the group`);
+    }, 1500);
+  };
 
   const handleRemoveMember = (id: number) => {
-    setIsProcessing(true)
+    setIsProcessing(true);
 
     // Simulate API call
     setTimeout(() => {
-      const memberToRemove = members.find((m) => m.id === id)
-      const updatedMembers = members.filter((member) => member.id !== id)
-      setMembers(updatedMembers)
-      setShowRemoveMemberConfirm(null)
-      setIsProcessing(false)
-      showSuccess(`${memberToRemove?.name} has been removed from the group`)
-    }, 1500)
-  }
+      const memberToRemove = members.find((m) => m.id === id);
+      const updatedMembers = members.filter((member) => member.id !== id);
+      setMembers(updatedMembers);
+      setShowRemoveMemberConfirm(null);
+      setIsProcessing(false);
+      showSuccess(`${memberToRemove?.name} has been removed from the group`);
+    }, 1500);
+  };
 
   const handleRoleChange = (id: number, newRole: string) => {
-    setIsProcessing(true)
+    setIsProcessing(true);
 
     // Simulate API call
     setTimeout(() => {
-      const updatedMembers = members.map((member) => (member.id === id ? { ...member, role: newRole } : member))
-      setMembers(updatedMembers)
-      setShowRoleChangeConfirm(null)
-      setIsProcessing(false)
-      const memberName = members.find((m) => m.id === id)?.name
-      showSuccess(`${memberName}'s role has been updated to ${newRole}`)
-    }, 1500)
-  }
+      const updatedMembers = members.map((member) =>
+        member.id === id ? { ...member, role: newRole } : member
+      );
+      setMembers(updatedMembers);
+      setShowRoleChangeConfirm(null);
+      setIsProcessing(false);
+      const memberName = members.find((m) => m.id === id)?.name;
+      showSuccess(`${memberName}'s role has been updated to ${newRole}`);
+    }, 1500);
+  };
 
   const showSuccess = (message: string) => {
-    setSuccessMessage(message)
+    setSuccessMessage(message);
     setTimeout(() => {
-      setSuccessMessage("")
-    }, 3000)
-  }
+      setSuccessMessage("");
+    }, 3000);
+  };
 
   // Apply search and sorting
   const filteredMembers = members.filter(
     (member) =>
       member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       member.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.role.toLowerCase().includes(searchTerm.toLowerCase()),
-  )
+      member.role.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const sortedMembers = [...filteredMembers].sort((a, b) => {
-    if (!sortField) return 0
+    if (!sortField) return 0;
 
-    let comparison = 0
+    let comparison = 0;
     if (sortField === "name") {
-      comparison = a.name.localeCompare(b.name)
+      comparison = a.name.localeCompare(b.name);
     } else if (sortField === "email") {
-      comparison = a.email.localeCompare(b.email)
+      comparison = a.email.localeCompare(b.email);
     } else if (sortField === "role") {
-      comparison = a.role.localeCompare(b.role)
+      comparison = a.role.localeCompare(b.role);
     } else if (sortField === "joinedDate") {
-      comparison = new Date(a.joinedDate).getTime() - new Date(b.joinedDate).getTime()
+      comparison =
+        new Date(a.joinedDate).getTime() - new Date(b.joinedDate).getTime();
     } else if (sortField === "paymentStatus") {
-      comparison = a.paymentStatus.localeCompare(b.paymentStatus)
+      comparison = a.paymentStatus.localeCompare(b.paymentStatus);
     }
 
-    return sortDirection === "asc" ? comparison : -comparison
-  })
+    return sortDirection === "asc" ? comparison : -comparison;
+  });
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -184,7 +211,10 @@ const MemberManagement = ({ groupId, groupName, isAdmin, onClose }: MemberManage
         {/* Header */}
         <div className="p-4 border-b dark:border-gray-700 flex justify-between items-center">
           <h2 className="text-xl font-bold">Manage Members - {groupName}</h2>
-          <button className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700" onClick={onClose}>
+          <button
+            className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
+            onClick={onClose}
+          >
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -214,7 +244,10 @@ const MemberManagement = ({ groupId, groupName, isAdmin, onClose }: MemberManage
             />
           </div>
           {isAdmin && (
-            <button className="btn btn-primary flex items-center gap-2" onClick={() => setShowAddMemberForm(true)}>
+            <button
+              className="btn btn-primary flex items-center gap-2"
+              onClick={() => setShowAddMemberForm(true)}
+            >
               <UserPlus className="h-4 w-4" />
               <span>Add Member</span>
             </button>
@@ -299,7 +332,9 @@ const MemberManagement = ({ groupId, groupName, isAdmin, onClose }: MemberManage
                             .join("")}
                         </div>
                         <div className="ml-3">
-                          <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{member.name}</div>
+                          <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                            {member.name}
+                          </div>
                         </div>
                       </div>
                     </td>
@@ -346,16 +381,21 @@ const MemberManagement = ({ groupId, groupName, isAdmin, onClose }: MemberManage
                             onClick={() =>
                               setShowRoleChangeConfirm({
                                 id: member.id,
-                                role: member.role === "Admin" ? "Member" : "Admin",
+                                role:
+                                  member.role === "Admin" ? "Member" : "Admin",
                               })
                             }
                             disabled={isProcessing}
                           >
-                            {member.role === "Admin" ? "Make Member" : "Make Admin"}
+                            {member.role === "Admin"
+                              ? "Make Member"
+                              : "Make Admin"}
                           </button>
                           <button
                             className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
-                            onClick={() => setShowRemoveMemberConfirm(member.id)}
+                            onClick={() =>
+                              setShowRemoveMemberConfirm(member.id)
+                            }
                             disabled={isProcessing || member.role === "Admin"}
                           >
                             Remove
@@ -378,40 +418,61 @@ const MemberManagement = ({ groupId, groupName, isAdmin, onClose }: MemberManage
             <h2 className="text-xl font-bold mb-4">Add New Member</h2>
             <form onSubmit={handleAddMember}>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Full Name
+                </label>
                 <input
                   type="text"
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   value={newMember.name}
-                  onChange={(e) => setNewMember({ ...newMember, name: e.target.value })}
+                  onChange={(e) =>
+                    setNewMember({ ...newMember, name: e.target.value })
+                  }
+                  aria-label="New Member"
                   required
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email Address</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Email Address
+                </label>
                 <input
                   type="email"
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   value={newMember.email}
-                  onChange={(e) => setNewMember({ ...newMember, email: e.target.value })}
+                  onChange={(e) =>
+                    setNewMember({ ...newMember, email: e.target.value })
+                  }
+                  aria-label="Email"
                   required
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone Number</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Phone Number
+                </label>
                 <input
+                  name="tel"
                   type="tel"
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   value={newMember.phone}
-                  onChange={(e) => setNewMember({ ...newMember, phone: e.target.value })}
+                  onChange={(e) =>
+                    setNewMember({ ...newMember, phone: e.target.value })
+                  }
+                  aria-label="telephone"
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Role</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Role
+                </label>
                 <select
+                  title="New Member Role"
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   value={newMember.role}
-                  onChange={(e) => setNewMember({ ...newMember, role: e.target.value })}
+                  onChange={(e) =>
+                    setNewMember({ ...newMember, role: e.target.value })
+                  }
                 >
                   <option value="Member">Member</option>
                   <option value="Admin">Admin</option>
@@ -426,7 +487,11 @@ const MemberManagement = ({ groupId, groupName, isAdmin, onClose }: MemberManage
                 >
                   Cancel
                 </button>
-                <button type="submit" className="btn btn-primary flex items-center gap-2" disabled={isProcessing}>
+                <button
+                  type="submit"
+                  className="btn btn-primary flex items-center gap-2"
+                  disabled={isProcessing}
+                >
                   {isProcessing ? (
                     <>
                       <svg
@@ -477,7 +542,8 @@ const MemberManagement = ({ groupId, groupName, isAdmin, onClose }: MemberManage
                     Are you sure you want to remove this member?
                   </p>
                   <p className="text-sm text-red-700 dark:text-red-300 mt-1">
-                    This action cannot be undone. The member will lose access to the group.
+                    This action cannot be undone. The member will lose access to
+                    the group.
                   </p>
                 </div>
               </div>
@@ -543,7 +609,8 @@ const MemberManagement = ({ groupId, groupName, isAdmin, onClose }: MemberManage
                 <AlertTriangle className="h-6 w-6 text-yellow-600 dark:text-yellow-500 mt-0.5" />
                 <div>
                   <p className="font-medium text-yellow-800 dark:text-yellow-200">
-                    Are you sure you want to change this member's role to {showRoleChangeConfirm.role}?
+                    Are you sure you want to change this member's role to{" "}
+                    {showRoleChangeConfirm.role}?
                   </p>
                   <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
                     {showRoleChangeConfirm.role === "Admin"
@@ -565,7 +632,12 @@ const MemberManagement = ({ groupId, groupName, isAdmin, onClose }: MemberManage
               <button
                 type="button"
                 className="btn btn-primary flex items-center gap-2"
-                onClick={() => handleRoleChange(showRoleChangeConfirm.id, showRoleChangeConfirm.role)}
+                onClick={() =>
+                  handleRoleChange(
+                    showRoleChangeConfirm.id,
+                    showRoleChangeConfirm.role
+                  )
+                }
                 disabled={isProcessing}
               >
                 {isProcessing ? (
@@ -604,7 +676,7 @@ const MemberManagement = ({ groupId, groupName, isAdmin, onClose }: MemberManage
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default MemberManagement
+export default MemberManagement;

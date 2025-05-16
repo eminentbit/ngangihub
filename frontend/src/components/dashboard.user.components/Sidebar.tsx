@@ -1,140 +1,165 @@
-"use client"
+"use client";
 
-import { usePathname, useRouter } from "next/navigation"
-import Link from "next/link"
-import Image from "next/image"
-import { LayoutDashboard, Users, CreditCard, Settings, Menu, X } from "lucide-react"
-import { useState, useEffect } from "react"
+import { useLocation, useNavigate, Link } from "react-router-dom";
+import {
+  LayoutDashboard,
+  Users,
+  CreditCard,
+  Settings,
+  Menu,
+  X,
+} from "lucide-react";
+import { useState, useEffect } from "react";
+import Logo from "/public/logo.png";
 
-const Sidebar = () => {
-  const pathname = usePathname()
-  const router = useRouter()
-  const [expandedNotifications, setExpandedNotifications] = useState(true)
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+const Sidebar = ({
+  activeTab: propActive,
+  isOpen,
+  setIsOpen,
+  onToggle,
+}: {
+  activeTab?: string;
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
+  onToggle: () => void;
+}) => {
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const [expandedNotifications, setExpandedNotifications] = useState(false);
 
-  // Handle sidebar state on window resize
+  // Close sidebar on small screens
   useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 768) {
-        setIsSidebarOpen(false)
-      } else {
-        setIsSidebarOpen(true)
-      }
-    }
-
-    // Set initial state
-    handleResize()
-
-    window.addEventListener("resize", handleResize)
-    return () => window.removeEventListener("resize", handleResize)
-  }, [])
+    const onResize = () => setIsOpen(window.innerWidth >= 768);
+    onResize();
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [setIsOpen]);
 
   const menuItems = [
-    { name: "Dashboard", icon: LayoutDashboard, path: "/" },
-    { name: "My Groups", icon: Users, path: "/my-groups" },
-    { name: "Payments", icon: CreditCard, path: "/payments" },
-    { name: "Settings", icon: Settings, path: "/settings" },
-  ]
+    { name: "Dashboard", icon: LayoutDashboard, path: "/user/dashboard" },
+    { name: "My Groups", icon: Users, path: "/user/groups" },
+    { name: "Payments", icon: CreditCard, path: "/user/payments" },
+    { name: "Settings", icon: Settings, path: "/user/settings" },
+  ];
 
   const notifications = [
-    {
-      id: 1,
-      message: "John added you to Team Alpha",
-      time: "2 hours ago",
-    },
+    { id: 1, message: "John added you to Team Alpha", time: "2 hours ago" },
     {
       id: 2,
       message: "Sarah paid her contribution to Project Beta",
       time: "5 hours ago",
     },
-  ]
+  ];
 
-  const handleNotificationClick = (notification) => {
-    // In a real app, this would mark the notification as read
-    console.log("Notification clicked:", notification)
-
-    // Navigate based on notification type
-    if (notification.message.includes("Team Alpha")) {
-      router.push("/my-groups")
-    } else if (notification.message.includes("contribution")) {
-      router.push("/payments")
-    }
+  interface MenuItem {
+    name: string;
+    icon: React.ComponentType;
+    path: string;
   }
 
+  const active = (item: MenuItem): boolean => {
+    if (propActive) return propActive === item.name.toLowerCase();
+    return pathname === item.path;
+  };
+
   return (
-    <div
-      className={`${isSidebarOpen ? "w-56" : "w-0 md:w-16"} bg-indigo-700 text-white flex flex-col h-screen transition-all duration-300 relative`}
+    <aside
+      className={`flex fixed flex-col h-screen bg-indigo-700 text-white transition-width duration-300 ${
+        isOpen ? "w-56" : "w-16"
+      }`}
     >
-      {/* Toggle button - NEW CODE */}
+      {/* Toggle */}
       <button
-        className="absolute top-4 right-4 text-white hover:text-indigo-200 z-10"
-        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        aria-label={isSidebarOpen ? "Close sidebar" : "Open sidebar"}
+        type="button"
+        onClick={onToggle}
+        aria-label={isOpen ? "Collapse sidebar" : "Expand sidebar"}
+        className="absolute top-4 right-4 p-1 hover:text-indigo-200 focus:outline-none"
       >
-        {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
+        {isOpen ? <X size={20} /> : <Menu size={20} />}
       </button>
 
-      {/* Logo - MODIFIED CODE */}
-      <div className="p-4 flex items-start">
-        <Link href="/" className="flex items-center">
-          <div className="relative h-10 w-10 overflow-hidden">
-            <Image src="/images/logo.png" alt="Logo" width={40} height={40} className="object-contain" />
-          </div>
-        </Link>
-      </div>
-
-      <div className="mt-6 overflow-hidden">
-        <div className={`px-4 py-2 text-sm font-semibold text-indigo-200 ${!isSidebarOpen && "md:text-center"}`}>
-          {isSidebarOpen ? "MENU" : ""}
+      {/* Logo */}
+      {isOpen && (
+        <div
+          className="flex items-center p-4 hover:bg-indigo-600 transition-colors justify-center w-20 cursor-pointer mx-au"
+          onClick={() => navigate("/user/dashboard")}
+        >
+          <img src={Logo} alt="Logo" className="h-10 w-full" />
         </div>
-        <nav className="mt-2 space-y-1 px-2">
-          {menuItems.map((item) => (
-            <Link
-              key={item.name}
-              href={item.path}
-              className={`sidebar-item ${pathname === item.path ? "active" : ""} ${!isSidebarOpen && "md:justify-center"}`}
-              title={!isSidebarOpen ? item.name : ""}
-            >
-              <item.icon size={20} />
-              {isSidebarOpen && <span>{item.name}</span>}
-            </Link>
-          ))}
-        </nav>
-      </div>
+      )}
 
-      {isSidebarOpen && (
-        <div className="mt-6 flex-1 overflow-y-auto">
+      {/* Menu */}
+      <nav className="mt-6 flex-1 px-2 py-10 overflow-y-auto">
+        {menuItems.map((item) => (
+          <Link
+            key={item.name}
+            to={item.path}
+            className={`flex items-center gap-3 p-2 rounded-lg mb-1 hover:bg-indigo-600 transition-colors ${
+              active(item) ? "bg-indigo-800" : ""
+            } ${!isOpen && "justify-center"}`}
+            title={!isOpen ? item.name : undefined}
+          >
+            <item.icon className="h-6 w-6" />
+            {isOpen && <span>{item.name}</span>}
+          </Link>
+        ))}
+      </nav>
+
+      {/* Notifications */}
+      {isOpen && (
+        <section className="px-2">
           <div
-            className="px-4 py-2 text-sm font-semibold text-indigo-200 flex justify-between items-center cursor-pointer"
+            className="flex items-center justify-between p-2 mt-4 text-sm font-semibold text-indigo-200 cursor-pointer hover:text-white transition-colors"
             onClick={() => setExpandedNotifications(!expandedNotifications)}
           >
-            <span>NOTIFICATIONS</span>
-            <span className="bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-              4
+            <span>Notifications</span>
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs">
+              {notifications.length}
             </span>
           </div>
           {expandedNotifications && (
-            <div className="mt-2 space-y-1 px-2">
-              {notifications.map((notification) => (
+            <div className="mt-2 space-y-1 max-h-40 overflow-y-auto px-2">
+              {notifications.map((n) => (
                 <div
-                  key={notification.id}
-                  className="p-2 text-sm bg-indigo-800 rounded-md mb-2 cursor-pointer hover:bg-indigo-900 transition-colors"
-                  onClick={() => handleNotificationClick(notification)}
+                  key={n.id}
+                  className="p-2 rounded-md hover:bg-indigo-600 transition-colors cursor-pointer"
+                  onClick={() => {
+                    console.log("Notification:", n);
+                    if (n.message.includes("Team Alpha"))
+                      navigate("/my-groups");
+                    else if (n.message.includes("contribution"))
+                      navigate("/payments");
+                  }}
                 >
-                  <p className="text-white">{notification.message}</p>
-                  <p className="text-indigo-300 text-xs mt-1">{notification.time}</p>
+                  <p className="text-sm">{n.message}</p>
+                  <p className="text-xs text-indigo-300">{n.time}</p>
                 </div>
               ))}
-              <Link href="/notifications" className="block text-sm text-indigo-300 hover:text-white px-2 py-1">
-                View all notifications
+              <Link
+                to="/notifications"
+                className="block p-2 text-sm text-indigo-300 hover:text-white"
+              >
+                View all
               </Link>
             </div>
           )}
-        </div>
+        </section>
       )}
-    </div>
-  )
-}
 
-export default Sidebar
+      {/* Footer */}
+      <div className="p-4">
+        {isOpen && (
+          <button
+            onClick={() => navigate("/settings")}
+            className="flex items-center gap-3 p-2 w-full rounded-lg hover:bg-indigo-600 transition-colors"
+          >
+            <Settings className="h-6 w-6" />
+            <span>Settings</span>
+          </button>
+        )}
+      </div>
+    </aside>
+  );
+};
 
+export default Sidebar;

@@ -53,7 +53,7 @@ export const router = createBrowserRouter([
   { path: "/group-settings-admin", element: <GroupSettingsPage /> },
   { path: "/notifications", element: <NotificationsPage /> },
   { path: "/admin/contributions", element: <ContributionChart /> },
-  { path: "/userdashboard", element: <UserDashboardPage /> },
+  { path: "/user/dashboard", element: <UserDashboardPage /> },
 
   // Catch-all route for 404
   {

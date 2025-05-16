@@ -1,10 +1,18 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { DollarSign, Calendar, CreditCard, Download, Filter, ArrowUpDown, Check } from "lucide-react"
+import { useState, useEffect } from "react";
+import {
+  DollarSign,
+  Calendar,
+  CreditCard,
+  Download,
+  Filter,
+  ArrowUpDown,
+  Check,
+} from "lucide-react";
 
 // Exchange rate: 1 USD = approximately 600 CFA
-const CFA_EXCHANGE_RATE = 600
+const CFA_EXCHANGE_RATE = 600;
 
 const Payments = () => {
   const [payments, setPayments] = useState([
@@ -72,7 +80,7 @@ const Payments = () => {
       status: "Completed",
       method: "Credit Card",
     },
-  ])
+  ]);
 
   const [pendingPayments, setPendingPayments] = useState([
     {
@@ -87,186 +95,230 @@ const Payments = () => {
       amount: 250 * CFA_EXCHANGE_RATE,
       dueDate: "Jun 15, 2023",
     },
-  ])
+  ]);
 
-  const [filterOpen, setFilterOpen] = useState(false)
-  const [sortField, setSortField] = useState(null)
-  const [sortDirection, setSortDirection] = useState("asc")
-  const [filterStatus, setFilterStatus] = useState("")
-  const [filterGroup, setFilterGroup] = useState("")
-  const [showReceipt, setShowReceipt] = useState(null)
-  const [isDownloading, setIsDownloading] = useState(false)
-  const [isProcessingPayment, setIsProcessingPayment] = useState(false)
-  const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage, setItemsPerPage] = useState(5)
-  const [filteredPayments, setFilteredPayments] = useState([])
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [sortField, setSortField] = useState<string | null>(null);
+  const [sortDirection, setSortDirection] = useState("asc");
+  const [filterStatus, setFilterStatus] = useState("");
+  const [filterGroup, setFilterGroup] = useState("");
+  const [showReceipt, setShowReceipt] = useState<number | null>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(5);
+  const [filteredPayments, setFilteredPayments] = useState<
+    {
+      id: number;
+      group: string;
+      amount: number;
+      date: string;
+      status: string;
+      method: string;
+    }[]
+  >([]);
 
   useEffect(() => {
     // Apply filters
-    let result = [...payments]
+    let result = [...payments];
 
     if (filterStatus) {
-      result = result.filter((p) => p.status.toLowerCase() === filterStatus.toLowerCase())
+      result = result.filter(
+        (p) => p.status.toLowerCase() === filterStatus.toLowerCase()
+      );
     }
 
     if (filterGroup) {
-      result = result.filter((p) => p.group.toLowerCase() === filterGroup.toLowerCase())
+      result = result.filter(
+        (p) => p.group.toLowerCase() === filterGroup.toLowerCase()
+      );
     }
 
     // Apply sorting
     if (sortField) {
       result.sort((a, b) => {
-        let comparison = 0
+        let comparison = 0;
         if (sortField === "group") {
-          comparison = a.group.localeCompare(b.group)
+          comparison = a.group.localeCompare(b.group);
         } else if (sortField === "amount") {
-          comparison = a.amount - b.amount
+          comparison = a.amount - b.amount;
         } else if (sortField === "date") {
-          comparison = new Date(a.date) - new Date(b.date)
+          comparison = new Date(a.date).getTime() - new Date(b.date).getTime();
         } else if (sortField === "status") {
-          comparison = a.status.localeCompare(b.status)
+          comparison = a.status.localeCompare(b.status);
         } else if (sortField === "method") {
-          comparison = a.method.localeCompare(b.method)
+          comparison = a.method.localeCompare(b.method);
         }
 
-        return sortDirection === "asc" ? comparison : -comparison
-      })
+        return sortDirection === "asc" ? comparison : -comparison;
+      });
     }
 
-    setFilteredPayments(result)
-  }, [payments, filterStatus, filterGroup, sortField, sortDirection])
+    setFilteredPayments(result);
+  }, [payments, filterStatus, filterGroup, sortField, sortDirection]);
 
-  const handleSort = (field) => {
+  const handleSort = (field: string | null) => {
     if (sortField === field) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc")
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
-      setSortField(field)
-      setSortDirection("asc")
+      setSortField(field);
+      setSortDirection("asc");
     }
-  }
+  };
 
-  const handlePayNow = (payment) => {
-    setIsProcessingPayment(true)
+  const handlePayNow = (payment: {
+    id: number;
+    group: string;
+    amount: number;
+    dueDate?: string;
+  }) => {
+    setIsProcessingPayment(true);
 
     // Simulate payment processing
     setTimeout(() => {
       // In a real app, this would open a payment form
-      alert(`Processing payment of ${payment.amount.toLocaleString()} CFA for ${payment.group}`)
+      alert(
+        `Processing payment of ${payment.amount.toLocaleString()} CFA for ${
+          payment.group
+        }`
+      );
 
       // Simulate successful payment
-      const updatedPendingPayments = pendingPayments.filter((p) => p.id !== payment.id)
-      setPendingPayments(updatedPendingPayments)
+      const updatedPendingPayments = pendingPayments.filter(
+        (p) => p.id !== payment.id
+      );
+      setPendingPayments(updatedPendingPayments);
 
       const newPayment = {
         id: payments.length + 1,
         group: payment.group,
         amount: payment.amount,
-        date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+        date: new Date().toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        }),
         status: "Completed",
         method: "Credit Card",
-      }
+      };
 
-      setPayments([newPayment, ...payments])
-      setIsProcessingPayment(false)
-    }, 2000)
-  }
+      setPayments([newPayment, ...payments]);
+      setIsProcessingPayment(false);
+    }, 2000);
+  };
 
   const handleDownload = () => {
-    setIsDownloading(true)
+    setIsDownloading(true);
 
     // Simulate download
     setTimeout(() => {
       // Create CSV content
-      const headers = ["ID", "Group", "Amount (CFA)", "Date", "Status", "Method"]
+      const headers = [
+        "ID",
+        "Group",
+        "Amount (CFA)",
+        "Date",
+        "Status",
+        "Method",
+      ];
       const csvContent = [
         headers.join(","),
-        ...filteredPayments.map((p) => [p.id, p.group, p.amount, p.date, p.status, p.method].join(",")),
-      ].join("\n")
+        ...filteredPayments.map((p) =>
+          [p.id, p.group, p.amount, p.date, p.status, p.method].join(",")
+        ),
+      ].join("\n");
 
       // Create blob and download
-      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" })
-      const url = URL.createObjectURL(blob)
-      const link = document.createElement("a")
-      link.href = url
-      link.setAttribute("download", "payment_history.csv")
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "payment_history.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
 
-      alert("Payment history downloaded successfully!")
-      setIsDownloading(false)
-    }, 1500)
-  }
+      alert("Payment history downloaded successfully!");
+      setIsDownloading(false);
+    }, 1500);
+  };
 
-  const handleViewReceipt = (paymentId) => {
-    setShowReceipt(paymentId)
-  }
+  const handleViewReceipt = (paymentId: number) => {
+    setShowReceipt(paymentId);
+  };
 
-  const handleDownloadReceipt = (paymentId) => {
+  const handleDownloadReceipt = (paymentId: number) => {
     // Simulate receipt download
-    alert(`Downloading receipt for payment #${paymentId}...`)
+    alert(`Downloading receipt for payment #${paymentId}...`);
 
     setTimeout(() => {
       // Create receipt content
-      const payment = payments.find((p) => p.id === paymentId)
+      const payment = payments.find((p) => p.id === paymentId);
       const receiptContent = `
 PAYMENT RECEIPT
 --------------
-Receipt #: ${payment.id}
-Group: ${payment.group}
-Amount: ${payment.amount.toLocaleString()} CFA
-Date: ${payment.date}
-Status: ${payment.status}
-Method: ${payment.method}
-      `
+Receipt #: ${payment?.id}
+Group: ${payment?.group}
+Amount: ${payment?.amount.toLocaleString()} CFA
+Date: ${payment?.date}
+Status: ${payment?.status}
+Method: ${payment?.method}
+      `;
 
       // Create blob and download
-      const blob = new Blob([receiptContent], { type: "text/plain;charset=utf-8;" })
-      const url = URL.createObjectURL(blob)
-      const link = document.createElement("a")
-      link.href = url
-      link.setAttribute("download", `receipt_${payment.id}.txt`)
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
+      const blob = new Blob([receiptContent], {
+        type: "text/plain;charset=utf-8;",
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `receipt_${payment?.id}.txt`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
 
-      alert("Receipt downloaded successfully!")
-    }, 1000)
-  }
+      alert("Receipt downloaded successfully!");
+    }, 1000);
+  };
 
   const applyFilters = () => {
-    setFilterOpen(false)
-    setCurrentPage(1) // Reset to first page when filters change
-  }
+    setFilterOpen(false);
+    setCurrentPage(1); // Reset to first page when filters change
+  };
 
   // Calculate total contributed
   const totalContributed = payments
     .filter((payment) => payment.status === "Completed")
-    .reduce((sum, payment) => sum + payment.amount, 0)
+    .reduce((sum, payment) => sum + payment.amount, 0);
 
   // Pagination
-  const indexOfLastItem = currentPage * itemsPerPage
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage
-  const currentItems = filteredPayments.slice(indexOfFirstItem, indexOfLastItem)
-  const totalPages = Math.ceil(filteredPayments.length / itemsPerPage)
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredPayments.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
+  const totalPages = Math.ceil(filteredPayments.length / itemsPerPage);
 
   const nextPage = () => {
     if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1)
+      setCurrentPage(currentPage + 1);
     }
-  }
+  };
 
   const prevPage = () => {
     if (currentPage > 1) {
-      setCurrentPage(currentPage - 1)
+      setCurrentPage(currentPage - 1);
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Payments</h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">Manage your payments and contributions</p>
+        <p className="text-gray-600 dark:text-gray-400 mt-1">
+          Manage your payments and contributions
+        </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -276,8 +328,12 @@ Method: ${payment.method}
               <DollarSign className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Total Contributed</p>
-              <p className="text-2xl font-bold">{totalContributed.toLocaleString()} CFA</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Total Contributed
+              </p>
+              <p className="text-2xl font-bold">
+                {totalContributed.toLocaleString()} CFA
+              </p>
             </div>
           </div>
         </div>
@@ -288,8 +344,12 @@ Method: ${payment.method}
               <Check className="h-6 w-6 text-green-600 dark:text-green-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Completed Payments</p>
-              <p className="text-2xl font-bold">{payments.filter((p) => p.status === "Completed").length}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Completed Payments
+              </p>
+              <p className="text-2xl font-bold">
+                {payments.filter((p) => p.status === "Completed").length}
+              </p>
             </div>
           </div>
         </div>
@@ -300,7 +360,9 @@ Method: ${payment.method}
               <Calendar className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Pending Payments</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Pending Payments
+              </p>
               <p className="text-2xl font-bold">{pendingPayments.length}</p>
             </div>
           </div>
@@ -324,9 +386,13 @@ Method: ${payment.method}
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="font-bold">{payment.amount.toLocaleString()} CFA</p>
+                  <p className="font-bold">
+                    {payment.amount.toLocaleString()} CFA
+                  </p>
                   <button
-                    className={`btn ${isProcessingPayment ? "btn-disabled" : "btn-primary"} mt-2 text-sm py-1.5 flex items-center justify-center gap-2`}
+                    className={`btn ${
+                      isProcessingPayment ? "btn-disabled" : "btn-primary"
+                    } mt-2 text-sm py-1.5 flex items-center justify-center gap-2`}
                     onClick={() => handlePayNow(payment)}
                     disabled={isProcessingPayment}
                   >
@@ -366,7 +432,10 @@ Method: ${payment.method}
           <h2 className="text-lg font-semibold">Payment History</h2>
           <div className="flex items-center gap-2">
             <div className="relative">
-              <button className="btn btn-secondary flex items-center gap-2" onClick={() => setFilterOpen(!filterOpen)}>
+              <button
+                className="btn btn-secondary flex items-center gap-2"
+                onClick={() => setFilterOpen(!filterOpen)}
+              >
                 <Filter className="h-4 w-4" />
                 <span>Filter</span>
               </button>
@@ -374,8 +443,11 @@ Method: ${payment.method}
               {filterOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-10 border border-gray-200 dark:border-gray-700">
                   <div className="px-3 py-2">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Status
+                    </label>
                     <select
+                      title="filterStatus"
                       className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                       value={filterStatus}
                       onChange={(e) => setFilterStatus(e.target.value)}
@@ -387,8 +459,11 @@ Method: ${payment.method}
                     </select>
                   </div>
                   <div className="px-3 py-2">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Group</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Group
+                    </label>
                     <select
+                      title="filterGroup"
                       className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                       value={filterGroup}
                       onChange={(e) => setFilterGroup(e.target.value)}
@@ -400,7 +475,10 @@ Method: ${payment.method}
                     </select>
                   </div>
                   <div className="border-t border-gray-200 dark:border-gray-700 mt-2 pt-2 px-3 py-1 flex justify-end">
-                    <button className="text-sm text-indigo-600 dark:text-indigo-400 font-medium" onClick={applyFilters}>
+                    <button
+                      className="text-sm text-indigo-600 dark:text-indigo-400 font-medium"
+                      onClick={applyFilters}
+                    >
                       Apply
                     </button>
                   </div>
@@ -513,7 +591,9 @@ Method: ${payment.method}
               {currentItems.map((payment) => (
                 <tr key={payment.id}>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{payment.group}</div>
+                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                      {payment.group}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
@@ -521,7 +601,9 @@ Method: ${payment.method}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-500 dark:text-gray-400">{payment.date}</div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                      {payment.date}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
@@ -556,20 +638,30 @@ Method: ${payment.method}
 
         <div className="flex items-center justify-between mt-4 border-t dark:border-gray-700 pt-4">
           <div className="text-sm text-gray-500 dark:text-gray-400">
-            Showing <span className="font-medium">{indexOfFirstItem + 1}</span> to{" "}
-            <span className="font-medium">{Math.min(indexOfLastItem, filteredPayments.length)}</span> of{" "}
-            <span className="font-medium">{filteredPayments.length}</span> results
+            Showing <span className="font-medium">{indexOfFirstItem + 1}</span>{" "}
+            to{" "}
+            <span className="font-medium">
+              {Math.min(indexOfLastItem, filteredPayments.length)}
+            </span>{" "}
+            of <span className="font-medium">{filteredPayments.length}</span>{" "}
+            results
           </div>
           <div className="flex items-center gap-2">
             <button
-              className={`btn btn-secondary py-1 px-2 text-sm ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""}`}
+              className={`btn btn-secondary py-1 px-2 text-sm ${
+                currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
+              }`}
               onClick={prevPage}
               disabled={currentPage === 1}
             >
               Previous
             </button>
             <button
-              className={`btn btn-secondary py-1 px-2 text-sm ${currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""}`}
+              className={`btn btn-secondary py-1 px-2 text-sm ${
+                currentPage === totalPages
+                  ? "opacity-50 cursor-not-allowed"
+                  : ""
+              }`}
               onClick={nextPage}
               disabled={currentPage === totalPages}
             >
@@ -587,34 +679,56 @@ Method: ${payment.method}
 
             <div className="border dark:border-gray-700 rounded-lg p-4 mb-4">
               <div className="flex justify-between mb-2">
-                <span className="text-gray-500 dark:text-gray-400">Payment ID:</span>
+                <span className="text-gray-500 dark:text-gray-400">
+                  Payment ID:
+                </span>
                 <span className="font-medium">#{showReceipt}</span>
               </div>
               <div className="flex justify-between mb-2">
                 <span className="text-gray-500 dark:text-gray-400">Group:</span>
-                <span className="font-medium">{payments.find((p) => p.id === showReceipt)?.group}</span>
+                <span className="font-medium">
+                  {payments.find((p) => p.id === showReceipt)?.group}
+                </span>
               </div>
               <div className="flex justify-between mb-2">
-                <span className="text-gray-500 dark:text-gray-400">Amount:</span>
+                <span className="text-gray-500 dark:text-gray-400">
+                  Amount:
+                </span>
                 <span className="font-medium">
-                  {payments.find((p) => p.id === showReceipt)?.amount.toLocaleString()} CFA
+                  {payments
+                    .find((p) => p.id === showReceipt)
+                    ?.amount.toLocaleString()}{" "}
+                  CFA
                 </span>
               </div>
               <div className="flex justify-between mb-2">
                 <span className="text-gray-500 dark:text-gray-400">Date:</span>
-                <span className="font-medium">{payments.find((p) => p.id === showReceipt)?.date}</span>
+                <span className="font-medium">
+                  {payments.find((p) => p.id === showReceipt)?.date}
+                </span>
               </div>
               <div className="flex justify-between mb-2">
-                <span className="text-gray-500 dark:text-gray-400">Status:</span>
+                <span className="text-gray-500 dark:text-gray-400">
+                  Status:
+                </span>
                 <span
-                  className={`font-medium ${payments.find((p) => p.id === showReceipt)?.status === "Completed" ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}
+                  className={`font-medium ${
+                    payments.find((p) => p.id === showReceipt)?.status ===
+                    "Completed"
+                      ? "text-green-600 dark:text-green-400"
+                      : "text-red-600 dark:text-red-400"
+                  }`}
                 >
                   {payments.find((p) => p.id === showReceipt)?.status}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500 dark:text-gray-400">Method:</span>
-                <span className="font-medium">{payments.find((p) => p.id === showReceipt)?.method}</span>
+                <span className="text-gray-500 dark:text-gray-400">
+                  Method:
+                </span>
+                <span className="font-medium">
+                  {payments.find((p) => p.id === showReceipt)?.method}
+                </span>
               </div>
             </div>
 
@@ -627,7 +741,10 @@ Method: ${payment.method}
                 <span>Download</span>
               </button>
 
-              <button className="btn btn-primary" onClick={() => setShowReceipt(null)}>
+              <button
+                className="btn btn-primary"
+                onClick={() => setShowReceipt(null)}
+              >
                 Close
               </button>
             </div>
@@ -635,7 +752,7 @@ Method: ${payment.method}
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default Payments
+export default Payments;
