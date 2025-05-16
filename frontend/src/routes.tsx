@@ -18,6 +18,7 @@ import VerifyEmail from "./pages/very.email";
 import ForgotPassword from "./pages/forgot.password";
 // import UserDashboard from "./pages/dashboard.user.pages/UserDashboardPage";
 import Dashboard from "./pages/dashboard.bod.pages/Dashboard";
+import UserDashboard from "./pages/dashboard.user.pages/dashboard";
 import Notifications from "./pages/dashboard.bod.pages/Notifications";
 import Resolutions from "./pages/dashboard.bod.pages/Resolutions";
 import MeetingSchedule from "./pages/dashboard.bod.pages/MeetingSchedule";
@@ -27,6 +28,7 @@ import Documents from "./pages/dashboard.bod.pages/Documents";
 import Policies from "./pages/dashboard.bod.pages/Policies";
 import Reports from "./pages/dashboard.bod.pages/Reports";
 import GroupReqest from "./pages/dashboard.bod.pages/GroupRequest";
+import MyGroups from "./components/dashboard.user.components/my-groups";
 
 // eslint-disable-next-line react-refresh/only-export-components
 const LandingSections: React.FC = () => <App />;
@@ -48,19 +50,31 @@ export const router = createBrowserRouter([
     ],
   },
 
+  {
+    path: "/user",
+    children: [
+      { path: "dashboard", element: <UserDashboard /> },
+      { path: "groups", element: <MyGroups /> },
+    ],
+  },
+
   // Admin routes
-  { path: "/admin/dashboard", element: <AdminDashboardPage /> },
-  { path: "/admin/manage-members", element: <MemberManagement /> },
-  { path: "/njangi-form", element: <NjangiForm /> },
-  { path: "/login", element: <Login /> },
-  { path: "/manage-admin", element: <MemberManagement /> },
-  { path: "/groups-admin", element: <GroupOverviewPage /> },
-  { path: "/group-info-admin", element: <GroupInfoPage /> },
-  { path: "/stats-admin", element: <StatisticsPage /> },
-  { path: "/add-member-admin", element: <AddMemberPage /> },
-  { path: "/add-member-admin", element: <AddMemberPage /> },
-  { path: "/group-settings-admin", element: <GroupSettingsPage /> },
-  { path: "/notifications", element: <NotificationsPage /> },
+  {
+    path: "/admin",
+    caseSensitive: false,
+    children: [
+      { path: "dashboard", element: <AdminDashboardPage /> },
+      { path: "manage-members", element: <MemberManagement /> },
+      { path: "njangi-form", element: <NjangiForm /> },
+      { path: "login", element: <Login /> },
+      { path: "admin/groups", element: <GroupOverviewPage /> },
+      { path: "admin/group-info", element: <GroupInfoPage /> },
+      { path: "admin/stats", element: <StatisticsPage /> },
+      { path: "admin/add-member", element: <AddMemberPage /> },
+      { path: "admin/group-settings", element: <GroupSettingsPage /> },
+      { path: "notifications", element: <NotificationsPage /> },
+    ],
+  },
 
   // Board of Directors routes
   {

@@ -47,7 +47,7 @@ export default function Login() {
       if (response.status === 200) {
         // Handle successful login
         console.log("Login successful");
-        navigate("/dashboard");
+        navigate("/user/dashboard");
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -162,18 +162,6 @@ export default function Login() {
             )}
           </Button>
         </form>
-
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-sm text-center pt-2">
-          <p className="text-gray-600">
-            Don't have an account?{" "}
-            <Link
-              to="/register"
-              className="text-blue-600 font-semibold hover:text-blue-800"
-            >
-              Sign up
-            </Link>
-          </p>
-        </div>
       </motion.div>
     </section>
   );

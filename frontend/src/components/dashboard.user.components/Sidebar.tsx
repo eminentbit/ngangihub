@@ -10,7 +10,7 @@ import {
   X,
 } from "lucide-react";
 import { useState, useEffect } from "react";
-import Logo from "/public/logo.png";
+import Logo from "/logo2.png";
 
 const Sidebar = ({
   activeTab: propActive,
@@ -126,7 +126,7 @@ const Sidebar = ({
                   onClick={() => {
                     console.log("Notification:", n);
                     if (n.message.includes("Team Alpha"))
-                      navigate("/my-groups");
+                      navigate("/user/groups");
                     else if (n.message.includes("contribution"))
                       navigate("/payments");
                   }}
