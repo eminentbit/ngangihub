@@ -67,13 +67,14 @@ export const router = createBrowserRouter([
       { path: "manage-members", element: <MemberManagement /> },
       { path: "njangi-form", element: <NjangiForm /> },
       { path: "login", element: <Login /> },
-      { path: "admin/groups", element: <GroupOverviewPage /> },
-      { path: "admin/group-info", element: <GroupInfoPage /> },
-      { path: "admin/stats", element: <StatisticsPage /> },
-      { path: "admin/add-member", element: <AddMemberPage /> },
-      { path: "admin/group-settings", element: <GroupSettingsPage /> },
+      { path: "groups", element: <GroupOverviewPage /> },
+      { path: "group-info", element: <GroupInfoPage /> },
+      { path: "stats", element: <StatisticsPage /> },
+      { path: "add-member", element: <AddMemberPage /> },
+      { path: "group-settings", element: <GroupSettingsPage /> },
       { path: "notifications", element: <NotificationsPage /> },
     ],
+    
   },
 
   // Board of Directors routes
