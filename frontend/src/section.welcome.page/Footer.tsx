@@ -2,7 +2,7 @@ import React from "react";
 import Container from "../components/Container";
 import { Link as RouterLink } from "react-router-dom";
 import { Link as ScrollLink } from "react-scroll";
-import { quickLinks, socialLinks } from "../utils/footerlinks";
+import { quickLinks } from "../utils/footerlinks";
 import { useNavigate } from "react-router-dom";
 
 const Footer: React.FC = () => {
@@ -29,17 +29,7 @@ const Footer: React.FC = () => {
               Modern Njangi SaaS platform for community savings and financial
               empowerment.
             </p>
-            <div className="flex space-x-4">
-              {socialLinks.map(({ icon: Icon, to }, index) => (
-                <RouterLink
-                  key={index}
-                  to={to}
-                  className="text-gray-400 hover:text-blue-500 transition-colors"
-                >
-                  <Icon size={20} />
-                </RouterLink>
-              ))}
-            </div>
+            
           </div>
 
           {/* Quick links */}
@@ -75,22 +65,9 @@ const Footer: React.FC = () => {
           ))}
         </div>
 
-        <div className="border-t border-gray-800 mt-12 pt-8 text-center md:text-left md:flex md:items-center md:justify-between">
-          <p>&copy; {currentYear} NAAS. All rights reserved.</p>
-          <div className="mt-4 md:mt-0">
-            <label htmlFor="language-select" className="sr-only">
-              Select Language
-            </label>
-            <select
-              id="language-select"
-              className="bg-gray-800 text-gray-300 rounded p-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-            >
-              <option value="en">English</option>
-              <option value="fr">Français</option>
-              <option value="es">Español</option>
-            </select>
-          </div>
-        </div>
+        <div className="border-t border-gray-800 mt-12 pt-8 text-center mx-auto">
+  <p>© {currentYear} NAAS. All rights reserved.</p>
+</div>
       </Container>
     </footer>
   );
