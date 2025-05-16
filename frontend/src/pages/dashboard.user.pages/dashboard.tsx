@@ -21,9 +21,9 @@ import {
   Legend,
 } from "chart.js";
 import { Doughnut, Line } from "react-chartjs-2";
-import ChatInterface from "./chat-interface";
+import ChatInterface from "../../components/dashboard.user.components/chat-interface";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "./Sidebar";
+import Sidebar from "../../components/dashboard.user.components/Sidebar";
 
 // Register ChartJS components
 ChartJS.register(
@@ -40,7 +40,7 @@ ChartJS.register(
 // Exchange rate: 1 USD = approximately 600 CFA
 const CFA_EXCHANGE_RATE = 600;
 
-const Dashboard = () => {
+const UserDashboard = () => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [groups] = useState([
@@ -208,7 +208,7 @@ const Dashboard = () => {
   };
 
   const handleViewAllGroups = () => {
-    navigate("/my-groups");
+    navigate("/user/groups");
   };
 
   return (
@@ -337,7 +337,7 @@ const Dashboard = () => {
                         className="block w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                         onClick={() => {
                           setShowGroupMenu(null);
-                          navigate("/my-groups");
+                          navigate("/user/groups");
                         }}
                       >
                         View All Groups
@@ -346,7 +346,7 @@ const Dashboard = () => {
                         className="block w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                         onClick={() => {
                           setShowGroupMenu(null);
-                          navigate("/my-groups?create=true");
+                          navigate("/user/groups?create=true");
                         }}
                       >
                         Create New Group
@@ -445,4 +445,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default UserDashboard;

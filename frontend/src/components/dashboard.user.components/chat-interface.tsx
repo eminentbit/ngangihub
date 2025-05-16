@@ -23,7 +23,7 @@ export interface Message {
 }
 
 interface ChatInterfaceProps {
-  groupId: number;
+  groupId?: number;
   groupName: string;
   onClose: () => void;
 }
