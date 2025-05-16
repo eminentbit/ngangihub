@@ -38,7 +38,7 @@ const Header: React.FC<HeaderProps> = ({ darkMode, setDarkMode }) => {
   }, []);
 
   return (
-    <header className="flex items-center justify-end px-6 py-4 border-b dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm sticky top-0 z-30">
+    <header className="flex items-center justify-end px-6 py-4 border-b dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm sticky w-full top-0 z-30">
       {/* User Profile */}
       <div className="relative mr-4" ref={profileRef}>
         <button

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   FaBars,
   FaUsers,
@@ -42,6 +43,7 @@ export const AdminDashboardPage: React.FC = () => {
   const setSidebarOpen = (updateFn: (prevState: boolean) => boolean) => {
     setIsOpen((prevState) => updateFn(prevState));
   };
+  const navigate = useNavigate();
 
   return (
     <div
@@ -84,17 +86,26 @@ export const AdminDashboardPage: React.FC = () => {
                 </h1>
               </div>
               <div className="flex space-x-4">
-                {quickActions.map((action) => (
-                  <button
-                    key={action.id}
-                    type="button"
-                    onClick={action.onClick}
-                    className={`${action.color} flex items-center px-4 py-2 text-white rounded-lg shadow hover:scale-105 hover:shadow-lg transition font-semibold`}
-                  >
-                    {action.icon}
-                    <span className="ml-2">{action.label}</span>
-                  </button>
-                ))}
+              {quickActions.map((action) => (
+  <button
+    key={action.id}
+    type="button"
+    onClick={() => {
+      if (action.label === "View Contributions") {
+        navigate("/admin/contributions");
+      } else if (action.label === "Request Loan") {
+        navigate("/admin/loans/request");
+      } else {
+        action.onClick();
+      }
+    }}
+    className={`${action.color} flex items-center px-4 py-2 text-white rounded-lg shadow hover:scale-105 hover:shadow-lg transition font-semibold`}
+  >
+    {action.icon}
+    <span className="ml-2">{action.label}</span>
+  </button>
+))}
+
               </div>
             </div>
 

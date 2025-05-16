@@ -70,13 +70,8 @@ const GroupInfoPage: React.FC = () => {
         />
       )}
 
-      {/* Sidebar Container */}
-      <aside
-        className={`fixed inset-y-0 left-0 z-40 w-64 transform transition-transform duration-300 lg:static lg:translate-x-0 ${
-          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
-      >
-        <Sidebar
+       {/* Sidebar Container */}
+       <Sidebar
           isOpen={isSidebarOpen}
           activeTab={activeTab}
           onTabChange={setActiveTab}
@@ -84,10 +79,9 @@ const GroupInfoPage: React.FC = () => {
           notifications={[]}
           onClose={toggleSidebar}
         />
-      </aside>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      <div className={`flex-1 transition-all duration-300 p-6 ${isSidebarOpen ? 'lg:ml-64' : 'ml-0'}`}>
         <Header darkMode={isDarkMode} setDarkMode={setIsDarkMode} />
 
         <main className="flex-1 pt-20 px-4 sm:px-6 md:px-8 lg:px-12 transition-all duration-200">

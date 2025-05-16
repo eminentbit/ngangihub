@@ -55,14 +55,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, activeTab, onToggle }) => {
           fixed inset-y-0 left-0 z-30
           bg-blue-700 text-white border-r
           transform transition-transform duration-300 ease-in-out
-          ${isOpen ? "translate-x-0" : "-translate-x-full"}
-          w-64 flex flex-col
+          ${isOpen ? "translate-x-0 w-64" : "-translate-x-full"}
+           flex flex-col
         `}
       >
         {/* Logo and Collapse button */}
         <div className="flex items-center h-16 px-4 border-b border-blue-800 relative">
           <img src="/logo2.png" alt="Logo" className="h-10 w-auto" />
-          <img src="/logo3.png" alt="Logo" className="h-8 w-auto" />
           {isOpen && (
             <button
               onClick={onToggle}

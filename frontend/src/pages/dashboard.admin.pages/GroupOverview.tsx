@@ -60,9 +60,8 @@ const GroupOverviewPage: React.FC = () => {
         />
       )}
 
-      {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-40 w-64 transform transition-transform duration-300 lg:static lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <Sidebar
+       {/* Sidebar Container */}
+       <Sidebar
           isOpen={isSidebarOpen}
           activeTab={activeTab}
           onTabChange={setActiveTab}
@@ -70,16 +69,16 @@ const GroupOverviewPage: React.FC = () => {
           notifications={[]}
           onClose={toggleSidebar}
         />
-      </aside>
 
-      {/* Main area */}
-      <div className="flex-1 flex flex-col">
+      {/* Main Content */}
+      <div className={`flex-1 transition-all duration-300 p-6 ${isSidebarOpen ? 'lg:ml-64' : 'ml-0'}`}>
+
         {/* Header */}
         <Header darkMode={isDarkMode}
          setDarkMode={setDarkMode} />
 
         <main className="flex-1 pt-20 px-2 sm:px-4 md:px-8 lg:px-12 transition-all duration-200">
-          <div className="max-w-5xl mx-auto">
+          <div className="max-auto mx-auto">
             {/* Header */}
             <header className="mb-6 sm:mb-8">
               <h1 className="text-3xl font-bold text-blue-700 mb-2">Group Overview</h1>

@@ -110,7 +110,7 @@ const ManageMembersPage: React.FC = () => {
   }, [isModalOpen]);
 
   return (
-    <div className={`flex min-h-screen bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-200 ${isDarkMode ? 'dark' : ''}`}>
+    <div className={`flex h-screen overflow-hidden bg-gray-50 dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-800 transition-colors}`}>
       {/* Sidebar Overlay for mobile */}
       {isSidebarOpen && (
         <div
@@ -121,12 +121,7 @@ const ManageMembersPage: React.FC = () => {
       )}
 
       {/* Sidebar Container */}
-      <aside
-        className={`fixed inset-y-0 left-0 z-40 w-64 transform transition-transform duration-300 lg:static lg:translate-x-0 ${
-          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
-      >
-        <Sidebar
+      <Sidebar
           isOpen={isSidebarOpen}
           activeTab={activeTab}
           onTabChange={setActiveTab}
@@ -134,15 +129,15 @@ const ManageMembersPage: React.FC = () => {
           notifications={[]}
           onClose={toggleSidebar}
         />
-      </aside>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      <div className={`flex-1 transition-all duration-300 p-6 ${isSidebarOpen ? 'lg:ml-64' : 'ml-0'}`}>
+
       <Header
           darkMode={isDarkMode}
           setDarkMode={setIsDarkMode}
         />
-        <main className="flex-1 px-6 py-8 lg:px-12 transition-all duration-200">
+        <main className={`${!isSidebarOpen ? "w-full" : "flex-1"} flex-1 h-screen px-6 w-full py-8 lg:px-12 bg-white transition-all duration-200 ml-0`}>
           <header className="mb-8">
             <h1 className="text-3xl font-bold text-blue-700 mb-2">Manage Members</h1>
             <p className="text-gray-600 dark:text-gray-300">

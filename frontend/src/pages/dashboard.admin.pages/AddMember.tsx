@@ -64,13 +64,8 @@ const AddMemberPage: React.FC = () => {
         />
       )}
 
-      {/* Sidebar */}
-      <aside
-        className={`fixed inset-y-0 left-0 z-40 w-64 transform transition-transform duration-300 lg:static lg:translate-x-0 ${
-          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
-      >
-        <Sidebar
+       {/* Sidebar Container */}
+       <Sidebar
           isOpen={isSidebarOpen}
           activeTab={activeTab}
           onTabChange={setActiveTab}
@@ -78,10 +73,9 @@ const AddMemberPage: React.FC = () => {
           notifications={[]}
           onClose={toggleSidebar}
         />
-      </aside>
 
-      {/* Main */}
-      <div className="flex-1 flex flex-col">
+      {/* Main Content */}
+      <div className={`flex-1 transition-all duration-300 p-6 ${isSidebarOpen ? 'lg:ml-64' : 'ml-0'}`}>
         {/* Header */}
         <Header 
         darkMode={isDarkMode} 
