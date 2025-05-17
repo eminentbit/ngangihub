@@ -25,7 +25,12 @@ const njangiDraftSchema = new mongoose.Schema(
       rules: String,
     },
     inviteMembers: [
-      {
+       {
+        type: {
+          type: String,
+          enum: ["email", "phone"],
+        },
+        value: String,
         contact: String,
       },
     ],
