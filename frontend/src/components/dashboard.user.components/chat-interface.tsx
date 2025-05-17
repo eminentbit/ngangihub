@@ -190,6 +190,7 @@ const ChatInterface = ({ groupId, groupName, onClose }: ChatInterfaceProps) => {
         <div className="p-4 border-b dark:border-gray-700 flex justify-between items-center">
           <h2 className="text-lg font-semibold">{groupName} Chat</h2>
           <button
+            type="button"
             className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
             onClick={onClose}
           >

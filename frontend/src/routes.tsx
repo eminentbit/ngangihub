@@ -29,6 +29,8 @@ import Policies from "./pages/dashboard.bod.pages/Policies";
 import Reports from "./pages/dashboard.bod.pages/Reports";
 import GroupReqest from "./pages/dashboard.bod.pages/GroupRequest";
 import MyGroups from "./components/dashboard.user.components/my-groups";
+import PaymentsPage from "./pages/dashboard.user.pages/payments/page";
+import Settings from "./components/dashboard.user.components/Settings";
 
 // eslint-disable-next-line react-refresh/only-export-components
 const LandingSections: React.FC = () => <App />;
@@ -55,6 +57,8 @@ export const router = createBrowserRouter([
     children: [
       { path: "dashboard", element: <UserDashboard /> },
       { path: "groups", element: <MyGroups /> },
+      { path: "payments", element: <PaymentsPage /> },
+      { path: "settings", element: <Settings /> },
     ],
   },
 

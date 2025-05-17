@@ -221,7 +221,7 @@ const UserDashboard = () => {
       />
 
       <main
-        className={`flex-1 p-6 pl-20 space-y-6 ${
+        className={`flex-1 p-6 pl-10 space-y-6 ${
           isOpen ? "lg:ml-64" : "lg:ml-16"
         } transition-all duration-300 `}
       >
