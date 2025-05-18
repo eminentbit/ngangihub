@@ -62,7 +62,7 @@ const createNjangiFlow = async (formData) => {
       inviteMembers,
     });
 
-    // send njangi created pending pending email, telling the user that their njangi is pending approval
+    // send njangi created pending pending email, telling the user that their njangi is pending approval from the board 
     await sendNjangiCreatedPendingEmail(
       accountSetup.email,
       `${accountSetup.firstName} ${accountSetup.lastName}`,
