@@ -78,12 +78,13 @@ export const groupDetailsSchema = z.object({
   contributionAmount: z
     .string()
     .min(1, "Contribution amount is required")
-    .refine((value) => !isNaN(Number(value)), {
+    .refine((value) => !isNaN(Number(parseInt(value.replace(/,/g, "")))), {
       message: "Contribution amount must be a number",
     })
-    .refine((value) => Number(value) > 0, {
+    .refine((value) => Number(parseInt(value)) > 0, {
       message: "Contribution amount must be greater than 0",
     }),
+
   contributionFrequency: z
     .enum(["Weekly", "Monthly", "Bi-weekly"], {
       required_error: "Please select a contribution frequency",

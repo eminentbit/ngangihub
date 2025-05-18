@@ -1,5 +1,5 @@
 // services/finalizeNjangiFromDraft.js
-import NjangiDraft from "../models/NjangiDrafts.js";
+import NjangiDraft from "../models/njangi.draft.model.js";
 import User from "../models/user.model.js";
 import { createUser } from "./user.service.js";
 import { createNjangiGroup } from "./njangi.service.js";

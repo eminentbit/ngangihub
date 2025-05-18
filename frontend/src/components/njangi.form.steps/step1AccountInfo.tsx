@@ -82,8 +82,21 @@ const Step1AccountInfo: React.FC = () => {
       console.log("Validation failed, not proceeding to next step.");
       return;
     }
-
     updateAccountSetup(data);
+    state.accountSetup = data;
+
+    if ("credentials" in navigator && "PasswordCredential" in window) {
+      console.log(state);
+      const credential = new window.PasswordCredential({
+        id: data.email,
+        password: data.password,
+        name: `${data.firstName} ${data.lastName}`,
+      });
+      navigator.credentials
+        .store(credential)
+        .catch((err) => console.error("Error storing credential:", err));
+    }
+
     nextStep();
   };
 

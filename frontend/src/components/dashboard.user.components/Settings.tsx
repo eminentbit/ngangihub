@@ -65,7 +65,7 @@ const Settings = () => {
     <div className="flex">
       <Sidebar
         isOpen={isOpen}
-        setIsOpen={setIsOpen}
+        onClose={() => setIsOpen(false)}
         onToggle={() => setIsOpen((o) => !o)}
         activeTab={activeTab}
       />
