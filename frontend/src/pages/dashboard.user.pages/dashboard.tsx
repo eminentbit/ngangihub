@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { SetStateAction, useState, useEffect } from "react";
 import {
   MoreHorizontal,
   MessageSquare,
@@ -24,6 +24,7 @@ import { Doughnut, Line } from "react-chartjs-2";
 import ChatInterface from "../../components/dashboard.user.components/chat-interface";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/dashboard.user.components/Sidebar";
+import Header from "../../components/dashboard.admin.components/Header";
 
 // Register ChartJS components
 ChartJS.register(
@@ -43,6 +44,20 @@ const CFA_EXCHANGE_RATE = 600;
 const UserDashboard = () => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [activeTab, setActiveTab] = useState<string>("Dashboard");
+  const [darkMode, setDarkMode] = useState<boolean>(false);
+  const handleTabChange = (tab: SetStateAction<string>) => {
+    setActiveTab(tab);
+  };
+useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("dark-mode", "true");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("dark-mode", "false");
+    }
+  }, [darkMode]);
   const [groups] = useState([
     {
       id: 1,
@@ -212,13 +227,18 @@ const UserDashboard = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100 dark:bg-gray-900">
-      <Sidebar
-        isOpen={isOpen}
-        onToggle={() => setIsOpen((o) => !o)}
-        activeTab="dashboard"
-        setIsOpen={setIsOpen}
-      />
+  <div className="flex flex-col min-h-screen bg-gray-100 dark:bg-gray-900">
+    <Sidebar
+      isOpen={isOpen}
+      activeTab={activeTab}
+      onToggle={() => setIsOpen(o => !o)}
+      onTabChange={handleTabChange}      // replace with your real handler
+      onClose={() => setIsOpen(false)}
+    />
+    <Header
+      darkMode={darkMode}
+      setDarkMode={setDarkMode}
+    />
 
       <main
         className={`flex-1 p-6 pl-10 space-y-6 ${
@@ -226,7 +246,7 @@ const UserDashboard = () => {
         } transition-all duration-300 `}
       >
         <header>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          <h1 className="text-3xl font-bold text-blue-700  dark:text-gray-100">
             Dashboard
           </h1>
           <p className="mt-1 text-gray-600 dark:text-gray-400">
