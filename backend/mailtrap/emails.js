@@ -61,10 +61,10 @@ export const sendNjangiCreatedPendingEmail = async (
         "{viewURL}",
         viewURL
       ),
-      category: "Njangi Creation Notification",
+      category: "Njangi Creation Pending Approval",
     });
     console.log(
-      "Njangi Notification Email Creation sent successfully",
+      "Njangi Pending Approval Email sent successfully",
       response
     );
   } catch (error) {

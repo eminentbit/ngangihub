@@ -4,6 +4,7 @@ import NjangiDraft from "../models/njangi.draft.model.js";
 import NjangiGroup from "../models/njangigroup.model.js";
 import User from "../models/user.model.js";
 import dotenv from "dotenv";
+import { sendNjangiCreatedPendingEmail } from "../mailtrap/emails.js";
 dotenv.config();
 
 /**
@@ -40,7 +41,7 @@ const createNjangiFlow = async (formData) => {
     }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(accountSetup.password, 15);
+    const hashedPassword = await bcrypt.hash(accountSetup.password, 20);
 
     // Ensure groupDetails has proper Date objects
     const parsedGroupDetails = {
@@ -51,26 +52,6 @@ const createNjangiFlow = async (formData) => {
       endDate: groupDetails.endDate ? new Date(groupDetails.endDate) : null,
     };
 
-    inviteMembers.map((member) => {
-      // Send invitation email
-      transporter.sendMail({
-        from: process.env.SENDER_EMAIL,
-        to: member.contact,
-        subject: "Invitation to join Njangi Group",
-        html: `
-          <h2>You've been invited to join a Njangi Group!</h2>
-          <p>You have been invited to join ${groupDetails.groupName}.</p>
-          <p>The group will start on ${groupDetails.startDate.toLocaleDateString()}.</p>
-          <p>Click the link below to accept the invitation and join the group:</p>
-          <a href="${process.env.FRONTEND_URL}/join-njangi/${
-          draft._id
-        }">Accept Invitation</a>
-          <p>Best regards,</p>
-          <p>The Njangi Team</p>
-        `,
-      });
-    });
-
     // Create and save Njangi draft
     const draft = await NjangiDraft.create({
       accountSetup: {
@@ -80,6 +61,19 @@ const createNjangiFlow = async (formData) => {
       groupDetails: parsedGroupDetails,
       inviteMembers,
     });
+
+    // send njangi created pending pending email, telling the user that their njangi is pending approval
+    await sendNjangiCreatedPendingEmail(
+      accountSetup.email,
+      `${accountSetup.firstName} ${accountSetup.lastName}`,
+      groupDetails.groupName,
+      groupDetails.createdAt,
+      groupDetails.expectedMembers,
+      groupDetails.contributionAmount,
+      (viewUrl =
+        process.env.NJANGI_DRAFT_URL ||
+        "http://localhost:3000/njangi-group/pending-approval")
+    );
 
     console.log("Njangi draft created:", draft._id);
     return { draftId: draft._id };
