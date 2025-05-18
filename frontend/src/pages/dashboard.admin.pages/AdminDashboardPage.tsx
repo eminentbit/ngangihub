@@ -77,7 +77,7 @@ export const AdminDashboardPage: React.FC = () => {
 
         {/* DASHBOARD BODY */}
         {activeTab === "admin" && (
-          <div className="px-2 md:px-6 py-8 max-w-[1500px] mx-auto">
+          <div className="px-2 md:px-6 py-8 max-w-[1100px] mx-auto">
             {/* Greeting & Overview */}
             <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div>
@@ -94,7 +94,7 @@ export const AdminDashboardPage: React.FC = () => {
       if (action.label === "View Contributions") {
         navigate("/admin/contributions");
       } else if (action.label === "Request Loan") {
-        navigate("/admin/loans/request");
+        navigate("/admin/loans-request");
       } else {
         action.onClick();
       }

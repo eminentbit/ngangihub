@@ -14,9 +14,10 @@ import StatisticsPage from "./pages/dashboard.admin.pages/MyStatistics";
 import AddMemberPage from "./pages/dashboard.admin.pages/AddMember";
 import GroupSettingsPage from "./pages/dashboard.admin.pages/GroupSetting";
 import NotificationsPage from "./pages/dashboard.admin.pages/Notification";
+import ContributionPage from "./pages/dashboard.admin.pages/Contribution";
+import LoanRequestPage from "./pages/dashboard.admin.pages/LoanRequested";
 import VerifyEmail from "./pages/very.email";
 import ForgotPassword from "./pages/forgot.password";
-// import UserDashboard from "./pages/dashboard.user.pages/UserDashboardPage";
 import Dashboard from "./pages/dashboard.bod.pages/Dashboard";
 import UserDashboard from "./pages/dashboard.user.pages/dashboard";
 import Notifications from "./pages/dashboard.bod.pages/Notifications";
@@ -77,6 +78,8 @@ export const router = createBrowserRouter([
       { path: "add-member", element: <AddMemberPage /> },
       { path: "group-settings", element: <GroupSettingsPage /> },
       { path: "notifications", element: <NotificationsPage /> },
+      { path: "contributions", element: <ContributionPage /> },
+      { path: "loans-request", element: <LoanRequestPage /> },
     ],
     
   },

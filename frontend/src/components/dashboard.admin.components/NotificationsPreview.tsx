@@ -6,8 +6,7 @@ interface Notification {
   message: string;
   time: string;
   isRead: boolean;
-  showLabels: boolean; 
-}
+} 
 
 interface NotificationsPreviewProps {
   notifications: Notification[];
@@ -19,13 +18,7 @@ const NotificationsPreview: React.FC<NotificationsPreviewProps> = ({
   notifications,
   onViewAll,
 }) => (
-  <div>
-    <div className="flex items-center justify-between mb-2">
-      <h3 className="font-bold text-indigo-200 ml-3">NOTIFICATIONS</h3>
-      <span className="bg-red-500 text-xs px-2 py-1 rounded-full">
-        {notifications.length}
-      </span>
-    </div>
+  
     <div className="space-y-2 max-h-60 overflow-y-auto">
       {notifications.slice(0, 2).map((n) => (
         <div
@@ -47,10 +40,11 @@ const NotificationsPreview: React.FC<NotificationsPreviewProps> = ({
         onClick={onViewAll}
         className="text-indigo-300 text-sm hover:text-white cursor-pointer whitespace-nowrap pb-3 ml-3"
       >
-        <Link to="/notifications">View All</Link>
+        
+        <Link to="/admin/notifications">View All</Link>
       </button>
     </div>
-  </div>
+  
 );
 
 export default NotificationsPreview;
