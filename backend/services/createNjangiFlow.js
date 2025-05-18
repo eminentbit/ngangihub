@@ -7,6 +7,8 @@ import dotenv from "dotenv";
 import { sendNjangiCreatedPendingEmail } from "../mailtrap/emails.js";
 dotenv.config();
 
+const viewURL = process.env.FRONTEND_URL || "http://localhost:5173";
+
 /**
  * Creates a Njangi draft document from the given form data
  * @param {Object} formData - form data from the Njangi creation form
@@ -15,6 +17,8 @@ dotenv.config();
 const createNjangiFlow = async (formData) => {
   try {
     const { accountSetup, groupDetails, inviteMembers } = formData;
+
+    console.log("Data recieved frome the frontend: ", formData);
 
     // Check for existing user
     const existingUser = await User.findOne({ email: accountSetup.email });
@@ -62,18 +66,21 @@ const createNjangiFlow = async (formData) => {
       inviteMembers,
     });
 
-    // send njangi created pending pending email, telling the user that their njangi is pending approval from the board 
-    await sendNjangiCreatedPendingEmail(
-      accountSetup.email,
-      `${accountSetup.firstName} ${accountSetup.lastName}`,
-      groupDetails.groupName,
-      groupDetails.createdAt,
-      groupDetails.expectedMembers,
-      groupDetails.contributionAmount,
-      (viewUrl =
-        process.env.NJANGI_DRAFT_URL ||
-        "http://localhost:3000/njangi-group/pending-approval")
-    );
+    // send njangi created pending pending email, telling the user that their njangi is pending approval from the board
+    try {
+      await sendNjangiCreatedPendingEmail(
+        accountSetup.email,
+        `${accountSetup.firstName} ${accountSetup.lastName}`,
+        groupDetails.groupName,
+        draft.createdAt,
+        groupDetails.expectedMembers || 0,
+        groupDetails.contributionAmount,
+        viewURL 
+      );
+    } catch (err) {
+      console.error("Email sending failed (non-blocking):", err.message);
+      console.log("Email sending failed (non-blocking):", err.message);
+    }
 
     console.log("Njangi draft created:", draft._id);
     return { draftId: draft._id };

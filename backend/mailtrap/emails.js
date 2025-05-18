@@ -11,26 +11,32 @@ import {
   GROUP_MEMBER_ADDITION_TEMPLATE,
 } from "./emailTemplates.js";
 
+const replacePlaceholders = (template, data) => {
+  return Object.entries(data).reduce((html, [key, value]) => {
+    return html.replaceAll(`{${key}}`, value);
+  }, template);
+};
+
 export const sendVerificationEmail = async (email, verificationToken) => {
   const recipient = [{ email }];
 
   try {
-    const response = await mailtrapClient.send({
+    const response = await mailtrapClient.testing.send({
       from: sender,
       to: recipient,
       subject: "Verify your email",
-      html: VERIFICATION_EMAIL_TEMPLATE.replace(
-        "{verificationCode}",
-        verificationToken
-      ),
+      html: replacePlaceholders(VERIFICATION_EMAIL_TEMPLATE, {
+        verificationCode: verificationToken,
+      }),
       category: "Email Verification",
     });
     console.log("Email sent successfully", response);
   } catch (error) {
     console.error(`Error sending email: ${error}`);
-    throw new Error("Error sending email: ", error);
+    throw new Error("Error sending email");
   }
 };
+
 export const sendNjangiCreatedPendingEmail = async (
   email,
   userName,
@@ -40,38 +46,47 @@ export const sendNjangiCreatedPendingEmail = async (
   contributionAmount,
   viewURL
 ) => {
-  const recipient = [{ email }];
+  const recipients = [{ email }];
+
+  console.log("Sending email with payload:", {
+    from: sender,
+    to: recipients,
+    subject: "Njangi Creation Approved",
+    html: replacePlaceholders(NJANGI_CREATION_NOTIFICATION_TEMPLATE, {
+      userName,
+      groupName,
+      creationDate,
+      memberCount,
+      contributionAmount,
+      viewURL,
+    }),
+  });
+
+
+  console.log(`recipient: ${recipients}`);
 
   try {
     const response = await mailtrapClient.send({
       from: sender,
-      to: recipient,
+      to: recipients,
       subject: "Njangi Creation Pending",
-      html: NJANGI_CREATION_NOTIFICATION_TEMPLATE.replace(
-        "{userName}",
+      html: replacePlaceholders(NJANGI_CREATION_NOTIFICATION_TEMPLATE, {
         userName,
-        "{groupName}",
         groupName,
-        "{creationDate}",
         creationDate,
-        "{memberCount}",
         memberCount,
-        "{contributionAmount}",
         contributionAmount,
-        "{viewURL}",
-        viewURL
-      ),
+        viewURL,
+      }),
       category: "Njangi Creation Pending Approval",
     });
-    console.log(
-      "Njangi Pending Approval Email sent successfully",
-      response
-    );
+    console.log("Njangi Pending Approval Email sent successfully", response);
   } catch (error) {
     console.error(`Error sending email: ${error}`);
-    throw new Error("Error sending email: ", error);
+    throw new Error("Error sending email");
   }
 };
+
 export const sendNjangiCreatedApprovalEmail = async (
   email,
   userName,
@@ -88,26 +103,20 @@ export const sendNjangiCreatedApprovalEmail = async (
       from: sender,
       to: recipient,
       subject: "Njangi Creation Approved",
-      html: NJANGI_APPROVAL_TEMPLATE.replace(
-        "{userName}",
+      html: replacePlaceholders(NJANGI_APPROVAL_TEMPLATE, {
         userName,
-        "{groupName}",
         groupName,
-        "{creationDate}",
         creationDate,
-        "{memberCount}",
         memberCount,
-        "{contributionAmount}",
         contributionAmount,
-        "{dashboardURL}",
-        dashboardURL
-      ),
+        dashboardURL,
+      }),
       category: "Njangi Creation Notification",
     });
     console.log("Njangi Approval Email sent successfully", response);
   } catch (error) {
     console.error(`Error sending email: ${error}`);
-    throw new Error("Error sending email: ", error);
+    throw new Error("Error sending email");
   }
 };
 
@@ -119,17 +128,15 @@ export const sendWelcomeEmail = async (email, username, dashboardURL) => {
       from: sender,
       to: recipient,
       subject: "Welcome to NjangiHub- NAAS(Njangi As A Service)",
-      html: WELCOME_TEMPLATE.replace(
-        "{userName}",
-        username,
-        "{dashboardURL}",
-        dashboardURL
-      ),
+      html: replacePlaceholders(WELCOME_TEMPLATE, {
+        userName: username,
+        dashboardURL,
+      }),
     });
     console.log("Welcome Email sent successfully", response);
   } catch (error) {
     console.error(`Error sending welcome email: ${error}`);
-    throw new Error("Error sending email: ", error);
+    throw new Error("Error sending email");
   }
 };
 
@@ -141,13 +148,15 @@ export const sendPasswordResetEmail = async (email, resetToken) => {
       from: sender,
       to: recipient,
       subject: "Reset your password",
-      html: PASSWORD_RESET_REQUEST_TEMPLATE.replace("{resetURL}", resetToken),
+      html: replacePlaceholders(PASSWORD_RESET_REQUEST_TEMPLATE, {
+        resetURL: resetToken,
+      }),
       category: "Password Reset",
     });
     console.log("Password reset email sent successfully", response);
   } catch (error) {
     console.error(`Error sending password reset email: ${error}`);
-    throw new Error("Error sending password reset email: ", error);
+    throw new Error("Error sending password reset email");
   }
 };
 
@@ -165,7 +174,7 @@ export const sentResetSuccessEmail = async (email) => {
     console.log("Password reset success email sent successfully", response);
   } catch (error) {
     console.error(`Error sending password reset success email: ${error}`);
-    throw new Error("Error sending password reset success email: ", error);
+    throw new Error("Error sending password reset success email");
   }
 };
 
@@ -183,24 +192,21 @@ export const sendNjangiInvitationEmail = async (
       from: sender,
       to: recipient,
       subject: "Njangi Creation Approved",
-      html: INVITE_TEMPLATE.replace(
-        "{senderName}",
+      html: replacePlaceholders(INVITE_TEMPLATE, {
         senderName,
-        "{groupName}",
         groupName,
-        "{personalMessage}",
         personalMessage,
-        "{inviteURL}",
-        inviteURL
-      ),
+        inviteURL,
+      }),
       category: "Njangi Invitation",
     });
     console.log("Njangi Invitation Email sent successfully", response);
   } catch (error) {
     console.error(`Error sending email: ${error}`);
-    throw new Error("Error sending email: ", error);
+    throw new Error("Error sending email");
   }
 };
+
 export const sendNjangiAleadyAddMemberEmail = async (
   email,
   userName,
@@ -217,28 +223,23 @@ export const sendNjangiAleadyAddMemberEmail = async (
       from: sender,
       to: recipient,
       subject: `You have been added to ${groupName}.`,
-      html: GROUP_MEMBER_ADDITION_TEMPLATE.replace(
-        "{creatorName}",
+      html: replacePlaceholders(GROUP_MEMBER_ADDITION_TEMPLATE, {
         creatorName,
-        "{userName}",
         userName,
-        "{contributionAmount}",
         contributionAmount,
-        "{paymentFrequency}",
         paymentFrequency,
-        "{groupName}",
         groupName,
-        "{dashboardURL}",
-        dashboardURL
-      ),
+        dashboardURL,
+      }),
       category: "Invited to Njangi Group",
     });
     console.log("Njangi already add member Email sent successfully", response);
   } catch (error) {
     console.error(`Error sending email: ${error}`);
-    throw new Error("Error sending email: ", error);
+    throw new Error("Error sending email");
   }
 };
+
 export const sendNjangiRejectionEmail = async (
   email,
   userName,
@@ -253,21 +254,17 @@ export const sendNjangiRejectionEmail = async (
       from: sender,
       to: recipient,
       subject: "Njangi Creation Not Approved",
-      html: NJANGI_REJECTION_TEMPLATE.replace(
-        "{userName}",
+      html: replacePlaceholders(NJANGI_REJECTION_TEMPLATE, {
         userName,
-        "{groupName}",
         groupName,
-        "{rejectionReason}",
         rejectionReason,
-        "{editURL}",
-        editURL
-      ),
+        editURL,
+      }),
       category: "Njangi Invitation Not Approved",
     });
     console.log("Njangi Rejection Email sent successfully", response);
   } catch (error) {
     console.error(`Error sending email: ${error}`);
-    throw new Error("Error sending email: ", error);
+    throw new Error("Error sending email");
   }
 };
