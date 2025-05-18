@@ -1,5 +1,5 @@
 import { finalizeNjangiFromDraft } from "../services/finalizeNjangiFromDraft.js";
-import NjangiDraft from "../models/NjangiDrafts.js";
+import NjangiDraft from "../models/njangi.draft.model.js";
 
 export const approveNjangi = async (req, res) => {
   const { draftId, action } = req.body;
@@ -25,12 +25,10 @@ export const approveNjangi = async (req, res) => {
     }
   } catch (error) {
     console.log("BOD approval error:", error);
-    return res
-      .status(500)
-      .json({
-        success: false,
-        message:
-          "An Error occured while approving Njangi. Please try again later.",
-      });
+    return res.status(500).json({
+      success: false,
+      message:
+        "An Error occured while approving Njangi. Please try again later.",
+    });
   }
 };
