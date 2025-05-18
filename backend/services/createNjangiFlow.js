@@ -1,8 +1,10 @@
 // services/createNjangiFlow.js
 import bcrypt from "bcryptjs";
-import NjangiDraft from "../models/NjangiDrafts.js";
+import NjangiDraft from "../models/njangi.draft.model.js";
 import NjangiGroup from "../models/njangigroup.model.js";
 import User from "../models/user.model.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 /**
  * Creates a Njangi draft document from the given form data
@@ -48,6 +50,26 @@ const createNjangiFlow = async (formData) => {
         : null,
       endDate: groupDetails.endDate ? new Date(groupDetails.endDate) : null,
     };
+
+    inviteMembers.map((member) => {
+      // Send invitation email
+      transporter.sendMail({
+        from: process.env.SENDER_EMAIL,
+        to: member.contact,
+        subject: "Invitation to join Njangi Group",
+        html: `
+          <h2>You've been invited to join a Njangi Group!</h2>
+          <p>You have been invited to join ${groupDetails.groupName}.</p>
+          <p>The group will start on ${groupDetails.startDate.toLocaleDateString()}.</p>
+          <p>Click the link below to accept the invitation and join the group:</p>
+          <a href="${process.env.FRONTEND_URL}/join-njangi/${
+          draft._id
+        }">Accept Invitation</a>
+          <p>Best regards,</p>
+          <p>The Njangi Team</p>
+        `,
+      });
+    });
 
     // Create and save Njangi draft
     const draft = await NjangiDraft.create({

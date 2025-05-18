@@ -1,7 +1,9 @@
 import React, { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
+import { NumericFormat } from "react-number-format";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Users, Calendar, DollarSign } from "lucide-react";
+import { Users, Calendar } from "lucide-react";
+
 import {
   groupDetailsSchema,
   GroupDetailsFormData,
@@ -22,6 +24,7 @@ const Step2GroupDetails: React.FC = () => {
     setError,
     clearErrors,
     trigger,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<GroupDetailsFormData>({
     resolver: zodResolver(groupDetailsSchema),
@@ -60,6 +63,7 @@ const Step2GroupDetails: React.FC = () => {
     }
 
     updateGroupDetails(data);
+
     nextStep();
   };
 
@@ -101,26 +105,60 @@ const Step2GroupDetails: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="form-label">Contribution Amount</label>
+              {/* <label className="form-label">Contribution Amount</label> */}
               <div className="relative mt-1">
-                <DollarSign
-                  size={18}
-                  className="absolute left-3 top-2.5 text-gray-400"
+                <Controller
+                  name="contributionAmount"
+                  control={control}
+                  defaultValue={state.groupDetails.contributionAmount ?? "0"}
+                  rules={{
+                    required: "Contribution is required",
+                    min: { value: 0.01, message: "Must be at least 0.01" },
+                  }}
+                  render={({ field, fieldState }) => (
+                    <div>
+                      <label className="form-label">Contribution Amount</label>
+                      <div className="relative mt-1">
+                        <NumericFormat
+                          {...field}
+                          // show commas as thousands separators
+                          thousandSeparator
+                          // allow two decimals
+                          decimalScale={0}
+                          fixedDecimalScale
+                          // disallow negative
+                          allowNegative={false}
+                          // pass the raw numeric string back to RHF
+                          onValueChange={(values) => {
+                            const raw = values.value.replace(/,/g, "");
+                            field.onChange(raw);
+                          }}
+                          className={`form-input ${
+                            fieldState.error ? "form-input-error" : ""
+                          }`}
+                          placeholder="0.00"
+                        />
+                        <div
+                          className="absolute left-3 top-2.5 text-gray-400"
+                          children={"₣"}
+                        />
+                      </div>
+                      {fieldState.error && (
+                        <p className="form-error">{fieldState.error.message}</p>
+                      )}
+                    </div>
+                  )}
                 />
-                <input
-                  type="number"
-                  {...register("contributionAmount")}
-                  className={`form-input ${
-                    errors.contributionAmount ? "form-input-error" : ""
-                  }`}
-                  min="0"
-                  step="0.01"
+
+                {/* <div
+                  className="absolute left-3 top-2.5 text-gray-400"
+                  children={"₣"}
                 />
                 {errors.contributionAmount && (
                   <p className="form-error">
                     {errors.contributionAmount.message}
                   </p>
-                )}
+                )} */}
               </div>
             </div>
 

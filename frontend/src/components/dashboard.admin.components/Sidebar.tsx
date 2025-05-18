@@ -11,6 +11,7 @@ import {
   FaUserPlus,
   FaCog,
   FaBars,
+  FaBell,
 } from "react-icons/fa";
 
 interface SidebarProps {
@@ -45,11 +46,21 @@ const menuGroups: MenuItem[] = [
   { icon: <FaUserPlus />, label: "Add Member", path: "/admin/add-member" },
 ];
 
+// NEW: Notifications menu
+const menuNotifications: MenuItem[] = [
+  { icon: <FaBell />, label: "Notifications", path: "/admin/notifications" },
+];
+
 const menuSettings: MenuItem[] = [
   { icon: <FaCog />, label: "Group Settings", path: "/admin/group-settings" },
 ];
 
-const allMenu: MenuItem[] = [...menuMain, ...menuGroups, ...menuSettings];
+const allMenu: MenuItem[] = [
+  ...menuMain,
+  ...menuGroups,
+  ...menuNotifications, // Add here for collapsed view
+  ...menuSettings,
+];
 
 const Sidebar: React.FC<SidebarProps> = ({
   isOpen,
@@ -112,7 +123,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       >
         {/* Logo and Collapse button */}
         <div className="flex items-center h-16 px-4 border-b border-blue-800 relative">
-          <img src="/logo2.png" alt="Logo" className="h-10 w-auto" />
+          
           {isOpen && (
             <button
               onClick={onToggle}
@@ -158,6 +169,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               />
             ))}
           </div>
+          
           {/* Settings */}
           <div className="mt-6 px-2">
             <p
@@ -178,12 +190,32 @@ const Sidebar: React.FC<SidebarProps> = ({
               />
             ))}
           </div>
+          {/* Notifications */}
+          <div className="mt-6 px-2">
+            <p
+              className={`uppercase text-xs text-blue-200 mb-2 px-2 transition-opacity duration-200 ${
+                !isOpen && "opacity-0"
+              }`}
+            >
+              Notifications
+            </p>
+            {menuNotifications.map(({ icon, label, path }) => (
+              <SidebarItem
+                key={path}
+                icon={icon}
+                label={label}
+                active={activeTab === path}
+                showLabels={isOpen}
+                onClick={() => handleNav(path)}
+              />
+            ))}
+          </div>
         </nav>
         {/* Notifications preview */}
         <div className="mt-auto mb-4 px-2">
           <NotificationsPreview
             notifications={notifications || []}
-            onViewAll={() => handleNav("/notifications")}
+            onViewAll={() => handleNav("/admin/notifications")}
             showLabels={isOpen}
           />
         </div>
@@ -294,15 +326,29 @@ const Sidebar: React.FC<SidebarProps> = ({
               />
             ))}
           </div>
-        </nav>
-        {/* Notifications preview */}
-        <div className="mt-auto mb-4 px-2">
+           {/* Notifications */}
+          <div className="mt-6 px-2">
+            <p className="uppercase text-xs text-blue-200 mb-2 px-2">
+              Notifications
+            </p>
+            {menuNotifications.map(({ icon, label, path }) => (
+              <SidebarItem
+                key={path}
+                icon={icon}
+                label={label}
+                active={activeTab === path}
+                showLabels={true}
+                onClick={() => handleNav(path)}
+              />
+            ))}
+          </div>
+          {/* Notifications preview */}
           <NotificationsPreview
             notifications={notifications || []}
-            onViewAll={() => handleNav("/notifications")}
+            onViewAll={() => handleNav("/admin/notifications")}
             showLabels={true}
           />
-        </div>
+        </nav>
       </div>
     </>
   );
