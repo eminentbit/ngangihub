@@ -4,7 +4,8 @@ import NjangiDraft from "../models/njangi.draft.model.js";
 import NjangiGroup from "../models/njangigroup.model.js";
 import User from "../models/user.model.js";
 import dotenv from "dotenv";
-import { sendNjangiCreatedPendingEmail } from "../mailtrap/emails.js";
+import emailQueue from "../bullMQ/queues/emailQueue.js";
+// import { sendNjangiCreatedPendingEmail } from "../mailtrap/emails.js";
 dotenv.config();
 
 const viewURL = process.env.FRONTEND_URL || "http://localhost:5173";
@@ -17,6 +18,8 @@ const viewURL = process.env.FRONTEND_URL || "http://localhost:5173";
 const createNjangiFlow = async (formData) => {
   try {
     const { accountSetup, groupDetails, inviteMembers } = formData;
+
+    console.log(`Form data from frontend: ${JSON.stringify(formData)}`);
     // Check for existing user
     const existingUser = await User.findOne({ email: accountSetup.email });
     if (existingUser) {
@@ -53,6 +56,7 @@ const createNjangiFlow = async (formData) => {
       endDate: groupDetails.endDate ? new Date(groupDetails.endDate) : null,
     };
 
+    console.time("💾 Save draft to Mongo");
     // Create and save Njangi draft
     const draft = await NjangiDraft.create({
       accountSetup: {
@@ -62,24 +66,28 @@ const createNjangiFlow = async (formData) => {
       groupDetails: parsedGroupDetails,
       inviteMembers,
     });
+    console.timeEnd("💾 Save draft to Mongo");
 
-    // send njangi created pending pending email, telling the user that their njangi is pending approval from the board
-    try {
-      console.time("send-email");
-      await sendNjangiCreatedPendingEmail(
-        accountSetup.email,
-        `${accountSetup.firstName} ${accountSetup.lastName}`,
-        groupDetails.groupName,
-        draft.createdAt,
-        groupDetails.expectedMembers || 0,
-        groupDetails.contributionAmount,
-        viewURL 
-      );
-      console.timeEnd("send-email"); // log the time it took to send the email
-    } catch (err) {
-      console.error("Email sending failed (non-blocking):", err.message);
-      console.log("Email sending failed (non-blocking):", err.message);
-    }
+    // Add email job to Redis
+    console.time("📬 Add email job to Redis");
+    await emailQueue.add(
+      "send-njangi-pending-email",
+      {
+        email: accountSetup.email,
+        userName: `${accountSetup.firstName} ${accountSetup.lastName}`,
+        groupName: groupDetails.groupName,
+        creationDate: draft.createdAt,
+        memberCount: groupDetails.expectedMembers || 0,
+        contributionAmount: groupDetails.contributionAmount,
+        viewURL,
+      },
+      {
+        removeOnComplete: true, // Optional: auto-remove from Redis when done
+        attempts: 3, // Retry email 3 times if it fails
+        backoff: { type: "exponential", delay: 1000 }, // Retry with delay
+      }
+    );
+    console.timeEnd("📬 Add email job to Redis");
 
     console.log("Njangi draft created:", draft._id);
     return { draftId: draft._id };

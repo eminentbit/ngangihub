@@ -249,7 +249,7 @@ const Step4Review: React.FC = () => {
               isLoading={isSubmitting}
               className="transition-transform hover:scale-105"
             >
-              {isSubmitting ? "Submitting..." : "Submit Njangi Request"}
+              {isSubmitting ? "Submitting, Please wait..." : "Submit Njangi Request"}
             </Button>
           </div>
         </div>
