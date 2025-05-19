@@ -44,8 +44,8 @@ const Step4Review: React.FC = () => {
             decision is made.
           </p>
           <p className="text-gray-500 text-sm">
-            Approvals typically take <strong>24–48 hours or less</strong>. No further
-            action is needed for now.
+            Approvals typically take <strong>24–48 hours or less</strong>. No
+            further action is needed for now.
           </p>
         </div>
       </div>
@@ -249,7 +249,7 @@ const Step4Review: React.FC = () => {
               isLoading={isSubmitting}
               className="transition-transform hover:scale-105"
             >
-              Submit Njangi Request
+              {isSubmitting ? "Submitting..." : "Submit Njangi Request"}
             </Button>
           </div>
         </div>

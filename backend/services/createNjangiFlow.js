@@ -17,9 +17,6 @@ const viewURL = process.env.FRONTEND_URL || "http://localhost:5173";
 const createNjangiFlow = async (formData) => {
   try {
     const { accountSetup, groupDetails, inviteMembers } = formData;
-
-    console.log("Data recieved frome the frontend: ", formData);
-
     // Check for existing user
     const existingUser = await User.findOne({ email: accountSetup.email });
     if (existingUser) {
@@ -68,6 +65,7 @@ const createNjangiFlow = async (formData) => {
 
     // send njangi created pending pending email, telling the user that their njangi is pending approval from the board
     try {
+      console.time("send-email");
       await sendNjangiCreatedPendingEmail(
         accountSetup.email,
         `${accountSetup.firstName} ${accountSetup.lastName}`,
@@ -77,6 +75,7 @@ const createNjangiFlow = async (formData) => {
         groupDetails.contributionAmount,
         viewURL 
       );
+      console.timeEnd("send-email"); // log the time it took to send the email
     } catch (err) {
       console.error("Email sending failed (non-blocking):", err.message);
       console.log("Email sending failed (non-blocking):", err.message);

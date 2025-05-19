@@ -47,24 +47,6 @@ export const sendNjangiCreatedPendingEmail = async (
   viewURL
 ) => {
   const recipients = [{ email }];
-
-  console.log("Sending email with payload:", {
-    from: sender,
-    to: recipients,
-    subject: "Njangi Creation Approved",
-    html: replacePlaceholders(NJANGI_CREATION_NOTIFICATION_TEMPLATE, {
-      userName,
-      groupName,
-      creationDate,
-      memberCount,
-      contributionAmount,
-      viewURL,
-    }),
-  });
-
-
-  console.log(`recipient: ${recipients}`);
-
   try {
     const response = await mailtrapClient.send({
       from: sender,
