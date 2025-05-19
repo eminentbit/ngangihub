@@ -78,7 +78,7 @@ export const groupDetailsSchema = z.object({
   contributionAmount: z
     .string()
     .min(1, "Contribution amount is required")
-    .refine((value) => !isNaN(Number(parseInt(value.replace(/,/g, "")))), {
+    .refine((value) => !isNaN(Number(value.replace(/,/g, ""))), {
       message: "Contribution amount must be a number",
     })
     .refine((value) => Number(parseInt(value)) > 0, {

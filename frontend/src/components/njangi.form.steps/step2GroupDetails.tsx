@@ -62,7 +62,6 @@ const Step2GroupDetails: React.FC = () => {
       return;
     }
 
-    console.log(`Group details data: ${JSON.stringify(data)}`);
     updateGroupDetails(data);
 
     nextStep();

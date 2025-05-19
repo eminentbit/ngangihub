@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL;
+const VALIDATE_API_URL = import.meta.env.VITE_VALIDATE_API_URL;
 
 /**
  *
@@ -13,7 +13,7 @@ export const useValidateEmail = (email: string) => {
   return useQuery({
     queryKey: ["validate-email", email],
     queryFn: async () => {
-      const { data } = await axios.get(`${API_URL}/validate-email`, {
+      const { data } = await axios.get(`${VALIDATE_API_URL}/validate-email`, {
         params: { email },
       });
       return data.valid;
@@ -32,9 +32,12 @@ export const useValidatePhoneNumber = (phoneNumber: string) => {
   return useQuery({
     queryKey: ["validate-phoneNumber", phoneNumber],
     queryFn: async () => {
-      const { data } = await axios.get(`${API_URL}/validate-phone-number`, {
-        params: { phoneNumber },
-      });
+      const { data } = await axios.get(
+        `${VALIDATE_API_URL}/validate-phone-number`,
+        {
+          params: { phoneNumber },
+        }
+      );
       return data.valid;
     },
     enabled: !!phoneNumber, // only run if email is not empty

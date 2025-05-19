@@ -2,7 +2,8 @@ import { create } from "zustand";
 import axios from "axios";
 import { NjangiSetup } from "../types/create-njangi-types";
 
-const API_URL = "http://localhost:3000/api/create-njangi";
+const CREATE_NJANGI_API = import.meta.env.VITE_CREATE_NJANGI_API_URL;
+console.log(CREATE_NJANGI_API);
 
 axios.defaults.withCredentials = true;
 
@@ -20,7 +21,7 @@ export const useCreateNjangiStore = create<CreateNjangiState>((set) => ({
   createNjangi: async (submissionData: NjangiSetup) => {
     set({ isLoading: true, errors: null, success: false });
     try {
-      const response = await axios.post(`${API_URL}`, submissionData);
+      const response = await axios.post(`${CREATE_NJANGI_API}`, submissionData);
       set({ isLoading: false, success: response.data.message });
     } catch (errors) {
       set({

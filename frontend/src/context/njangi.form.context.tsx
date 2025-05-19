@@ -176,9 +176,10 @@ export const FormProvider: React.FC<{ children: ReactNode }> = ({
         },
         groupDetails: {
           groupName: state.groupDetails.groupName || "",
-          contributionAmount: Number(
-            parseInt(state.groupDetails.contributionAmount || "0") || 0
-          ),
+          contributionAmount:
+            Number(
+              (state.groupDetails.contributionAmount || "0").replace(/,/g, "")
+            ) || 0,
           contributionFrequency: state.groupDetails.contributionFrequency || "",
           payoutMethod: state.groupDetails.payoutMethod || "",
           startDate: state.groupDetails.startDate || "",

@@ -73,6 +73,7 @@ const Step4Review: React.FC = () => {
                 Account Information
               </h3>
               <Button
+                disabled={isSubmitting}
                 type="button"
                 variant="outline"
                 size="sm"
@@ -126,6 +127,7 @@ const Step4Review: React.FC = () => {
                 Group Details
               </h3>
               <Button
+                disabled={isSubmitting}
                 type="button"
                 variant="outline"
                 size="sm"
@@ -212,6 +214,7 @@ const Step4Review: React.FC = () => {
                 Invited Members
               </h3>
               <Button
+                disabled={isSubmitting}
                 type="button"
                 variant="outline"
                 size="sm"
@@ -234,6 +237,7 @@ const Step4Review: React.FC = () => {
 
           <div className="border-t pt-6 mt-6 flex max-sm:flex-col max-sm:gap-y-3 justify-between">
             <Button
+              disabled={isSubmitting}
               type="button"
               variant="outline"
               onClick={prevStep}
@@ -249,7 +253,9 @@ const Step4Review: React.FC = () => {
               isLoading={isSubmitting}
               className="transition-transform hover:scale-105"
             >
-              {isSubmitting ? "Submitting, Please wait..." : "Submit Njangi Request"}
+              {isSubmitting
+                ? "Submitting, Please wait..."
+                : "Submit Njangi Request"}
             </Button>
           </div>
         </div>

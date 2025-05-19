@@ -40,7 +40,6 @@ const Step3InviteMembers: React.FC = () => {
   });
 
   const onSubmit = (data: InviteMembersFormData) => {
-    console.log("Submitted data for invites:", data);
     updateInviteMembers(data);
     nextStep();
   };
