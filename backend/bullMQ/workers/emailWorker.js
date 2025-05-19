@@ -9,6 +9,8 @@ import { Worker } from "bullmq";
 import { createRedisClient } from "../../redisClient.js";
 import { sendNjangiCreatedPendingEmail } from "../../mailtrap/emails.js";
 
+const redis = createRedisClient();
+
 const worker = new Worker(
   "emailQueue",
   async (job) => {
@@ -37,7 +39,7 @@ const worker = new Worker(
     console.log(`Email sent to ${email}`);
   },
   {
-    connection: createRedisClient(),
+    connection: redis,
   }
 );
 
