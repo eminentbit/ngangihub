@@ -57,7 +57,7 @@ export const router = createBrowserRouter([
     path: "/user",
     children: [
       { path: "dashboard", element: <UserDashboard /> },
-      { path: "groups", element: <MyGroups /> },
+      { path: "my-groups", element: <MyGroups /> },
       { path: "payments", element: <PaymentsPage /> },
       { path: "settings", element: <Settings /> },
     ],

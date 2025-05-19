@@ -22,6 +22,7 @@ import GroupDetailsModal from "./group-details-modal";
 import ReactDOM from "react-dom/client";
 import { useSearchParams } from "react-router-dom";
 import Sidebar from "./Sidebar";
+import Header from "../dashboard.admin.components/Header";
 
 // Exchange rate: 1 USD = approximately 600 CFA
 const CFA_EXCHANGE_RATE = 600;
@@ -301,12 +302,14 @@ const MyGroups = () => {
 
   return (
     <div className="flex">
+
       <Sidebar
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
         onToggle={() => setIsOpen((o) => !o)}
         activeTab="user/groups"
       />
+      
       <div
         className={`mx-auto py-10 px-10 space-y-6 ${
           isOpen ? "lg:ml-[20%]" : "lg:ml-[5%]"

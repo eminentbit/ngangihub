@@ -33,7 +33,7 @@ type MenuItem = {
 
 const menuMain: MenuItem[] = [
   { icon: <FaUserShield />, label: "Dashboard", path: "/user/dashboard" },
-  { icon: <FaUsers />, label: "My Groups", path: "/user/groups" },
+  { icon: <FaUsers />, label: "My Groups", path: "/user/my-groups" },
   { icon: <FaChartBar />, label: "Payment", path: "/user/payments" },
   { icon: <FaCog />, label: "Settings", path: "/user/settings" },
 ];

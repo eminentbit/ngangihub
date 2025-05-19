@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 
-import MyGroups from "../../../components/dashboard.user.components/my-groups";
-import Sidebar from "../../../components/dashboard.user.components/Sidebar";
-import Header from "../../../components/dashboard.user.components/Header";
+import MyGroups from "../../components/dashboard.user.components/my-groups";
+import Sidebar from "../../components/dashboard.user.components/Sidebar";
+import Header from "../../components/dashboard.admin.components/Header";
 
 export default function MyGroupsPage() {
 
@@ -39,11 +39,19 @@ export default function MyGroupsPage() {
       darkMode={darkMode}
       setDarkMode={setDarkMode}
     />
+    <main className="flex-grow p-4 md:p-8">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-2xl font-bold mb-4 text-blue-700 dark:text-blue-400">
+          My Groups
+        </h1>
+        <p className="mb-6 text-gray-600 dark:text-gray-300">
+          Here you can view and manage your groups.
+        </p>
+        <MyGroups />
+      </div>
+    </main>
 
-        {/* Page content */}
-        <main className="p-4 flex-1 overflow-auto">
-          <MyGroups />
-        </main>
+
       </div>
   );
 }
