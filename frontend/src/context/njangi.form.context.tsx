@@ -183,6 +183,9 @@ export const FormProvider: React.FC<{ children: ReactNode }> = ({
           payoutMethod: state.groupDetails.payoutMethod || "",
           startDate: state.groupDetails.startDate || "",
           endDate: state.groupDetails.endDate || "",
+          numberOfMember: state.groupDetails.numOfMembers
+            ? Number(state.groupDetails.numOfMembers)
+            : 0,
           rules: state.groupDetails.rules || "",
         },
         inviteMembers: (state.inviteMembers.invites || []).map((invite) => ({

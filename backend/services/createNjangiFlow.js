@@ -19,7 +19,6 @@ const createNjangiFlow = async (formData) => {
   try {
     const { accountSetup, groupDetails, inviteMembers } = formData;
 
-    console.log(`Form data from frontend: ${JSON.stringify(formData)}`);
     // Check for existing user
     const existingUser = await User.findOne({ email: accountSetup.email });
     if (existingUser) {
@@ -77,7 +76,7 @@ const createNjangiFlow = async (formData) => {
         userName: `${accountSetup.firstName} ${accountSetup.lastName}`,
         groupName: groupDetails.groupName,
         creationDate: draft.createdAt,
-        memberCount: groupDetails.expectedMembers || 0,
+        memberCount: groupDetails.numberOfMember || 0,
         contributionAmount: groupDetails.contributionAmount,
         viewURL,
       },

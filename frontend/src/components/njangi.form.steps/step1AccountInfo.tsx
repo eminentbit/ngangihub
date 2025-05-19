@@ -86,7 +86,7 @@ const Step1AccountInfo: React.FC = () => {
     state.accountSetup = data;
 
     if ("credentials" in navigator && "PasswordCredential" in window) {
-      console.log(state);
+      // console.log(state);
       const credential = new window.PasswordCredential({
         id: data.email,
         password: data.password,

@@ -21,11 +21,11 @@ const njangiDraftSchema = new mongoose.Schema(
       payoutMethod: String,
       startDate: Date,
       endDate: Date,
-      expectedMembers: Number,
+      numberOfMember: Number,
       rules: String,
     },
     inviteMembers: [
-       {
+      {
         type: {
           type: String,
           enum: ["email", "phone"],

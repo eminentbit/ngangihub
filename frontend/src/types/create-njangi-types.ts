@@ -14,6 +14,7 @@ export interface GroupDetails {
   payoutMethod: string;
   startDate: string; // ISO date string
   endDate: string; // ISO date string
+  numberOfMember: number;
   rules: string;
 }
 
