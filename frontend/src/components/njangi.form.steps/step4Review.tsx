@@ -1,10 +1,16 @@
 import React from "react";
-import { ChevronRight, CheckCircle2 } from "lucide-react";
+import { ChevronRight, CheckCircle2, ArrowRight } from "lucide-react";
 import { useFormContext } from "../../context/njangi.form.context";
 import Button from "../ExtraButton";
+import { useNavigate } from "react-router-dom";
+import { useCreateNjangiStore } from "../../store/create.njangi.store";
 
 const Step4Review: React.FC = () => {
   const { state, prevStep, submitForm, goToStep } = useFormContext();
+  const navigate = useNavigate();
+  const createdNjangiId = useCreateNjangiStore(
+    (state) => state.createdNjangiId
+  );
   const {
     accountSetup,
     groupDetails,
@@ -47,6 +53,17 @@ const Step4Review: React.FC = () => {
             Approvals typically take <strong>24–48 hours or less</strong>. No
             further action is needed for now.
           </p>
+          <div className="mt-6">
+            <Button
+              type="button"
+              variant="primary"
+              onClick={() => navigate(`/njangi-group/${createdNjangiId}`)}
+              className="transition-transform hover:scale-105 flex items-center gap-2"
+            >
+              View Your Njangi State
+              <ArrowRight size={18} />
+            </Button>
+          </div>
         </div>
       </div>
     );

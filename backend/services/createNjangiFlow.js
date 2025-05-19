@@ -14,8 +14,10 @@ const viewURL = process.env.FRONTEND_URL || "http://localhost:5173";
  * Creates a Njangi draft document from the given form data
  * @param {Object} formData - form data from the Njangi creation form
  * @returns {Object} An object with the created draftId
+ * @throws {Error} If an error occurs while creating the draft
+ * 
  */
-const createNjangiFlow = async (formData) => {
+const createNjangiFlow = async (formData, njangiId) => {
   try {
     const { accountSetup, groupDetails, inviteMembers } = formData;
 
@@ -64,6 +66,7 @@ const createNjangiFlow = async (formData) => {
       },
       groupDetails: parsedGroupDetails,
       inviteMembers,
+      njangiRouteId: njangiId,
     });
     console.timeEnd("💾 Save draft to Mongo");
 
@@ -89,7 +92,7 @@ const createNjangiFlow = async (formData) => {
     console.timeEnd("📬 Add email job to Redis");
 
     console.log("Njangi draft created:", draft._id);
-    return { draftId: draft._id };
+    return { draftId: draft._id, njangiId: draft.njangiRouteId};
   } catch (error) {
     console.error("Error creating Njangi draft:", error.message);
     throw error;
