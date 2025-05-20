@@ -8,14 +8,14 @@ const inviteSchema = new mongoose.Schema(
       ref: "NjangiGroup",
       required: true,
     },
-    emailOrPhone: { type: String, required: true, unique: true },
+    emailOrPhone: { type: String, required: true },
     inviteToken: { type: String, required: true, unique: true },
     status: {
       type: String,
       enum: ["pending", "accepted", "expired"],
       default: "pending",
     },
-    invitedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    invitedBy: String,
     expiresAt: { type: Date },
   },
   { timestamps: true }

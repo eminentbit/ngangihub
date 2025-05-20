@@ -38,7 +38,7 @@ export const VERIFICATION_EMAIL_TEMPLATE = `
   </div>
 </body>
 </html>
-`
+`;
 
 export const PASSWORD_RESET_SUCCESS_TEMPLATE = `
 <!DOCTYPE html>
@@ -90,7 +90,7 @@ export const PASSWORD_RESET_SUCCESS_TEMPLATE = `
   </div>
 </body>
 </html>
-`
+`;
 
 export const PASSWORD_RESET_REQUEST_TEMPLATE = `
 <!DOCTYPE html>
@@ -130,7 +130,7 @@ export const PASSWORD_RESET_REQUEST_TEMPLATE = `
   </div>
 </body>
 </html>
-`
+`;
 
 export const INVITE_TEMPLATE = `
 <!DOCTYPE html>
@@ -176,7 +176,7 @@ export const INVITE_TEMPLATE = `
   </div>
 </body>
 </html>
-`
+`;
 
 export const NJANGI_APPROVAL_TEMPLATE = `
 <!DOCTYPE html>
@@ -212,7 +212,7 @@ export const NJANGI_APPROVAL_TEMPLATE = `
           <li>Group Name: {groupName}</li>
           <li>Creation Date: {creationDate}</li>
           <li>Number of Members: {memberCount}</li>
-          <li>Contribution Amount: {contributionAmount}</li>
+          <li>Contribution Amount: {contributionAmount} FCFA</li>
         </ul>
       </div>
       
@@ -233,7 +233,7 @@ export const NJANGI_APPROVAL_TEMPLATE = `
   </div>
 </body>
 </html>
-`
+`;
 
 export const NJANGI_REJECTION_TEMPLATE = `
 <!DOCTYPE html>
@@ -285,7 +285,7 @@ export const NJANGI_REJECTION_TEMPLATE = `
   </div>
 </body>
 </html>
-`
+`;
 
 export const NJANGI_CREATION_NOTIFICATION_TEMPLATE = `
 <!DOCTYPE html>
@@ -321,7 +321,7 @@ export const NJANGI_CREATION_NOTIFICATION_TEMPLATE = `
           <li>Group Name: {groupName}</li>
           <li>Creation Date: {creationDate}</li>
           <li>Number of Members: {memberCount}</li>
-          <li>Contribution Amount: {contributionAmount}</li>
+          <li>Contribution Amount: {contributionAmount} FCFA</li>
         </ul>
       </div>
       
@@ -343,7 +343,7 @@ export const NJANGI_CREATION_NOTIFICATION_TEMPLATE = `
   </div>
 </body>
 </html>
-`
+`;
 
 export const WELCOME_TEMPLATE = `
 <!DOCTYPE html>
@@ -412,7 +412,7 @@ export const WELCOME_TEMPLATE = `
   </div>
 </body>
 </html>
-`
+`;
 export const GROUP_MEMBER_ADDITION_TEMPLATE = `
 <!DOCTYPE html>
 <html lang="en">
@@ -446,7 +446,7 @@ export const GROUP_MEMBER_ADDITION_TEMPLATE = `
           <li>Group Name: {groupName}</li>
           <li>Created By: {creatorName}</li>
           <li>Your Role: Member</li>
-          <li>Contribution Amount: {contributionAmount}</li>
+          <li>Contribution Amount: {contributionAmount} FCFA</li>
           <li>Payment Frequency: {paymentFrequency}</li>
         </ul>
       </div>
@@ -483,5 +483,4 @@ export const GROUP_MEMBER_ADDITION_TEMPLATE = `
   </div>
 </body>
 </html>
-`
-
+`;

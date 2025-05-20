@@ -5,7 +5,12 @@ import NjangiGroup from "../models/njangigroup.model.js";
 import User from "../models/user.model.js";
 import dotenv from "dotenv";
 import emailQueue from "../bullMQ/queues/emailQueue.js";
-// import { sendNjangiCreatedPendingEmail } from "../mailtrap/emails.js";
+import {
+  sendInviteEmailBeforeNjangiCreation,
+  sendNjangiCreatedPendingEmail,
+} from "../mail/emails.js";
+import Invite from "../models/invite.model.js";
+import { generateToken } from "../utils/inviteUtils.js";
 dotenv.config();
 
 const viewURL = process.env.FRONTEND_URL || "http://localhost:5173";
@@ -15,7 +20,7 @@ const viewURL = process.env.FRONTEND_URL || "http://localhost:5173";
  * @param {Object} formData - form data from the Njangi creation form
  * @returns {Object} An object with the created draftId
  * @throws {Error} If an error occurs while creating the draft
- * 
+ *
  */
 const createNjangiFlow = async (formData, njangiId) => {
   try {
@@ -58,13 +63,14 @@ const createNjangiFlow = async (formData, njangiId) => {
     };
 
     console.time("💾 Save draft to Mongo");
+
     // Create and save Njangi draft
     const draft = await NjangiDraft.create({
-      accountSetup: {
-        ...accountSetup,
-        password: hashedPassword,
-      },
-      groupDetails: parsedGroupDetails,
+      // accountSetup: {
+      //   ...accountSetup,
+      //   password: hashedPassword,
+      // },
+      groupDetails: { ...parsedGroupDetails, adminEmail: accountSetup.email },
       inviteMembers,
       njangiRouteId: njangiId,
     });
@@ -75,24 +81,58 @@ const createNjangiFlow = async (formData, njangiId) => {
     await emailQueue.add(
       "send-njangi-pending-email",
       {
+        dest: "admin",
         email: accountSetup.email,
         userName: `${accountSetup.firstName} ${accountSetup.lastName}`,
         groupName: groupDetails.groupName,
         creationDate: draft.createdAt,
-        memberCount: groupDetails.numberOfMember || 0,
+        memberCount: groupDetails.numberOfMember || null,
         contributionAmount: groupDetails.contributionAmount,
         viewURL,
+        inviteURL: null,
       },
       {
-        removeOnComplete: true, // Optional: auto-remove from Redis when done
-        attempts: 3, // Retry email 3 times if it fails
+        removeOnComplete: true,
+        attempts: 3,
         backoff: { type: "exponential", delay: 1000 }, // Retry with delay
       }
     );
+
+    await sendNjangiCreatedPendingEmail(
+      accountSetup.email,
+      `${accountSetup.firstName} ${accountSetup.lastName}`,
+      groupDetails.groupName,
+      draft.createdAt,
+      groupDetails.numberOfMember || inviteMembers.length,
+      groupDetails.contributionAmount,
+      viewURL
+    );
+
+    inviteMembers.map(async (member) => {
+      await emailQueue.add("send-invitee-email", {
+        dest: "user",
+        email: member.contact,
+        userName: `${accountSetup.firstName} ${accountSetup.lastName}`,
+        groupName: groupDetails.groupName,
+        creationDate: draft.createdAt,
+        memberCount: groupDetails.numberOfMember || null,
+        contributionAmount: groupDetails.contributionAmount,
+        viewURL,
+        inviteURL: `${
+          process.env.FRONTEND_URL
+        }/njangi/join?token=${generateToken()}`,
+      });
+      sendInviteEmailBeforeNjangiCreation(
+        member.contact,
+        `${accountSetup.firstName} ${accountSetup.lastName}`,
+        groupDetails.groupName,
+        `${process.env.FRONTEND_URL}/njangi/join?token=${generateToken()}`
+      );
+    });
     console.timeEnd("📬 Add email job to Redis");
 
     console.log("Njangi draft created:", draft._id);
-    return { draftId: draft._id, njangiId: draft.njangiRouteId};
+    return { draftId: draft._id, njangiId: draft.njangiRouteId };
   } catch (error) {
     console.error("Error creating Njangi draft:", error.message);
     throw error;

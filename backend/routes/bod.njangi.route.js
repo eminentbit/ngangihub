@@ -7,6 +7,6 @@ const router = express.Router();
 
 router.post("/approve", approveNjangi);
 
-router.post("/", verifyToken, viewNjangiDrafts);
+router.get("/drafts", viewNjangiDrafts);
 
 export default router;

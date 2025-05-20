@@ -1,19 +1,20 @@
 // models/NjangiDraft.js
 import mongoose from "mongoose";
+import User from "./user.model.js";
 
 const njangiDraftSchema = new mongoose.Schema(
   {
-    accountSetup: {
-      firstName: String,
-      lastName: String,
-      email: String,
-      phoneNumber: String,
-      password: String,
-      profilePicUrl: String,
-      passwordHash: String,
-      verificationToken: String,
-      verificationTokenExpireAt: Date,
-    },
+    // accountSetup: {
+    //   firstName: String,
+    //   lastName: String,
+    //   email: String,
+    //   phoneNumber: String,
+    //   password: String,
+    //   profilePicUrl: String,
+    //   passwordHash: String,
+    //   verificationToken: String,
+    //   verificationTokenExpireAt: Date,
+    // },
     groupDetails: {
       groupName: String,
       contributionAmount: Number,
@@ -22,7 +23,12 @@ const njangiDraftSchema = new mongoose.Schema(
       startDate: Date,
       endDate: Date,
       numberOfMember: Number,
+      adminEmail: String,
       rules: String,
+      state: {
+        type: String,
+        default: "pending",
+      },
     },
     inviteMembers: [
       {

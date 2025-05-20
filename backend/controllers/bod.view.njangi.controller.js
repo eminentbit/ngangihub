@@ -6,7 +6,10 @@ import asyncHandler from "express-async-handler";
 // @access  Private (BOD only)
 export const viewNjangiDrafts = asyncHandler(async (req, res) => {
   const drafts = await NjangiDraft.find()
-    .populate("createdBy", "firstName lastName email")
+    .populate(
+      // "createdBy",
+      "submittedBy"
+    )
     .sort({ createdAt: -1 });
 
   res.status(200).json({

@@ -31,6 +31,7 @@ const Step4Review: React.FC = () => {
   };
 
   if (isSubmitted) {
+    sessionStorage.clear();
     return (
       <div className="max-w-2xl mx-auto w-full transition-all duration-300 animate-fadeIn">
         <div className="bg-white p-8 rounded-lg shadow-lg text-center">

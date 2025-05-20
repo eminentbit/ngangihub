@@ -97,6 +97,11 @@ const Step1AccountInfo: React.FC = () => {
         .catch((err) => console.error("Error storing credential:", err));
     }
 
+    sessionStorage.setItem(
+      "tempData",
+      JSON.stringify({ senderEmail: data.email })
+    );
+
     nextStep();
   };
 
@@ -157,7 +162,7 @@ const Step1AccountInfo: React.FC = () => {
             <div className="relative">
               {/* Using react-phone-input-2 library with custom styling */}
               <PhoneInput
-                country={"us"}
+                country={"cm"}
                 value={phone}
                 onChange={handlePhoneChange}
                 inputProps={{
@@ -168,7 +173,7 @@ const Step1AccountInfo: React.FC = () => {
                 searchPlaceholder="Search countries..."
                 countryCodeEditable={false}
                 disableSearchIcon={false}
-                preferredCountries={["us", "ca", "gb", "cm"]}
+                preferredCountries={["cm", "us", "ca", "gb"]}
               />
               {isPhoneChecking && (
                 <span className="text-sm text-blue-600 animate-pulse">

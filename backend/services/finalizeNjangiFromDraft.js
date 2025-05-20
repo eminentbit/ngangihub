@@ -27,7 +27,7 @@ export const finalizeNjangiFromDraft = async (draftId, res) => {
   await adminUser.save();
 
   // 2) groupDetails
-  const group = await createNjangiGroup(groupDetails, adminUser._id);
+  const group = await createNjangiGroup(groupDetails, adminUser._id, draftId);
 
   // Add admin as first group member in Njangigroup model
   group.groupMembers.push(adminUser._id);

@@ -7,7 +7,10 @@
  */
 import { Worker } from "bullmq";
 import { createRedisClient } from "../../redisClient.js";
-import { sendNjangiCreatedPendingEmail } from "../../mailtrap/emails.js";
+import {
+  sendInviteEmailBeforeNjangiCreation,
+  sendNjangiCreatedPendingEmail,
+} from "../../mail/emails.js";
 
 const redis = createRedisClient();
 
@@ -15,6 +18,7 @@ const worker = new Worker(
   "emailQueue",
   async (job) => {
     const {
+      dest,
       email,
       userName,
       groupName,
@@ -22,19 +26,32 @@ const worker = new Worker(
       memberCount,
       contributionAmount,
       viewURL,
+      // inviteURL,
     } = job.data;
 
     console.log(`🚀 Sending email to ${email}...`);
 
-    await sendNjangiCreatedPendingEmail(
-      email,
-      userName,
-      groupName,
-      creationDate,
-      memberCount,
-      contributionAmount,
-      viewURL
-    );
+    if (dest == "admin") {
+      await sendNjangiCreatedPendingEmail(
+        email,
+        userName,
+        groupName,
+        creationDate,
+        memberCount,
+        contributionAmount,
+        viewURL
+      );
+    }
+
+    // if (dest == "user") {
+    //   await sendInviteEmailBeforeNjangiCreation(
+    //     email,
+    //     userName,
+    //     "We await your presence",
+    //     groupName,
+    //     inviteURL
+    //   );
+    // }
 
     console.log(`Email sent to ${email}`);
   },
