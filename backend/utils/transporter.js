@@ -11,4 +11,10 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// export const transporter = Nodemailer.createTransport(
+//   MailtrapTransport({
+//     token: process.env.SMTP_TOKEN,
+//   })
+// );
+
 export default transporter;

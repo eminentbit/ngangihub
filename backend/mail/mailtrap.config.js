@@ -1,13 +1,17 @@
 // import { MailtrapClient } from "mailtrap";
+import Nodemailer from "nodemailer";
 import dotenv from "dotenv";
 dotenv.config();
 
-// const TOKEN = "17bad88fb89d9cb30d8270846a4414a7";
+const { MailtrapTransport } = require("mailtrap");
 
-// export const mailtrapClient = new MailtrapClient({
-//   token: process.env.MAILTRAP_TOKEN || TOKEN,
-//   testInboxId: 3697449,
-// });
+const TOKEN = process.env.SMPT_TOKEN;
+
+export const transporter = Nodemailer.createTransport(
+  MailtrapTransport({
+    token: TOKEN,
+  })
+);
 
 export const sender = {
   email: process.env.SENDER_EMAIL,
