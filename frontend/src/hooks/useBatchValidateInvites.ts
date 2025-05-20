@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { UseFormClearErrors, UseFormSetError } from "react-hook-form";
 import axios from "axios";
 
-const INVITE_API_URL = import.meta.env.VITE_VALIDATE_API_URL;
+const INVITE_API_URL = import.meta.env.VITE_API_URL;
 
 export type Invite = {
   type: "email" | "phone";

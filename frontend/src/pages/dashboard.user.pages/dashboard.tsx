@@ -149,7 +149,7 @@ const UserDashboard = () => {
 
   const [showGroupMenu, setShowGroupMenu] = useState<"main" | null>(null);
   const [showChat, setShowChat] = useState<{
-    id: number;
+    id: string;
     name: string;
     members: number;
     paid: number;
@@ -210,9 +210,9 @@ const UserDashboard = () => {
   };
 
   const handleGroupChat = (groupId: number) => {
-    const group = groups.find((g: { id: number }) => g.id === groupId);
+    const group = groups.find((g) => g.id === groupId);
     if (group) {
-      setShowChat(group);
+      setShowChat({ ...group, id: String(group.id) });
     }
   };
 

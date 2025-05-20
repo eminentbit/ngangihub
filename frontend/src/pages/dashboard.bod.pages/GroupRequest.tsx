@@ -5,12 +5,16 @@ import Sidebar from "../../components/dashboard.bod.components/Sidebar";
 import GroupRequestTable from "../../components/dashboard.bod.components/GroupRequestTable";
 import GroupRequestDetails from "../../components/dashboard.bod.components/GroupRequestDetails";
 import DecisionModal from "../../components/dashboard.bod.components/DecisionModal";
+import axios from "axios";
+import { GroupRequest } from "../../types/group.request";
 
 const GroupRequests: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [selectedRequestId, setSelectedRequestId] = useState<number | null>(
+  const [selectedRequestId, setSelectedRequestId] = useState<string | null>(
     null
   );
+
+  const [requests, setRequests] = useState<GroupRequest[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalAction, setModalAction] = useState<"Accept" | "Reject" | null>(
     null
@@ -30,10 +34,26 @@ const GroupRequests: React.FC = () => {
         setIsSidebarOpen(true);
       }
     };
+
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  useEffect(() => {
+    const fetchRequests = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/bod/drafts`
+        );
+        setRequests(response.data.data);
+      } catch (error) {
+        console.error("Error fetching njangi drafts:", error);
+      }
+    };
+
+    fetchRequests();
+  });
 
   const notifications = [
     "🚨 Board meeting scheduled for next week (2 hours ago)",
@@ -43,38 +63,38 @@ const GroupRequests: React.FC = () => {
 
   const isMobile = window.innerWidth < 768;
 
-  const requestsData = [
-    {
-      id: 1,
-      leaderName: "John Doe",
-      groupName: "Innovation Team",
-      maxMembers: 10,
-      description:
-        "Our group is mainly focused on driving innovation and creativity within the organization by exploring new ideas and technologies.",
-      state: "Pending",
-    },
-    {
-      id: 2,
-      leaderName: "Jane Smith",
-      groupName: "Sustainability Committee",
-      maxMembers: 15,
-      description:
-        "This group aims to promote sustainable practices and reduce the organization’s carbon footprint through actionable initiatives.",
-      state: "Pending",
-    },
-    {
-      id: 3,
-      leaderName: "Alice Johnson",
-      groupName: "Marketing Task Force",
-      maxMembers: 8,
-      description:
-        "A task force dedicated to enhancing our marketing strategies and increasing brand visibility in competitive markets.",
-      state: "Pending",
-    },
-  ];
+  // const requestsData = [
+  //   {
+  //     id: 1,
+  //     leaderName: "John Doe",
+  //     groupName: "Innovation Team",
+  //     maxMembers: 10,
+  //     description:
+  //       "Our group is mainly focused on driving innovation and creativity within the organization by exploring new ideas and technologies.",
+  //     state: "Pending",
+  //   },
+  //   {
+  //     id: 2,
+  //     leaderName: "Jane Smith",
+  //     groupName: "Sustainability Committee",
+  //     maxMembers: 15,
+  //     description:
+  //       "This group aims to promote sustainable practices and reduce the organization’s carbon footprint through actionable initiatives.",
+  //     state: "Pending",
+  //   },
+  //   {
+  //     id: 3,
+  //     leaderName: "Alice Johnson",
+  //     groupName: "Marketing Task Force",
+  //     maxMembers: 8,
+  //     description:
+  //       "A task force dedicated to enhancing our marketing strategies and increasing brand visibility in competitive markets.",
+  //     state: "Pending",
+  //   },
+  // ];
 
-  const selectedRequest = requestsData.find(
-    (request) => request.id === selectedRequestId
+  const selectedRequest = requests?.find(
+    (request) => request._id === selectedRequestId
   );
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -169,7 +189,7 @@ const GroupRequests: React.FC = () => {
             />
           ) : (
             <GroupRequestTable
-              requests={requestsData}
+              requests={requests}
               isDarkMode={isDarkMode}
               onSelectRequest={setSelectedRequestId}
               onAccept={() => {}}

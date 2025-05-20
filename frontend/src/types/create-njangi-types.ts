@@ -12,9 +12,11 @@ export interface GroupDetails {
   contributionAmount: number;
   contributionFrequency: string;
   payoutMethod: string;
-  startDate: string; // ISO date string
-  endDate: string; // ISO date string
+  startDate: string;
+  endDate: string;
+  adminEmail?: string;
   numberOfMember: number;
+  state?: string;
   rules: string;
 }
 

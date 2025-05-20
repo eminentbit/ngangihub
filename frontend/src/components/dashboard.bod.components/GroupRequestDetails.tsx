@@ -1,13 +1,5 @@
 import React from "react";
-
-interface GroupRequest {
-  id: number;
-  leaderName: string;
-  groupName: string;
-  maxMembers: number;
-  description: string;
-  state: string;
-}
+import { GroupRequest } from "../../types/group.request";
 
 interface GroupRequestDetailsProps {
   request: GroupRequest;
@@ -70,32 +62,32 @@ const GroupRequestDetails: React.FC<GroupRequestDetailsProps> = ({
       <p
         style={{ color: isDarkMode ? "#d1d5db" : "#6b7280", fontSize: "14px" }}
       >
-        <strong>ID:</strong> {request.id}
+        <strong>ID:</strong> {request._id}
       </p>
       <p
         style={{ color: isDarkMode ? "#d1d5db" : "#6b7280", fontSize: "14px" }}
       >
-        <strong>Leader Name:</strong> {request.leaderName}
+        <strong>Leader Name:</strong> {request.groupDetails.adminEmail}
       </p>
       <p
         style={{ color: isDarkMode ? "#d1d5db" : "#6b7280", fontSize: "14px" }}
       >
-        <strong>Group Name:</strong> {request.groupName}
+        <strong>Group Name:</strong> {request.groupDetails.groupName}
       </p>
       <p
         style={{ color: isDarkMode ? "#d1d5db" : "#6b7280", fontSize: "14px" }}
       >
-        <strong>Max Members:</strong> {request.maxMembers}
+        <strong>Max Members:</strong> {request.groupDetails.numberOfMember}
       </p>
       <p
         style={{ color: isDarkMode ? "#d1d5db" : "#6b7280", fontSize: "14px" }}
       >
-        <strong>Description:</strong> {request.description}
+        <strong>Description:</strong> {request.groupDetails.rules}
       </p>
       <p
         style={{ color: isDarkMode ? "#d1d5db" : "#6b7280", fontSize: "14px" }}
       >
-        <strong>State:</strong> {request.state}
+        <strong>State:</strong> {request.groupDetails.state}
       </p>
     </div>
   );

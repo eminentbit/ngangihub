@@ -1,20 +1,15 @@
 import React from "react";
-
-interface GroupRequest {
-  id: number;
-  leaderName: string;
-  groupName: string;
-  maxMembers: number;
-  description: string;
-  state: string;
-}
+import { GroupDetails } from "../../types/create-njangi-types";
 
 interface GroupRequestRowProps {
-  request: GroupRequest;
+  request: {
+    groupDetails: GroupDetails;
+    _id: string;
+  };
   isDarkMode: boolean;
   isMobile: boolean;
   onSelect: () => void;
-  onShowModal: (action: "Accept" | "Reject", requestId: number) => void; // Add this prop
+  onShowModal: (action: "Accept" | "Reject", requestId: string) => void; // Add this prop
 }
 
 const GroupRequestRow: React.FC<GroupRequestRowProps> = ({
@@ -50,16 +45,20 @@ const GroupRequestRow: React.FC<GroupRequestRowProps> = ({
 
   return (
     <div style={rowStyle}>
-      <div style={columnStyle("0 0 50px")}>{request.id}</div>
+      <div style={columnStyle("0 0 50px")}>{request._id}</div>
       <div style={columnStyle("1")}>
-        {truncateText(request.leaderName, isMobile ? 15 : 20)}
+        {request.groupDetails.adminEmail &&
+          truncateText(request.groupDetails.adminEmail, isMobile ? 15 : 20)}
       </div>
       <div style={columnStyle("1")}>
-        {truncateText(request.groupName, isMobile ? 15 : 20)}
+        {truncateText(request.groupDetails.groupName, isMobile ? 15 : 20)}
       </div>
-      <div style={columnStyle("0 0 150px")}>{request.maxMembers}</div>
+      <div style={columnStyle("0 0 150px")}>
+        {request.groupDetails.numberOfMember || "N/A"}
+      </div>
       <div style={columnStyle("2")}>
-        {truncateText(request.description, isMobile ? 20 : 40)}
+        {request.groupDetails.rules &&
+          truncateText(request.groupDetails.rules, isMobile ? 20 : 40)}
       </div>
       <div style={columnStyle("0 0 120px")}>
         <span
@@ -72,14 +71,14 @@ const GroupRequestRow: React.FC<GroupRequestRowProps> = ({
             fontWeight: "bold",
           }}
         >
-          {request.state}
+          {request.groupDetails.state && request.groupDetails.state}
         </span>
       </div>
       <div style={columnStyle("0 0 200px")}>
         <div style={{ display: "flex", gap: "8px" }}>
           <button
             type="button"
-            onClick={() => onShowModal("Accept", request.id)}
+            onClick={() => onShowModal("Accept", request._id)}
             style={{
               padding: "4px 8px",
               backgroundColor: "#10b981",
@@ -95,7 +94,7 @@ const GroupRequestRow: React.FC<GroupRequestRowProps> = ({
           </button>
           <button
             type="button"
-            onClick={() => onShowModal("Reject", request.id)}
+            onClick={() => onShowModal("Reject", request._id)}
             style={{
               padding: "4px 8px",
               backgroundColor: "#ef4444",
