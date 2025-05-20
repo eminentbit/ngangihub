@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import GroupRequestRow from "./GroupRequestRow";
 import { GroupRequest } from "../../types/group.request";
+import { GroupDetails } from "../../types/create-njangi-types";
+import GroupRequestModal from "./GroupRequestModal";
 
 interface GroupRequestTableProps {
   requests: GroupRequest[];
   isDarkMode: boolean;
   onSelectRequest: (id: string) => void;
+  selectedGroup: GroupDetails;
   onAccept: (id: number) => void;
   onReject: (id: number) => void;
 }
@@ -14,10 +17,13 @@ const GroupRequestTable: React.FC<GroupRequestTableProps> = ({
   requests,
   isDarkMode,
   onSelectRequest,
+  selectedGroup,
   // onAccept,
   // onReject,
 }) => {
   const isMobile = window.innerWidth < 768;
+  const [isOpen, setIsOpen] = useState(false);
+  const [action, setAction] = useState<"approve" | "reject" | undefined>();
 
   const headerStyle: React.CSSProperties = {
     display: "flex",
@@ -52,7 +58,7 @@ const GroupRequestTable: React.FC<GroupRequestTableProps> = ({
         <div style={columnStyle("0 0 150px")}>Max Members</div>
         <div style={columnStyle("2")}>Description</div>
         <div style={columnStyle("0 0 120px")}>State</div>
-        <div style={columnStyle("0 0 200px")}>Decision</div>
+        {/* <div style={columnStyle("0 0 200px")}>Decision</div> */}
       </div>
       {requests.length === 0 ? (
         <p
@@ -71,10 +77,21 @@ const GroupRequestTable: React.FC<GroupRequestTableProps> = ({
             request={request}
             isDarkMode={isDarkMode}
             isMobile={isMobile}
-            onSelect={() => onSelectRequest(request._id)}
-            onShowModal={() => console.log("Test")}
+            onSelect={() => {
+              onSelectRequest(request._id);
+            }}
+            setAction={setAction}
+            onShowModal={() => setIsOpen(true)}
           />
         ))
+      )}
+      {isOpen && (
+        <GroupRequestModal
+          action={action}
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
+          request={selectedGroup}
+        />
       )}
     </div>
   );

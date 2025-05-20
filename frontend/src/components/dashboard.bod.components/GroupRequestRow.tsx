@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import { GroupDetails } from "../../types/create-njangi-types";
 
 interface GroupRequestRowProps {
@@ -9,7 +9,8 @@ interface GroupRequestRowProps {
   isDarkMode: boolean;
   isMobile: boolean;
   onSelect: () => void;
-  onShowModal: (action: "Accept" | "Reject", requestId: string) => void; // Add this prop
+  onShowModal: (id: string) => void;
+  setAction: Dispatch<SetStateAction<"approve" | "reject" | undefined>>;
 }
 
 const GroupRequestRow: React.FC<GroupRequestRowProps> = ({
@@ -17,7 +18,6 @@ const GroupRequestRow: React.FC<GroupRequestRowProps> = ({
   isDarkMode,
   isMobile,
   onSelect,
-  onShowModal,
 }) => {
   const truncateText = (text: string, maxLength: number) => {
     if (text.length <= maxLength) return text;
@@ -78,38 +78,6 @@ const GroupRequestRow: React.FC<GroupRequestRowProps> = ({
         <div style={{ display: "flex", gap: "8px" }}>
           <button
             type="button"
-            onClick={() => onShowModal("Accept", request._id)}
-            style={{
-              padding: "4px 8px",
-              backgroundColor: "#10b981",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-              fontSize: isMobile ? "12px" : "14px",
-              boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
-            }}
-          >
-            Accept
-          </button>
-          <button
-            type="button"
-            onClick={() => onShowModal("Reject", request._id)}
-            style={{
-              padding: "4px 8px",
-              backgroundColor: "#ef4444",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-              fontSize: isMobile ? "12px" : "14px",
-              boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
-            }}
-          >
-            Reject
-          </button>
-          <button
-            type="button"
             onClick={onSelect}
             style={{
               padding: "4px 8px",
@@ -122,7 +90,7 @@ const GroupRequestRow: React.FC<GroupRequestRowProps> = ({
               boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
             }}
           >
-            ➔
+            View More ➔
           </button>
         </div>
       </div>

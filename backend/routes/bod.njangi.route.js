@@ -1,12 +1,12 @@
 import express from "express";
-import { approveNjangi } from "../controllers/bod.approve.njangi.controller.js";
+import approveNjangi from "../controllers/bod.approve.njangi.controller.js";
 import { viewNjangiDrafts } from "../controllers/bod.view.njangi.controller.js";
-import { verifyToken } from "../middleware/verify.token.js";
+import verifyIfBod from "../middleware/verify.if.bod.js";
 
 const router = express.Router();
 
 router.post("/approve", approveNjangi);
 
-router.get("/drafts", viewNjangiDrafts);
+router.get("/drafts", verifyIfBod, viewNjangiDrafts);
 
 export default router;

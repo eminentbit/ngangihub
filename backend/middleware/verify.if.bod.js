@@ -1,4 +1,4 @@
-import User from "../models/user.model";
+import User from "../models/user.model.js";
 
 const verifyIfBod = async (req, res, next) => {
   try {
@@ -7,6 +7,7 @@ const verifyIfBod = async (req, res, next) => {
     }
 
     const user = await User.findById(req.user.id);
+    console.log(user);
 
     if (user.role !== "bod") {
       return res

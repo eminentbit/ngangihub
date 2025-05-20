@@ -1,7 +1,7 @@
 import { finalizeNjangiFromDraft } from "../services/finalizeNjangiFromDraft.js";
 import NjangiDraft from "../models/njangi.draft.model.js";
 
-export const approveNjangi = async (req, res) => {
+const approveNjangi = async (req, res) => {
   const { draftId, action } = req.body;
 
   try {
@@ -32,3 +32,5 @@ export const approveNjangi = async (req, res) => {
     });
   }
 };
+
+export default approveNjangi;

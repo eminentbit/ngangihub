@@ -2,7 +2,7 @@ import React from "react";
 
 interface DecisionModalProps {
   isOpen: boolean;
-  action: "Accept" | "Reject" | null;
+  action: "approve" | "reject" | null;
   isDarkMode: boolean;
   onClose: () => void;
   onSubmit: (reason: string) => void;
@@ -107,7 +107,7 @@ const DecisionModal: React.FC<DecisionModalProps> = ({
             onClick={handleSubmit}
             style={{
               padding: "8px 16px",
-              backgroundColor: action === "Accept" ? "#10b981" : "#ef4444",
+              backgroundColor: action === "approve" ? "#10b981" : "#ef4444",
               color: "white",
               border: "none",
               borderRadius: "4px",

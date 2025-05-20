@@ -5,7 +5,7 @@ import NjangiGroup from "../models/njangigroup.model.js";
 import bcrypt from "bcryptjs";
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
 
-export const acceptInvite = async (req, res) => {
+const acceptInvite = async (req, res) => {
   const { token } = req.query;
   const { firstName, lastName, email, phoneNumber, password } = req.body;
 
@@ -81,3 +81,5 @@ export const acceptInvite = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export default acceptInvite;

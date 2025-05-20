@@ -7,6 +7,7 @@ import GroupRequestDetails from "../../components/dashboard.bod.components/Group
 import DecisionModal from "../../components/dashboard.bod.components/DecisionModal";
 import axios from "axios";
 import { GroupRequest } from "../../types/group.request";
+import { GroupDetails } from "../../types/create-njangi-types";
 
 const GroupRequests: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -16,7 +17,7 @@ const GroupRequests: React.FC = () => {
 
   const [requests, setRequests] = useState<GroupRequest[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalAction, setModalAction] = useState<"Accept" | "Reject" | null>(
+  const [modalAction, setModalAction] = useState<"approve" | "reject" | null>(
     null
   );
   const [modalRequestId, setModalRequestId] = useState<number | null>(null);
@@ -93,12 +94,11 @@ const GroupRequests: React.FC = () => {
   //   },
   // ];
 
-  const selectedRequest = requests?.find(
+  const selectedRequest = requests.find(
     (request) => request._id === selectedRequestId
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleShowModal = (action: "Accept" | "Reject", requestId: number) => {
+  const handleShowModal = (action: "approve" | "reject", requestId: number) => {
     setModalAction(action);
     setModalRequestId(requestId);
     setIsModalOpen(true);
@@ -109,7 +109,7 @@ const GroupRequests: React.FC = () => {
       console.log(
         `Group request with ID: ${modalRequestId} has been ${modalAction.toLowerCase()}ed. Reason: ${reason}`
       );
-      // Here you can later add logic to email the reason to the group leader
+      // TODO: add logic to email the reason to the group leader
     }
   };
 
@@ -186,9 +186,11 @@ const GroupRequests: React.FC = () => {
               request={selectedRequest}
               isDarkMode={isDarkMode}
               onBack={() => setSelectedRequestId(null)}
+              setAction={setModalAction}
             />
           ) : (
             <GroupRequestTable
+              selectedGroup={selectedRequest || ({} as GroupDetails)}
               requests={requests}
               isDarkMode={isDarkMode}
               onSelectRequest={setSelectedRequestId}

@@ -18,6 +18,7 @@ export interface GroupDetails {
   numberOfMember: number;
   state?: string;
   rules: string;
+  createdAt: string | null;
 }
 
 export type InviteMember = {
