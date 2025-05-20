@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import Sidebar from "./Sidebar";
 
+
 const Settings = () => {
   const [activeTab, setActiveTab] = useState("profile");
   const [saveSuccess, setSaveSuccess] = useState(false);

@@ -328,7 +328,7 @@ Method: ${payment?.method}
         } transition-all duration-300`}
       >
         <div className="pt-6 w-full">
-          <h1 className="text-2xl font-bold">Payments</h1>
+          <h1 className="text-3xl font-bold text-blue-700">Payments</h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1">
             Manage your payments and contributions
           </p>

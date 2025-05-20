@@ -39,7 +39,7 @@ const menuMain: MenuItem[] = [
 ];
 
 const menuNotifications: MenuItem[] = [
-  { icon: <FaBell />, label: "Notifications", path: "/notifications" },
+  { icon: <FaBell />, label: "Notifications", path: "user/notifications" },
 ];
 
 const allMenu = [...menuMain, ...menuNotifications];

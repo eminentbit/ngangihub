@@ -20,6 +20,7 @@ import VerifyEmail from "./pages/very.email";
 import ForgotPassword from "./pages/forgot.password";
 import Dashboard from "./pages/dashboard.bod.pages/Dashboard";
 import UserDashboard from "./pages/dashboard.user.pages/dashboard";
+import MyGroups from "./pages/dashboard.user.pages/MYGroup";
 import Notifications from "./pages/dashboard.bod.pages/Notifications";
 import Resolutions from "./pages/dashboard.bod.pages/Resolutions";
 import MeetingSchedule from "./pages/dashboard.bod.pages/MeetingSchedule";
@@ -29,7 +30,6 @@ import Documents from "./pages/dashboard.bod.pages/Documents";
 import Policies from "./pages/dashboard.bod.pages/Policies";
 import Reports from "./pages/dashboard.bod.pages/Reports";
 import GroupReqest from "./pages/dashboard.bod.pages/GroupRequest";
-import MyGroups from "./components/dashboard.user.components/my-groups";
 import PaymentsPage from "./pages/dashboard.user.pages/payments/page";
 import Settings from "./components/dashboard.user.components/Settings";
 
