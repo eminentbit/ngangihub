@@ -78,6 +78,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       {/* Toggle Button */}
       {!isOpen && (
         <button
+          type="button"
           onClick={onToggle}
           className="fixed top-4 left-4 z-40 text-white bg-blue-800 p-2 rounded-full shadow md:block hidden"
           aria-label="Expand sidebar"
@@ -89,11 +90,16 @@ const Sidebar: React.FC<SidebarProps> = ({
       {/* Desktop Sidebar */}
       <div
         className={`fixed inset-y-0 left-0 z-30 bg-blue-700 text-white border-r flex flex-col transform transition-transform duration-300 ease-in-out
-          ${isOpen ? "translate-x-0 w-64" : "-translate-x-full md:translate-x-0 md:w-16"} hidden md:flex`}
+          ${
+            isOpen
+              ? "translate-x-0 w-64"
+              : "-translate-x-full md:translate-x-0 md:w-16"
+          } hidden md:flex`}
       >
         <div className="flex items-center h-16 px-4 border-b border-blue-800 relative">
           {isOpen && (
             <button
+              type="button"
               onClick={onToggle}
               className="absolute top-1/2 right-4 -translate-y-1/2 text-white hover:text-blue-200"
               aria-label="Collapse sidebar"
@@ -157,7 +163,12 @@ const Sidebar: React.FC<SidebarProps> = ({
       )}
 
       {/* Mobile Overlay & Drawer */}
-      {isOpen && <div className="fixed inset-0 z-40 bg-black bg-opacity-40 md:hidden" onClick={onClose} />}
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black bg-opacity-40 md:hidden"
+          onClick={onClose}
+        />
+      )}
       <div
         className={`fixed top-0 left-0 bottom-0 z-50 bg-blue-700 text-white border-r transform transition-transform duration-300 ease-in-out w-64 md:hidden flex flex-col
           ${isOpen ? "translate-x-0" : "-translate-x-full"}`}
@@ -165,6 +176,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         <div className="flex items-center h-16 px-4 border-b border-blue-800 relative">
           <img src="/logo2.png" alt="Logo" className="h-10 w-auto" />
           <button
+            type="button"
             onClick={onClose}
             className="absolute top-1/2 right-4 -translate-y-1/2 text-white hover:text-blue-200"
             aria-label="Close sidebar"
@@ -184,7 +196,9 @@ const Sidebar: React.FC<SidebarProps> = ({
             />
           ))}
           <div className="mt-6">
-            <p className="uppercase text-xs text-blue-200 mb-2">Notifications</p>
+            <p className="uppercase text-xs text-blue-200 mb-2">
+              Notifications
+            </p>
             {menuNotifications.map(({ icon, label, path }) => (
               <SidebarItem
                 key={path}

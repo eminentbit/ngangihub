@@ -23,14 +23,13 @@ const getInitials = (name: string): string =>
     .map((n) => n[0]?.toUpperCase() ?? "")
     .join("");
 
-
 const ManageMembersPage: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
-   useEffect(() => {
-      document.documentElement.classList.toggle('dark', isDarkMode);
-    }, [isDarkMode]);
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", isDarkMode);
+  }, [isDarkMode]);
 
   // Active tab for Sidebar
   const [activeTab, setActiveTab] = useState<string>("manage-members");
@@ -40,8 +39,20 @@ const ManageMembersPage: React.FC = () => {
 
   // Members list
   const [members, setMembers] = useState<Member[]>([
-    { id: 1, initials: "JD", name: "John Doe", role: "Admin", status: "Active" },
-    { id: 2, initials: "AS", name: "Alice Smith", role: "Member", status: "Inactive" },
+    {
+      id: 1,
+      initials: "JD",
+      name: "John Doe",
+      role: "Admin",
+      status: "Active",
+    },
+    {
+      id: 2,
+      initials: "AS",
+      name: "Alice Smith",
+      role: "Member",
+      status: "Inactive",
+    },
   ]);
 
   // Modal state for add/edit
@@ -51,9 +62,10 @@ const ManageMembersPage: React.FC = () => {
   // Filter and sort members memoized
   const filteredMembers = useMemo(() => {
     return members
-      .filter((m) =>
-        m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        m.initials.toLowerCase().includes(searchQuery.toLowerCase())
+      .filter(
+        (m) =>
+          m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          m.initials.toLowerCase().includes(searchQuery.toLowerCase())
       )
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [members, searchQuery]);
@@ -110,7 +122,9 @@ const ManageMembersPage: React.FC = () => {
   }, [isModalOpen]);
 
   return (
-    <div className={`flex h-screen overflow-hidden bg-gray-50 dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-800 transition-colors}`}>
+    <div
+      className={`flex h-screen overflow-hidden bg-gray-50 dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-800 transition-colors}`}
+    >
       {/* Sidebar Overlay for mobile */}
       {isSidebarOpen && (
         <div
@@ -122,24 +136,30 @@ const ManageMembersPage: React.FC = () => {
 
       {/* Sidebar Container */}
       <Sidebar
-          isOpen={isSidebarOpen}
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-          onToggle={toggleSidebar}
-          notifications={[]}
-          onClose={toggleSidebar}
-        />
+        isOpen={isSidebarOpen}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        onToggle={toggleSidebar}
+        notifications={[]}
+        onClose={toggleSidebar}
+      />
 
       {/* Main Content */}
-      <div className={`flex-1 transition-all duration-300 p-6 ${isSidebarOpen ? 'lg:ml-64' : 'ml-0'}`}>
-
-      <Header
-          darkMode={isDarkMode}
-          setDarkMode={setIsDarkMode}
-        />
-        <main className={`${!isSidebarOpen ? "w-full" : "flex-1"} flex-1 h-screen px-6 w-full py-8 lg:px-12 bg-white transition-all duration-200 ml-0`}>
+      <div
+        className={`flex-1 transition-all duration-300 p-6 ${
+          isSidebarOpen ? "lg:ml-64" : "ml-0"
+        }`}
+      >
+        <Header darkMode={isDarkMode} setDarkMode={setIsDarkMode} />
+        <main
+          className={`${
+            !isSidebarOpen ? "w-full" : "flex-1"
+          } flex-1 h-screen px-6 w-full py-8 lg:px-12 bg-white transition-all duration-200 ml-0`}
+        >
           <header className="mb-8">
-            <h1 className="text-3xl font-bold text-blue-700 mb-2">Manage Members</h1>
+            <h1 className="text-3xl font-bold text-blue-700 mb-2">
+              Manage Members
+            </h1>
             <p className="text-gray-600 dark:text-gray-300">
               Add, edit, or remove members from your Njangi circle
             </p>
@@ -158,6 +178,7 @@ const ManageMembersPage: React.FC = () => {
               />
             </div>
             <button
+              type="button"
               onClick={openAddModal}
               className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
             >
@@ -170,8 +191,11 @@ const ManageMembersPage: React.FC = () => {
             <table className="min-w-full rounded-lg">
               <thead>
                 <tr>
-                  {['Member', 'Role', 'Status', 'Actions'].map((col) => (
-                    <th key={col} className="px-6 py-3 text-left text-sm font-medium">
+                  {["Member", "Role", "Status", "Actions"].map((col) => (
+                    <th
+                      key={col}
+                      className="px-6 py-3 text-left text-sm font-medium"
+                    >
                       {col}
                     </th>
                   ))}
@@ -180,7 +204,10 @@ const ManageMembersPage: React.FC = () => {
               <tbody>
                 {filteredMembers.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="px-6 py-4 text-center text-gray-500">
+                    <td
+                      colSpan={4}
+                      className="px-6 py-4 text-center text-gray-500"
+                    >
                       No members found.
                     </td>
                   </tr>
@@ -200,9 +227,9 @@ const ManageMembersPage: React.FC = () => {
                       <td className="px-6 py-4">
                         <span
                           className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                            member.status === 'Active'
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-red-100 text-red-800'
+                            member.status === "Active"
+                              ? "bg-green-100 text-green-800"
+                              : "bg-red-100 text-red-800"
                           }`}
                         >
                           {member.status}
@@ -210,6 +237,7 @@ const ManageMembersPage: React.FC = () => {
                       </td>
                       <td className="px-6 py-4 flex justify-end space-x-2">
                         <button
+                          type="button"
                           onClick={() => openEditModal(member)}
                           aria-label="Edit member"
                           className="p-2 rounded hover:bg-indigo-100 transition-colors duration-150 text-indigo-600 hover:text-indigo-800"
@@ -217,6 +245,7 @@ const ManageMembersPage: React.FC = () => {
                           <FaEdit size={18} />
                         </button>
                         <button
+                          type="button"
                           onClick={() => handleDelete(member.id)}
                           aria-label="Delete member"
                           className="p-2 rounded hover:bg-red-100 transition-colors duration-150 text-red-600 hover:text-red-800"
@@ -249,14 +278,17 @@ const ManageMembersPage: React.FC = () => {
                     </div>
                     <div>
                       <div className="font-semibold">{member.name}</div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">{member.role}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                        {member.role}
+                      </div>
                       <div className="mt-1">
                         <span
                           className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                            member.status === 'Active'
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-red-100 text-red-800'
-                          }`}>
+                            member.status === "Active"
+                              ? "bg-green-100 text-green-800"
+                              : "bg-red-100 text-red-800"
+                          }`}
+                        >
                           {member.status}
                         </span>
                       </div>
@@ -264,6 +296,7 @@ const ManageMembersPage: React.FC = () => {
                   </div>
                   <div className="flex flex-col items-end space-y-2">
                     <button
+                      type="button"
                       onClick={() => openEditModal(member)}
                       aria-label="Edit member"
                       className="p-2 rounded hover:bg-indigo-100 transition-colors duration-150 text-indigo-600 hover:text-indigo-800"
@@ -271,6 +304,7 @@ const ManageMembersPage: React.FC = () => {
                       <FaEdit size={18} />
                     </button>
                     <button
+                      type="button"
                       onClick={() => handleDelete(member.id)}
                       aria-label="Delete member"
                       className="p-2 rounded hover:bg-red-100 transition-colors duration-150 text-red-600 hover:text-red-800"
@@ -292,39 +326,48 @@ const ManageMembersPage: React.FC = () => {
                 </h2>
                 <form onSubmit={handleSave} className="space-y-4">
                   <div>
-                    <label htmlFor="fullName" className="block mb-1 text-sm font-medium">
+                    <label
+                      htmlFor="fullName"
+                      className="block mb-1 text-sm font-medium"
+                    >
                       Full Name
                     </label>
                     <input
                       id="fullName"
                       name="fullName"
                       type="text"
-                      defaultValue={editingMember?.name || ''}
+                      defaultValue={editingMember?.name || ""}
                       required
                       className="w-full px-3 py-2 border rounded-lg focus:ring-indigo-300 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
                     />
                   </div>
                   <div>
-                    <label htmlFor="role" className="block mb-1 text-sm font-medium">
+                    <label
+                      htmlFor="role"
+                      className="block mb-1 text-sm font-medium"
+                    >
                       Role
                     </label>
                     <input
                       id="role"
                       name="role"
                       type="text"
-                      defaultValue={editingMember?.role || ''}
+                      defaultValue={editingMember?.role || ""}
                       required
                       className="w-full px-3 py-2 border rounded-lg focus:ring-indigo-300 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
                     />
                   </div>
                   <div>
-                    <label htmlFor="status" className="block mb-1 text-sm font-medium">
+                    <label
+                      htmlFor="status"
+                      className="block mb-1 text-sm font-medium"
+                    >
                       Status
                     </label>
                     <select
                       id="status"
                       name="status"
-                      defaultValue={editingMember?.status || 'Active'}
+                      defaultValue={editingMember?.status || "Active"}
                       className="w-full px-3 py-2 border rounded-lg focus:ring-indigo-300 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
                     >
                       <option value="Active">Active</option>
@@ -343,7 +386,7 @@ const ManageMembersPage: React.FC = () => {
                       type="submit"
                       className="px-4 py-2 font-medium text-white rounded-lg bg-indigo-600 hover:bg-indigo-700"
                     >
-                      {editingMember ? 'Update' : 'Add'} Member
+                      {editingMember ? "Update" : "Add"} Member
                     </button>
                   </div>
                 </form>

@@ -139,7 +139,7 @@ const Step2GroupDetails: React.FC = () => {
                           placeholder="0.00"
                         />
                         <div
-                          className="absolute left-3 top-2.5 text-gray-400"
+                          className="absolute left-3 pr-3 top-2.5 text-gray-400"
                           children={"₣"}
                         />
                       </div>

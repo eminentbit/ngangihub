@@ -49,7 +49,7 @@ const UserDashboard = () => {
   const handleTabChange = (tab: SetStateAction<string>) => {
     setActiveTab(tab);
   };
-useEffect(() => {
+  useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add("dark");
       localStorage.setItem("dark-mode", "true");
@@ -227,18 +227,15 @@ useEffect(() => {
   };
 
   return (
-  <div className="flex flex-col min-h-screen bg-gray-100 dark:bg-gray-900">
-    <Sidebar
-      isOpen={isOpen}
-      activeTab={activeTab}
-      onToggle={() => setIsOpen(o => !o)}
-      onTabChange={handleTabChange}      // replace with your real handler
-      onClose={() => setIsOpen(false)}
-    />
-    <Header
-      darkMode={darkMode}
-      setDarkMode={setDarkMode}
-    />
+    <div className="flex flex-col min-h-screen bg-gray-100 dark:bg-gray-900">
+      <Sidebar
+        isOpen={isOpen}
+        activeTab={activeTab}
+        onToggle={() => setIsOpen((o) => !o)}
+        onTabChange={handleTabChange} // replace with your real handler
+        onClose={() => setIsOpen(false)}
+      />
+      <Header darkMode={darkMode} setDarkMode={setDarkMode} />
 
       <main
         className={`flex-1 p-6 pl-10 space-y-6 ${
@@ -344,6 +341,7 @@ useEffect(() => {
                 </h2>
                 <div className="relative">
                   <button
+                    type="button"
                     onClick={() =>
                       setShowGroupMenu(showGroupMenu ? null : "main")
                     }
@@ -354,6 +352,7 @@ useEffect(() => {
                   {showGroupMenu === "main" && (
                     <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-2 border border-gray-200 dark:border-gray-700">
                       <button
+                        type="button"
                         className="block w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                         onClick={() => {
                           setShowGroupMenu(null);
@@ -363,6 +362,7 @@ useEffect(() => {
                         View All Groups
                       </button>
                       <button
+                        type="button"
                         className="block w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                         onClick={() => {
                           setShowGroupMenu(null);
@@ -424,6 +424,7 @@ useEffect(() => {
 
                     <div className="mt-4 flex justify-between">
                       <button
+                        type="button"
                         className="flex items-center gap-1 text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
                         onClick={() => handleGroupChat(group.id)}
                       >
@@ -431,6 +432,7 @@ useEffect(() => {
                         Chat
                       </button>
                       <button
+                        type="button"
                         className="flex items-center gap-1 text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
                         onClick={() => handleGroupDetails(group.id)}
                       >
@@ -443,6 +445,7 @@ useEffect(() => {
               </div>
 
               <button
+                type="button"
                 className="mt-6 w-full py-2 text-center text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-800/30 transition"
                 onClick={handleViewAllGroups}
               >

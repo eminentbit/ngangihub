@@ -319,7 +319,8 @@ Method: ${payment?.method}
       <Sidebar
         isOpen={isOpen}
         onToggle={() => setIsOpen((o) => !o)}
-        setIsOpen={setIsOpen}
+        onClose={() => setIsOpen(false)}
+        // setIsOpen={setIsOpen}
         activeTab="user/payments"
       />
       <div
@@ -399,6 +400,7 @@ Method: ${payment?.method}
                       {payment.amount.toLocaleString()} CFA
                     </p>
                     <button
+                      type="button"
                       className={`btn ${
                         isProcessingPayment ? "btn-disabled" : "btn-primary"
                       } mt-2 text-sm py-1.5 flex items-center justify-center gap-2`}
@@ -441,6 +443,7 @@ Method: ${payment?.method}
             <div className="flex items-center gap-2">
               <div className="relative">
                 <button
+                  type="button"
                   className="btn btn-secondary flex items-center gap-2"
                   onClick={() => setFilterOpen(!filterOpen)}
                 >
@@ -483,6 +486,7 @@ Method: ${payment?.method}
                     </div>
                     <div className="border-t border-gray-200 dark:border-gray-700 mt-2 pt-2 px-3 py-1 flex justify-end">
                       <button
+                        type="button"
                         className="text-sm text-indigo-600 dark:text-indigo-400 font-medium"
                         onClick={applyFilters}
                       >
@@ -493,6 +497,7 @@ Method: ${payment?.method}
                 )}
               </div>
               <button
+                type="button"
                 className="btn btn-secondary flex items-center gap-2"
                 onClick={handleDownload}
                 disabled={isDownloading}
@@ -629,6 +634,7 @@ Method: ${payment?.method}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button
+                        type="button"
                         className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300"
                         onClick={() => handleViewReceipt(payment.id)}
                       >
@@ -652,6 +658,7 @@ Method: ${payment?.method}
             </div>
             <div className="flex items-center gap-2">
               <button
+                type="button"
                 className={`btn btn-secondary py-1 px-2 text-sm ${
                   currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
                 }`}
@@ -661,6 +668,7 @@ Method: ${payment?.method}
                 Previous
               </button>
               <button
+                type="button"
                 className={`btn btn-secondary py-1 px-2 text-sm ${
                   currentPage === totalPages
                     ? "opacity-50 cursor-not-allowed"
@@ -739,6 +747,7 @@ Method: ${payment?.method}
               </div>
               <div className="flex justify-between">
                 <button
+                  type="button"
                   className="btn btn-secondary flex items-center gap-2"
                   onClick={() => handleDownloadReceipt(showReceipt)}
                 >
@@ -746,6 +755,7 @@ Method: ${payment?.method}
                   <span>Download</span>
                 </button>
                 <button
+                  type="button"
                   className="btn btn-primary"
                   onClick={() => setShowReceipt(null)}
                 >

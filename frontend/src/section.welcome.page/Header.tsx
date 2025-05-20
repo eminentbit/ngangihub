@@ -18,7 +18,6 @@ const navLinks: NavLinkItem[] = [
   { label: "Pricing", to: "pricing", scroll: true },
   { label: "Testimonials", to: "testimonials", scroll: true },
   { label: "FAQ", to: "faq", scroll: true },
-
 ];
 
 const Header: React.FC = () => {
@@ -92,6 +91,7 @@ const Header: React.FC = () => {
 
           {/* Mobile Menu Toggle */}
           <button
+            type="button"
             className="md:hidden text-gray-600"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >

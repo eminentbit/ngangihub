@@ -160,23 +160,34 @@ const Header: React.FC<HeaderProps> = ({ darkMode, setDarkMode }) => {
               aria-label="User menu"
             >
               <FaUserCircle size={28} />
-              <span className="ml-2 font-medium hidden md:inline">John Doe</span>
+              <span className="ml-2 font-medium hidden md:inline">
+                John Doe
+              </span>
             </button>
             {showProfileMenu && (
               <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
                 <ul className="py-1">
                   <li>
-                    <button className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <button
+                      type="button"
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
                       Profile
                     </button>
                   </li>
                   <li>
-                    <button className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <button
+                      type="button"
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
                       <Link to="/">Settings</Link>
                     </button>
                   </li>
                   <li>
-                    <button className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600">
+                    <button
+                      type="button"
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600"
+                    >
                       Logout
                     </button>
                   </li>

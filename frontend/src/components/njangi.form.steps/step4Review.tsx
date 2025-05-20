@@ -170,7 +170,7 @@ const Step4Review: React.FC = () => {
                     Contribution
                   </dt>
                   <dd className="mt-1 text-sm text-gray-900">
-                    ${groupDetails.contributionAmount} (
+                    FCFA {groupDetails.contributionAmount} (
                     {groupDetails.contributionFrequency})
                   </dd>
                 </div>

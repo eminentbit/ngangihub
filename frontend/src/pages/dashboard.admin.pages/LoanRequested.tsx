@@ -28,6 +28,7 @@ const LoanRequestPage: React.FC = () => {
     <div className="relative min-h-screen bg-gray-50 dark:bg-gray-900 p-8">
       {/* Back button at top-left */}
       <button
+        type="button"
         onClick={() => navigate("/admin/dashboard")}
         className="absolute left-8 top-8 flex items-center text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-blue-100 dark:hover:bg-gray-700 rounded-md px-3 py-2 transition-colors duration-300"
       >
@@ -36,9 +37,12 @@ const LoanRequestPage: React.FC = () => {
       </button>
 
       <div className="mx-auto mt-16 w-full max-w-2xl p-10 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
-        <h1 className="text-2xl font-bold mb-4 text-blue-700 dark:text-blue-400">Loan Request</h1>
+        <h1 className="text-2xl font-bold mb-4 text-blue-700 dark:text-blue-400">
+          Loan Request
+        </h1>
         <p className="mb-6 text-gray-600 dark:text-gray-300">
-          Need a loan? Fill out the form below and our admins will review your request promptly.
+          Need a loan? Fill out the form below and our admins will review your
+          request promptly.
         </p>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
@@ -116,7 +120,8 @@ const LoanRequestPage: React.FC = () => {
         </form>
 
         <p className="mt-8 text-sm text-gray-500 dark:text-gray-400 text-center">
-          Please ensure your contribution history is up to date before requesting a loan.
+          Please ensure your contribution history is up to date before
+          requesting a loan.
         </p>
       </div>
     </div>

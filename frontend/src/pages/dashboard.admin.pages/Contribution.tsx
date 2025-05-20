@@ -60,6 +60,7 @@ const ContributionPage: React.FC = () => {
     <div className="relative min-h-screen bg-gray-50 dark:bg-gray-900 p-8">
       {/* Back button at top-left */}
       <button
+        type="button"
         onClick={() => navigate("/admin/dashboard")}
         className="absolute left-8 top-8 flex items-center text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-blue-100 dark:hover:bg-gray-700 rounded-md px-3 py-2 transition-colors duration-300"
       >
@@ -71,7 +72,9 @@ const ContributionPage: React.FC = () => {
         {/* Campaign Details */}
         <div className="grid grid-cols-2 gap-6 mb-8">
           <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-md">
-            <p className="text-sm text-gray-500 dark:text-gray-300">Total Raised</p>
+            <p className="text-sm text-gray-500 dark:text-gray-300">
+              Total Raised
+            </p>
             <p className="text-xl font-semibold text-gray-800 dark:text-white">
               FCFA{stats.totalRaised.toLocaleString()}
             </p>
@@ -83,7 +86,9 @@ const ContributionPage: React.FC = () => {
             </p>
           </div>
           <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-md">
-            <p className="text-sm text-gray-500 dark:text-gray-300">Contributions</p>
+            <p className="text-sm text-gray-500 dark:text-gray-300">
+              Contributions
+            </p>
             <p className="text-xl font-semibold text-gray-800 dark:text-white">
               {stats.contributionsCount}
             </p>
@@ -107,13 +112,17 @@ const ContributionPage: React.FC = () => {
           Make a Contribution
         </h1>
         <p className="mb-8 text-gray-600 dark:text-gray-300">
-          Support your group by contributing funds. Every contribution makes a difference.
+          Support your group by contributing funds. Every contribution makes a
+          difference.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Group Selection */}
           <div>
-            <label htmlFor="group" className="block text-gray-700 dark:text-gray-200 font-medium mb-2">
+            <label
+              htmlFor="group"
+              className="block text-gray-700 dark:text-gray-200 font-medium mb-2"
+            >
               Select Group
             </label>
             <select

@@ -1,94 +1,111 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Bell, Moon, Sun } from "lucide-react";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 interface HeaderProps {
-  style?: React.CSSProperties;
   toggleTheme: () => void;
   isDarkMode: boolean;
   notificationCount: number;
 }
 
-const Header: React.FC<HeaderProps> = ({ style, toggleTheme, isDarkMode, notificationCount }) => {
+const Header: React.FC<HeaderProps> = ({
+  toggleTheme,
+  isDarkMode,
+  notificationCount,
+}) => {
   const [showNotifications, setShowNotifications] = useState(false);
 
   return (
-    <header style={{
-      backgroundColor: isDarkMode ? '#1f2937' : '#6b21a8',
-      color: 'white',
-      padding: '16px',
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      position: 'relative',
-      ...style
-    }}>
-      <div style={{ display: 'flex', alignItems: 'center' }}>
-        <img src="/logo.png" alt="Logo" style={{ height: '40px', marginRight: '16px' }} />
+    <header
+      className={`${
+        isDarkMode ? "bg-gray-900 text-white" : "bg-purple-700 text-white"
+      } p-4 flex justify-between items-center relative`}
+    >
+      <div className="flex items-center space-x-4">
+        <img src="/logo.png" alt="Logo" className="h-10" />
         <input
           type="text"
           placeholder="Search..."
-          style={{
-            padding: '8px',
-            borderRadius: '8px',
-            color: isDarkMode ? 'white' : 'black',
-            backgroundColor: isDarkMode ? '#374151' : 'white',
-            border: 'none'
-          }}
+          className={`${
+            isDarkMode
+              ? "bg-gray-800 placeholder-gray-400 text-white"
+              : "bg-white placeholder-gray-500 text-gray-900"
+          } px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500`}
         />
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', position: 'relative' }}>
-        <div style={{ position: 'relative' }}>
-          <button onClick={() => setShowNotifications(!showNotifications)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', fontSize: '24px', position: 'relative' }}>
-            🔔
+
+      <div className="flex items-center space-x-6">
+        {/* Notifications */}
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => setShowNotifications((prev) => !prev)}
+            className="relative focus:outline-none"
+          >
+            <span className="text-xl">
+              <Bell />
+            </span>
             {notificationCount > 0 && (
-              <span style={{
-                backgroundColor: '#ef4444',
-                color: 'white',
-                borderRadius: '50%',
-                width: '20px',
-                height: '20px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                position: 'absolute',
-                top: '-10px',
-                right: '-10px',
-                fontSize: '12px'
-              }}>
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
                 {notificationCount}
               </span>
             )}
           </button>
+
           {showNotifications && (
-            <div style={{
-              position: 'absolute',
-              top: '40px',
-              right: '0',
-              backgroundColor: isDarkMode ? '#374151' : 'white',
-              color: isDarkMode ? 'white' : 'black',
-              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-              borderRadius: '4px',
-              padding: '8px',
-              width: '300px',
-              zIndex: 10
-            }}>
-              <h4 style={{ margin: '0 0 8px 0' }}>Notifications</h4>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                <li style={{ padding: '8px', backgroundColor: isDarkMode ? '#4b5563' : '#e9d5ff', borderRadius: '4px', marginBottom: '4px' }}>
-                  🚨 Board meeting scheduled for next week (2 hours ago)
+            <div
+              className={`${
+                isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"
+              } absolute right-0 mt-2 w-72 rounded-md shadow-lg z-20`}
+            >
+              <h4 className="px-4 py-2 font-semibold border-b border-gray-200 dark:border-gray-700">
+                Notifications
+              </h4>
+              <ul className="max-h-60 overflow-auto">
+                <li
+                  className={`${
+                    isDarkMode ? "bg-gray-700" : "bg-purple-100"
+                  } px-4 py-2 rounded-lg m-2`}
+                >
+                  🚨 Board meeting scheduled for next week{" "}
+                  <span className="text-xs text-gray-400">(2 hours ago)</span>
                 </li>
-                <li style={{ padding: '8px', backgroundColor: isDarkMode ? '#4b5563' : '#e9d5ff', borderRadius: '4px', marginBottom: '4px' }}>
-                  🚨 Annual report review pending (5 hours ago)
+                <li
+                  className={`${
+                    isDarkMode ? "bg-gray-700" : "bg-purple-100"
+                  } px-4 py-2 rounded-lg m-2`}
+                >
+                  🚨 Annual report review pending{" "}
+                  <span className="text-xs text-gray-400">(5 hours ago)</span>
                 </li>
-                <li><Link to="/board/notifications" style={{ display: 'block', padding: '8px', color: isDarkMode ? '#93c5fd' : '#2563eb', textDecoration: 'none' }}>View all notifications</Link></li>
+                <li className="px-4 py-2 mt-2">
+                  <Link
+                    to="/board/notifications"
+                    className={`${
+                      isDarkMode ? "text-indigo-300" : "text-indigo-600"
+                    } hover:underline block`}
+                  >
+                    View all notifications
+                  </Link>
+                </li>
               </ul>
             </div>
           )}
         </div>
-        <button onClick={toggleTheme} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', fontSize: '24px' }}>
-          {isDarkMode ? '☀️' : '🌙'}
+
+        {/* Theme Toggle */}
+        <button
+          type="button"
+          onClick={toggleTheme}
+          className="focus:outline-none text-xl"
+        >
+          {isDarkMode ? <Sun /> : <Moon />}
         </button>
-        <span style={{ marginRight: '8px' }}>👤 Wepngong Shalom</span>
+
+        {/* User Info */}
+        <div className="flex items-center space-x-2">
+          <span className="text-sm">👤 Wepngong Shalom</span>
+        </div>
       </div>
     </header>
   );
