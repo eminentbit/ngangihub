@@ -2,7 +2,7 @@ import { create } from "zustand";
 import axios from "axios";
 import { NjangiSetup } from "../types/create-njangi-types";
 
-const CREATE_NJANGI_API = `${import.meta.env.VITE_API_URL}/create-njangi`;
+const CREATE_NJANGI_API = import.meta.env.VITE_CREATE_NJANGI_API_URL;
 
 axios.defaults.withCredentials = true;
 

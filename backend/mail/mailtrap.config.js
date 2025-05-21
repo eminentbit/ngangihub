@@ -1,17 +1,16 @@
-// import { MailtrapClient } from "mailtrap";
-// import Nodemailer from "nodemailer";
+import Nodemailer from "nodemailer";
+import { MailtrapTransport } from "mailtrap";
 import dotenv from "dotenv";
 dotenv.config();
 
-const TOKEN = process.env.SMTP_TOKEN;
-
-// export const transporter = Nodemailer.createTransport(
-//   MailtrapTransport({
-//     token: TOKEN,
-//   })
-// );
+const TOKEN = process.env.MAILTRAP_TOKEN;
+export const transporter = Nodemailer.createTransport(
+  MailtrapTransport({
+    token: TOKEN,
+  })
+);
 
 export const sender = {
-  email: process.env.SENDER_EMAIL,
-  name: "NjangiHub Auth",
+  address: "hello@demomailtrap.co",
+  name: "NjangiHub Team",
 };

@@ -8,7 +8,6 @@
 import { Worker } from "bullmq";
 import { createRedisClient } from "../../redisClient.js";
 import {
-  sendInviteEmailBeforeNjangiCreation,
   sendNjangiCreatedPendingEmail,
 } from "../../mail/emails.js";
 
@@ -26,10 +25,11 @@ const worker = new Worker(
       memberCount,
       contributionAmount,
       viewURL,
-      // inviteURL,
     } = job.data;
 
     console.log(`🚀 Sending email to ${email}...`);
+    console.log(`Job data:`, job.data);
+    console.log(`Destination: ${dest}`);
 
     if (dest == "admin") {
       await sendNjangiCreatedPendingEmail(
@@ -42,16 +42,6 @@ const worker = new Worker(
         viewURL
       );
     }
-
-    // if (dest == "user") {
-    //   await sendInviteEmailBeforeNjangiCreation(
-    //     email,
-    //     userName,
-    //     "We await your presence",
-    //     groupName,
-    //     inviteURL
-    //   );
-    // }
 
     console.log(`Email sent to ${email}`);
   },
