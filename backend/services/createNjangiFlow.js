@@ -110,7 +110,7 @@ const createNjangiFlow = async (formData, njangiId) => {
 
     inviteMembers.map(async (member) => {
       await emailQueue.add("send-invitee-email", {
-        dest: "user",
+        // dest: "user",
         email: member.contact,
         userName: `${accountSetup.firstName} ${accountSetup.lastName}`,
         groupName: groupDetails.groupName,
@@ -118,16 +118,16 @@ const createNjangiFlow = async (formData, njangiId) => {
         memberCount: groupDetails.numberOfMember || null,
         contributionAmount: groupDetails.contributionAmount,
         viewURL,
-        inviteURL: `${
-          process.env.FRONTEND_URL
-        }/njangi/join?token=${generateToken()}`,
+        // inviteURL: `${
+        //   process.env.FRONTEND_URL
+        // }/njangi/join?token=${generateToken()}`,
       });
-      sendInviteEmailBeforeNjangiCreation(
-        member.contact,
-        `${accountSetup.firstName} ${accountSetup.lastName}`,
-        groupDetails.groupName,
-        `${process.env.FRONTEND_URL}/njangi/join?token=${generateToken()}`
-      );
+      // sendInviteEmailBeforeNjangiCreation(
+      //   member.contact,
+      //   `${accountSetup.firstName} ${accountSetup.lastName}`,
+      //   groupDetails.groupName,
+      //   `${process.env.FRONTEND_URL}/njangi/join?token=${generateToken()}`
+      // );
     });
     console.timeEnd("📬 Add email job to Redis");
 
