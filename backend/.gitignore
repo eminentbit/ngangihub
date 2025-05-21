@@ -28,3 +28,6 @@ backup_backend
 *.njsproj
 *.sln
 *.sw?
+
+package.json
+package-lock.json
