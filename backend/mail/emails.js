@@ -48,9 +48,7 @@ export const sendNjangiCreatedPendingEmail = async (
   viewURL
 ) => {
   const recipients = [email];
-  console.log("Sending email to: ", recipients);
-  console.log("Sender:  ", sender);
-
+ 
   try {
     const response = transporter.sendMail({
       from: sender,
