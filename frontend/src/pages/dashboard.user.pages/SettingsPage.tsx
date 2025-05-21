@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
-import Settings from "../../../components/dashboard.user.components/Settings"
-import Header from "../../../components/dashboard.admin.components/Header"
+import Settings from "../../components/dashboard.user.components/Settings"
+import Header from "../../components/dashboard.admin.components/Header"
 
 export default function SettingsPage() {
   
