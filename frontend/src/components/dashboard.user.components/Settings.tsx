@@ -27,8 +27,8 @@ export default function Settings() {
         } transition-all duration-300`}
       >
         <div>
-          <h1 className="text-2xl font-bold">Settings</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
+          <h1 className="text-3xl font-bold text-blue-700">Settings</h1>
+          <p className="text-gray-600 dark:text-blue-400  mt-400 mt-1">
             Manage your account settings and preferences
           </p>
         </div>
@@ -38,7 +38,6 @@ export default function Settings() {
               activeTab={activeTab} 
               onTabChange={setActiveTab}
               isOpen={isOpen}
-              onClose={() => setIsOpen(false)}
               onToggle={() => setIsOpen((o) => !o)}
             />
           </div>
