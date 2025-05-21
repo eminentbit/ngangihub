@@ -187,9 +187,7 @@ const MyGroups: React.FC = () => {
 
             {/* Chat content */}
             <div className="max-h-[60vh] overflow-y-auto">
-              <ChatInterface groupId={chatGroup.id} groupName={""} onClose={function (): void {
-                throw new Error("Function not implemented.");
-              } } />
+              <ChatInterface groupId={chatGroup.id} groupName={""} onClose={() => setChatModalGroupId(null)} />
             </div>
           </div>
         </div>
