@@ -29,5 +29,4 @@ backup_backend
 *.sln
 *.sw?
 
-package.json
 package-lock.json

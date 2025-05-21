@@ -1,5 +1,5 @@
 import { sender } from "./mailtrap.config.js";
-import transporter from "../utils/transporter.js";
+import { transporter } from "./mailtrap.config.js";
 import {
   VERIFICATION_EMAIL_TEMPLATE,
   PASSWORD_RESET_REQUEST_TEMPLATE,
@@ -20,9 +20,11 @@ const replacePlaceholders = (template, data) => {
 
 export const sendVerificationEmail = async (email, verificationToken) => {
   try {
-    const response = await transporter.sendMail({
-      from: sender.email,
-      to: email,
+  const recipient = [email];
+
+    const response =  transporter.sendMail({
+      from: sender,
+      to: recipient,
       subject: "Verify your email",
       html: replacePlaceholders(VERIFICATION_EMAIL_TEMPLATE, {
         verificationCode: verificationToken,
@@ -45,10 +47,12 @@ export const sendNjangiCreatedPendingEmail = async (
   contributionAmount,
   viewURL
 ) => {
+  const recipients = [email];
+ 
   try {
-    const response = await transporter.sendMail({
-      from: sender.email,
-      to: email,
+    const response = transporter.sendMail({
+      from: sender,
+      to: recipients,
       subject: "Njangi Creation Pending",
       html: replacePlaceholders(NJANGI_CREATION_NOTIFICATION_TEMPLATE, {
         userName,
@@ -67,35 +71,37 @@ export const sendNjangiCreatedPendingEmail = async (
   }
 };
 
-export const sendInviteEmailBeforeNjangiCreation = async (
-  email,
-  senderName,
-  personalMessage,
-  groupName,
-  inviteURL
-) => {
-  try {
-    const response = await transporter.sendMail({
-      from: sender.email,
-      to: email,
-      subject: `Join ${groupName} Njangi Group`,
-      html: replacePlaceholders(INVITE_TEMPLATE, {
-        senderName,
-        groupName,
-        personalMessage,
-        inviteURL,
-      }),
-      category: "Pre-Creation Njangi Invitation",
-    });
-    console.log(
-      "Pre-Creation Njangi Invitation Email sent successfully",
-      response
-    );
-  } catch (error) {
-    console.error(`Error sending email: ${error}`);
-    throw new Error("Error sending email");
-  }
-};
+// export const sendInviteEmailBeforeNjangiCreation = async (
+//   email,
+//   senderName,
+//   personalMessage,
+//   groupName,
+//   inviteURL
+// ) => {
+//   const recipient = [email];
+
+//   try {
+//     const response = transporter.sendMail({
+//       from: sender,
+//       to: recipient,
+//       subject: `Join ${groupName} Njangi Group`,
+//       html: replacePlaceholders(INVITE_TEMPLATE, {
+//         senderName,
+//         groupName,
+//         personalMessage,
+//         inviteURL,
+//       }),
+//       category: "Pre-Creation Njangi Invitation",
+//     });
+//     console.log(
+//       "Pre-Creation Njangi Invitation Email sent successfully",
+//       response
+//     );
+//   } catch (error) {
+//     console.error(`Error sending email: ${error}`);
+//     throw new Error("Error sending email");
+//   }
+// };
 
 export const sendNjangiCreatedApprovalEmail = async (
   email,
@@ -106,9 +112,11 @@ export const sendNjangiCreatedApprovalEmail = async (
   contributionAmount,
   dashboardURL
 ) => {
+  const recipient = [email];
+
   try {
-    const response = await transporter.sendMail({
-      from: email,
+    const response = transporter.sendMail({
+      from: sender,
       to: recipient,
       subject: "Njangi Creation Approved",
       html: replacePlaceholders(NJANGI_APPROVAL_TEMPLATE, {
@@ -129,10 +137,12 @@ export const sendNjangiCreatedApprovalEmail = async (
 };
 
 export const sendWelcomeEmail = async (email, username, dashboardURL) => {
+  const recipient = [email];
+
   try {
-    const response = await transporter.sendMail({
-      from: sender.email,
-      to: email,
+    const response = transporter.sendMail({
+      from: sender,
+      to: recipient,
       subject: "Welcome to NjangiHub- NAAS(Njangi As A Service)",
       html: replacePlaceholders(WELCOME_TEMPLATE, {
         userName: username,
@@ -148,8 +158,8 @@ export const sendWelcomeEmail = async (email, username, dashboardURL) => {
 
 export const sendPasswordResetEmail = async (email, resetToken) => {
   try {
-    const response = await mailtrapClient.send({
-      from: sender.email,
+    const response = transporter.sendMail({
+      from: sender,
       to: email,
       subject: "Reset your password",
       html: replacePlaceholders(PASSWORD_RESET_REQUEST_TEMPLATE, {
@@ -165,10 +175,12 @@ export const sendPasswordResetEmail = async (email, resetToken) => {
 };
 
 export const sentResetSuccessEmail = async (email) => {
+  const recipient = [email];
+
   try {
-    const response = await mailtrapClient.send({
-      from: sender.email,
-      to: email,
+    const response = transporter.sendMail({
+      from: sender,
+      to: recipient,
       subject: "Password reset successful",
       html: PASSWORD_RESET_SUCCESS_TEMPLATE,
       category: "Password Reset",
@@ -187,12 +199,12 @@ export const sendNjangiInvitationEmail = async (
   groupName,
   inviteURL
 ) => {
-  const recipient = [{ email }];
+  const recipient = [email];
 
   try {
-    const response = await transporter.sendMail({
-      from: sender.email,
-      to: email,
+    const response = transporter.sendMail({
+      from: sender,
+      to: recipient,
       subject: "Njangi Creation Approved",
       html: replacePlaceholders(INVITE_TEMPLATE, {
         senderName,
@@ -218,10 +230,12 @@ export const sendNjangiAleadyAddMemberEmail = async (
   dashboardURL,
   groupName
 ) => {
+  const recipient = [email];
+
   try {
-    const response = await transporter.sendMail({
-      from: sender.email,
-      to: email,
+    const response = transporter.sendMail({
+      from: sender,
+      to: recipient,
       subject: `You have been added to ${groupName}.`,
       html: replacePlaceholders(GROUP_MEMBER_ADDITION_TEMPLATE, {
         creatorName,
@@ -247,10 +261,12 @@ export const sendNjangiRejectionEmail = async (
   editURL,
   groupName
 ) => {
+  const recipient = [email];
+
   try {
-    const response = await transporter.sendMail({
-      from: sender.email,
-      to: email,
+    const response = transporter.sendMail({
+      from: sender,
+      to: recipient,
       subject: "Njangi Creation Not Approved",
       html: replacePlaceholders(NJANGI_REJECTION_TEMPLATE, {
         userName,

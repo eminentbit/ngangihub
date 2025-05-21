@@ -5,15 +5,9 @@ import NjangiGroup from "../models/njangigroup.model.js";
 import User from "../models/user.model.js";
 import dotenv from "dotenv";
 import emailQueue from "../bullMQ/queues/emailQueue.js";
-import {
-  sendInviteEmailBeforeNjangiCreation,
-  sendNjangiCreatedPendingEmail,
-} from "../mail/emails.js";
-import Invite from "../models/invite.model.js";
-import { generateToken } from "../utils/inviteUtils.js";
 dotenv.config();
 
-const viewURL = process.env.FRONTEND_URL || "http://localhost:5173";
+const viewURL = process.env.FRONTEND_URL;
 
 /**
  * Creates a Njangi draft document from the given form data
@@ -25,6 +19,9 @@ const viewURL = process.env.FRONTEND_URL || "http://localhost:5173";
 const createNjangiFlow = async (formData, njangiId) => {
   try {
     const { accountSetup, groupDetails, inviteMembers } = formData;
+
+    console.log("Creating Njangi draft with data:", formData);
+    console.log("Njangi ID:", njangiId);
 
     // Check for existing user
     const existingUser = await User.findOne({ email: accountSetup.email });
@@ -66,13 +63,15 @@ const createNjangiFlow = async (formData, njangiId) => {
 
     // Create and save Njangi draft
     const draft = await NjangiDraft.create({
-      // accountSetup: {
-      //   ...accountSetup,
-      //   password: hashedPassword,
-      // },
-      groupDetails: { ...parsedGroupDetails, adminEmail: accountSetup.email },
+      accountSetup: {
+        ...accountSetup,
+        password: hashedPassword,
+      },
+      groupDetails: { ...parsedGroupDetails },
       inviteMembers,
       njangiRouteId: njangiId,
+      status: "pending",
+      createdAt: new Date(),
     });
     console.timeEnd("💾 Save draft to Mongo");
 
@@ -89,7 +88,7 @@ const createNjangiFlow = async (formData, njangiId) => {
         memberCount: groupDetails.numberOfMember || null,
         contributionAmount: groupDetails.contributionAmount,
         viewURL,
-        inviteURL: null,
+        inviteURL: "http://localhost:5173/invite", // Replace with the actual invite URL
       },
       {
         removeOnComplete: true,
@@ -97,38 +96,6 @@ const createNjangiFlow = async (formData, njangiId) => {
         backoff: { type: "exponential", delay: 1000 }, // Retry with delay
       }
     );
-
-    await sendNjangiCreatedPendingEmail(
-      accountSetup.email,
-      `${accountSetup.firstName} ${accountSetup.lastName}`,
-      groupDetails.groupName,
-      draft.createdAt,
-      groupDetails.numberOfMember || inviteMembers.length,
-      groupDetails.contributionAmount,
-      viewURL
-    );
-
-    inviteMembers.map(async (member) => {
-      await emailQueue.add("send-invitee-email", {
-        // dest: "user",
-        email: member.contact,
-        userName: `${accountSetup.firstName} ${accountSetup.lastName}`,
-        groupName: groupDetails.groupName,
-        creationDate: draft.createdAt,
-        memberCount: groupDetails.numberOfMember || null,
-        contributionAmount: groupDetails.contributionAmount,
-        viewURL,
-        // inviteURL: `${
-        //   process.env.FRONTEND_URL
-        // }/njangi/join?token=${generateToken()}`,
-      });
-      // sendInviteEmailBeforeNjangiCreation(
-      //   member.contact,
-      //   `${accountSetup.firstName} ${accountSetup.lastName}`,
-      //   groupDetails.groupName,
-      //   `${process.env.FRONTEND_URL}/njangi/join?token=${generateToken()}`
-      // );
-    });
     console.timeEnd("📬 Add email job to Redis");
 
     console.log("Njangi draft created:", draft._id);

@@ -111,6 +111,7 @@ export const validateGroupName = async (req, res) => {
     ]);
 
     const exists = inDrafts || inGroups;
+    console.log({ inDrafts, inGroups, exists });
     res.json({ valid: !exists });
   } catch (error) {
     res
@@ -123,7 +124,6 @@ export const validateGroupName = async (req, res) => {
  * Validates whether a contact (email or phone) is already used in a NjangiDraft.
  * This helps prevent duplicate signups or invites during the Njangi creation process.
  */
-
 export const validateInviteContact = async (req, res) => {
   let { contact } = req.query;
 

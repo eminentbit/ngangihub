@@ -4,7 +4,7 @@ import { nanoid } from "nanoid";
 
 const createNjangi = async (req, res) => {
   try {
-    const njangiId = `njangi_${nanoid(8)}`;
+    const njangiId = `njangi_${nanoid(8)}`;;
     const result = await createNjangiFlow(req.body, njangiId, res);
     res.status(201).json({
       success: true,

@@ -1,7 +1,5 @@
-import crypto from "crypto";
-import transporter from "./transporter.js";
-
 export const generateToken = () => crypto.randomBytes(20).toString("hex");
+import { transporter } from "../mail/mailtrap.config.js";
 
 export const sendInvite = async (
   contact,

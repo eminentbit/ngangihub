@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-const VALIDATE_API_URL = import.meta.env.VITE_API_URL;
+const VALIDATE_API_URL = import.meta.env.VITE_VALIDATE_API_URL;
 
 /**
  *
@@ -33,15 +33,19 @@ export const useValidatePhoneNumber = (phoneNumber: string) => {
   return useQuery({
     queryKey: ["validate-phoneNumber", phoneNumber],
     queryFn: async () => {
-      const { data } = await axios.get(
-        `${VALIDATE_API_URL}/validate-phone-number`,
-        {
-          params: { phoneNumber },
-        }
-      );
-      return data.valid;
+      try {
+        const { data } = await axios.get(
+          `${VALIDATE_API_URL}/validate-phone-number`,
+          { params: { phoneNumber } }
+        );
+        // Always return a boolean value
+        return typeof data.valid === "boolean" ? data.valid : false;
+      } catch (error) {
+        console.error("Error validating phone number:", error);
+        return false;
+      }
     },
-    enabled: !!phoneNumber, // only run if number is not empty
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    enabled: !!phoneNumber,
+    staleTime: 1000 * 60 * 5,
   });
 };
