@@ -52,7 +52,7 @@ const GroupRequests: React.FC = () => {
       groupName: 'Innovation Team',
       maxMembers: 10,
       description: 'Our group is mainly focused on driving innovation and creativity within the organization by exploring new ideas and technologies.',
-      state: 'Pending',
+      state: 'Pending...',
     },
     {
       id: 2,
@@ -60,7 +60,7 @@ const GroupRequests: React.FC = () => {
       groupName: 'Sustainability Committee',
       maxMembers: 15,
       description: 'This group aims to promote sustainable practices and reduce the organization’s carbon footprint through actionable initiatives.',
-      state: 'Pending',
+      state: 'Pending...',
     },
     {
       id: 3,
@@ -68,7 +68,7 @@ const GroupRequests: React.FC = () => {
       groupName: 'Marketing Task Force',
       maxMembers: 8,
       description: 'A task force dedicated to enhancing our marketing strategies and increasing brand visibility in competitive markets.',
-      state: 'Pending',
+      state: 'Pending...',
     },
   ];
 
