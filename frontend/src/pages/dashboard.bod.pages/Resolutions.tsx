@@ -41,6 +41,8 @@ const Resolutions: React.FC = () => {
   const notificationCount = notifications.length;
 
   const isMobile = window.innerWidth < 768;
+  const isTablet = window.innerWidth >= 768 && window.innerWidth <= 1024;
+  const isDesktop = window.innerWidth > 1024;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
@@ -57,23 +59,23 @@ const Resolutions: React.FC = () => {
           toggleSidebar={toggleSidebar}
         />
         <main style={{
-          flex: isSidebarOpen ? '1' : '100%', // Expand to full width when sidebar is closed
-          padding: isMobile ? '16px' : (isSidebarOpen ? '24px' : '24px 0'), // Adjust padding when sidebar closes
+          flex: isSidebarOpen ? '1' : '100%',
+          padding: isMobile ? '8px' : (isTablet ? '12px' : (isDesktop ? '24px' : '16px')),
           backgroundColor: isDarkMode ? '#374151' : '#f3f4f6',
           color: isDarkMode ? 'white' : 'black',
-          transition: 'flex 0.3s ease, padding 0.3s ease' // Smooth adjustment
+          transition: 'flex 0.3s ease, padding 0.3s ease'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '8px' : (isTablet ? '12px' : '16px'), marginBottom: isMobile ? '8px' : (isTablet ? '12px' : '16px') }}>
             {!isSidebarOpen && (
-              <button onClick={toggleSidebar} style={{ background: 'none', border: 'none', color: isDarkMode ? 'white' : '#5b1a89', cursor: 'pointer', fontSize: '24px' }}>
+              <button onClick={toggleSidebar} style={{ background: 'none', border: 'none', color: isDarkMode ? 'white' : '#5b1a89', cursor: 'pointer', fontSize: isMobile ? '20px' : (isTablet ? '22px' : '24px') }}>
                 ☰
               </button>
             )}
             <h1 style={{
-              fontSize: isMobile ? '20px' : '24px',
+              fontSize: isMobile ? '18px' : (isTablet ? '20px' : '24px'),
               fontWeight: 'bold',
               boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-              padding: '8px',
+              padding: isMobile ? '4px' : (isTablet ? '6px' : '8px'),
               backgroundColor: isDarkMode ? '#4b5563' : '#ffffff',
               borderRadius: '4px',
               display: 'inline-block'
@@ -86,8 +88,8 @@ const Resolutions: React.FC = () => {
             flexDirection: isMobile ? 'column' : 'row',
             justifyContent: 'space-between',
             alignItems: isMobile ? 'stretch' : 'center',
-            gap: '16px',
-            marginBottom: '16px'
+            gap: isMobile ? '8px' : (isTablet ? '12px' : '16px'),
+            marginBottom: isMobile ? '8px' : (isTablet ? '12px' : '16px')
           }}>
             <ResolutionFilter filter={filter} setFilter={setFilter} />
             <button
@@ -95,11 +97,12 @@ const Resolutions: React.FC = () => {
               style={{
                 backgroundColor: '#9333ea',
                 color: 'white',
-                padding: '8px 16px',
+                padding: isMobile ? '6px 12px' : (isTablet ? '7px 14px' : '8px 16px'),
                 border: 'none',
                 borderRadius: '4px',
                 cursor: 'pointer',
-                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                fontSize: isMobile ? '12px' : (isTablet ? '13px' : '14px')
               }}
             >
               <span role="img" aria-label="plus">➕</span> New Resolution

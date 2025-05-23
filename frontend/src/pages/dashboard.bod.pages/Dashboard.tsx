@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useTheme } from './ThemeContext'; // Adjust path as needed
+import { Link } from 'react-router-dom';
+import { useTheme } from './ThemeContext'; 
 import Header from '../../components/dashboard.bod.components/Header';
 import Sidebar from '../../components/dashboard.bod.components/Sidebar';
 import BoardOverview from '../../components/dashboard.bod.components/BoardOverview';
@@ -35,6 +36,8 @@ const Dashboard: React.FC = () => {
   const notificationCount = notifications.length;
 
   const isMobile = window.innerWidth < 768;
+  const isTablet = window.innerWidth >= 768 && window.innerWidth <= 1024;
+  const isDesktop = window.innerWidth > 1024;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', backgroundColor: isDarkMode ? '#1f2937' : '#f3f4f6' }}>
@@ -51,26 +54,26 @@ const Dashboard: React.FC = () => {
           toggleSidebar={toggleSidebar}
         />
         <main style={{
-          flex: isSidebarOpen ? '1' : '100%', // Expand to full width when sidebar is closed
-          padding: isMobile ? '16px' : (isSidebarOpen ? '20px' : '20px 0'), // Adjust padding when sidebar closes
+          flex: isSidebarOpen ? '1' : '100%',
+          padding: isMobile ? '8px' : (isTablet ? '12px' : (isDesktop ? '20px' : '16px')),
           backgroundColor: isDarkMode ? '#374151' : '#f3f4f6',
           boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
           color: isDarkMode ? 'white' : 'black',
-          transition: 'flex 0.3s ease, padding 0.3s ease', // Smooth adjustment
-          width: isSidebarOpen ? 'auto' : '100%' // Ensure full width when sidebar is closed
+          transition: 'flex 0.3s ease, padding 0.3s ease',
+          width: isSidebarOpen ? 'auto' : '100%'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '8px' : (isTablet ? '12px' : '16px') }}>
             {!isSidebarOpen && (
-              <button onClick={toggleSidebar} style={{ background: 'none', border: 'none', color: isDarkMode ? 'white' : '#5b1a89', cursor: 'pointer', fontSize: '24px' }}>
+              <button onClick={toggleSidebar} style={{ background: 'none', border: 'none', color: isDarkMode ? 'white' : '#5b1a89', cursor: 'pointer', fontSize: isMobile ? '20px' : (isTablet ? '22px' : '24px') }}>
                 ☰
               </button>
             )}
             <h1 style={{
-              fontSize: isMobile ? '20px' : '24px',
+              fontSize: isMobile ? '18px' : (isTablet ? '20px' : '24px'),
               fontWeight: 'bold',
-              marginBottom: '16px',
+              marginBottom: isMobile ? '8px' : (isTablet ? '12px' : '16px'),
               boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-              padding: '8px',
+              padding: isMobile ? '4px' : (isTablet ? '6px' : '8px'),
               backgroundColor: isDarkMode ? '#4b5563' : '#ffffff',
               borderRadius: '4px',
               display: 'inline-block'
@@ -80,41 +83,56 @@ const Dashboard: React.FC = () => {
           </div>
           <p style={{
             color: isDarkMode ? '#d1d5db' : '#6b7280',
-            marginBottom: '16px',
+            marginBottom: isMobile ? '8px' : (isTablet ? '12px' : '16px'),
             boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-            padding: '8px',
+            padding: isMobile ? '4px' : (isTablet ? '6px' : '8px'),
             backgroundColor: isDarkMode ? '#4b5563' : '#ffffff',
             borderRadius: '4px',
-            display: 'inline-block'
+            display: 'inline-block',
+            fontSize: isMobile ? '12px' : (isTablet ? '14px' : '16px')
           }}>
             Monitor board activities and make informed decisions.
           </p>
-          <div style={{ display: 'flex', gap: '16px', marginBottom: '16px' }}>
-            <button style={{
-              backgroundColor: '#9333ea',
-              color: 'white',
-              padding: '8px 16px',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
-            }}>
+          <div style={{ display: 'flex', gap: isMobile ? '8px' : (isTablet ? '12px' : '16px'), marginBottom: isMobile ? '8px' : (isTablet ? '12px' : '16px') }}>
+            <Link
+              to="/board/resolutions/"
+              style={{
+                backgroundColor: '#9333ea',
+                color: 'white',
+                padding: isMobile ? '6px 12px' : (isTablet ? '7px 14px' : '8px 16px'),
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                textDecoration: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                fontSize: isMobile ? '12px' : (isTablet ? '13px' : '14px')
+              }}
+            >
               <span role="img" aria-label="plus">➕</span> New Resolution
-            </button>
-            <button style={{
-              backgroundColor: '#9333ea',
-              color: 'white',
-              padding: '8px 16px',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
-            }}>
+            </Link>
+            <Link
+              to="/board/schedule/"
+              style={{
+                backgroundColor: '#9333ea',
+                color: 'white',
+                padding: isMobile ? '6px 12px' : (isTablet ? '7px 14px' : '8px 16px'),
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                textDecoration: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                fontSize: isMobile ? '12px' : (isTablet ? '13px' : '14px')
+              }}
+            >
               <span role="img" aria-label="calendar">📅</span> Schedule Meeting
-            </button>
+            </Link>
           </div>
           <BoardOverview style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }} isDarkMode={isDarkMode} />
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '16px', marginTop: '24px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : (isTablet ? '1fr 1fr' : 'repeat(3, 1fr)'), gap: isMobile ? '8px' : (isTablet ? '12px' : '16px'), marginTop: isMobile ? '12px' : (isTablet ? '18px' : '24px') }}>
             <ResolutionVoting style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }} isDarkMode={isDarkMode} />
             <AttendanceRate style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }} isDarkMode={isDarkMode} />
             <RecentResolutions style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }} isDarkMode={isDarkMode} />

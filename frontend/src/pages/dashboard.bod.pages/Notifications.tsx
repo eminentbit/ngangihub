@@ -11,12 +11,15 @@ const Notifications: React.FC = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  // Get notification count from NotificationsList data
   const notifications = [
     '🚨 Board meeting scheduled for next week (2 hours ago)',
     '🚨 Annual report review pending (5 hours ago)'
   ];
   const notificationCount = notifications.length;
+
+  const isMobile = window.innerWidth < 768;
+  const isTablet = window.innerWidth >= 768 && window.innerWidth <= 1024;
+  const isDesktop = window.innerWidth > 1024;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
@@ -34,11 +37,11 @@ const Notifications: React.FC = () => {
         />
         <main style={{
           flex: '1',
-          padding: '20px',
+          padding: isMobile ? '8px' : (isTablet ? '10px' : (isDesktop ? '20px' : '12px')),
           backgroundColor: isDarkMode ? '#374151' : '#f3f4f6',
           color: isDarkMode ? 'white' : 'black'
         }}>
-          <h1 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '16px' }}>Notifications</h1>
+          <h1 style={{ fontSize: isMobile ? '18px' : (isTablet ? '20px' : '24px'), fontWeight: 'bold', marginBottom: isMobile ? '8px' : (isTablet ? '10px' : '16px') }}>Notifications</h1>
           <NotificationsList isDarkMode={isDarkMode} />
         </main>
       </div>

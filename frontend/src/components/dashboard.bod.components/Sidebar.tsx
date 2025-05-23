@@ -22,21 +22,25 @@ const Sidebar: React.FC<SidebarProps> = ({ style, isOpen, toggleSidebar }) => {
   });
 
   const isMobile = window.innerWidth < 768;
+  const headerHeight = 64; // Assumed header height in pixels; adjust if different
 
   return (
     <aside style={{
       backgroundColor: isOpen ? '#5b1a89' : 'transparent',
       color: 'white',
-      width: isMobile ? (isOpen ? '100%' : '0') : (isOpen ? 'auto' : '0'), // Dynamic width for desktop
-      minWidth: isMobile ? '100%' : (isOpen ? '256px' : '0'), // Ensure minimum width for readability
-      minHeight: '100vh', // At least fill the viewport, but can grow
+      width: isMobile ? (isOpen ? '100vw' : '0') : (isOpen ? 'auto' : '0'), // Full width on mobile when open
+      minWidth: isMobile ? (isOpen ? '100vw' : '0') : (isOpen ? '256px' : '0'), // Full viewport width on mobile
+      minHeight: isMobile ? `calc(100vh - ${headerHeight}px)` : '100vh', // Adjust height on mobile to account for header
       padding: isOpen ? '16px' : '0',
       overflow: 'hidden',
-      overflowY: 'auto', // Enable scrolling if content overflows
-      opacity: isOpen ? 1 : 0, // Fade in/out
-      visibility: isOpen ? 'visible' : 'hidden', // Hide when fully closed
-      transition: 'width 0.3s ease, padding 0.3s ease, opacity 0.3s ease, background-color 0.3s ease, visibility 0.3s ease', // Smooth transitions
-      position: 'relative',
+      overflowY: 'auto',
+      opacity: isOpen ? 1 : 0,
+      visibility: isOpen ? 'visible' : 'hidden',
+      transition: 'width 0.3s ease, padding 0.3s ease, opacity 0.3s ease, background-color 0.3s ease, visibility 0.3s ease',
+      position: isMobile ? 'fixed' : 'relative', // Fixed positioning on mobile
+      top: isMobile ? `${headerHeight}px` : 0, // Start below header on mobile
+      left: isMobile ? (isOpen ? '0' : '-100vw') : 0, // Slide from left on mobile
+      zIndex: isMobile ? 1000 : 'auto', // Ensure it overlays content on mobile
       ...style
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
