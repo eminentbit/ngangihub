@@ -1,5 +1,13 @@
 export const profanityList = [
   "sex",
+  "sexy",
+  "sexytime",
+  "sexting",
+  "sextoys",
+  "sextape",
+  "sextortion", 
+  "sextuplets",
+  "bad",
   "violence",
   "drugs",
   "hate",

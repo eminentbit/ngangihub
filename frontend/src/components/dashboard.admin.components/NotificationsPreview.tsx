@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 interface Notification {
   id: number;
@@ -46,7 +47,7 @@ const NotificationsPreview: React.FC<NotificationsPreviewProps> = ({
         onClick={onViewAll}
         className="text-indigo-300 text-sm hover:text-white cursor-pointer whitespace-nowrap pb-3 ml-3"
       >
-        View all notifications
+        <Link to="/notifications">View All</Link>
       </button>
     </div>
   </div>

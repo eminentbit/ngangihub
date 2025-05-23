@@ -155,25 +155,39 @@ export const groupDetailsSchema = z.object({
 export const inviteMembersSchema = z.object({
   invites: z
     .array(
-      z.object({
-        contact: z
-          .string()
-          .min(1, "Email or Phone number is required")
-          .refine(
-            (val) => {
-              // Check if it's a valid email
-              const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-              if (emailRegex.test(val)) return true;
-
-              // Check if it's a valid phone number
-              const phoneNumber = parsePhoneNumberFromString(val);
-              return phoneNumber ? phoneNumber.isValid() : false;
-            },
-            { message: "Please enter a valid email or phone number" }
-          ),
-      })
+      z
+        .object({
+          type: z.enum(["email", "phone"], {
+            required_error:
+              "Please select how you'd like to invite this member",
+          }),
+          value: z.string().min(1, "This field is required"),
+        })
+        .superRefine((data, ctx) => {
+          if (data.type === "email") {
+            const isEmail = z.string().email().safeParse(data.value).success;
+            if (!isEmail) {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "Please enter a valid email address",
+                path: ["value"],
+              });
+            }
+          } else if (data.type === "phone") {
+            const phone = parsePhoneNumberFromString(data.value);
+            if (!phone || !phone.isValid()) {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message:
+                  "Please enter a valid phone number and include your country code",
+                path: ["value"],
+              });
+            }
+          }
+        })
     )
-    .min(1, "At least one member must be invited"),
+    .min(1, "At least one member must be invited")
+    .max(3, "You can only invite up to 3 members"),
 });
 
 // Combined form schema types

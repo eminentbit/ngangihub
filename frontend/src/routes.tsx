@@ -14,8 +14,11 @@ import StatisticsPage from "./pages/dashboard.admin.pages/MyStatistics";
 import AddMemberPage from "./pages/dashboard.admin.pages/AddMember";
 import GroupSettingsPage from "./pages/dashboard.admin.pages/GroupSetting";
 import NotificationsPage from "./pages/dashboard.admin.pages/Notification";
-//BOD
-import Dashboard from './pages/dashboard.bod.pages/Dashboard';
+import VerifyEmail from "./pages/very.email";
+import ForgotPassword from "./pages/forgot.password";
+// import UserDashboard from "./pages/dashboard.user.pages/UserDashboardPage";
+import Dashboard from "./pages/dashboard.bod.pages/Dashboard";
+import UserDashboard from "./pages/dashboard.user.pages/dashboard";
 import Notifications from "./pages/dashboard.bod.pages/Notifications";
 import Resolutions from "./pages/dashboard.bod.pages/Resolutions";
 import MeetingSchedule from "./pages/dashboard.bod.pages/MeetingSchedule";
@@ -25,6 +28,9 @@ import Documents from "./pages/dashboard.bod.pages/Documents";
 import Policies from "./pages/dashboard.bod.pages/Policies";
 import Reports from "./pages/dashboard.bod.pages/Reports";
 import GroupReqest from "./pages/dashboard.bod.pages/GroupRequest";
+import MyGroups from "./components/dashboard.user.components/my-groups";
+import PaymentsPage from "./pages/dashboard.user.pages/payments/page";
+import Settings from "./components/dashboard.user.components/Settings";
 
 // eslint-disable-next-line react-refresh/only-export-components
 const LandingSections: React.FC = () => <App />;
@@ -40,38 +46,55 @@ export const router = createBrowserRouter([
       { path: "contact", element: <ContactPage /> },
       { path: "login", element: <Login /> },
       { path: "njangi-form", element: <NjangiForm /> },
+      { path: "verify-email", element: <VerifyEmail /> },
+      { path: "forgot-password", element: <ForgotPassword /> },
       { path: "*", element: <NotFoundPage /> },
     ],
   },
 
+  {
+    path: "/user",
+    children: [
+      { path: "dashboard", element: <UserDashboard /> },
+      { path: "groups", element: <MyGroups /> },
+      { path: "payments", element: <PaymentsPage /> },
+      { path: "settings", element: <Settings /> },
+    ],
+  },
+
   // Admin routes
-  { path: "/admindashboard", element: <AdminDashboardPage /> },
-  { path: "/admin-manage-members", element: <MemberManagement /> },
-  { path: "/njangi-form", element: <NjangiForm /> },
-  { path: "/login", element: <Login /> },
-  { path: "/manage-admin", element: <MemberManagement /> },
-  { path: "/groups-admin", element: <GroupOverviewPage /> },
-  { path: "/group-info-admin", element: <GroupInfoPage /> },
-  { path: "/stats-admin", element: <StatisticsPage /> },
-  { path: "/add-member-admin", element: <AddMemberPage /> },
-  { path: "/add-member-admin", element: <AddMemberPage /> },
-  {path: "/group-settings-admin", element: <GroupSettingsPage /> },
-  {path: "/notifications", element: <NotificationsPage /> },
+  {
+    path: "/admin",
+    caseSensitive: false,
+    children: [
+      { path: "dashboard", element: <AdminDashboardPage /> },
+      { path: "manage-members", element: <MemberManagement /> },
+      { path: "njangi-form", element: <NjangiForm /> },
+      { path: "login", element: <Login /> },
+      { path: "groups", element: <GroupOverviewPage /> },
+      { path: "group-info", element: <GroupInfoPage /> },
+      { path: "stats", element: <StatisticsPage /> },
+      { path: "add-member", element: <AddMemberPage /> },
+      { path: "group-settings", element: <GroupSettingsPage /> },
+      { path: "notifications", element: <NotificationsPage /> },
+    ],
+    
+  },
 
   // Board of Directors routes
   {
     path: "/board",
     children: [
       { path: "dashboard", element: <Dashboard /> },
-      { path: "notifications", element: <Notifications/>},
-      { path: "resolutions", element: <Resolutions/>},
-      { path: "schedule", element: <MeetingSchedule/>},
-      { path: "minutes", element: <MeetingMinutes/>},
-      { path: "attendance", element: <Attendance/>},
-      { path: "documents", element: <Documents/>},
-      { path: "policies", element: <Policies/>},
-      { path: "reports", element: <Reports/>},
-      { path: "group-requests", element: <GroupReqest/>},
+      { path: "notifications", element: <Notifications /> },
+      { path: "resolutions", element: <Resolutions /> },
+      { path: "schedule", element: <MeetingSchedule /> },
+      { path: "minutes", element: <MeetingMinutes /> },
+      { path: "attendance", element: <Attendance /> },
+      { path: "documents", element: <Documents /> },
+      { path: "policies", element: <Policies /> },
+      { path: "reports", element: <Reports /> },
+      { path: "group-requests", element: <GroupReqest /> },
     ],
   },
   // Catch-all route for 404

@@ -119,6 +119,7 @@ const FormFileInput = forwardRef<HTMLInputElement, FormFileInputProps>(
                     className="w-full h-full object-cover rounded-md"
                   />
                   <button
+                    type="button"
                     onClick={clearFile}
                     className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition-colors"
                   >
