@@ -424,7 +424,7 @@ export const GROUP_MEMBER_ADDITION_TEMPLATE = `
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>You've Been Added to a Njangi Group - NganjiHub</title>
+  <title>Njangi Group Invitation - NganjiHub</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body style="font-family: 'Inter', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 0;">
@@ -437,7 +437,13 @@ export const GROUP_MEMBER_ADDITION_TEMPLATE = `
     <!-- Content -->
     <div style="background-color: #ffffff; padding: 30px;">
       <p style="margin-top: 0; font-size: 16px;">{userName},</p>
-      <p style="font-size: 16px;">Good news! <strong>{creatorName}</strong> has added you as a member of their Njangi group <strong>"{groupName}"</strong> on NganjiHub.</p>
+      <p style="font-size: 16px;">
+        Great news! The Board of Directors has officially approved a Njangi group created by <strong>{creatorName}</strong>, and you've been added as a member of <strong>"{groupName}"</strong> on NganjiHub.
+      </p>
+
+      <p style="font-size: 16px; background-color: #fef3c7; padding: 10px; border-left: 4px solid #f59e0b; border-radius: 4px;">
+        <strong>Note:</strong> For security reasons, your invitation link will expire in <strong>24 hours</strong>. Please complete your registration before then.
+      </p>
       
       <div style="text-align: center; margin: 30px 0;">
         <div style="background-color: #dbeafe; border-radius: 50%; width: 80px; height: 80px; margin: 0 auto; display: flex; align-items: center; justify-content: center;">
@@ -456,26 +462,13 @@ export const GROUP_MEMBER_ADDITION_TEMPLATE = `
         </ul>
       </div>
       
-      <div style="background-color: #f0f9ff; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #1a56db;">
-        <p style="font-size: 16px; margin-top: 0;"><strong>What is Njangi?</strong></p>
-        <p style="font-size: 16px; margin-bottom: 0;">Njangi is a traditional rotating savings and credit association where members contribute money regularly, and each member takes turns receiving the collected sum. NganjiHub brings this practice online, making it secure, transparent, and convenient.</p>
-      </div>
-      
-      <p style="font-size: 16px;">As a member of this group, you'll be able to:</p>
-      <ul style="font-size: 16px;">
-        <li>Track your contributions</li>
-        <li>See when you're scheduled to receive funds</li>
-        <li>Communicate with other group members</li>
-        <li>Receive payment reminders</li>
-      </ul>
-      
-      <p style="font-size: 16px;">To view your group and manage your membership, click the button below:</p>
+      <p style="font-size: 16px;">To join the group and activate your membership, click the button below:</p>
       
       <div style="text-align: center; margin: 30px 0;">
-        <a href="{dashboardURL}" style="background-color: #1a56db; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block; font-size: 16px;">Go to Dashboard</a>
+        <a href="{registrationUrl}" style="background-color: #1a56db; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block; font-size: 16px;">Accept Invitation</a>
       </div>
       
-      <p style="font-size: 16px;">If you believe you've been added to this group by mistake, please contact our support team or speak directly with {creatorName}.</p>
+      <p style="font-size: 16px;">If you believe you've received this email in error, please contact our support team or speak with {creatorName}.</p>
       
       <p style="margin-top: 30px; font-size: 16px;">Best regards,<br><strong>NAAS Team</strong></p>
     </div>

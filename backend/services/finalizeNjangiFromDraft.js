@@ -34,8 +34,6 @@ export const finalizeNjangiFromDraft = async (draftId, res) => {
   group.groupMembers.push(adminUser._id);
   await group.save();
 
-  // add user to group members in GroupMember model
-
   await addAdminAsGroupMember(group._id, adminUser._id, group.status);
 
   //Update users group array
@@ -72,9 +70,7 @@ export const finalizeNjangiFromDraft = async (draftId, res) => {
     groupDetails.contributionAmount,
     `${process.env.ADMIN_DASHBOARD_URL}`
   );
-  console.log(
-    `Njangi created approval email sent to ${adminUser.email}`
-  );
+  console.log(`Njangi created approval email sent to ${adminUser.email}`);
 
   // delete the draft after finalizing
   await NjangiDraft.deleteOne({ _id: draftId });

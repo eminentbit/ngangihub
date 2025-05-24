@@ -4,7 +4,7 @@ import axios from "axios";
 const VALIDATE_API_URL = import.meta.env.VITE_VALIDATE_API_URL;
 
 
-const buildUrl = (path: string) => {
+const buildUrl = (path: string) => { //Ensure that there is no duplicate // of avoid where its
   return `${VALIDATE_API_URL.replace(/\/+$/, "")}/${path.replace(/^\/+/, "")}`;
 };
 

@@ -42,6 +42,9 @@ export const inviteMembersToGroup = async (
       // Generate invite token
       const Invitetoken = generateToken();
 
+      // Construct the registration URL with the invite token
+      const registrationUrl = `${process.env.REGISTER_URL}/members?inviteToken=${Invitetoken}`;
+
       // Utility function to check if a string is an email
       const isEmail = (contact) => /\S+@\S+\.\S+/.test(contact);
 
@@ -49,7 +52,7 @@ export const inviteMembersToGroup = async (
       const newInvite = await Invite.create({
         groupId,
         emailOrPhone: contact,
-        inviteToken: token,
+        inviteToken: Invitetoken,
         invitedBy: adminId,
         status: "pending",
         expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24), // 24h
@@ -66,8 +69,8 @@ export const inviteMembersToGroup = async (
           `${adminFirstName} ${adminLastName}`,
           contributionAmount,
           contributionFrequency,
-          Invitetoken, //will need to be a link to a password generated invite page or sign up page
-          groupName
+          groupName,
+          registrationUrl
         );
       }
 

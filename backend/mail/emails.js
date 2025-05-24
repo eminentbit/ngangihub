@@ -20,9 +20,9 @@ const replacePlaceholders = (template, data) => {
 
 export const sendVerificationEmail = async (email, verificationToken) => {
   try {
-  const recipient = [email];
+    const recipient = [email];
 
-    const response =  transporter.sendMail({
+    const response = transporter.sendMail({
       from: sender,
       to: recipient,
       subject: "Verify your email",
@@ -48,7 +48,7 @@ export const sendNjangiCreatedPendingEmail = async (
   viewURL
 ) => {
   const recipients = [email];
- 
+
   try {
     const response = transporter.sendMail({
       from: sender,
@@ -227,8 +227,8 @@ export const sendNjangiAleadyAddMemberEmail = async (
   creatorName,
   contributionAmount,
   paymentFrequency,
-  inviteToken,
-  groupName
+  groupName,
+  registrationUrl
 ) => {
   const recipient = [email];
 
@@ -236,18 +236,18 @@ export const sendNjangiAleadyAddMemberEmail = async (
     const response = transporter.sendMail({
       from: sender,
       to: recipient,
-      subject: `You have been added to ${groupName}.`,
+      subject: `You have been added to ${groupName} on NjangiHub`,
       html: replacePlaceholders(GROUP_MEMBER_ADDITION_TEMPLATE, {
         creatorName,
         userName,
         contributionAmount,
         paymentFrequency,
         groupName,
-        inviteToken,
+        registrationUrl,
       }),
-      category: "Invited to Njangi Group",
+      category: "Njangi Group Member Invitation",
     });
-    console.log("Njangi already add member Email sent successfully", response);
+    console.log("Njangi member invitation email sent successfully", response);
   } catch (error) {
     console.error(`Error sending email: ${error}`);
     throw new Error("Error sending email");
