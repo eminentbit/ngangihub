@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FaBell, FaSun, FaMoon, FaUserCircle, FaSearch } from "react-icons/fa";
 import { notifications } from "../../utils/data.admin.dashboard";
-import { Link } from "react-scroll";
+import { Link } from 'react-router-dom';
+
 
 interface HeaderProps {
   darkMode: boolean;
@@ -168,29 +169,22 @@ const Header: React.FC<HeaderProps> = ({ darkMode, setDarkMode }) => {
               <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
                 <ul className="py-1">
                   <li>
-                    <button
-                      type="button"
-                      className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    >
-                      Profile
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      type="button"
-                      className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    >
-                      <Link to="/">Settings</Link>
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      type="button"
-                      className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600"
-                    >
-                      Logout
-                    </button>
-                  </li>
+                    <Link
+                     to="/profile"
+                    className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
+                  Profile
+              </Link>
+               </li>
+                <li>
+                  <Link
+                    to="/logout"
+                    className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600"
+                  >
+                    Logout
+                  </Link>
+                </li>
+                
                 </ul>
               </div>
             )}

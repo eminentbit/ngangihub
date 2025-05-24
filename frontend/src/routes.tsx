@@ -3,6 +3,8 @@ import { createBrowserRouter } from "react-router-dom";
 import AboutPage from "./pages/About";
 import ContactPage from "./pages/Contact";
 import NotFoundPage from "./pages/not-found";
+import ProfilePage from "./pages/ProfilePage";
+import LogoutPage from "./pages/Logout";
 import { AdminDashboardPage } from "./pages/dashboard.admin.pages/AdminDashboardPage";
 import App from "./App";
 import NjangiForm from "./pages/njangi.form.page";
@@ -33,6 +35,7 @@ import GroupReqest from "./pages/dashboard.bod.pages/GroupRequest";
 import PaymentsPage from "./pages/dashboard.user.pages/PaymentPage";
 import SettingsPage from "./pages/dashboard.user.pages/SettingsPage";
 
+
 // eslint-disable-next-line react-refresh/only-export-components
 const LandingSections: React.FC = () => <App />;
 
@@ -45,6 +48,8 @@ export const router = createBrowserRouter([
       { index: true, element: <LandingSections /> },
       { path: "about", element: <AboutPage /> },
       { path: "contact", element: <ContactPage /> },
+      { path: "profile", element: <ProfilePage /> },
+      { path: "logout", element: <LogoutPage /> },
       { path: "login", element: <Login /> },
       { path: "njangi-form", element: <NjangiForm /> },
       { path: "verify-email", element: <VerifyEmail /> },
@@ -60,6 +65,7 @@ export const router = createBrowserRouter([
       { path: "groups", element: <MyGroups /> },
       { path: "payments", element: <PaymentsPage /> },
       { path: "settings", element: <SettingsPage /> },
+      { path: "notifications", element: <NotificationsPage /> }
     ],
   },
 

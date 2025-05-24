@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import SidebarItem from "../dashboard.admin.components/SidebarItem";
-import NotificationsPreview from "../dashboard.admin.components/NotificationsPreview";
+
 import {
   FaUserShield,
   FaUsers,
@@ -16,12 +16,6 @@ interface SidebarProps {
   activeTab: string;
   onToggle: () => void;
   onTabChange?: (tab: string) => void;
-  notifications?: {
-    id: number;
-    message: string;
-    time: string;
-    isRead: boolean;
-  }[];
   onClose: () => void;
 }
 
@@ -49,7 +43,6 @@ const Sidebar: React.FC<SidebarProps> = ({
   activeTab,
   onToggle,
   onTabChange,
-  notifications = [],
   onClose,
 }) => {
   const navigate = useNavigate();
@@ -139,13 +132,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             ))}
           </div>
         </nav>
-        <div className="mt-auto mb-4 px-2">
-          <NotificationsPreview
-            notifications={notifications}
-            onViewAll={() => handleNav("/user/notifications")}
-            showLabels={isOpen}
-          />
-        </div>
+        
       </div>
 
       {/* Collapsed Desktop */}
