@@ -9,8 +9,9 @@ export const useLogin = () => {
 
   return useMutation({
     mutationFn: async (credentials: { email: string; password: string }) => {
+      console.log("Logging in with credentials:", credentials);
       const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/auth/login`,
+        `${import.meta.env.VITE_LOGIN_API_URL}`,
         credentials,
         { withCredentials: true }
       );

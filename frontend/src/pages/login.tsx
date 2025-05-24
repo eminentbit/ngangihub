@@ -34,6 +34,7 @@ export default function Login() {
   const { mutate, isError } = useLogin();
 
   const onSubmit = async (data: LoginFormData) => {
+    console.log("Form submitted with data for login:", data);
     mutate({ email: data.email, password: data.password });
   };
 

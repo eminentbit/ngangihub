@@ -1,6 +1,5 @@
 // models/NjangiDraft.js
 import mongoose from "mongoose";
-import User from "./user.model.js";
 
 const njangiDraftSchema = new mongoose.Schema(
   {
@@ -14,6 +13,16 @@ const njangiDraftSchema = new mongoose.Schema(
       passwordHash: String,
       verificationToken: String,
       verificationTokenExpireAt: Date,
+      role: {
+        type: String,
+        enum: ["admin", "member", "bod"],
+        default: "member",
+      },
+      status: {
+      type: String,
+      enum: ["active", "pending", "invited", "suspended"],
+      default: "pending",
+    },
     },
     groupDetails: {
       groupName: String,

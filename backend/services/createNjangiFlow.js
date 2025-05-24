@@ -66,6 +66,8 @@ const createNjangiFlow = async (formData, njangiId) => {
       accountSetup: {
         ...accountSetup,
         password: hashedPassword,
+        role: "admin", // Default role for the creator
+        status: "pending", 
       },
       groupDetails: { ...parsedGroupDetails },
       inviteMembers,

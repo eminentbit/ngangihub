@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema(
     role: { type: String, enum: ["admin", "member", "bod"], default: "member" },
     status: {
       type: String,
-      enum: ["active", "pending", "invited"],
+      enum: ["active", "pending", "invited", "suspended"],
       default: "pending",
     },
     lastlogin: {
