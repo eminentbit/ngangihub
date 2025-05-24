@@ -34,7 +34,7 @@ import Reports from "./pages/dashboard.bod.pages/Reports";
 import GroupReqest from "./pages/dashboard.bod.pages/GroupRequest";
 import PaymentsPage from "./pages/dashboard.user.pages/PaymentPage";
 import SettingsPage from "./pages/dashboard.user.pages/SettingsPage";
-
+import InviteMemberRegistrationForm from "./pages/invites.member.register.form";
 
 // eslint-disable-next-line react-refresh/only-export-components
 const LandingSections: React.FC = () => <App />;
@@ -65,7 +65,7 @@ export const router = createBrowserRouter([
       { path: "groups", element: <MyGroups /> },
       { path: "payments", element: <PaymentsPage /> },
       { path: "settings", element: <SettingsPage /> },
-      { path: "notifications", element: <NotificationsPage /> }
+      { path: "notifications", element: <NotificationsPage /> },
     ],
   },
 
@@ -87,7 +87,6 @@ export const router = createBrowserRouter([
       { path: "contributions", element: <ContributionPage /> },
       { path: "loans-request", element: <LoanRequestPage /> },
     ],
-    
   },
 
   // Board of Directors routes
@@ -106,6 +105,13 @@ export const router = createBrowserRouter([
       { path: "group-requests", element: <GroupReqest /> },
     ],
   },
+
+  //Registration route for invted memebers
+  {
+    path: "/register/members",
+    element: <InviteMemberRegistrationForm />,
+  },
+
   // Catch-all route for 404
   {
     path: "*",
