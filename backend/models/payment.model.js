@@ -11,6 +11,10 @@ const paymentMethodSchema = new mongoose.Schema({
     enum: ["card", "mobile_money"],
     required: true,
   },
+  paymentMode: {
+    type: String,
+    enum: ["basic", "starter", "enterprise"],
+  },
   // Card specific fields
   cardNumber: {
     type: String,

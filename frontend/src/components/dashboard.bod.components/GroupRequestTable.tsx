@@ -5,12 +5,12 @@ import { GroupDetails } from "../../types/create-njangi-types";
 import GroupRequestModal from "./GroupRequestModal";
 
 interface GroupRequestTableProps {
-  requests: GroupRequest[];
+  requests: GroupRequest[] | null;
   isDarkMode: boolean;
   onSelectRequest: (id: string) => void;
   selectedGroup: GroupDetails;
-  onAccept: (id: number) => void;
-  onReject: (id: number) => void;
+  onAccept: (id: string) => void;
+  onReject: (id: string) => void;
 }
 
 const GroupRequestTable: React.FC<GroupRequestTableProps> = ({
@@ -60,7 +60,7 @@ const GroupRequestTable: React.FC<GroupRequestTableProps> = ({
         <div style={columnStyle("0 0 120px")}>State</div>
         {/* <div style={columnStyle("0 0 200px")}>Decision</div> */}
       </div>
-      {requests.length === 0 ? (
+      {requests?.length === 0 ? (
         <p
           style={{
             padding: "16px",
@@ -71,7 +71,7 @@ const GroupRequestTable: React.FC<GroupRequestTableProps> = ({
           No group requests found.
         </p>
       ) : (
-        requests.map((request, index) => (
+        requests?.map((request, index) => (
           <GroupRequestRow
             key={index}
             request={request}

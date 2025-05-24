@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import createNjangiRoutes from "./routes/create.njangi.route.js";
 import validationRoutes from "./routes/validation.js";
 import approveNjangiRoutes from "./routes/bod.njangi.route.js";
+import authRoutes from "./routes/auth.routes.js";
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
@@ -24,6 +25,7 @@ app.use(cookieParser()); // allow cookie parsing
 app.use("/api/create-njangi", createNjangiRoutes);
 app.use("/api/bod", approveNjangiRoutes); // handles BOD approval of njangi
 app.use("/api", validationRoutes); // validates upon filling form
+app.use("/api/auth", authRoutes);
 
 const startServer = async () => {
   try {

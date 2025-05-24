@@ -227,7 +227,7 @@ export const sendNjangiAleadyAddMemberEmail = async (
   creatorName,
   contributionAmount,
   paymentFrequency,
-  dashboardURL,
+  inviteToken,
   groupName
 ) => {
   const recipient = [email];
@@ -243,7 +243,7 @@ export const sendNjangiAleadyAddMemberEmail = async (
         contributionAmount,
         paymentFrequency,
         groupName,
-        dashboardURL,
+        inviteToken,
       }),
       category: "Invited to Njangi Group",
     });

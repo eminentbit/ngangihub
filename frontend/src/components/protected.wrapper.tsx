@@ -1,20 +1,32 @@
 // components/ProtectedRoute.tsx
+import { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
-import { useAuthStore } from "../store/use.auth.store";
-import { JSX } from "react";
+import { useSession } from "../hooks/useSession";
+import { useAuthStore } from "../store/create.auth.store";
 
-type Props = {
-  children: JSX.Element;
-};
+interface ProtectedRouteProps {
+  children: ReactNode;
+  requiredRole?: "admin" | "bod" | "user";
+}
 
-const ProtectedRoute = ({ children }: Props) => {
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+export const ProtectedRoute = ({
+  children,
+  requiredRole,
+}: ProtectedRouteProps) => {
+  const { isLoading, isError } = useSession();
+  const { isAuthenticated, user } = useAuthStore();
 
-  if (!isAuthenticated) {
+  if (isLoading) {
+    return <div>Loading session...</div>; // Or a fancy spinner
+  }
+
+  if (isError || !isAuthenticated || !user) {
     return <Navigate to="/login" replace />;
   }
 
-  return children;
-};
+  if (requiredRole && user.role !== requiredRole) {
+    return <Navigate to="/unauthorized" replace />;
+  }
 
-export default ProtectedRoute;
+  return <>{children}</>;
+};
