@@ -1,6 +1,6 @@
 // hooks/useSession.ts
 import { useQuery } from "@tanstack/react-query";
-import { useAuthStore } from "../store/use.auth.store";
+import { useAuthStore } from "../store/create.auth.store";
 import { userSchema, ValidatedUser } from "../types/auth.validator";
 import axios from "axios";
 

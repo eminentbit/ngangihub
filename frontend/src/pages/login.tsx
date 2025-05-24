@@ -7,7 +7,7 @@ import { Mail, Lock, ArrowLeft } from "lucide-react";
 import SocialBtnLogin from "../components/social.btn.login";
 import Loader from "../components/loader";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { useLogin } from "../hooks/useLogin";
 import { motion } from "framer-motion";
 
 // Define Zod schema
@@ -31,27 +31,10 @@ export default function Login() {
       password: "",
     },
   });
+  const { mutate, isError } = useLogin();
 
   const onSubmit = async (data: LoginFormData) => {
-    console.log("Login Data:", data);
-
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/auth/login`,
-        {
-          email: data.email,
-          password: data.password,
-        }
-      );
-      console.log("Login Response:", response);
-      if (response.status === 200) {
-        // Handle successful login
-        console.log("Login successful");
-        navigate("/user/dashboard");
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-    }
+    mutate({ email: data.email, password: data.password });
   };
 
   return (
@@ -84,6 +67,7 @@ export default function Login() {
           <span className="px-3 text-gray-500 text-sm">OR</span>
           <hr className="flex-grow border-gray-300" />
         </div>
+        <div>{isError ?? "An error occured"}</div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Email */}

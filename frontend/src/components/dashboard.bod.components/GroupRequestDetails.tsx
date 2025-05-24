@@ -1,11 +1,10 @@
-import React, { Dispatch, SetStateAction } from "react";
+import React from "react";
 import { GroupRequest } from "../../types/group.request";
 import axios from "axios";
-
 interface GroupRequestDetailsProps {
   request: GroupRequest;
   isDarkMode: boolean;
-  setAction: Dispatch<SetStateAction<"approve" | "reject" | null>>;
+  setAction: (action: "approve" | "reject", requestId: string) => void;
   onBack?: () => void;
 }
 
@@ -72,7 +71,7 @@ const GroupRequestDetails: React.FC<GroupRequestDetailsProps> = ({
         <button
           type="button"
           onClick={() => {
-            setAction("approve");
+            setAction("approve", request._id);
             handleApproveOrReject("approve");
           }}
           className="flex-1 px-3 py-2 bg-green-500 text-white rounded-md shadow hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 text-sm md:text-base"
@@ -82,7 +81,7 @@ const GroupRequestDetails: React.FC<GroupRequestDetailsProps> = ({
         <button
           type="button"
           onClick={() => {
-            setAction("reject");
+            setAction("reject", request._id);
             handleApproveOrReject("reject");
           }}
           className="flex-1 px-3 py-2 bg-red-500 text-white rounded-md shadow hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 text-sm md:text-base"
