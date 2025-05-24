@@ -57,7 +57,7 @@ const ContributionPage: React.FC = () => {
   );
 
   return (
-    <div className="relative min-h-screen bg-gray-50 dark:bg-gray-900 p-8">
+    <div className="flex flex-col h-screen bg-gray-50 dark:bg-gray-900">
       {/* Back button at top-left */}
       <button
         type="button"
@@ -68,119 +68,97 @@ const ContributionPage: React.FC = () => {
         Back to Dashboard
       </button>
 
-      <div className="mx-auto mt-16 w-full max-w-2xl p-10 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
-        {/* Campaign Details */}
-        <div className="grid grid-cols-2 gap-6 mb-8">
-          <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-md">
-            <p className="text-sm text-gray-500 dark:text-gray-300">
-              Total Raised
-            </p>
-            <p className="text-xl font-semibold text-gray-800 dark:text-white">
-              FCFA{stats.totalRaised.toLocaleString()}
-            </p>
-          </div>
-          <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-md">
-            <p className="text-sm text-gray-500 dark:text-gray-300">Goal</p>
-            <p className="text-xl font-semibold text-gray-800 dark:text-white">
-              FCFA{stats.goal.toLocaleString()}
-            </p>
-          </div>
-          <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-md">
-            <p className="text-sm text-gray-500 dark:text-gray-300">
-              Contributions
-            </p>
-            <p className="text-xl font-semibold text-gray-800 dark:text-white">
-              {stats.contributionsCount}
-            </p>
-          </div>
-          <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-md">
-            <p className="text-sm text-gray-500 dark:text-gray-300">Deadline</p>
-            <p className="text-xl font-semibold text-gray-800 dark:text-white">
-              {stats.deadline}
-            </p>
-          </div>
-        </div>
-        {/* Progress Bar */}
-        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 mb-8">
-          <div
-            className="h-4 rounded-full bg-blue-600"
-            style={{ width: `${progressPercent}%` }}
-          />
-        </div>
-
-        <h1 className="text-3xl font-bold mb-4 text-blue-700 dark:text-blue-400">
-          Make a Contribution
-        </h1>
-        <p className="mb-8 text-gray-600 dark:text-gray-300">
-          Support your group by contributing funds. Every contribution makes a
-          difference.
-        </p>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Group Selection */}
-          <div>
-            <label
-              htmlFor="group"
-              className="block text-gray-700 dark:text-gray-200 font-medium mb-2"
-            >
-              Select Group
-            </label>
-            <select
-              id="group"
-              value={selectedGroup}
-              onChange={(e) => setSelectedGroup(e.target.value)}
-              required
-              className="w-full px-5 py-3 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="" disabled>
-                -- Choose a group --
-              </option>
-              {groups.map((grp) => (
-                <option key={grp} value={grp}>
-                  {grp}
-                </option>
-              ))}
-            </select>
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto p-8">
+        <div className="mx-auto mt-16 w-full max-w-2xl p-10 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+          {/* Campaign Details */}
+          <div className="grid grid-cols-2 gap-6 mb-8">
+            {[
+              { label: "Total Raised", value: `FCFA${stats.totalRaised.toLocaleString()}` },
+              { label: "Goal", value: `FCFA${stats.goal.toLocaleString()}` },
+              { label: "Contributions", value: stats.contributionsCount },
+              { label: "Deadline", value: stats.deadline },
+            ].map(({ label, value }) => (
+              <div key={label} className="p-4 bg-gray-100 dark:bg-gray-700 rounded-md">
+                <p className="text-sm text-gray-500 dark:text-gray-300">{label}</p>
+                <p className="text-xl font-semibold text-gray-800 dark:text-white">
+                  {value}
+                </p>
+              </div>
+            ))}
           </div>
 
-          <div>
-            <label
-              htmlFor="amount"
-              className="block text-gray-700 dark:text-gray-200 font-medium mb-2"
-            >
-              Amount (FCFA)
-            </label>
-            <input
-              id="amount"
-              type="number"
-              min={500}
-              step={500}
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              placeholder="Enter amount (minimum FCFA500)"
-              required
-              className="w-full px-5 py-3 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          {/* Progress Bar */}
+          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 mb-8">
+            <div
+              className="h-4 rounded-full bg-blue-600"
+              style={{ width: `${progressPercent}%` }}
             />
           </div>
 
-          <button
-            type="submit"
-            disabled={loading || !amount || !selectedGroup}
-            className="w-full py-3 px-6 rounded-md bg-blue-700 hover:bg-blue-800 text-white font-semibold text-lg transition disabled:opacity-50"
-          >
-            {loading ? "Processing..." : "Contribute"}
-          </button>
+          <h1 className="text-3xl font-bold mb-4 text-blue-700 dark:text-blue-400">
+            Make a Contribution
+          </h1>
+          <p className="mb-8 text-gray-600 dark:text-gray-300">
+            Support your group by contributing funds. Every contribution makes a difference.
+          </p>
 
-          {message && (
-            <div className="text-green-600 dark:text-green-400 font-medium pt-2 text-center">
-              {message}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Group Selection */}
+            <div>
+              <label htmlFor="group" className="block text-gray-700 dark:text-gray-200 font-medium mb-2">
+                Select Group
+              </label>
+              <select
+                id="group"
+                value={selectedGroup}
+                onChange={(e) => setSelectedGroup(e.target.value)}
+                required
+                className="w-full px-5 py-3 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="" disabled>-- Choose a group --</option>
+                {groups.map((grp) => (
+                  <option key={grp} value={grp}>{grp}</option>
+                ))}
+              </select>
             </div>
-          )}
-        </form>
 
-        <p className="mt-8 text-sm text-gray-500 dark:text-gray-400 text-center">
-          Your contribution is secure and will reflect in your group account.
-        </p>
+            <div>
+              <label htmlFor="amount" className="block text-gray-700 dark:text-gray-200 font-medium mb-2">
+                Amount (FCFA)
+              </label>
+              <input
+                id="amount"
+                type="number"
+                min={500}
+                step={500}
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder="Enter amount (minimum FCFA500)"
+                required
+                className="w-full px-5 py-3 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading || !amount || !selectedGroup}
+              className="w-full py-3 px-6 rounded-md bg-blue-700 hover:bg-blue-800 text-white font-semibold text-lg transition disabled:opacity-50"
+            >
+              {loading ? "Processing..." : "Contribute"}
+            </button>
+
+            {message && (
+              <div className="text-green-600 dark:text-green-400 font-medium pt-2 text-center">
+                {message}
+              </div>
+            )}
+          </form>
+
+          <p className="mt-8 text-sm text-gray-500 dark:text-gray-400 text-center">
+            Your contribution is secure and will reflect in your group account.
+          </p>
+        </div>
       </div>
     </div>
   );

@@ -20,7 +20,7 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
   <button
     className={`
       flex items-center w-full px-4 py-3 text-left hover:bg-blue-900 transition
-      ${active ? "bg-blue-900 font-bold" : ""}
+      ${active ? "bg-blue-900 font-bold rounded-md" : ""}
       ${showLabels ? "" : "justify-center"}
       ${className}
     `}
