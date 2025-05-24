@@ -9,6 +9,8 @@ import Loader from "../components/loader";
 import { useNavigate } from "react-router-dom";
 import { useLogin } from "../hooks/useLogin";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import ErrorPopup from "../components/error";
 
 // Define Zod schema
 const loginSchema = z.object({
@@ -20,6 +22,16 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function Login() {
   const navigate = useNavigate();
+  const [error, setError] = useState<string | null>(null);
+
+  // Auto-hide error after 4 seconds
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
   const {
     register,
     handleSubmit,
@@ -31,15 +43,21 @@ export default function Login() {
       password: "",
     },
   });
-  const { mutate, isError } = useLogin();
+  const { mutate, isError } = useLogin(setError);
 
   const onSubmit = async (data: LoginFormData) => {
-    console.log("Form submitted with data for login:", data);
-    mutate({ email: data.email, password: data.password });
+    return new Promise<void>((resolve, reject) => {
+      mutate(data, {
+        onSuccess: () => resolve(),
+        onError: () => reject(),
+      });
+    });
   };
 
   return (
     <section className="relative flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200 p-6">
+      {/* Error Popup */}
+      {error && <ErrorPopup error={error} onClose={() => setError(null)} />}
       <div
         className="absolute left-4 top-6 text-sm flex items-center gap-1 cursor-pointer hover:bg-blue-100 hover:text-blue-700 py-2 px-4 hover:rounded-md transition duration-300 group"
         onClick={() => navigate("/")}

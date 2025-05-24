@@ -82,7 +82,7 @@ export const login = async (req, res) => {
     // Send role in response so frontend can redirect
     return res.status(200).json({
       success: true,
-      message: "Login successfully",
+      message: "Login successfully!",
       user: {
         id: user._id,
         email: user.email,
