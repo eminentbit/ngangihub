@@ -329,7 +329,12 @@ export const NJANGI_CREATION_NOTIFICATION_TEMPLATE = `
       <p style="font-size: 16px;">In the meantime, you can view your pending group by clicking the button below:</p>
       
       <div style="text-align: center; margin: 30px 0;">
-        <a href="{viewURL}" style="background-color: #1a56db; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block; font-size: 16px;">View Group</a>
+        <a href="{viewURL}" style="background-color: #1a56db; color: white; padding: 14px 36px; text-decoration: none; border-radius: 8px; font-weight: 700; display: inline-block; font-size: 17px; letter-spacing: 1px; box-shadow: 0 2px 8px rgba(26,86,219,0.08); transition: background 0.2s;"></a>
+          <span style="display: inline-flex; align-items: center; gap: 8px;">
+            <svg width="20" height="20" fill="none" style="vertical-align: middle;" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="10" fill="#fff" opacity="0.15"/><path d="M8 6l4 4-4 4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            View Njangi Status
+          </span>
+        </a>
       </div>
       
       <p style="margin-top: 30px; font-size: 16px;">Best regards,<br><strong>NAAS Team</strong></p>
@@ -431,7 +436,7 @@ export const GROUP_MEMBER_ADDITION_TEMPLATE = `
     
     <!-- Content -->
     <div style="background-color: #ffffff; padding: 30px;">
-      <p style="margin-top: 0; font-size: 16px;">Hello {userName},</p>
+      <p style="margin-top: 0; font-size: 16px;">{userName},</p>
       <p style="font-size: 16px;">Good news! <strong>{creatorName}</strong> has added you as a member of their Njangi group <strong>"{groupName}"</strong> on NganjiHub.</p>
       
       <div style="text-align: center; margin: 30px 0;">

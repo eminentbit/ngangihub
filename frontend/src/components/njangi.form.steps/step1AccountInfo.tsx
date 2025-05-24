@@ -276,13 +276,15 @@ const Step1AccountInfo: React.FC = () => {
                 isSubmitting ||
                 isEmailChecking ||
                 !!errors.email ||
-                isPhoneChecking
+                isPhoneChecking ||
+                !!errors.phoneNum
               }
               className={`form-button ${
                 isSubmitting ||
                 isEmailChecking ||
                 !!errors.email ||
-                isPhoneChecking
+                isPhoneChecking ||
+                !!errors.phoneNum
                   ? "form-button-disabled"
                   : ""
               }`}
