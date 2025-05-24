@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import bcrypt from "bcrypt";
 dotenv.config();
 
 // Define the User schema
@@ -25,45 +26,65 @@ const bodUsers = [
   {
     name: "Sarah Johnson",
     email: "sarah.j@example.com",
-    password: "hashedPassword123",
+    password: "hashedPassword456",
     role: "bod",
-    joinDate: new Date("2022-01-02"),
+    joinDate: new Date("2022-02-15"),
   },
   {
-    name: "Michael Brown",
-    email: "michael.b@example.com",
-    password: "hashedPassword123",
+    name: "Michael Chen",
+    email: "m.chen@example.com",
+    password: "hashedPassword789",
     role: "bod",
-    joinDate: new Date("2022-01-03"),
+    joinDate: new Date("2022-03-10"),
   },
   {
-    name: "Lisa Davis",
-    email: "lisa.d@example.com",
-    password: "hashedPassword123",
+    name: "Emily Rodriguez",
+    email: "e.rodriguez@example.com",
+    password: "hashedPasswordABC",
     role: "bod",
-    joinDate: new Date("2022-01-04"),
+    joinDate: new Date("2022-04-20"),
   },
   {
-    name: "Robert Wilson",
-    email: "robert.w@example.com",
-    password: "hashedPassword123",
+    name: "David Kim",
+    email: "d.kim@example.com",
+    password: "hashedPasswordDEF",
     role: "bod",
-    joinDate: new Date("2022-01-05"),
+    joinDate: new Date("2022-05-05"),
+  },
+  {
+    name: "Lisa Wong",
+    email: "l.wong@example.com",
+    password: "hashedPasswordGHI",
+    role: "bod",
+    joinDate: new Date("2022-06-15"),
   },
 ];
 
-// Connect to MongoDB and insert data
-mongoose
-  .connect(process.env.MONGODB_URL)
-  .then(async () => {
+// Hash passwords and insert users
+async function insertUsersWithHashedPasswords() {
+  const saltRounds = 10;
+
+  // Hash passwords for all users
+  const usersWithHashedPasswords = await Promise.all(
+    bodUsers.map(async (user) => ({
+      ...user,
+      password: await bcrypt.hash(user.password, saltRounds),
+    }))
+  );
+
+  // Connect and insert users
+  try {
+    await mongoose.connect(process.env.MONGODB_URL);
     console.log("Connected to MongoDB");
-    try {
-      await User.insertMany(bodUsers);
-      console.log("Successfully inserted 5 BOD users");
-    } catch (error) {
-      console.error("Error inserting BOD users:", error);
-    } finally {
-      mongoose.connection.close();
-    }
-  })
-  .catch((err) => console.error("Error connecting to MongoDB:", err));
+
+    await User.insertMany(usersWithHashedPasswords);
+    console.log("Successfully inserted 5 BOD users");
+  } catch (error) {
+    console.error("Error:", error);
+  } finally {
+    await mongoose.connection.close();
+  }
+}
+
+// Run the insertion
+insertUsersWithHashedPasswords();
