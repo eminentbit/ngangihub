@@ -30,64 +30,30 @@ const group = {
 
 const GroupInfoPage: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [activeTab, setActiveTab] = useState<string>("/group");
+  const [, setActiveTab] = useState<string>("/group");
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
   const [members, setMembers] = useState<Member[]>([
-    {
-      id: 1,
-      name: "John Doe",
-      role: "Organizer",
-      status: "Active",
-      initials: "",
-    },
-    {
-      id: 2,
-      name: "Alice Smith",
-      role: "Treasurer",
-      status: "Active",
-      initials: "",
-    },
-    {
-      id: 3,
-      name: "Michael Brown",
-      role: "Member",
-      status: "Active",
-      initials: "",
-    },
-    {
-      id: 4,
-      name: "Linda Carter",
-      role: "Member",
-      status: "Inactive",
-      initials: "",
-    },
+    { id: 1, name: "John Doe", role: "Organizer", status: "Active", initials: "" },
+    { id: 2, name: "Alice Smith", role: "Treasurer", status: "Active", initials: "" },
+    { id: 3, name: "Michael Brown", role: "Member", status: "Active", initials: "" },
+    { id: 4, name: "Linda Carter", role: "Member", status: "Inactive", initials: "" },
   ]);
+
+  // Dark mode toggle
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", isDarkMode);
+  }, [isDarkMode]);
 
   // Initialize initials
   useEffect(() => {
-    setMembers((prev) =>
-      prev.map((m) => ({ ...m, initials: getInitials(m.name) }))
-    );
+    setMembers((prev) => prev.map((m) => ({ ...m, initials: getInitials(m.name) })));
   }, []);
 
-  // Lock scroll when sidebar is open
-  useEffect(() => {
-    document.body.style.overflow = isSidebarOpen ? "hidden" : "auto";
-  }, [isSidebarOpen]);
-
-  const toggleSidebar = () => {
-    setIsSidebarOpen((prev) => !prev);
-  };
+  const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
   return (
-    <div
-      className={`flex min-h-screen bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-200 ${
-        isDarkMode ? "dark" : ""
-      }`}
-    >
-      {document.documentElement.classList.toggle("dark", isDarkMode)}
-
-      {/* Sidebar Overlay for mobile */}
+    <div className="flex h-screen bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-200 overflow-hidden">
+      {/* Mobile overlay */}
       {isSidebarOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-30 z-30 lg:hidden"
@@ -96,26 +62,33 @@ const GroupInfoPage: React.FC = () => {
         />
       )}
 
-      {/* Sidebar Container */}
+      {/* Sidebar */}
       <Sidebar
         isOpen={isSidebarOpen}
-        activeTab={activeTab}
         onTabChange={setActiveTab}
         onToggle={toggleSidebar}
         notifications={[]}
         onClose={toggleSidebar}
       />
 
-      {/* Main Content */}
+      {/* Content panel */}
       <div
-        className={`flex-1 transition-all duration-300 p-6 ${
-          isSidebarOpen ? "lg:ml-64" : "ml-0"
-        }`}
+        className={`
+          flex flex-col flex-1 h-full
+          ${isSidebarOpen ? "lg:ml-64" : "ml-0"}
+          transition-all duration-300
+          overflow-y-auto
+        `}
       >
-        <Header darkMode={isDarkMode} setDarkMode={setIsDarkMode} />
+        {/* Sticky Header */}
+        <Header
+          darkMode={isDarkMode}
+          setDarkMode={setIsDarkMode}
+        />
 
-        <main className="flex-1 pt-20 px-4 sm:px-6 md:px-8 lg:px-12 transition-all duration-200">
-          <div className="max-w-4xl mx-auto">
+        {/* Scrollable Main */}
+        <main className="flex-1 pt-20 px-4 sm:px-6 md:px-8 lg:px-12">
+          <div className="max-w-4xl mx-auto space-y-6">
             {/* Group Header */}
             <section className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between">
@@ -123,9 +96,7 @@ const GroupInfoPage: React.FC = () => {
                   <h1 className="flex items-center text-3xl font-bold text-blue-700 dark:text-gray-100 mb-2">
                     <FaInfoCircle className="mr-2" /> {group.name}
                   </h1>
-                  <p className="text-gray-600 dark:text-gray-300">
-                    {group.description}
-                  </p>
+                  <p className="text-gray-600 dark:text-gray-300">{group.description}</p>
                 </div>
                 <button
                   type="button"
@@ -142,52 +113,38 @@ const GroupInfoPage: React.FC = () => {
                     <p className="text-xl font-semibold dark:text-gray-100">
                       {group.membersCount}
                     </p>
-                    <p className="text-sm text-blue-400 dark:text-blue-300">
-                      Members
-                    </p>
+                    <p className="text-sm text-blue-400 dark:text-blue-300">Members</p>
                   </div>
                 </div>
 
                 <div className="flex items-center p-4 bg-white dark:bg-gray-700 rounded">
                   <FaCalendarAlt className="text-green-500 text-2xl mr-3" />
                   <div>
-                    <p className="text-xl font-semibold dark:text-gray-100">
-                      {group.nextMeeting}
-                    </p>
-                    <p className="text-sm text-gray-600 dark:text-gray-300">
-                      Next Meeting
-                    </p>
+                    <p className="text-xl font-semibold dark:text-gray-100">{group.nextMeeting}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">Next Meeting</p>
                   </div>
                 </div>
 
                 <div className="flex items-center p-4 bg-white dark:bg-gray-700 rounded">
                   <FaCalendarAlt className="text-blue-500 text-2xl mr-3" />
                   <div>
-                    <p className="text-xl font-semibold dark:text-gray-100">
-                      {group.createdOn}
-                    </p>
-                    <p className="text-sm text-gray-600 dark:text-gray-300">
-                      Created On
-                    </p>
+                    <p className="text-xl font-semibold dark:text-gray-100">{group.createdOn}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">Created On</p>
                   </div>
                 </div>
 
                 <div className="flex items-center p-4 bg-white dark:bg-gray-700 rounded">
                   <FaCogs className="text-blue-500 text-2xl mr-3" />
                   <div>
-                    <p className="text-xl font-semibold dark:text-gray-100">
-                      Settings
-                    </p>
-                    <p className="text-sm text-gray-600 dark:text-gray-300">
-                      Manage Settings
-                    </p>
+                    <p className="text-xl font-semibold dark:text-gray-100">Settings</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">Manage Settings</p>
                   </div>
                 </div>
               </div>
             </section>
 
             {/* Members List */}
-            <section className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <section className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-10">
               <h2 className="text-2xl font-bold text-green-700 dark:text-gray-100 mb-4">
                 Members
               </h2>
@@ -197,16 +154,14 @@ const GroupInfoPage: React.FC = () => {
                 <table className="min-w-full border-collapse">
                   <thead>
                     <tr className="border-b border-gray-200 dark:border-gray-700">
-                      {["Initials", "Name", "Role", "Status", "Actions"].map(
-                        (col) => (
-                          <th
-                            key={col}
-                            className="px-4 py-2 text-left text-sm font-medium text-gray-600 dark:text-gray-300"
-                          >
-                            {col}
-                          </th>
-                        )
-                      )}
+                      {["Initials", "Name", "Role", "Status", "Actions"].map((col) => (
+                        <th
+                          key={col}
+                          className="px-4 py-2 text-left text-sm font-medium text-gray-600 dark:text-gray-300"
+                        >
+                          {col}
+                        </th>
+                      ))}
                     </tr>
                   </thead>
                   <tbody>
@@ -214,9 +169,7 @@ const GroupInfoPage: React.FC = () => {
                       <MemberRow
                         key={member.id}
                         member={member}
-                        onDelete={(id) =>
-                          setMembers((prev) => prev.filter((m) => m.id !== id))
-                        }
+                        onDelete={(id) => setMembers((prev) => prev.filter((m) => m.id !== id))}
                       />
                     ))}
                   </tbody>
@@ -229,9 +182,7 @@ const GroupInfoPage: React.FC = () => {
                   <MemberCard
                     key={member.id}
                     member={member}
-                    onDelete={(id: number) =>
-                      setMembers((prev) => prev.filter((m) => m.id !== id))
-                    }
+                    onDelete={(id) => setMembers((prev) => prev.filter((m) => m.id !== id))}
                   />
                 ))}
               </div>

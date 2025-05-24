@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import SidebarItem from "./SidebarItem";
 import NotificationsPreview from "./NotificationsPreview";
 import {
@@ -16,7 +16,6 @@ import {
 
 interface SidebarProps {
   isOpen: boolean;
-  activeTab: string;
   onToggle: () => void;
   onTabChange?: (tab: string) => void;
   notifications?: {
@@ -62,15 +61,18 @@ const allMenu: MenuItem[] = [
   ...menuSettings,
 ];
 
+
+
+
 const Sidebar: React.FC<SidebarProps> = ({
   isOpen,
-  activeTab,
   onToggle,
   onTabChange,
   notifications,
   onClose,
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleNav = (path: string) => {
     navigate(path);
@@ -88,7 +90,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         icon={icon}
         label={label}
         showLabels={false}
-        active={activeTab === path}
+        active={location.pathname === path}
         onClick={() => handleNav(path)}
         className="flex-1 justify-center"
       />
@@ -144,7 +146,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               key={path}
               icon={icon}
               label={label}
-              active={activeTab === path}
+              active={location.pathname === path}
               showLabels={isOpen}
               onClick={() => handleNav(path)}
             />
@@ -163,7 +165,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 key={path}
                 icon={icon}
                 label={label}
-                active={activeTab === path}
+                active={location.pathname === path}
                 showLabels={isOpen}
                 onClick={() => handleNav(path)}
               />
@@ -184,7 +186,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 key={path}
                 icon={icon}
                 label={label}
-                active={activeTab === path}
+                active={location.pathname === path}
                 showLabels={isOpen}
                 onClick={() => handleNav(path)}
               />
@@ -204,7 +206,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 key={path}
                 icon={icon}
                 label={label}
-                active={activeTab === path}
+                active={location.pathname === path}
                 showLabels={isOpen}
                 onClick={() => handleNav(path)}
               />
@@ -289,7 +291,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               key={path}
               icon={icon}
               label={label}
-              active={activeTab === path}
+              active={location.pathname === path}
               showLabels={true}
               onClick={() => handleNav(path)}
             />
@@ -304,7 +306,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 key={path}
                 icon={icon}
                 label={label}
-                active={activeTab === path}
+                active={location.pathname === path}
                 showLabels={true}
                 onClick={() => handleNav(path)}
               />
@@ -320,7 +322,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 key={path}
                 icon={icon}
                 label={label}
-                active={activeTab === path}
+                active={location.pathname === path}
                 showLabels={true}
                 onClick={() => handleNav(path)}
               />
@@ -336,7 +338,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 key={path}
                 icon={icon}
                 label={label}
-                active={activeTab === path}
+                active={location.pathname === path}
                 showLabels={true}
                 onClick={() => handleNav(path)}
               />
