@@ -24,10 +24,10 @@ export default function Login() {
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
 
-  // Auto-hide error after 4 seconds
+  // Auto-hide error after 6 seconds
   useEffect(() => {
     if (error) {
-      const timer = setTimeout(() => setError(null), 5000);
+      const timer = setTimeout(() => setError(null), 6000);
       return () => clearTimeout(timer);
     }
   }, [error]);

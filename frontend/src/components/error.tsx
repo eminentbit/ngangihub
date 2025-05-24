@@ -17,8 +17,8 @@ export default function ErrorPopup({ error, onClose }: ErrorPopupProps) {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pointer-events-none">
-      <div className="relative mt-4 sm:mt-6 md:mt-8 w-full max-w-sm sm:max-w-md md:max-w-lg pointer-events-auto">
+    <div className="fixed inset-0 z-50 flex items-start justify-center p-3 pointer-events-none">
+      <div className="relative mt-4 sm:mt-5 md:mt-6 w-full max-w-sm sm:max-w-md md:max-w-lg pointer-events-auto">
         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-rose-400 via-rose-500 to-rose-600 p-[1px] shadow-2xl animate-in slide-in-from-top-4 fade-in duration-300">
           <div className="relative rounded-2xl bg-rose-500/90 backdrop-blur-xl border border-rose-300/40">
             {/* Close button */}
