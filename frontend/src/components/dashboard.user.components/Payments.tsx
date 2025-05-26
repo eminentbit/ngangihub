@@ -10,7 +10,7 @@ import {
   ArrowUpDown,
   Check,
 } from "lucide-react";
-import Sidebar from "./Sidebar";
+import Sidebar from "../dashboard.admin.components/Sidebar";
 
 // Exchange rate: 1 USD = approximately 600 CFA
 const CFA_EXCHANGE_RATE = 600;
@@ -321,7 +321,7 @@ Method: ${payment?.method}
         onToggle={() => setIsOpen((o) => !o)}
         onClose={() => setIsOpen(false)}
         // setIsOpen={setIsOpen}
-        activeTab="user/payments"
+        //activeTab="user/payments"
       />
       <div
         className={`mx-auto  px-20 py-5 space-y-6 ${

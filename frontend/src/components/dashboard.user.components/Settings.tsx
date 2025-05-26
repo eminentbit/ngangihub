@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Sidebar from "./Sidebar";
+import Sidebar from "../dashboard.admin.components/Sidebar";
 import SettingsSidebar from "./SettingsSidebar";
 import SettingsProfileForm from "./Profile";
 import SettingsPasswordForm from "./Password";
@@ -19,7 +19,7 @@ export default function Settings() {
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
         onToggle={() => setIsOpen((o) => !o)}
-        activeTab={activeTab}
+       
       />
       <div
         className={`space-y-6 px-20 py-10 mx-auto ${

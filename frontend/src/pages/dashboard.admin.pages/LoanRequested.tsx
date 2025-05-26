@@ -52,7 +52,7 @@ const LoanRequestPage: React.FC = () => {
                 htmlFor="loan-amount"
                 className="block text-gray-700 dark:text-gray-200 font-medium mb-2"
               >
-                Amount (FCFA)
+                Amount (CFA)
               </label>
               <input
                 id="loan-amount"
@@ -61,7 +61,7 @@ const LoanRequestPage: React.FC = () => {
                 step="500"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                placeholder="Enter loan amount (minimum FCFA1,000)"
+                placeholder="Enter loan amount (minimum CFA1,000)"
                 required
                 className="w-full px-5 py-3 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />

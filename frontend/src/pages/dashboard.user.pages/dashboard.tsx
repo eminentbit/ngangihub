@@ -23,7 +23,7 @@ import {
 import { Doughnut, Line } from "react-chartjs-2";
 import ChatInterface from "../../components/dashboard.user.components/chat-interface";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "../../components/dashboard.user.components/Sidebar";
+import Sidebar from "../../components/dashboard.admin.components/Sidebar";
 import Header from "../../components/dashboard.admin.components/Header";
 
 // Register ChartJS components
@@ -44,7 +44,7 @@ const CFA_EXCHANGE_RATE = 600;
 const UserDashboard = () => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [activeTab, setActiveTab] = useState<string>("Dashboard");
+  const [, setActiveTab] = useState<string>("Dashboard");
   const [darkMode, setDarkMode] = useState<boolean>(false);
   const handleTabChange = (tab: SetStateAction<string>) => {
     setActiveTab(tab);
@@ -230,7 +230,6 @@ const UserDashboard = () => {
     <div className="flex flex-col min-h-screen bg-gray-100 dark:bg-gray-900">
       <Sidebar
         isOpen={isOpen}
-        activeTab={activeTab}
         onToggle={() => setIsOpen((o) => !o)}
         onTabChange={handleTabChange} // replace with your real handler
         onClose={() => setIsOpen(false)}
