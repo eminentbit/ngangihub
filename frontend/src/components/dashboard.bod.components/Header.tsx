@@ -104,7 +104,7 @@ const Header: React.FC<HeaderProps> = ({
 
         {/* User Info */}
         <div className="flex items-center space-x-2">
-          <span className="text-sm">👤 Wepngong Shalom</span>
+          {/* <span className="text-sm">👤 Wepngong Shalom</span> */}
         </div>
       </div>
     </header>

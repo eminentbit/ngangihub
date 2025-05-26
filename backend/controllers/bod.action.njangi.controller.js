@@ -1,5 +1,7 @@
 import { finalizeNjangiFromDraft } from "../services/finalizeNjangiFromDraft.js";
 import NjangiDraft from "../models/njangi.draft.model.js";
+import RequestNjangi from "../models/request.njangi.js";
+import { sendNjangiCreatedApprovalEmail } from "../mail/emails.js";
 
 const approveNjangi = async (req, res) => {
   const { draftId, action } = req.body;
@@ -7,6 +9,7 @@ const approveNjangi = async (req, res) => {
   try {
     if (action === "approve") {
       const result = await finalizeNjangiFromDraft(draftId, res);
+
       return res.status(200).json({
         success: true,
         message:

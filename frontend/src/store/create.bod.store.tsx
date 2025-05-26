@@ -1,8 +1,6 @@
 // store/use.bod.store.ts
 import { create } from "zustand";
 import axios from "axios";
-import { groupDetailsSchema } from "../types/njangi.form.schema.type.ts";
-import { z } from "zod";
 import { GroupRequest } from "../types/group.request.ts";
 
 interface BodStoreState {
@@ -24,11 +22,12 @@ export const useBodStore = create<BodStoreState>((set) => ({
     set({ isLoading: true, error: null });
     try {
       const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/najngi/requests`
+        `${import.meta.env.VITE_API_URL}/bod/drafts`,
+        { withCredentials: true }
       );
-      const parsed = z.array(groupDetailsSchema).parse(res.data);
+
       set({
-        requests: parsed as unknown as GroupRequest[] | undefined,
+        requests: res.data.data,
         isLoading: false,
       });
     } catch (err) {
@@ -41,7 +40,7 @@ export const useBodStore = create<BodStoreState>((set) => ({
     try {
       await axios.post(
         `${import.meta.env.VITE_API_URL}/api/najngi/requests/${id}/accept`,
-        { reason },
+        { reason, action: "accept" },
         { withCredentials: true }
       );
       set((state) => ({
@@ -56,7 +55,7 @@ export const useBodStore = create<BodStoreState>((set) => ({
     try {
       await axios.post(
         `${import.meta.env.VITE_API_URL}/api/najngi/requests/${id}/accept`,
-        { reason },
+        { reason, action: "reject" },
         { withCredentials: true }
       );
       set((state) => ({

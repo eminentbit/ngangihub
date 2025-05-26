@@ -2,6 +2,8 @@ import User from "../models/user.model.js";
 import NjangiDraft from "../models/njangi.draft.model.js";
 import bcryptjs from "bcryptjs";
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
+import LastLogin from "../models/login.attempt.js";
+import { getIPAddress } from "../utils/getIPAddress.js";
 
 export const checkSession = async (req, res) => {
   if (!req.user || !req.user.id) {
@@ -45,7 +47,9 @@ export const login = async (req, res) => {
             .json({ message: "Account suspended. Contact support." });
         }
       }
-      return res.status(401).json({success: false, message: "Invalid email or password!" });
+      return res
+        .status(401)
+        .json({ success: false, message: "Invalid email or password!" });
     }
     console.log(user);
     const isPasswordValid = await bcryptjs.compare(password, user.password);
@@ -57,7 +61,7 @@ export const login = async (req, res) => {
     }
 
     // Check if user is pending approval (adjust field name as needed)
-    if (user.status === "pending") {
+    if (user.status === "pending" && user.role != "bod") {
       return res.status(403).json({
         success: false,
         message:
@@ -72,19 +76,24 @@ export const login = async (req, res) => {
     }
 
     // generate token and set cookie for the user
-    generateTokenAndSetCookie(res, user._id);
+    const token = generateTokenAndSetCookie(res, user.id);
+    console.log(token);
 
-    user.lastlogin = Date.now();
-    await user.save();
+    LastLogin.create({
+      email: user.email,
+      ipAddress: getIPAddress(req),
+      status: user.status,
+    });
 
-    req.user = { id: user._id, role: user.role };
+    req.user = { id: user.id, role: user.role };
+    console.log(req.user);
 
     // Send role in response so frontend can redirect
     return res.status(200).json({
       success: true,
       message: "Login successfully!",
       user: {
-        id: user._id,
+        id: user.id,
         email: user.email,
         role: user.role,
       },

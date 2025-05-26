@@ -16,7 +16,7 @@ export interface GroupDetails {
   endDate: string;
   adminEmail?: string;
   numberOfMember: number;
-  state?: string;
+  status?: string;
   rules: string;
 }
 

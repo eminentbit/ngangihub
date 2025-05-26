@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { GroupRequest } from "../../types/group.request";
-import axios from "axios";
+import { useBodStore } from "../../store/create.bod.store";
+
 interface GroupRequestDetailsProps {
   request: GroupRequest;
   isDarkMode: boolean;
-  setAction: (action: "approve" | "reject", requestId: string) => void;
   onBack?: () => void;
 }
 
@@ -12,14 +12,33 @@ const GroupRequestDetails: React.FC<GroupRequestDetailsProps> = ({
   request,
   isDarkMode,
   onBack,
-  setAction,
 }) => {
-  const handleApproveOrReject = async (action: string) => {
-    const response = await axios.post(
-      `${import.meta.env.VITE_API_URL}/bod/approve`,
-      { action, draftId: request._id }
-    );
-    console.log(response.data);
+  const { isLoading, error, acceptRequest, rejectRequest } = useBodStore();
+
+  const [actionLoading, setActionLoading] = useState<
+    "accept" | "reject" | null
+  >(null);
+
+  const handleAccept = async () => {
+    setActionLoading("accept");
+    try {
+      await acceptRequest(request._id, "Approved by board");
+    } catch (e) {
+      console.error("Failed to accept request", e);
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleReject = async () => {
+    setActionLoading("reject");
+    try {
+      await rejectRequest(request._id, "Not eligible");
+    } catch (e) {
+      console.error("Failed to reject request", e);
+    } finally {
+      setActionLoading(null);
+    }
   };
 
   return (
@@ -41,52 +60,54 @@ const GroupRequestDetails: React.FC<GroupRequestDetailsProps> = ({
         <h3 className="text-lg font-semibold">Group Request Details</h3>
       </div>
 
-      <div className="space-y-2 mb-6">
-        <p className="text-sm">
-          <span className="font-medium">ID:</span> {request._id}
-        </p>
-        <p className="text-sm">
-          <span className="font-medium">Leader Name:</span>{" "}
-          {request.groupDetails.adminEmail}
-        </p>
-        <p className="text-sm">
-          <span className="font-medium">Group Name:</span>{" "}
-          {request.groupDetails.groupName}
-        </p>
-        <p className="text-sm">
-          <span className="font-medium">Max Members:</span>{" "}
-          {request.groupDetails.numberOfMember}
-        </p>
-        <p className="text-sm">
-          <span className="font-medium">Description:</span>{" "}
-          {request.groupDetails.rules}
-        </p>
-        <p className="text-sm">
-          <span className="font-medium">State:</span>{" "}
-          {request.groupDetails.state}
-        </p>
-      </div>
+      {isLoading ? (
+        <p className="text-sm text-gray-500">Loading request...</p>
+      ) : error ? (
+        <p className="text-sm text-red-500">Error: {error}</p>
+      ) : (
+        <div className="space-y-2 mb-6">
+          <p className="text-sm">
+            <span className="font-medium">ID:</span> {request._id}
+          </p>
+          <p className="text-sm">
+            <span className="font-medium">Leader Name:</span>{" "}
+            {request.accountSetup.firstName} {request.accountSetup.lastName}
+          </p>
+          <p className="text-sm">
+            <span className="font-medium">Group Name:</span>{" "}
+            {request.groupDetails.groupName}
+          </p>
+          <p className="text-sm">
+            <span className="font-medium">Max Members:</span>{" "}
+            {request.groupDetails.numberOfMember}
+          </p>
+          <p className="text-sm">
+            <span className="font-medium">Description:</span>{" "}
+            {request.groupDetails.rules}
+          </p>
+          <p className="text-sm">
+            <span className="font-medium">State:</span>{" "}
+            {request.groupDetails.status}
+          </p>
+        </div>
+      )}
 
       <div className="flex gap-4">
         <button
           type="button"
-          onClick={() => {
-            setAction("approve", request._id);
-            handleApproveOrReject("approve");
-          }}
-          className="flex-1 px-3 py-2 bg-green-500 text-white rounded-md shadow hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 text-sm md:text-base"
+          onClick={handleAccept}
+          disabled={actionLoading === "accept"}
+          className="flex-1 px-3 py-2 bg-green-500 text-white rounded-md shadow hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 text-sm md:text-base disabled:opacity-50"
         >
-          Accept
+          {actionLoading === "accept" ? "Approving..." : "Accept"}
         </button>
         <button
           type="button"
-          onClick={() => {
-            setAction("reject", request._id);
-            handleApproveOrReject("reject");
-          }}
-          className="flex-1 px-3 py-2 bg-red-500 text-white rounded-md shadow hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 text-sm md:text-base"
+          onClick={handleReject}
+          disabled={actionLoading === "reject"}
+          className="flex-1 px-3 py-2 bg-red-500 text-white rounded-md shadow hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 text-sm md:text-base disabled:opacity-50"
         >
-          Reject
+          {actionLoading === "reject" ? "Rejecting..." : "Reject"}
         </button>
       </div>
     </div>
