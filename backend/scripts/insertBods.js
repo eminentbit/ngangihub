@@ -1,61 +1,63 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
+import User from "../models/user.model.js";
 dotenv.config();
-
-// Define the User schema
-const userSchema = new mongoose.Schema({
-  name: String,
-  email: String,
-  password: String,
-  role: String,
-  joinDate: Date,
-});
-
-const User = mongoose.model("User", userSchema);
 
 // Sample BOD user data
 const bodUsers = [
   {
-    name: "John Smith",
+    firstName: "John",
+    lastName: "Smith",
     email: "john.smith@example.com",
     password: "hashedPassword123",
     role: "bod",
+    phoneNumber: "123-456-7890",
     joinDate: new Date("2022-01-01"),
   },
   {
-    name: "Sarah Johnson",
+    firstName: "Sarah",
+    lastName: "Johnson",
     email: "sarah.j@example.com",
     password: "hashedPassword456",
     role: "bod",
+    phoneNumber: "234-567-8901",
     joinDate: new Date("2022-02-15"),
   },
   {
-    name: "Michael Chen",
+    firstName: "Michael",
+    lastName: "Chen",
     email: "m.chen@example.com",
     password: "hashedPassword789",
     role: "bod",
+    phoneNumber: "345-678-9012",
     joinDate: new Date("2022-03-10"),
   },
   {
-    name: "Emily Rodriguez",
+    firstName: "Emily",
+    lastName: "Rodriguez",
     email: "e.rodriguez@example.com",
     password: "hashedPasswordABC",
     role: "bod",
+    phoneNumber: "456-789-0123",
     joinDate: new Date("2022-04-20"),
   },
   {
-    name: "David Kim",
+    firstName: "David",
+    lastName: "Kim",
     email: "d.kim@example.com",
     password: "hashedPasswordDEF",
     role: "bod",
+    phoneNumber: "567-890-1234",
     joinDate: new Date("2022-05-05"),
   },
   {
-    name: "Lisa Wong",
+    firstName: "Lisa",
+    lastName: "Wong",
     email: "l.wong@example.com",
     password: "hashedPasswordGHI",
     role: "bod",
+    phoneNumber: "678-901-2345",
     joinDate: new Date("2022-06-15"),
   },
 ];

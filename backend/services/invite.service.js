@@ -5,6 +5,8 @@ import Invite from "../models/invite.model.js";
 import NjangiGroup from "../models/njangigroup.model.js";
 import User from "../models/user.model.js";
 import { sendNjangiAleadyAddMemberEmail } from "../mail/emails.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 // Utility function to generate a random token for invites
 const generateToken = () => crypto.randomBytes(20).toString("hex");
