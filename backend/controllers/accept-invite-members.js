@@ -7,6 +7,7 @@ import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js
 
 const acceptInvite = async (req, res) => {
   const { token } = req.query;
+  console.log("Accepting invite with token from query:", token);
   const { firstName, lastName, email, phoneNumber, password } = req.body;
 
   try {
