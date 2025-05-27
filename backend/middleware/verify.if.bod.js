@@ -15,6 +15,8 @@ const verifyIfBod = async (req, res, next) => {
         .json({ message: "Forbidden - BOD access required" });
     }
 
+    req.user = { ...req.user, isBod: true }; // Add isBod property to user object
+
     next();
   } catch (error) {
     return res

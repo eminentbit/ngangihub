@@ -39,8 +39,8 @@ export const useBodStore = create<BodStoreState>((set) => ({
   acceptRequest: async (id: string, reason: string) => {
     try {
       await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/najngi/requests/${id}/accept`,
-        { reason, action: "accept" },
+        `${import.meta.env.VITE_API_URL}/bod/approve`,
+        { reason, action: "approve", draftId: id },
         { withCredentials: true }
       );
       set((state) => ({
@@ -54,8 +54,8 @@ export const useBodStore = create<BodStoreState>((set) => ({
   rejectRequest: async (id: string, reason: string) => {
     try {
       await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/najngi/requests/${id}/accept`,
-        { reason, action: "reject" },
+        `${import.meta.env.VITE_API_URL}/bod/reject`,
+        { reason, action: "reject", draftId: id },
         { withCredentials: true }
       );
       set((state) => ({
