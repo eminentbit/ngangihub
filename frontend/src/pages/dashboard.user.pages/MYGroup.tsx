@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { HiOutlineChat, HiOutlineUserGroup, HiX } from "react-icons/hi";
-import Sidebar from "../../components/dashboard.user.components/Sidebar";
+import Sidebar from "../../components/dashboard.admin.components/Sidebar";
 import Header from "../../components/dashboard.admin.components/Header";
 import ChatInterface from "../../components/dashboard.user.components/chat-interface";
 
@@ -32,7 +32,7 @@ const MyGroups: React.FC = () => {
   // Dark mode state
   const [darkMode, setDarkMode] = useState(false);
   // Sidebar open state
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   // Load persisted dark mode
   useEffect(() => {
@@ -67,7 +67,7 @@ const MyGroups: React.FC = () => {
       {/* Sidebar */}
       <Sidebar
         isOpen={sidebarOpen}
-        activeTab="my-groups"
+        //activeTab="my-groups"
         onToggle={toggleSidebar}
         onClose={closeSidebar}
       />
@@ -81,7 +81,10 @@ const MyGroups: React.FC = () => {
          />
 
         {/* Page content */}
-        <main className="flex-1 overflow-auto p-6 sm:p-8 md:p-10">
+       <main
+        className={`flex-1 transition-all duration-300 min-h-screen bg-gray-50 dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-800 overflow-auto 
+          ${sidebarOpen ? "lg:ml-4" : "lg:ml-6"}`}
+      >
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-10 gap-6">
             <h1 className="text-3xl md:text-4xl font-bold text-blue-700 dark:text-white">
               My Groups

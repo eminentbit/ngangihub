@@ -22,7 +22,7 @@ const StatisticsPage: React.FC = () => {
 
   const summary = [
     { icon: <FaUsers size={28} />,       label: 'Active Members',       value: 124 },
-    { icon: <FaMoneyBillWave size={28} />, label: 'Total Contributions',  value: '₦1,250,000' },
+    { icon: <FaMoneyBillWave size={28} />, label: 'Total Contributions',  value: 'CFA 1,250,000' },
     { icon: <FaChartPie size={28} />,      label: 'Monthly Growth',      value: '8.2%' },
   ];
 
