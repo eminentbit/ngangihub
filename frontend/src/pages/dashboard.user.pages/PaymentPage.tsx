@@ -1,14 +1,13 @@
 import { useState, useEffect } from "react";
 import Payments from "../../components/dashboard.user.components/Payments";
 import Header from "../../components/dashboard.admin.components/Header";
+import Sidebar from "../../components/dashboard.admin.components/Sidebar";
 
 export default function PaymentsPage() {
-  // State to manage dark mode
+  // Dark mode
   const [darkMode, setDarkMode] = useState(
     () => localStorage.getItem("dark-mode") === "true"
   );
-
-  // Sync dark mode with localStorage and apply the class
   useEffect(() => {
     const root = document.documentElement;
     if (darkMode) {
@@ -19,22 +18,41 @@ export default function PaymentsPage() {
       localStorage.setItem("dark-mode", "false");
     }
   }, [darkMode]);
-
-  // Toggle dark mode
   const toggleDarkMode = () => setDarkMode((prev) => !prev);
 
-  return (
-    <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-      {/* Header */}
-      <Header darkMode={darkMode} setDarkMode={toggleDarkMode} />
+  // Sidebar state
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const toggleSidebar = () => setSidebarOpen((prev) => !prev);
+  const closeSidebar  = () => setSidebarOpen(false);
 
-      {/* Main Content */}
-      <main className="flex-1 w-full max-w-full mx-auto px-2 sm:px-4 md:px-8 lg:px-10 py-4 sm:py-6 space-y-6 overflow-x-hidden">
-        {/* Payments Component */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md w-full max-w-full p-3 sm:p-6 md:p-8">
-          <Payments />
-        </div>
-      </main>
+  // slide-over class for both header & main
+  const slideClass = sidebarOpen ? "md:ml-64" : "md:ml-16";
+
+  return (
+    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+      {/* Sidebar */}
+      <Sidebar
+        isOpen={sidebarOpen}
+        onToggle={toggleSidebar}
+        onClose={closeSidebar}
+      />
+
+      {/* Content wrapper (slides with sidebar) */}
+      <div className={`flex-1 flex flex-col transition-all duration-300 ${slideClass}`}>
+        {/* Header */}
+        <Header
+          darkMode={darkMode}
+          setDarkMode={toggleDarkMode}
+          // add a menu button in Header that calls onMenuClick={toggleSidebar} if you need one
+        />
+
+        {/* Main content */}
+        <main className="flex-1 overflow-auto p-6 sm:p-8 md:p-10">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-10 gap-4">
+            <Payments />
+          </div>
+        </main>
+      </div>
     </div>
   );
 }

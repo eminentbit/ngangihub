@@ -203,7 +203,6 @@ const AddMemberPage: React.FC = () => {
                   >
                     <option value="">Select role</option>
                     <option value="Member">Member</option>
-                    <option value="Admin">Admin</option>
                     <option value="Treasurer">Treasurer</option>
                   </select>
                   {errors.role && (
