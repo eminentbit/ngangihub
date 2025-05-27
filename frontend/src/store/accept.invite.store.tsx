@@ -3,11 +3,21 @@ import axios from "axios";
 
 const ACCEPT_INVITE_API = import.meta.env.VITE_ACCEPT_INVITE_MEMBER_API_URL;
 
+interface MemberDataInfo {
+  memberInfo: MemberInfo;
+  inviteToken: string;
+  message: string;
+  userId: string;
+}
+
 interface AcceptInviteState {
   isLoading: boolean;
   isErrors: string | null;
   success: boolean;
-  acceptInvite: (inviteToken: string, memberInfo: MemberInfo) => Promise<void>;
+  acceptInvite: (
+    inviteToken: string,
+    memberInfo: MemberInfo
+  ) => Promise<MemberDataInfo>;
 }
 
 interface MemberInfo {
@@ -32,6 +42,7 @@ export const useAcceptInviteStore = create<AcceptInviteState>((set) => ({
       );
       set({ isLoading: false, success: true, isErrors: null });
       console.log(response.data);
+      return response.data;
     } catch (isErrors) {
       set({
         isLoading: false,
@@ -40,6 +51,7 @@ export const useAcceptInviteStore = create<AcceptInviteState>((set) => ({
             ? isErrors.response.data.message
             : "An isErrors occurred while accepting your invite! Please try again.",
       });
+      throw isErrors;
     }
   },
 }));

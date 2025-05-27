@@ -13,10 +13,17 @@ import {
 import { useAcceptInviteStore } from "../store/accept.invite.store";
 import ErrorPopup from "../components/error";
 import Button from "../components/ExtraButton";
+import { useNavigate } from "react-router-dom";
 
 export default function InviteMemberRegistrationForm() {
   const [phone, setPhone] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [searchParams] = useSearchParams();
+  const inviteToken = searchParams.get("inviteToken");
+  const inviteEmail = searchParams.get("email");
+  const invitePhone = searchParams.get("phone");
+  const { acceptInvite, isErrors } = useAcceptInviteStore();
+  const navigate = useNavigate();
 
   const {
     register,
@@ -30,15 +37,12 @@ export default function InviteMemberRegistrationForm() {
     defaultValues: {
       firstName: "",
       lastName: "",
-      email: "",
-      phoneNum: "",
+      email: inviteEmail || "",
+      phoneNum: invitePhone || "",
       password: "",
     },
     mode: "onChange",
   });
-  const [searchParams] = useSearchParams();
-  const inviteToken = searchParams.get("inviteToken");
-  const { acceptInvite, isErrors } = useAcceptInviteStore();
 
   // Handle phone change and update the form
   const handlePhoneChange = (value: string) => {
@@ -60,13 +64,21 @@ export default function InviteMemberRegistrationForm() {
         console.log("No invite token provided");
         return;
       }
-      await acceptInvite(inviteToken, {
+      const response = await acceptInvite(inviteToken, {
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,
         phoneNumber: data.phoneNum,
         password: data.password,
       });
+      // Redirect based on response (e.g., to group dashboard)
+      if (response && response.userId && response.message) {
+        navigate(`/user/dashboard`);
+        console.log(`/user/dashboard?userId=${response.userId}`);
+        alert(`Success: ${response.message}`);
+      } else {
+        alert(`Error: ${response?.message || "Unknown error occurred"}`);
+      }
     } catch (error) {
       console.error("Submission error:", error);
     }
@@ -163,6 +175,7 @@ export default function InviteMemberRegistrationForm() {
               </label>
               <input
                 type="email"
+                readOnly
                 {...register("email")}
                 className={`w-full px-3 py-2 border rounded-md shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-0 ${
                   errors.email ? "form-input-error" : ""

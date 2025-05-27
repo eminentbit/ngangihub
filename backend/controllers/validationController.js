@@ -167,11 +167,18 @@ export const validateInviteContact = async (req, res) => {
       ],
     });
 
-    // Already has a pending invite?
-    const pendingInvite = await Invite.exists({
-      emailOrPhone: sanitizedContact,
-      status: "pending" || "accepted" || "expired",
-    });
+    // Check for pending invite by email or phone
+    const inviteOrConditions = [];
+    if (isEmail) inviteOrConditions.push({ email: sanitizedContact });
+    if (isPhone) inviteOrConditions.push({ phone: sanitizedContact });
+
+    let pendingInvite = null;
+    if (inviteOrConditions.length > 0) {
+      pendingInvite = await Invite.exists({
+        $or: inviteOrConditions,
+        status: { $in: ["pending", "accepted", "expired"] },
+      });
+    }
 
     if (pendingInvite) {
       return res.status(200).json({
