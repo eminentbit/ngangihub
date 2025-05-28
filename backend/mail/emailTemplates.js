@@ -328,11 +328,24 @@ export const NJANGI_CREATION_NOTIFICATION_TEMPLATE = `
       <p style="font-size: 16px;">Our board will review your Njangi group within 24-48 hours. You will receive another email once the review is complete.</p>
       <p style="font-size: 16px;">In the meantime, you can view your pending group by clicking the button below:</p>
       
-        
       <div style="text-align: center; margin: 30px 0;">
-        <a href="{viewURL}" style="background-color: #1a56db; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block; font-size: 16px;">View Njangi Status</a>
-      </div>
-
+  <a href="{viewURL}" style="
+    background-color: #1a56db;
+    color: white;
+    padding: 12px 30px;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 16px;
+    display: inline-block;
+    text-align: center;
+    line-height: 1.5;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(26, 86, 219, 0.1);
+    ">
+    View Njangi Status
+  </a>
+</div>
       
       <p style="margin-top: 30px; font-size: 16px;">Best regards,<br><strong>NAAS Team</strong></p>
     </div>

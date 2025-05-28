@@ -1,5 +1,5 @@
 import { useSearchParams } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Eye, EyeOff, Users, Shield, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -14,6 +14,8 @@ import { useAcceptInviteStore } from "../store/accept.invite.store";
 import ErrorPopup from "../components/error";
 import Button from "../components/ExtraButton";
 import { useNavigate } from "react-router-dom";
+import { useValidateInvitationToken } from "../store/validate.registration.token";
+import InviteTokenStatusUi from "../components/ui.messages/invalid.token.ui.msg";
 
 export default function InviteMemberRegistrationForm() {
   const [phone, setPhone] = useState("");
@@ -23,7 +25,11 @@ export default function InviteMemberRegistrationForm() {
   const inviteEmail = searchParams.get("email");
   const invitePhone = searchParams.get("phone");
   const { acceptInvite, isErrors } = useAcceptInviteStore();
+  const { validateInvitationToken } = useValidateInvitationToken();
   const navigate = useNavigate();
+  const [inviteStatus, setInviteStatus] = useState<
+    "valid" | "invalid" | "expired" | "missing"
+  >("valid");
 
   const {
     register,
@@ -43,6 +49,32 @@ export default function InviteMemberRegistrationForm() {
     },
     mode: "onChange",
   });
+
+  // check if inviteToken is present
+  useEffect(() => {
+    if (!inviteToken) {
+      setInviteStatus("missing");
+      return;
+    }
+    //API call to validate invite token
+    (async () => {
+      const result = await validateInvitationToken(inviteToken);
+      if (!result) setInviteStatus("invalid");
+      else if (result.status === "expired") setInviteStatus("expired");
+      else if (result.status === "accepted") {
+        // Redirect to login with inviteToken
+        navigate(`/login?inviteToken=${inviteToken}&alreadyAccepted=1`);
+      } else setInviteStatus("valid");
+    })();
+  }, [validateInvitationToken, inviteToken, navigate]);
+
+  if (inviteStatus !== "valid") {
+    return (
+      <>
+        <InviteTokenStatusUi inviteStatus={inviteStatus} />
+      </>
+    );
+  }
 
   // Handle phone change and update the form
   const handlePhoneChange = (value: string) => {
@@ -255,6 +287,7 @@ export default function InviteMemberRegistrationForm() {
               type="submit"
               fullWidth={true}
               variant="primary"
+              disabled={isSubmitting || !inviteToken}
               isLoading={isSubmitting}
               className="transition-transform hover:scale-105"
             >

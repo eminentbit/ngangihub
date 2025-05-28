@@ -38,13 +38,20 @@ export const inviteMembersToGroup = async (
       if (!email && !phone) throw new Error("Missing contact for invite");
 
       // Avoid duplicate invites (by email or phone)
-      const existingInvite = await Invite.findOne({
-        groupId,
-        $or: [email ? { email } : {}, phone ? { phone } : {}],
-      });
+      const inviteOrConditions = [];
+      if (email) inviteOrConditions.push({ email });
+      if (phone) inviteOrConditions.push({ phone });
+
+      let existingInvite = null;
+      if (inviteOrConditions.length > 0) {
+        existingInvite = await Invite.findOne({
+          groupId,
+          $or: inviteOrConditions,
+        });
+      }
       if (existingInvite) return existingInvite;
 
-      // Check if the user already exists in the group
+
       // Only build $or array with non-null values
       const userOrConditions = [];
       if (email) userOrConditions.push({ email });
@@ -78,8 +85,8 @@ export const inviteMembersToGroup = async (
       // Save invite
       const newInvite = await Invite.create({
         groupId,
-        email: email || undefined,
-        phone: phone || undefined,
+        ...(email ? { email } : {}),
+        ...(phone ? { phone } : {}),
         inviteToken: Invitetoken,
         invitedBy: adminId,
         status: "pending",

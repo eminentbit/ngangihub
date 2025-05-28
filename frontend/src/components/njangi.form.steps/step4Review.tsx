@@ -1,16 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import { ChevronRight, CheckCircle2, ArrowRight } from "lucide-react";
 import { useFormContext } from "../../context/njangi.form.context";
 import Button from "../ExtraButton";
 import { useNavigate } from "react-router-dom";
 import { useCreateNjangiStore } from "../../store/create.njangi.store";
+import ErrorPopup from "../error";
 
 const Step4Review: React.FC = () => {
   const { state, prevStep, submitForm, goToStep } = useFormContext();
   const navigate = useNavigate();
-  const createdNjangiId = useCreateNjangiStore(
-    (state) => state.createdNjangiId
-  );
+  const [, setisError] = useState(false);
+  const { njangiStatusURL, errors } = useCreateNjangiStore();
   const {
     accountSetup,
     groupDetails,
@@ -29,8 +29,13 @@ const Step4Review: React.FC = () => {
       day: "numeric",
     });
   };
+  // checks errors================NB
+  if (errors)
+    return (
+      <>{<ErrorPopup error={errors} onClose={() => setisError(false)} />}</>
+    );
 
-  if (isSubmitted) {
+  if (isSubmitted && !error) {
     sessionStorage.clear();
     return (
       <div className="max-w-2xl mx-auto w-full transition-all duration-300 animate-fadeIn">
@@ -58,7 +63,28 @@ const Step4Review: React.FC = () => {
             <Button
               type="button"
               variant="primary"
-              onClick={() => navigate(`/njangi-group/${createdNjangiId}`)}
+              onClick={() => {
+                if (
+                  njangiStatusURL &&
+                  (njangiStatusURL.startsWith("http://") ||
+                    njangiStatusURL.startsWith("https://"))
+                ) {
+                  // Parse the URL and extract the pathname + search
+                  try {
+                    const url = new URL(njangiStatusURL);
+                    // Only navigate internally if the host matches your app
+                    if (url.host === window.location.host) {
+                      navigate(url.pathname + url.search);
+                    } else {
+                      window.location.href = njangiStatusURL;
+                    }
+                  } catch {
+                    window.location.href = njangiStatusURL;
+                  }
+                } else if (njangiStatusURL) {
+                  navigate(njangiStatusURL);
+                }
+              }}
               className="transition-transform hover:scale-105 flex items-center gap-2"
             >
               View Your Njangi State

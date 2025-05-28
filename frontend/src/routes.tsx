@@ -35,13 +35,13 @@ import GroupReqest from "./pages/dashboard.bod.pages/GroupRequest";
 import PaymentsPage from "./pages/dashboard.user.pages/PaymentPage";
 import SettingsPage from "./pages/dashboard.user.pages/SettingsPage";
 import InviteMemberRegistrationForm from "./pages/invites.member.register.form";
-import ProtectedRoute from "./components/protected.route";
+import NjangiStateDashBoard from "./pages/njangi-state-dashboard";
 
 // eslint-disable-next-line react-refresh/only-export-components
 const LandingSections: React.FC = () => <App />;
 
 // ----- Build the router -----
-const router = createBrowserRouter([
+ const router = createBrowserRouter([
   // Public routes
   {
     path: "/",
@@ -61,7 +61,6 @@ const router = createBrowserRouter([
 
   {
     path: "/user",
-    element: <ProtectedRoute allowedRoles={["user"]} />,
     children: [
       { path: "dashboard", element: <UserDashboard /> },
       { path: "groups", element: <MyGroups /> },
@@ -75,7 +74,6 @@ const router = createBrowserRouter([
   {
     path: "/admin",
     caseSensitive: false,
-    element: <ProtectedRoute allowedRoles={["admin"]} />,
     children: [
       { path: "dashboard", element: <AdminDashboardPage /> },
       { path: "manage-members", element: <MemberManagement /> },
@@ -95,7 +93,6 @@ const router = createBrowserRouter([
   // Board of Directors routes
   {
     path: "/board",
-    element: <ProtectedRoute allowedRoles={["bod"]} />,
     children: [
       { path: "dashboard", element: <Dashboard /> },
       { path: "notifications", element: <Notifications /> },
@@ -114,6 +111,12 @@ const router = createBrowserRouter([
   {
     path: "/register/members",
     element: <InviteMemberRegistrationForm />,
+  },
+
+  // state dashboard route where user visit after njangi form submission
+  {
+    path: "/njangi-state-dashboard",
+    element: <NjangiStateDashBoard />,
   },
 
   // Catch-all route for 404

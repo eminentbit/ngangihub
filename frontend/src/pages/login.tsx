@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,8 +9,9 @@ import Loader from "../components/loader";
 import { useNavigate } from "react-router-dom";
 import { useLogin } from "../hooks/useLogin";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ErrorPopup from "../components/error";
+import { toast } from "react-hot-toast";
 
 // Define Zod schema
 const loginSchema = z.object({
@@ -23,6 +24,28 @@ type LoginFormData = z.infer<typeof loginSchema>;
 export default function Login() {
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
+  const location = useLocation();
+  const toastShown = useRef(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get("alreadyAccepted") === "1" && !toastShown.current) {
+      toastShown.current = true; //Avoid toast from showing multiple times
+      toast.success("You already have an account. Please log in.", {
+        position: "top-right",
+      });
+
+      // Remove the param from the URL
+      params.delete("alreadyAccepted");
+      navigate(
+        {
+          pathname: location.pathname,
+          search: params.toString(),
+        },
+        { replace: true }
+      );
+    }
+  }, [location.search, location.pathname, navigate]);
 
   // Auto-hide error after 6 seconds
   useEffect(() => {
