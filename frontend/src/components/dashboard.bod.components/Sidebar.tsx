@@ -141,7 +141,7 @@ const Sidebar: React.FC<SidebarProps> = ({ style, isOpen, toggleSidebar }) => {
             </Link>
           </li>
         </ul>
-        <h3
+        {/* <h3
           style={{ fontSize: "18px", marginBottom: "16px", marginTop: "24px" }}
         >
           DOCUMENTS
@@ -167,7 +167,7 @@ const Sidebar: React.FC<SidebarProps> = ({ style, isOpen, toggleSidebar }) => {
               📜 Policies
             </Link>
           </li>
-        </ul>
+        </ul> */}
         <h3
           style={{ fontSize: "18px", marginBottom: "16px", marginTop: "24px" }}
         >

@@ -35,12 +35,13 @@ import GroupReqest from "./pages/dashboard.bod.pages/GroupRequest";
 import PaymentsPage from "./pages/dashboard.user.pages/PaymentPage";
 import SettingsPage from "./pages/dashboard.user.pages/SettingsPage";
 import InviteMemberRegistrationForm from "./pages/invites.member.register.form";
+import ProtectedRoute from "./components/protected.route";
 
 // eslint-disable-next-line react-refresh/only-export-components
 const LandingSections: React.FC = () => <App />;
 
 // ----- Build the router -----
-export const router = createBrowserRouter([
+const router = createBrowserRouter([
   // Public routes
   {
     path: "/",
@@ -60,6 +61,7 @@ export const router = createBrowserRouter([
 
   {
     path: "/user",
+    element: <ProtectedRoute allowedRoles={["user"]} />,
     children: [
       { path: "dashboard", element: <UserDashboard /> },
       { path: "groups", element: <MyGroups /> },
@@ -73,6 +75,7 @@ export const router = createBrowserRouter([
   {
     path: "/admin",
     caseSensitive: false,
+    element: <ProtectedRoute allowedRoles={["admin"]} />,
     children: [
       { path: "dashboard", element: <AdminDashboardPage /> },
       { path: "manage-members", element: <MemberManagement /> },
@@ -92,6 +95,7 @@ export const router = createBrowserRouter([
   // Board of Directors routes
   {
     path: "/board",
+    element: <ProtectedRoute allowedRoles={["bod"]} />,
     children: [
       { path: "dashboard", element: <Dashboard /> },
       { path: "notifications", element: <Notifications /> },
@@ -118,3 +122,5 @@ export const router = createBrowserRouter([
     element: <NotFoundPage />,
   },
 ]);
+
+export default router;

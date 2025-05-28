@@ -9,7 +9,7 @@ interface ProtectedRouteProps {
   requiredRole?: "admin" | "bod" | "user";
 }
 
-export const ProtectedRoute = ({
+export const ProtectedWrapper = ({
   children,
   requiredRole,
 }: ProtectedRouteProps) => {
