@@ -40,6 +40,7 @@ export const router = createBrowserRouter([
   // Public routes
   {
     path: "/",
+    caseSensitive: false,
     children: [
       { index: true, element: <LandingSections /> },
       { path: "about", element: <AboutPage /> },
@@ -54,6 +55,7 @@ export const router = createBrowserRouter([
 
   {
     path: "/user",
+    caseSensitive: false,
     children: [
       { path: "dashboard", element: <UserDashboard /> },
       { path: "groups", element: <MyGroups /> },
@@ -84,6 +86,7 @@ export const router = createBrowserRouter([
   // Board of Directors routes
   {
     path: "/board",
+    caseSensitive: false,
     children: [
       { path: "dashboard", element: <Dashboard /> },
       { path: "notifications", element: <Notifications /> },
