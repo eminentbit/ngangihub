@@ -35,22 +35,17 @@ function formatDate(dateStr: string) {
 
 const GroupOverviewPage: React.FC = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(true);
-  const [activeTab, setActiveTab] = useState<string>('/overview');
+  const [, setActiveTab] = useState<string>('/overview');
   const [isDarkMode, setDarkMode] = useState<boolean>(false);
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', isDarkMode);
   }, [isDarkMode]);
 
-  // Prevent background scroll when sidebar open
-  useEffect(() => {
-    document.body.style.overflow = isSidebarOpen ? 'hidden' : '';
-  }, [isSidebarOpen]);
-
   const toggleSidebar = () => setSidebarOpen(prev => !prev);
 
   return (
-    <div className={`flex min-h-screen bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-200 ${isDarkMode ? 'dark' : ''}`}>
+    <div className={`flex h-screen bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-200`}>
       {/* Mobile overlay */}
       {isSidebarOpen && (
         <div
@@ -60,29 +55,39 @@ const GroupOverviewPage: React.FC = () => {
         />
       )}
 
-       {/* Sidebar Container */}
-       <Sidebar
-          isOpen={isSidebarOpen}
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-          onToggle={toggleSidebar}
-          notifications={[]}
-          onClose={toggleSidebar}
+      {/* Sidebar */}
+      <Sidebar
+        isOpen={isSidebarOpen}
+        onTabChange={setActiveTab}
+        onToggle={toggleSidebar}
+        notifications={[]}
+        onClose={toggleSidebar}
+      />
+
+      {/* Content panel */}
+      <div
+        className={`
+         flex-1 h-full
+          transition-all duration-300
+          ${isSidebarOpen ? 'lg:ml-44' : 'ml-0'}
+          overflow-y-auto
+          md:px-16 px-10 py-0
+        `}
+      >
+        {/* Sticky Header */}
+        <Header
+          darkMode={isDarkMode}
+          setDarkMode={setDarkMode}
         />
 
-      {/* Main Content */}
-      <div className={`flex-1 transition-all duration-300 p-6 ${isSidebarOpen ? 'lg:ml-64' : 'ml-0'}`}>
-
-        {/* Header */}
-        <Header darkMode={isDarkMode}
-         setDarkMode={setDarkMode} />
-
-        <main className="flex-1 pt-20 px-2 sm:px-4 md:px-8 lg:px-12 transition-all duration-200">
-          <div className="max-auto mx-auto">
-            {/* Header */}
-            <header className="mb-6 sm:mb-8">
+        {/* Scrollable main area */}
+        <main className="flex-1 pt-15 bg-white sm:px-4 md:px-16 transition-all duration-200">
+          <div className="mx-auto max-w-5xl">
+            <header className="mb-8 sm:mb-8">
               <h1 className="text-3xl font-bold text-blue-700 mb-2">Group Overview</h1>
-              <p className="text-gray-600 dark:text-gray-300">Summary and recent activities for your Njangi circle</p>
+              <p className="text-gray-600 dark:text-gray-300">
+                Summary and recent activities for your Njangi circle
+              </p>
             </header>
 
             {/* Info Cards */}
@@ -90,12 +95,18 @@ const GroupOverviewPage: React.FC = () => {
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-3">
                 <div className="flex items-center gap-3">
                   <FaUsers className="text-blue-500 text-2xl" />
-                  <h2 className="text-xl font-bold text-blue-800 dark:text-gray-100">{groupInfo.name}</h2>
+                  <h2 className="text-xl font-bold text-blue-800 dark:text-gray-100">
+                    {groupInfo.name}
+                  </h2>
                 </div>
                 <p className="text-gray-700 dark:text-gray-300">{groupInfo.description}</p>
                 <div className="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400">
-                  <span className="flex items-center gap-1"><FaCalendarAlt /> Created: {new Date(groupInfo.createdAt).toLocaleDateString()}</span>
-                  <span className="flex items-center gap-1"><FaUsers /> Members: {groupInfo.membersCount}</span>
+                  <span className="flex items-center gap-1">
+                    <FaCalendarAlt /> Created: {new Date(groupInfo.createdAt).toLocaleDateString()}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <FaUsers /> Members: {groupInfo.membersCount}
+                  </span>
                 </div>
               </div>
 
@@ -103,14 +114,18 @@ const GroupOverviewPage: React.FC = () => {
                 <div className="flex items-center gap-3">
                   <FaMoneyBillWave className="text-green-500 text-2xl" />
                   <div>
-                    <div className="text-lg font-semibold text-green-700 dark:text-green-300">₦{groupInfo.totalFunds.toLocaleString()}</div>
+                    <div className="text-lg font-semibold text-green-700 dark:text-green-300">
+                      CFA {groupInfo.totalFunds.toLocaleString()}
+                    </div>
                     <div className="text-sm text-gray-500 dark:text-gray-400">Total Funds</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
                   <FaRegClock className="text-indigo-500 text-2xl" />
                   <div>
-                    <div className="text-lg font-semibold text-indigo-700 dark:text-indigo-300">{formatDate(groupInfo.nextMeeting)}</div>
+                    <div className="text-lg font-semibold text-indigo-700 dark:text-indigo-300">
+                      {formatDate(groupInfo.nextMeeting)}
+                    </div>
                     <div className="text-sm text-gray-500 dark:text-gray-400">Next Meeting</div>
                   </div>
                 </div>
@@ -119,7 +134,9 @@ const GroupOverviewPage: React.FC = () => {
 
             {/* Rules */}
             <section className="mb-8">
-              <h3 className="text-lg font-bold text-blue-700 dark:text-gray-100 mb-2">Group Rules</h3>
+              <h3 className="text-lg font-bold text-blue-700 dark:text-gray-100 mb-2">
+                Group Rules
+              </h3>
               <ul className="list-disc pl-6 space-y-1 text-gray-700 dark:text-gray-300">
                 {groupInfo.rules.map((rule, i) => <li key={i}>{rule}</li>)}
               </ul>
@@ -127,7 +144,9 @@ const GroupOverviewPage: React.FC = () => {
 
             {/* Recent Activities */}
             <section>
-              <h3 className="text-lg font-bold text-blue-700 dark:text-gray-100 mb-4">Recent Activities</h3>
+              <h3 className="text-lg font-bold text-blue-700 dark:text-gray-100 mb-4">
+                Recent Activities
+              </h3>
 
               {/* Desktop Table */}
               <div className="hidden sm:block overflow-x-auto bg-white dark:bg-gray-800 rounded-lg shadow">
@@ -135,19 +154,29 @@ const GroupOverviewPage: React.FC = () => {
                   <thead>
                     <tr className="border-b border-gray-200 dark:border-gray-700">
                       {['Date','Type','Member','Amount','Note'].map(col => (
-                        <th key={col} className="px-6 py-3 text-left text-sm font-medium text-blue-500 dark:text-gray-400 uppercase">{col}</th>
+                        <th
+                          key={col}
+                          className="px-6 py-3 text-left text-sm font-medium text-blue-500 dark:text-gray-400 uppercase"
+                        >
+                          {col}
+                        </th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
                     {recentActivities.map(act => (
-                      <tr key={act.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                      <tr
+                        key={act.id}
+                        className="hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                      >
                         <td className="px-6 py-4 text-sm">{formatDate(act.date)}</td>
                         <td className="px-6 py-4 text-sm">{act.type}</td>
                         <td className="px-6 py-4 text-sm">{act.user}</td>
                         <td className="px-6 py-4 text-sm">
                           {act.amount != null
-                            ? <span className={`font-semibold ${act.type==='Withdrawal'?'text-red-600 dark:text-red-400':'text-green-700 dark:text-green-300'}`}>₦{act.amount.toLocaleString()}</span>
+                            ? <span className={`font-semibold ${act.type==='Withdrawal' ? 'text-red-600 dark:text-red-400' : 'text-green-700 dark:text-green-300'}`}>
+                                ₦{act.amount.toLocaleString()}
+                              </span>
                             : '--'}
                         </td>
                         <td className="px-6 py-4 text-sm">{act.note}</td>
@@ -167,7 +196,9 @@ const GroupOverviewPage: React.FC = () => {
                     </div>
                     <div className="text-sm text-gray-700 dark:text-gray-200">By: {act.user}</div>
                     {act.amount != null && (
-                      <div className={`mt-1 font-semibold ${act.type==='Withdrawal'?'text-red-600 dark:text-red-400':'text-green-700 dark:text-green-300'}`}>₦{act.amount.toLocaleString()}</div>
+                      <div className={`mt-1 font-semibold ${act.type==='Withdrawal' ? 'text-red-600 dark:text-red-400' : 'text-green-700 dark:text-green-300'}`}>
+                        ₦{act.amount.toLocaleString()}
+                      </div>
                     )}
                     <div className="mt-1 text-sm text-gray-500 dark:text-gray-400">{act.note}</div>
                   </div>

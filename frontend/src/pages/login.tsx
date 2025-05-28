@@ -7,8 +7,10 @@ import { Mail, Lock, ArrowLeft } from "lucide-react";
 import SocialBtnLogin from "../components/social.btn.login";
 import Loader from "../components/loader";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { useLogin } from "../hooks/useLogin";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import ErrorPopup from "../components/error";
 
 // Define Zod schema
 const loginSchema = z.object({
@@ -20,6 +22,16 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function Login() {
   const navigate = useNavigate();
+  const [error, setError] = useState<string | null>(null);
+
+  // Auto-hide error after 6 seconds
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(null), 6000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
   const {
     register,
     handleSubmit,
@@ -31,31 +43,21 @@ export default function Login() {
       password: "",
     },
   });
+  const { mutate, isError } = useLogin(setError);
 
   const onSubmit = async (data: LoginFormData) => {
-    console.log("Login Data:", data);
-
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/auth/login`,
-        {
-          email: data.email,
-          password: data.password,
-        }
-      );
-      console.log("Login Response:", response);
-      if (response.status === 200) {
-        // Handle successful login
-        console.log("Login successful");
-        navigate("/user/dashboard");
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-    }
+    return new Promise<void>((resolve, reject) => {
+      mutate(data, {
+        onSuccess: () => resolve(),
+        onError: () => reject(),
+      });
+    });
   };
 
   return (
     <section className="relative flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200 p-6">
+      {/* Error Popup */}
+      {error && <ErrorPopup error={error} onClose={() => setError(null)} />}
       <div
         className="absolute left-4 top-6 text-sm flex items-center gap-1 cursor-pointer hover:bg-blue-100 hover:text-blue-700 py-2 px-4 hover:rounded-md transition duration-300 group"
         onClick={() => navigate("/")}
@@ -84,6 +86,7 @@ export default function Login() {
           <span className="px-3 text-gray-500 text-sm">OR</span>
           <hr className="flex-grow border-gray-300" />
         </div>
+        <div>{isError ?? "An error occured"}</div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Email */}

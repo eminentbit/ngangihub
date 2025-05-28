@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 interface SidebarProps {
   style?: React.CSSProperties;
@@ -12,47 +12,83 @@ const Sidebar: React.FC<SidebarProps> = ({ style, isOpen, toggleSidebar }) => {
   const [hoveredLink, setHoveredLink] = useState<string | null>(null);
 
   const getLinkStyle = (path: string) => ({
-    display: 'block',
-    padding: '8px',
-    backgroundColor: currentPath === path ? '#7c3aed' : (hoveredLink === path ? '#9333ea' : (isOpen ? 'transparent' : 'none')),
-    borderRadius: '4px',
-    textDecoration: 'none',
-    color: currentPath === path ? 'white' : (hoveredLink === path ? 'white' : (isOpen ? 'white' : 'transparent')),
-    transition: 'background-color 0.3s ease, color 0.3s ease'
+    display: "block",
+    padding: "8px",
+    backgroundColor:
+      currentPath === path
+        ? "#7c3aed"
+        : hoveredLink === path
+        ? "#9333ea"
+        : isOpen
+        ? "transparent"
+        : "none",
+    borderRadius: "4px",
+    textDecoration: "none",
+    color:
+      currentPath === path
+        ? "white"
+        : hoveredLink === path
+        ? "white"
+        : isOpen
+        ? "white"
+        : "transparent",
+    transition: "background-color 0.3s ease, color 0.3s ease",
   });
 
   const isMobile = window.innerWidth < 768;
 
   return (
-    <aside style={{
-      backgroundColor: isOpen ? '#5b1a89' : 'transparent',
-      color: 'white',
-      width: isMobile ? (isOpen ? '100%' : '0') : (isOpen ? 'auto' : '0'), // Dynamic width for desktop
-      minWidth: isMobile ? '100%' : (isOpen ? '256px' : '0'), // Ensure minimum width for readability
-      minHeight: '100vh', // At least fill the viewport, but can grow
-      padding: isOpen ? '16px' : '0',
-      overflow: 'hidden',
-      overflowY: 'auto', // Enable scrolling if content overflows
-      opacity: isOpen ? 1 : 0, // Fade in/out
-      visibility: isOpen ? 'visible' : 'hidden', // Hide when fully closed
-      transition: 'width 0.3s ease, padding 0.3s ease, opacity 0.3s ease, background-color 0.3s ease, visibility 0.3s ease', // Smooth transitions
-      position: 'relative',
-      ...style
-    }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-        <h3 style={{ fontSize: '18px', display: isOpen ? 'block' : 'none' }}>BOARD MENU</h3>
-        <button onClick={toggleSidebar} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', fontSize: '24px' }}>
-          {isOpen ? '✖' : '☰'}
+    <aside
+      style={{
+        backgroundColor: isOpen ? "#5b1a89" : "transparent",
+        color: "white",
+        width: isMobile ? (isOpen ? "100%" : "0") : isOpen ? "auto" : "0", // Dynamic width for desktop
+        minWidth: isMobile ? "100%" : isOpen ? "256px" : "0", // Ensure minimum width for readability
+        minHeight: "100vh", // At least fill the viewport, but can grow
+        padding: isOpen ? "16px" : "0",
+        overflow: "hidden",
+        overflowY: "auto", // Enable scrolling if content overflows
+        opacity: isOpen ? 1 : 0, // Fade in/out
+        visibility: isOpen ? "visible" : "hidden", // Hide when fully closed
+        transition:
+          "width 0.3s ease, padding 0.3s ease, opacity 0.3s ease, background-color 0.3s ease, visibility 0.3s ease", // Smooth transitions
+        position: "relative",
+        ...style,
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "16px",
+        }}
+      >
+        <h3 style={{ fontSize: "18px", display: isOpen ? "block" : "none" }}>
+          BOARD MENU
+        </h3>
+        <button
+          type="button"
+          onClick={toggleSidebar}
+          style={{
+            background: "none",
+            border: "none",
+            color: "white",
+            cursor: "pointer",
+            fontSize: "24px",
+          }}
+        >
+          {isOpen ? "✖" : "☰"}
         </button>
       </div>
-      <nav style={{ display: isOpen ? 'block' : 'none' }}>
-        <ul style={{ marginBottom: '24px', listStyle: 'none', padding: 0 }}>
+      <nav style={{ display: isOpen ? "block" : "none" }}>
+        <ul style={{ marginBottom: "24px", listStyle: "none", padding: 0 }}>
           <li>
             <Link
               to="/board/dashboard"
-              onMouseEnter={() => setHoveredLink('/board/dashboard')}
+              onMouseEnter={() => setHoveredLink("/board/dashboard")}
               onMouseLeave={() => setHoveredLink(null)}
-              style={getLinkStyle('/board/dashboard')}
+              style={getLinkStyle("/board/dashboard")}
             >
               📊 Board Dashboard
             </Link>
@@ -60,22 +96,26 @@ const Sidebar: React.FC<SidebarProps> = ({ style, isOpen, toggleSidebar }) => {
           <li>
             <Link
               to="/board/resolutions"
-              onMouseEnter={() => setHoveredLink('/board/resolutions')}
+              onMouseEnter={() => setHoveredLink("/board/resolutions")}
               onMouseLeave={() => setHoveredLink(null)}
-              style={getLinkStyle('/board/resolutions')}
+              style={getLinkStyle("/board/resolutions")}
             >
               📋 Resolutions
             </Link>
           </li>
         </ul>
-        <h3 style={{ fontSize: '18px', marginBottom: '16px', marginTop: '24px' }}>MEETINGS</h3>
-        <ul style={{ marginBottom: '24px', listStyle: 'none', padding: 0 }}>
+        <h3
+          style={{ fontSize: "18px", marginBottom: "16px", marginTop: "24px" }}
+        >
+          MEETINGS
+        </h3>
+        <ul style={{ marginBottom: "24px", listStyle: "none", padding: 0 }}>
           <li>
             <Link
               to="/board/schedule"
-              onMouseEnter={() => setHoveredLink('/board/schedule')}
+              onMouseEnter={() => setHoveredLink("/board/schedule")}
               onMouseLeave={() => setHoveredLink(null)}
-              style={getLinkStyle('/board/schedule')}
+              style={getLinkStyle("/board/schedule")}
             >
               📅 Meeting Schedule
             </Link>
@@ -83,9 +123,9 @@ const Sidebar: React.FC<SidebarProps> = ({ style, isOpen, toggleSidebar }) => {
           <li>
             <Link
               to="/board/minutes"
-              onMouseEnter={() => setHoveredLink('/board/minutes')}
+              onMouseEnter={() => setHoveredLink("/board/minutes")}
               onMouseLeave={() => setHoveredLink(null)}
-              style={getLinkStyle('/board/minutes')}
+              style={getLinkStyle("/board/minutes")}
             >
               📝 Meeting Minutes
             </Link>
@@ -93,22 +133,26 @@ const Sidebar: React.FC<SidebarProps> = ({ style, isOpen, toggleSidebar }) => {
           <li>
             <Link
               to="/board/attendance"
-              onMouseEnter={() => setHoveredLink('/board/attendance')}
+              onMouseEnter={() => setHoveredLink("/board/attendance")}
               onMouseLeave={() => setHoveredLink(null)}
-              style={getLinkStyle('/board/attendance')}
+              style={getLinkStyle("/board/attendance")}
             >
               👥 Attendance
             </Link>
           </li>
         </ul>
-        <h3 style={{ fontSize: '18px', marginBottom: '16px', marginTop: '24px' }}>DOCUMENTS</h3>
-        <ul style={{ marginBottom: '24px', listStyle: 'none', padding: 0 }}>
+        {/* <h3
+          style={{ fontSize: "18px", marginBottom: "16px", marginTop: "24px" }}
+        >
+          DOCUMENTS
+        </h3>
+        <ul style={{ marginBottom: "24px", listStyle: "none", padding: 0 }}>
           <li>
             <Link
               to="/board/documents"
-              onMouseEnter={() => setHoveredLink('/board/documents')}
+              onMouseEnter={() => setHoveredLink("/board/documents")}
               onMouseLeave={() => setHoveredLink(null)}
-              style={getLinkStyle('/board/documents')}
+              style={getLinkStyle("/board/documents")}
             >
               📑 Documents
             </Link>
@@ -116,49 +160,59 @@ const Sidebar: React.FC<SidebarProps> = ({ style, isOpen, toggleSidebar }) => {
           <li>
             <Link
               to="/board/policies"
-              onMouseEnter={() => setHoveredLink('/board/policies')}
+              onMouseEnter={() => setHoveredLink("/board/policies")}
               onMouseLeave={() => setHoveredLink(null)}
-              style={getLinkStyle('/board/policies')}
+              style={getLinkStyle("/board/policies")}
             >
               📜 Policies
             </Link>
           </li>
-        </ul>
-        <h3 style={{ fontSize: '18px', marginBottom: '16px', marginTop: '24px' }}>REPORTS</h3>
-        <ul style={{ marginBottom: '24px', listStyle: 'none', padding: 0 }}>
+        </ul> */}
+        <h3
+          style={{ fontSize: "18px", marginBottom: "16px", marginTop: "24px" }}
+        >
+          REPORTS
+        </h3>
+        <ul style={{ marginBottom: "24px", listStyle: "none", padding: 0 }}>
           <li>
             <Link
               to="/board/reports"
-              onMouseEnter={() => setHoveredLink('/board/reports')}
+              onMouseEnter={() => setHoveredLink("/board/reports")}
               onMouseLeave={() => setHoveredLink(null)}
-              style={getLinkStyle('/board/reports')}
+              style={getLinkStyle("/board/reports")}
             >
               📊 Reports
             </Link>
           </li>
         </ul>
-        <h3 style={{ fontSize: '18px', marginBottom: '16px', marginTop: '24px' }}>GROUP REQUESTS</h3>
-        <ul style={{ marginBottom: '24px', listStyle: 'none', padding: 0 }}>
+        <h3
+          style={{ fontSize: "18px", marginBottom: "16px", marginTop: "24px" }}
+        >
+          GROUP REQUESTS
+        </h3>
+        <ul style={{ marginBottom: "24px", listStyle: "none", padding: 0 }}>
           <li>
             <Link
               to="/board/group-requests"
-              onMouseEnter={() => setHoveredLink('/board/group-requests')}
+              onMouseEnter={() => setHoveredLink("/board/group-requests")}
               onMouseLeave={() => setHoveredLink(null)}
-              style={getLinkStyle('/board/group-requests')}
+              style={getLinkStyle("/board/group-requests")}
             >
               👥 Group Requests
             </Link>
           </li>
         </ul>
-        <div style={{ marginTop: '24px' }}>
-          <h3 style={{ fontSize: '18px', marginBottom: '8px' }}>NOTIFICATIONS</h3>
-          <ul style={{ listStyle: 'none', padding: 0 }}>
+        <div style={{ marginTop: "24px" }}>
+          <h3 style={{ fontSize: "18px", marginBottom: "8px" }}>
+            NOTIFICATIONS
+          </h3>
+          <ul style={{ listStyle: "none", padding: 0 }}>
             <li>
               <Link
                 to="/board/notifications"
-                onMouseEnter={() => setHoveredLink('/board/notifications')}
+                onMouseEnter={() => setHoveredLink("/board/notifications")}
                 onMouseLeave={() => setHoveredLink(null)}
-                style={getLinkStyle('/board/notifications')}
+                style={getLinkStyle("/board/notifications")}
               >
                 🔔 View Notifications
               </Link>

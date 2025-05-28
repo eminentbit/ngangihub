@@ -17,7 +17,10 @@ export default function VerifyEmail() {
           We've sent a verification link to your email address. Please check
           your inbox and click on the link to verify your account.
         </p>
-        <button className="mt-4 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+        <button
+          type="button"
+          className="mt-4 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+        >
           Resend Email
         </button>
       </div>

@@ -1,16 +1,16 @@
-"use client"
+"use client";
 
-import { useEffect, useRef } from "react"
-import { Smile } from "lucide-react"
+import { useEffect, useRef } from "react";
+import { Smile } from "lucide-react";
 
 interface EmojiPickerProps {
-  onEmojiSelect: (emoji: string) => void
-  isOpen: boolean
-  onClose: () => void
+  onEmojiSelect: (emoji: string) => void;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 const EmojiPicker = ({ onEmojiSelect, isOpen, onClose }: EmojiPickerProps) => {
-  const pickerRef = useRef<HTMLDivElement>(null)
+  const pickerRef = useRef<HTMLDivElement>(null);
 
   // Common emojis organized by category
   const emojis = {
@@ -33,32 +33,131 @@ const EmojiPicker = ({ onEmojiSelect, isOpen, onClose }: EmojiPickerProps) => {
       "🥰",
       "😘",
     ],
-    "People & Body": ["👍", "👎", "👌", "✌️", "🤞", "🤝", "🙏", "👏", "🙌", "👐", "🤲", "🤦‍♂️", "🤦‍♀️", "🤷‍♂️", "🤷‍♀️"],
-    "Animals & Nature": ["🐶", "🐱", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼", "🐨", "🐯", "🦁", "🐮", "🐷", "🐸", "🐵"],
-    "Food & Drink": ["🍎", "🍐", "🍊", "🍋", "🍌", "🍉", "🍇", "🍓", "🍈", "🍒", "🍑", "🥭", "🍍", "🥥", "🥝"],
-    Activities: ["⚽", "🏀", "🏈", "⚾", "🥎", "🎾", "🏐", "🏉", "🎱", "🏓", "🏸", "🥅", "🏒", "🏑", "🥍"],
-    Objects: ["💻", "📱", "📞", "⌚", "📷", "🔋", "💡", "🔨", "🧰", "🧲", "🧪", "🧫", "🧬", "🔬", "🔭"],
-    Symbols: ["❤️", "🧡", "💛", "💚", "💙", "💜", "🖤", "❣️", "💕", "💞", "💓", "💗", "💖", "💘", "💝"],
-  }
+    "People & Body": [
+      "👍",
+      "👎",
+      "👌",
+      "✌️",
+      "🤞",
+      "🤝",
+      "🙏",
+      "👏",
+      "🙌",
+      "👐",
+      "🤲",
+      "🤦‍♂️",
+      "🤦‍♀️",
+      "🤷‍♂️",
+      "🤷‍♀️",
+    ],
+    "Animals & Nature": [
+      "🐶",
+      "🐱",
+      "🐭",
+      "🐹",
+      "🐰",
+      "🦊",
+      "🐻",
+      "🐼",
+      "🐨",
+      "🐯",
+      "🦁",
+      "🐮",
+      "🐷",
+      "🐸",
+      "🐵",
+    ],
+    "Food & Drink": [
+      "🍎",
+      "🍐",
+      "🍊",
+      "🍋",
+      "🍌",
+      "🍉",
+      "🍇",
+      "🍓",
+      "🍈",
+      "🍒",
+      "🍑",
+      "🥭",
+      "🍍",
+      "🥥",
+      "🥝",
+    ],
+    Activities: [
+      "⚽",
+      "🏀",
+      "🏈",
+      "⚾",
+      "🥎",
+      "🎾",
+      "🏐",
+      "🏉",
+      "🎱",
+      "🏓",
+      "🏸",
+      "🥅",
+      "🏒",
+      "🏑",
+      "🥍",
+    ],
+    Objects: [
+      "💻",
+      "📱",
+      "📞",
+      "⌚",
+      "📷",
+      "🔋",
+      "💡",
+      "🔨",
+      "🧰",
+      "🧲",
+      "🧪",
+      "🧫",
+      "🧬",
+      "🔬",
+      "🔭",
+    ],
+    Symbols: [
+      "❤️",
+      "🧡",
+      "💛",
+      "💚",
+      "💙",
+      "💜",
+      "🖤",
+      "❣️",
+      "💕",
+      "💞",
+      "💓",
+      "💗",
+      "💖",
+      "💘",
+      "💝",
+    ],
+  };
 
   useEffect(() => {
     // Close emoji picker when clicking outside
     const handleClickOutside = (event: MouseEvent) => {
-      if (pickerRef.current && !pickerRef.current.contains(event.target as Node)) {
-        onClose()
+      if (
+        pickerRef.current &&
+        !pickerRef.current.contains(event.target as Node)
+      ) {
+        onClose();
       }
-    }
+    };
 
     if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside)
+      document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, [isOpen, onClose])
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen, onClose]);
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
     <div
@@ -74,15 +173,18 @@ const EmojiPicker = ({ onEmojiSelect, isOpen, onClose }: EmojiPickerProps) => {
       <div className="p-2">
         {Object.entries(emojis).map(([category, categoryEmojis]) => (
           <div key={category} className="mb-3">
-            <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{category}</h3>
+            <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+              {category}
+            </h3>
             <div className="grid grid-cols-7 gap-1">
               {categoryEmojis.map((emoji, index) => (
                 <button
+                  type="button"
                   key={index}
                   className="h-8 w-8 flex items-center justify-center text-lg hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
                   onClick={() => {
-                    onEmojiSelect(emoji)
-                    onClose()
+                    onEmojiSelect(emoji);
+                    onClose();
                   }}
                 >
                   {emoji}
@@ -93,7 +195,7 @@ const EmojiPicker = ({ onEmojiSelect, isOpen, onClose }: EmojiPickerProps) => {
         ))}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default EmojiPicker
+export default EmojiPicker;

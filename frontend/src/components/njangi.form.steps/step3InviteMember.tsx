@@ -33,6 +33,7 @@ const Step3InviteMembers: React.FC = () => {
       ? state.inviteMembers
       : { invites: [{ type: "email", value: "" }] },
   });
+  const tempData = JSON.parse(sessionStorage.getItem("tempData") ?? "{}");
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -40,7 +41,6 @@ const Step3InviteMembers: React.FC = () => {
   });
 
   const onSubmit = (data: InviteMembersFormData) => {
-    console.log("Submitted data for invites:", data);
     updateInviteMembers(data);
     nextStep();
   };
@@ -81,7 +81,7 @@ const Step3InviteMembers: React.FC = () => {
         <div className="text-sm text-blue-600 bg-blue-50 px-4 py-2 rounded-md mb-4 flex items-start gap-2">
           <Info size={16} className="mt-1 text-blue-500" />
           <span>
-            You can invite up to 3 members during setup. You’ll be able to add
+            You can invite up to 3 members during setup. You'll be able to add
             more later from your dashboard.
           </span>
         </div>
@@ -108,6 +108,7 @@ const Step3InviteMembers: React.FC = () => {
                     {...register(`invites.${index}.type`)}
                     onChange={(e) => {
                       const selectedType = e.target.value;
+
                       setValue(
                         `invites.${index}.type`,
                         selectedType as "email" | "phone"
@@ -125,6 +126,41 @@ const Step3InviteMembers: React.FC = () => {
                       type="email"
                       {...register(`invites.${index}.value`)}
                       placeholder="example@email.com"
+                      onChange={(e) => {
+                        if (
+                          tempData &&
+                          tempData.senderEmail == e.target.value
+                        ) {
+                          setError(`invites.${index}.value`, {
+                            type: "manual",
+                            message: "Cannot be the same as creator",
+                          });
+                        } else {
+                          clearErrors();
+
+                          const updatedTempData = {
+                            ...tempData,
+                            [`email${index}`]: (e.target as HTMLInputElement)
+                              .value,
+                          };
+                          sessionStorage.setItem(
+                            "tempData",
+                            JSON.stringify(updatedTempData)
+                          );
+
+                          if (index > 0) {
+                            if (
+                              (e.target as HTMLInputElement).value ===
+                              tempData[`email${index - 1}`]
+                            ) {
+                              setError(`invites.${index}.value`, {
+                                type: "manual",
+                                message: "Cannot be the same as previous email",
+                              });
+                            }
+                          }
+                        }
+                      }}
                       className={`form-input flex-1 rounded-md border pl-3 ${
                         errors.invites?.[index]?.value
                           ? "border-red-500"
@@ -134,7 +170,7 @@ const Step3InviteMembers: React.FC = () => {
                   ) : (
                     <div className="flex-1">
                       <PhoneInput
-                        country={"us"}
+                        country={"cm"}
                         value={watchedInvites?.[index]?.value ?? ""}
                         onChange={(value) => handlePhoneChange(index, value)}
                         inputProps={{
@@ -143,7 +179,7 @@ const Step3InviteMembers: React.FC = () => {
                         }}
                         enableSearch
                         countryCodeEditable={false}
-                        preferredCountries={["us", "ca", "gb", "cm"]}
+                        preferredCountries={["cm", "us", "ca", "gb"]}
                         inputClass="w-full !pl-10 !py-2 !border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                       />
                     </div>

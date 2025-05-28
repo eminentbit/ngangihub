@@ -1,11 +1,11 @@
-import NjangiDrafts from "../models/NjangiDrafts.js";
+import NjangiDrafts from "../models/njangi.draft.model.js";
 import User from "../models/user.model.js";
 import NjangiGroup from "../models/njangigroup.model.js";
 import Invite from "../models/invite.model.js";
 
 const isValidEmail = (contact) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact);
 
-const isValidPhone = (contact) => /^\+?[1-9]\d{6,14}$/.test(contact); // E.164 format more strictly
+const isValidPhone = (contact) => /^\+?[1-9]\d{6,14}$/.test(contact);
 
 /**
  * Validates whether an email is already used in a NjangiDraft (temporary creation).
@@ -28,7 +28,7 @@ export const validateEmail = async (req, res) => {
 
     const exists = inDraft || inUsers;
 
-    res.json({ valid: !exists });
+    return res.json({ valid: !exists });
   } catch (error) {
     res
       .status(500)
@@ -40,7 +40,7 @@ export const validateEmail = async (req, res) => {
  * Validates whether a phone number is already used in a NjangiDraft, NjangiGroup or User.
  * This helps prevent duplicate signups during the Njangi creation process.
  */
-export const validatPhoneNumber = async (req, res) => {
+export const validatePhoneNumber = async (req, res) => {
   let { phoneNumber } = req.query;
 
   if (!phoneNumber || typeof phoneNumber !== "string") {
@@ -70,7 +70,7 @@ export const validatPhoneNumber = async (req, res) => {
     ]);
 
     const exists = inDrafts || inGroups || inUsers;
-    res.json({ valid: !exists });
+    return res.json({ valid: !exists });
   } catch (error) {
     console.error("Phone number validation error:", error);
     res.status(500).json({
@@ -111,6 +111,7 @@ export const validateGroupName = async (req, res) => {
     ]);
 
     const exists = inDrafts || inGroups;
+    console.log({ inDrafts, inGroups, exists });
     res.json({ valid: !exists });
   } catch (error) {
     res
@@ -123,7 +124,6 @@ export const validateGroupName = async (req, res) => {
  * Validates whether a contact (email or phone) is already used in a NjangiDraft.
  * This helps prevent duplicate signups or invites during the Njangi creation process.
  */
-
 export const validateInviteContact = async (req, res) => {
   let { contact } = req.query;
 

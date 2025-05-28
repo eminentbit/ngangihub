@@ -1,19 +1,26 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL;
+const VALIDATE_API_URL = import.meta.env.VITE_VALIDATE_API_URL;
+
+
+const buildUrl = (path: string) => { //Ensure that there is no duplicate // of avoid where its
+  return `${VALIDATE_API_URL.replace(/\/+$/, "")}/${path.replace(/^\/+/, "")}`;
+};
+
+console.log("Calling validate email URL:", `${VALIDATE_API_URL}/validate-email`);
+console.log("BuildUrl: " + buildUrl("validate-email"))
+
 
 /**
  *
  * @param email - The email address to validate
- * @description This hook is used to validate an email address. It sends a GET request to the server with the email address as a query parameter. The server responds with a boolean indicating whether the email is valid or not upon filling the form.
- * @returns
- */
+ * @descrp i* @returns */
 export const useValidateEmail = (email: string) => {
   return useQuery({
     queryKey: ["validate-email", email],
     queryFn: async () => {
-      const { data } = await axios.get(`${API_URL}/validate-email`, {
+      const { data } = await axios.get(buildUrl("validate-email"), {
         params: { email },
       });
       return data.valid;
@@ -32,12 +39,19 @@ export const useValidatePhoneNumber = (phoneNumber: string) => {
   return useQuery({
     queryKey: ["validate-phoneNumber", phoneNumber],
     queryFn: async () => {
-      const { data } = await axios.get(`${API_URL}/validate-phone-number`, {
-        params: { phoneNumber },
-      });
-      return data.valid;
+      try {
+        const { data } = await axios.get(
+          `${VALIDATE_API_URL}/validate-phone-number`,
+          { params: { phoneNumber } }
+        );
+        // Always return a boolean value
+        return typeof data.valid === "boolean" ? data.valid : false;
+      } catch (error) {
+        console.error("Error validating phone number:", error);
+        return false;
+      }
     },
-    enabled: !!phoneNumber, // only run if email is not empty
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    enabled: !!phoneNumber,
+    staleTime: 1000 * 60 * 5,
   });
 };

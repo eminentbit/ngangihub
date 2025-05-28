@@ -1,53 +1,109 @@
+// services/createNjangiFlow.js
 import bcrypt from "bcryptjs";
-import NjangiDraft from "../models/NjangiDrafts.js";
+import NjangiDraft from "../models/njangi.draft.model.js";
 import NjangiGroup from "../models/njangigroup.model.js";
 import User from "../models/user.model.js";
+import dotenv from "dotenv";
+import emailQueue from "../bullMQ/queues/emailQueue.js";
+dotenv.config();
+
+const viewURL = process.env.FRONTEND_URL;
 
 /**
  * Creates a Njangi draft document from the given form data
  * @param {Object} formData - form data from the Njangi creation form
- * @returns {Object} An object with a single property, draftId, which is the ID of the created Njangi draft document
- * @throws {Error} If validation fails or database creation fails
+ * @returns {Object} An object with the created draftId
+ * @throws {Error} If an error occurs while creating the draft
+ *
  */
-const createNjangiFlow = async (formData) => {
+const createNjangiFlow = async (formData, njangiId) => {
   try {
     const { accountSetup, groupDetails, inviteMembers } = formData;
 
+    console.log("Creating Njangi draft with data:", formData);
+    console.log("Njangi ID:", njangiId);
+
+    // Check for existing user
     const existingUser = await User.findOne({ email: accountSetup.email });
     if (existingUser) {
+      console.log("User already exists with email:", accountSetup.email);
       throw new Error("A user with this email already exists.");
     }
 
-    //  Reject if Njangi group name already exists
+    // Check for existing Njangi group
     const existingNjangi = await NjangiGroup.findOne({
       "groupDetails.groupName": groupDetails.groupName,
     });
     if (existingNjangi) {
+      console.log("Group already exists with name:", groupDetails.groupName);
       throw new Error("A Njangi group with this name already exists.");
     }
 
-    //  Reject if invite list contains duplicates
+    // Check for duplicate invite contacts
     const inviteContacts = inviteMembers.map((m) => m.contact);
     const uniqueContacts = new Set(inviteContacts);
     if (inviteContacts.length !== uniqueContacts.size) {
+      console.log("Duplicate invite contacts found:", inviteContacts);
       throw new Error("Duplicate invites found in the invite list.");
     }
 
-    //  Hash password before saving
-    const hashedPassword = await bcrypt.hash(accountSetup.password, 15);
+    // Hash password
+    const hashedPassword = await bcrypt.hash(accountSetup.password, 20);
 
-    //  Create the draft safely
+    // Ensure groupDetails has proper Date objects
+    const parsedGroupDetails = {
+      ...groupDetails,
+      startDate: groupDetails.startDate
+        ? new Date(groupDetails.startDate)
+        : null,
+      endDate: groupDetails.endDate ? new Date(groupDetails.endDate) : null,
+    };
+
+    console.time("💾 Save draft to Mongo");
+
+    // Create and save Njangi draft
     const draft = await NjangiDraft.create({
-      ...formData,
       accountSetup: {
         ...accountSetup,
         password: hashedPassword,
+        role: "admin", // Default role for the creator
+        status: "pending", 
       },
+      groupDetails: { ...parsedGroupDetails },
+      inviteMembers,
+      njangiRouteId: njangiId,
+      status: "pending",
+      createdAt: new Date(),
     });
+    console.timeEnd("💾 Save draft to Mongo");
 
-    return { draftId: draft._id };
+    // Add email job to Redis
+    console.time("📬 Add email job to Redis");
+    await emailQueue.add(
+      "send-njangi-pending-email",
+      {
+        dest: "admin",
+        email: accountSetup.email,
+        userName: `${accountSetup.firstName} ${accountSetup.lastName}`,
+        groupName: groupDetails.groupName,
+        creationDate: draft.createdAt,
+        memberCount: groupDetails.numberOfMember || null,
+        contributionAmount: groupDetails.contributionAmount,
+        viewURL,
+        inviteURL: "http://localhost:5173/invite", // Replace with the actual invite URL
+      },
+      {
+        removeOnComplete: true,
+        attempts: 3,
+        backoff: { type: "exponential", delay: 1000 }, // Retry with delay
+      }
+    );
+    console.timeEnd("📬 Add email job to Redis");
+
+    console.log("Njangi draft created:", draft._id);
+    return { draftId: draft._id, njangiId: draft.njangiRouteId };
   } catch (error) {
-    console.log("Error creating Njangi draft:", error.message);
+    console.error("Error creating Njangi draft:", error.message);
     throw error;
   }
 };

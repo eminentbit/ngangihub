@@ -5,23 +5,17 @@ import Header from '../../components/dashboard.admin.components/Header';
 
 const GroupSettingsPage: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [activeTab, setActiveTab] = useState<string>('group-settings');
+  const [, setActiveTab] = useState<string>('group-settings');
   const [groupName, setGroupName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [privacy, setPrivacy] = useState<'public' | 'private'>('private');
   const [success, setSuccess] = useState<boolean>(false);
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
- 
 
   // Dark mode toggle
   useEffect(() => {
     document.documentElement.classList.toggle('dark', isDarkMode);
   }, [isDarkMode]);
-
-  // Prevent body scroll when sidebar open
-  useEffect(() => {
-    document.body.style.overflow = isSidebarOpen ? 'hidden' : '';
-  }, [isSidebarOpen]);
 
   const toggleSidebar = () => setIsSidebarOpen(prev => !prev);
 
@@ -33,34 +27,43 @@ const GroupSettingsPage: React.FC = () => {
   };
 
   return (
-    <div className={`flex min-h-screen bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-200 ${isDarkMode ? 'dark' : ''}`}>
-      {/* Sidebar Overlay */}
+    <div className="flex h-screen bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-200">
+      {/* Mobile overlay */}
       {isSidebarOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-30 z-30 lg:hidden"
+          className="fixed inset-0 z-30 bg-black bg-opacity-30 lg:hidden"
           onClick={toggleSidebar}
-          aria-label="Close sidebar"
+          aria-label="Close sidebar overlay"
         />
       )}
 
- {/* Sidebar Container */}
- <Sidebar
-          isOpen={isSidebarOpen}
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-          onToggle={toggleSidebar}
-          notifications={[]}
-          onClose={toggleSidebar}
+      {/* Sidebar */}
+      <Sidebar
+        isOpen={isSidebarOpen}
+        onTabChange={setActiveTab}
+        onToggle={toggleSidebar}
+        notifications={[]}
+        onClose={toggleSidebar}
+      />
+
+      {/* Content panel */}
+      <div
+        className={`
+          flex flex-col flex-1 h-full
+          ${isSidebarOpen ? 'lg:ml-56' : 'ml-0'}
+          transition-all duration-300
+          overflow-y-auto
+          px-4 md:px-8 py-4
+        `}
+      >
+        {/* Sticky Header */}
+        <Header
+          darkMode={isDarkMode}
+          setDarkMode={setIsDarkMode}
         />
 
-      {/* Main Content */}
-      <div className={`flex-1 transition-all duration-300 p-6 ${isSidebarOpen ? 'lg:ml-64' : 'ml-0'}`}>
-        {/* Header */}
-        <Header 
-        darkMode={isDarkMode} 
-        setDarkMode={setIsDarkMode} 
-        />
-        <main className="flex-1 pt-20 px-4 sm:px-6 lg:px-12 overflow-auto">
+        {/* Scrollable Main */}
+        <main className="flex-1 pt-20 bg-white transition-all duration-200">
           <div className="max-w-3xl mx-auto space-y-6">
             {/* Page Header */}
             <section className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 flex flex-col md:flex-row md:items-center md:justify-between">

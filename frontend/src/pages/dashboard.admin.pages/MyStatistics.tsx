@@ -12,29 +12,25 @@ import Header from '../../components/dashboard.admin.components/Header';
 
 const StatisticsPage: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [activeTab, setActiveTab] = useState<string>('/statistics');
+  const [, setActiveTab] = useState<string>('/statistics');
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
-  //const [setIsDesktop] = useState<boolean>(false);
 
+  // Toggle Tailwind dark class on <html>
   useEffect(() => {
     document.documentElement.classList.toggle('dark', isDarkMode);
   }, [isDarkMode]);
 
-  useEffect(() => {
-    document.body.style.overflow = isSidebarOpen ? 'hidden' : '';
-  }, [isSidebarOpen]);
-
   const summary = [
     { icon: <FaUsers size={28} />,       label: 'Active Members',       value: 124 },
-    { icon: <FaMoneyBillWave size={28} />, label: 'Total Contributions',  value: '₦1,250,000' },
+    { icon: <FaMoneyBillWave size={28} />, label: 'Total Contributions',  value: 'CFA 1,250,000' },
     { icon: <FaChartPie size={28} />,      label: 'Monthly Growth',      value: '8.2%' },
   ];
 
   const toggleSidebar = () => setIsSidebarOpen(prev => !prev);
 
   return (
-    <div className={`flex min-h-screen bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-200 ${isDarkMode ? 'dark' : ''}`}>
-      {/* Sidebar Overlay */}
+    <div className="flex h-screen bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-200 overflow-hidden">
+      {/* Mobile overlay */}
       {isSidebarOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-30 z-30 lg:hidden"
@@ -43,30 +39,37 @@ const StatisticsPage: React.FC = () => {
         />
       )}
 
-       {/* Sidebar Container */}
-       <Sidebar
-          isOpen={isSidebarOpen}
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-          onToggle={toggleSidebar}
-          notifications={[]}
-          onClose={toggleSidebar}
+      {/* Sidebar */}
+      <Sidebar
+        isOpen={isSidebarOpen}
+        onTabChange={setActiveTab}
+        onToggle={toggleSidebar}
+        notifications={[]}
+        onClose={toggleSidebar}
+      />
+
+      {/* Content panel */}
+      <div
+        className={`
+          flex flex-col flex-1 h-full
+          ${isSidebarOpen ? 'lg:ml-64' : 'ml-0'}
+          transition-all duration-300
+          overflow-y-auto
+        `}
+      >
+        {/* Sticky Header */}
+        <Header
+          darkMode={isDarkMode}
+          setDarkMode={setIsDarkMode}
         />
 
-      {/* Main Content */}
-      <div className={`flex-1 transition-all duration-300 p-6 ${isSidebarOpen ? 'lg:ml-64' : 'ml-0'}`}>
-        {/* Header */}
-        <Header 
-        darkMode={isDarkMode} 
-        setDarkMode={setIsDarkMode} 
-        />
-
-        <main className="flex-1 pt-20 px-4 sm:px-6 md:px-8 lg:px-12 transition-all duration-200">
-          <div className="max-w-5xl mx-auto">
+        {/* Scrollable Main */}
+        <main className="flex-1 pt-20 px-4 sm:px-6 md:px-8 lg:px-12">
+          <div className="max-w-5xl mx-auto space-y-8">
             {/* Page Title */}
-            <section className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
+            <section className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-4">
               <div>
-                <h1 className="text-3xl font-bold text-blue-700 dark:text-gray-100 flex items-center">
+                <h1 className="flex items-center text-3xl font-bold text-blue-700 dark:text-gray-100">
                   <FaChartLine className="mr-2" size={30} /> Statistics Dashboard
                 </h1>
                 <p className="mt-1 text-gray-600 dark:text-gray-300">
@@ -79,7 +82,7 @@ const StatisticsPage: React.FC = () => {
             </section>
 
             {/* Summary Cards */}
-            <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {summary.map((item, idx) => (
                 <div
                   key={idx}
@@ -99,11 +102,15 @@ const StatisticsPage: React.FC = () => {
             {/* Charts */}
             <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-                <h2 className="text-lg font-semibold dark:text-gray-100 mb-4">📈 Activity Over Time</h2>
+                <h2 className="text-lg font-semibold dark:text-gray-100 mb-4">
+                  📈 Activity Over Time
+                </h2>
                 <ActivityChart />
               </div>
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-                <h2 className="text-lg font-semibold dark:text-gray-100 mb-4">💰 Contributions Breakdown</h2>
+                <h2 className="text-lg font-semibold dark:text-gray-100 mb-4">
+                  💰 Contributions Breakdown
+                </h2>
                 <ContributionChart />
               </div>
             </section>

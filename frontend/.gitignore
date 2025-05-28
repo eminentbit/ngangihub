@@ -16,6 +16,8 @@ helper.ts
 .env
 .env.local
 
+backup
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

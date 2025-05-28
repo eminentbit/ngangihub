@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { UseFormClearErrors, UseFormSetError } from "react-hook-form";
 import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL;
+const INVITE_API_URL = import.meta.env.VITE_API_URL;
 
 export type Invite = {
   type: "email" | "phone";
@@ -28,7 +28,7 @@ export const useBatchValidateInvites = (
       const results = await Promise.all(
         invites.map(async (invite) => {
           const { data } = await axios.get(
-            `${API_URL}/validate-invite-contact`,
+            `${INVITE_API_URL}/validate-invite-contact`,
             {
               params: { contact: invite.value },
             }

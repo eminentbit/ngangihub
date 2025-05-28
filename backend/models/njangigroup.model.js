@@ -1,5 +1,7 @@
 // models/NjangiGroup.js
 import mongoose from "mongoose";
+import User from "./user.model.js";
+import njangiDraftModel from "./njangi.draft.model.js";
 
 const njangiGroupSchema = new mongoose.Schema(
   {
@@ -8,6 +10,10 @@ const njangiGroupSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+    },
+    draftId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "NjangiDraft",
     },
     contributionAmount: { type: Number, required: true },
     contributionFrequency: {

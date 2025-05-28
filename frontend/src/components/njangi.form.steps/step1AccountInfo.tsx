@@ -82,8 +82,26 @@ const Step1AccountInfo: React.FC = () => {
       console.log("Validation failed, not proceeding to next step.");
       return;
     }
-
     updateAccountSetup(data);
+    state.accountSetup = data;
+
+    if ("credentials" in navigator && "PasswordCredential" in window) {
+      // console.log(state);
+      const credential = new window.PasswordCredential({
+        id: data.email,
+        password: data.password,
+        name: `${data.firstName} ${data.lastName}`,
+      });
+      navigator.credentials
+        .store(credential)
+        .catch((err) => console.error("Error storing credential:", err));
+    }
+
+    sessionStorage.setItem(
+      "tempData",
+      JSON.stringify({ senderEmail: data.email })
+    );
+
     nextStep();
   };
 
@@ -144,7 +162,7 @@ const Step1AccountInfo: React.FC = () => {
             <div className="relative">
               {/* Using react-phone-input-2 library with custom styling */}
               <PhoneInput
-                country={"us"}
+                country={"cm"}
                 value={phone}
                 onChange={handlePhoneChange}
                 inputProps={{
@@ -155,7 +173,7 @@ const Step1AccountInfo: React.FC = () => {
                 searchPlaceholder="Search countries..."
                 countryCodeEditable={false}
                 disableSearchIcon={false}
-                preferredCountries={["us", "ca", "gb", "cm"]}
+                preferredCountries={["cm", "us", "ca", "gb"]}
               />
               {isPhoneChecking && (
                 <span className="text-sm text-blue-600 animate-pulse">
@@ -258,13 +276,15 @@ const Step1AccountInfo: React.FC = () => {
                 isSubmitting ||
                 isEmailChecking ||
                 !!errors.email ||
-                isPhoneChecking
+                isPhoneChecking ||
+                !!errors.phoneNum
               }
               className={`form-button ${
                 isSubmitting ||
                 isEmailChecking ||
                 !!errors.email ||
-                isPhoneChecking
+                isPhoneChecking ||
+                !!errors.phoneNum
                   ? "form-button-disabled"
                   : ""
               }`}

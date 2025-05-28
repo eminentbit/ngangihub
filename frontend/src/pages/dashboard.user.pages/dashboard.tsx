@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { SetStateAction, useState, useEffect } from "react";
 import {
   MoreHorizontal,
   MessageSquare,
@@ -23,7 +23,8 @@ import {
 import { Doughnut, Line } from "react-chartjs-2";
 import ChatInterface from "../../components/dashboard.user.components/chat-interface";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "../../components/dashboard.user.components/Sidebar";
+import Sidebar from "../../components/dashboard.admin.components/Sidebar";
+import Header from "../../components/dashboard.admin.components/Header";
 
 // Register ChartJS components
 ChartJS.register(
@@ -43,6 +44,20 @@ const CFA_EXCHANGE_RATE = 600;
 const UserDashboard = () => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [, setActiveTab] = useState<string>("Dashboard");
+  const [darkMode, setDarkMode] = useState<boolean>(false);
+  const handleTabChange = (tab: SetStateAction<string>) => {
+    setActiveTab(tab);
+  };
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("dark-mode", "true");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("dark-mode", "false");
+    }
+  }, [darkMode]);
   const [groups] = useState([
     {
       id: 1,
@@ -134,7 +149,7 @@ const UserDashboard = () => {
 
   const [showGroupMenu, setShowGroupMenu] = useState<"main" | null>(null);
   const [showChat, setShowChat] = useState<{
-    id: number;
+    id: string;
     name: string;
     members: number;
     paid: number;
@@ -195,9 +210,9 @@ const UserDashboard = () => {
   };
 
   const handleGroupChat = (groupId: number) => {
-    const group = groups.find((g: { id: number }) => g.id === groupId);
+    const group = groups.find((g) => g.id === groupId);
     if (group) {
-      setShowChat(group);
+      setShowChat({ ...group, id: String(group.id) });
     }
   };
 
@@ -216,9 +231,10 @@ const UserDashboard = () => {
       <Sidebar
         isOpen={isOpen}
         onToggle={() => setIsOpen((o) => !o)}
-        activeTab="dashboard"
-        setIsOpen={setIsOpen}
+        onTabChange={handleTabChange} // replace with your real handler
+        onClose={() => setIsOpen(false)}
       />
+      <Header darkMode={darkMode} setDarkMode={setDarkMode} />
 
       <main
         className={`flex-1 p-6 pl-10 space-y-6 ${
@@ -226,7 +242,7 @@ const UserDashboard = () => {
         } transition-all duration-300 `}
       >
         <header>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          <h1 className="text-3xl font-bold text-blue-700  dark:text-gray-100">
             Dashboard
           </h1>
           <p className="mt-1 text-gray-600 dark:text-gray-400">
@@ -324,6 +340,7 @@ const UserDashboard = () => {
                 </h2>
                 <div className="relative">
                   <button
+                    type="button"
                     onClick={() =>
                       setShowGroupMenu(showGroupMenu ? null : "main")
                     }
@@ -334,6 +351,7 @@ const UserDashboard = () => {
                   {showGroupMenu === "main" && (
                     <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-2 border border-gray-200 dark:border-gray-700">
                       <button
+                        type="button"
                         className="block w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                         onClick={() => {
                           setShowGroupMenu(null);
@@ -343,10 +361,11 @@ const UserDashboard = () => {
                         View All Groups
                       </button>
                       <button
+                        type="button"
                         className="block w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                         onClick={() => {
                           setShowGroupMenu(null);
-                          navigate("/user/groups?create=true");
+                          navigate("/user/groups");
                         }}
                       >
                         Create New Group
@@ -404,6 +423,7 @@ const UserDashboard = () => {
 
                     <div className="mt-4 flex justify-between">
                       <button
+                        type="button"
                         className="flex items-center gap-1 text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
                         onClick={() => handleGroupChat(group.id)}
                       >
@@ -411,6 +431,7 @@ const UserDashboard = () => {
                         Chat
                       </button>
                       <button
+                        type="button"
                         className="flex items-center gap-1 text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
                         onClick={() => handleGroupDetails(group.id)}
                       >
@@ -423,6 +444,7 @@ const UserDashboard = () => {
               </div>
 
               <button
+                type="button"
                 className="mt-6 w-full py-2 text-center text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-800/30 transition"
                 onClick={handleViewAllGroups}
               >
