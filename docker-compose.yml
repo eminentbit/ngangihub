@@ -43,6 +43,16 @@ services:
       - REDIS_PASSWORD=mjlsbkCh2z8Ft63
     command: ["redis-server", "--requirepass", "mjlsbkCh2z8Ft63"]
 
+  bullmq:
+    image: node:alpine
+    ports:
+      - "6380:6379"
+    volumes:
+      - bullmq_data:/data
+    environment:
+      - REDIS_PASSWORD=mjlsbkCh2z8Ft63
+    command: ["redis-server", "--requirepass", "mjlsbkCh2z8Ft63"]
+
   reverse-proxy:
     image: nginx:latest
     ports:
