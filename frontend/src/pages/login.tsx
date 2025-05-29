@@ -29,6 +29,8 @@ export default function Login() {
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
+    const invitToken = params.get("inviteToken");
+    console.log("Invitation Token from login:", invitToken); // token will be use to redirect user to dashboard if already exists
     if (params.get("alreadyAccepted") === "1" && !toastShown.current) {
       toastShown.current = true; //Avoid toast from showing multiple times
       toast.success("You already have an account. Please log in.", {

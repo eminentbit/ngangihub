@@ -4,6 +4,7 @@ import GroupMember from "../models/group.member.model.js";
 import NjangiGroup from "../models/njangigroup.model.js";
 import bcrypt from "bcryptjs";
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
+import { sendWelcomeEmail } from "../mail/emails.js";
 
 const acceptInvite = async (req, res) => {
   const { token } = req.query;
@@ -71,6 +72,13 @@ const acceptInvite = async (req, res) => {
     // 4. Update Invite
     invite.status = "accepted";
     await invite.save();
+
+    //send welcome email to the new user
+    await sendWelcomeEmail(
+      newUser.email,
+      `${newUser.firstName} ${newUser.lastName}`,
+      `${process.env.USER_DASHBOARD_URL}?groupId=${invite.groupId}`,
+    );
 
     return res.status(201).json({
       success: true,

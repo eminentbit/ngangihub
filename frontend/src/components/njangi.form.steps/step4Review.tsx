@@ -29,11 +29,6 @@ const Step4Review: React.FC = () => {
       day: "numeric",
     });
   };
-  // checks errors================NB
-  if (errors)
-    return (
-      <>{<ErrorPopup error={errors} onClose={() => setisError(false)} />}</>
-    );
 
   if (isSubmitted && !error) {
     sessionStorage.clear();
@@ -108,6 +103,10 @@ const Step4Review: React.FC = () => {
           <div className="bg-red-100 text-red-700 p-4 rounded-md mb-6">
             <p>{error}</p>
           </div>
+        )}
+
+        {errors && (
+          <>{<ErrorPopup error={errors} onClose={() => setisError(false)} />}</>
         )}
 
         <div className="space-y-6">

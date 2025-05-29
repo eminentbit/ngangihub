@@ -3,7 +3,7 @@ import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuthStore } from "../store/create.auth.store";
 
 type Props = {
-  allowedRoles: ("user" | "admin" | "bod")[];
+  allowedRoles: ("user" | "admin" | "bod" | "member")[];
 };
 
 export default function ProtectedRoute({ allowedRoles }: Props) {

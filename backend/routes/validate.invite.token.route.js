@@ -3,6 +3,6 @@ import { validateInviteToken } from "../controllers/validate.invite.token.contro
 
 const router = express.Router();
 
-router.get("/validate-invite-token", validateInviteToken);
+router.get("/validate-draft-id", validateInviteToken);
 
 export default router;
