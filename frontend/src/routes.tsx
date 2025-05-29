@@ -45,6 +45,7 @@ const LandingSections: React.FC = () => <App />;
   // Public routes
   {
     path: "/",
+    caseSensitive: false,
     children: [
       { index: true, element: <LandingSections /> },
       { path: "about", element: <AboutPage /> },
@@ -61,6 +62,8 @@ const LandingSections: React.FC = () => <App />;
 
   {
     path: "/user",
+    caseSensitive: false,
+    element: <ProtectedRoute allowedRoles={["user"]} />,
     children: [
       { path: "dashboard", element: <UserDashboard /> },
       { path: "groups", element: <MyGroups /> },
@@ -93,6 +96,7 @@ const LandingSections: React.FC = () => <App />;
   // Board of Directors routes
   {
     path: "/board",
+    caseSensitive: false,
     children: [
       { path: "dashboard", element: <Dashboard /> },
       { path: "notifications", element: <Notifications /> },
