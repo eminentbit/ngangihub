@@ -11,7 +11,11 @@ export default function SettingsPasswordForm() {
     formState: { errors, isSubmitting },
     reset,
     getValues,
-  } = useForm<{ currentPassword: string; newPassword: string; confirmPassword: string }>();
+  } = useForm<{
+    currentPassword: string;
+    newPassword: string;
+    confirmPassword: string;
+  }>();
 
   const onSubmit = async () => {
     try {
@@ -55,13 +59,21 @@ export default function SettingsPasswordForm() {
             </div>
             <input
               type="password"
-              {...register("currentPassword", { required: "Current password is required" })}
+              {...register("currentPassword", {
+                required: "Current password is required",
+              })}
               placeholder="Enter current password"
-              className={`block w-full pl-10 pr-3 py-2 border ${errors.currentPassword ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'} rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition`}
+              className={`block w-full pl-10 pr-3 py-2 border ${
+                errors.currentPassword
+                  ? "border-red-500"
+                  : "border-gray-300 dark:border-gray-600"
+              } rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition`}
             />
           </div>
           {errors.currentPassword && (
-            <p className="text-red-500 text-sm mt-1">{errors.currentPassword.message}</p>
+            <p className="text-red-500 text-sm mt-1">
+              {errors.currentPassword.message}
+            </p>
           )}
         </div>
 
@@ -76,16 +88,26 @@ export default function SettingsPasswordForm() {
             </div>
             <input
               type="password"
+              autoComplete="new-password"
               {...register("newPassword", {
                 required: "New password is required",
-                minLength: { value: 8, message: "Must be at least 8 characters" },
+                minLength: {
+                  value: 8,
+                  message: "Must be at least 8 characters",
+                },
               })}
               placeholder="Enter new password"
-              className={`block w-full pl-10 pr-3 py-2 border ${errors.newPassword ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'} rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition`}
+              className={`block w-full pl-10 pr-3 py-2 border ${
+                errors.newPassword
+                  ? "border-red-500"
+                  : "border-gray-300 dark:border-gray-600"
+              } rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition`}
             />
           </div>
           {errors.newPassword && (
-            <p className="text-red-500 text-sm mt-1">{errors.newPassword.message}</p>
+            <p className="text-red-500 text-sm mt-1">
+              {errors.newPassword.message}
+            </p>
           )}
         </div>
 
@@ -102,14 +124,22 @@ export default function SettingsPasswordForm() {
               type="password"
               {...register("confirmPassword", {
                 required: "Please confirm password",
-                validate: (value) => value === getValues("newPassword") || "Passwords do not match",
+                validate: (value) =>
+                  value === getValues("newPassword") ||
+                  "Passwords do not match",
               })}
               placeholder="Confirm new password"
-              className={`block w-full pl-10 pr-3 py-2 border ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'} rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition`}
+              className={`block w-full pl-10 pr-3 py-2 border ${
+                errors.confirmPassword
+                  ? "border-red-500"
+                  : "border-gray-300 dark:border-gray-600"
+              } rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition`}
             />
           </div>
           {errors.confirmPassword && (
-            <p className="text-red-500 text-sm mt-1">{errors.confirmPassword.message}</p>
+            <p className="text-red-500 text-sm mt-1">
+              {errors.confirmPassword.message}
+            </p>
           )}
         </div>
 
@@ -120,7 +150,7 @@ export default function SettingsPasswordForm() {
             className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition"
           >
             <Save className="h-4 w-4" />
-            {isSubmitting ? 'Updating...' : 'Update Password'}
+            {isSubmitting ? "Updating..." : "Update Password"}
           </button>
         </div>
       </form>
