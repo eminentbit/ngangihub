@@ -6,6 +6,8 @@ import { createNjangiGroup } from "./njangi.service.js";
 import { addAdminAsGroupMember } from "./groupMember.service.js";
 import { inviteMembersToGroup } from "./invite.service.js";
 import { sendNjangiCreatedApprovalEmail } from "../mail/emails.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 export const finalizeNjangiFromDraft = async (draftId, res) => {
   const draft = await NjangiDraft.findById(draftId);

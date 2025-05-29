@@ -71,7 +71,7 @@ const GroupOverviewPage: React.FC = () => {
           transition-all duration-300
           ${isSidebarOpen ? 'lg:ml-44' : 'ml-0'}
           overflow-y-auto
-          md:px-8 px-2 py-0
+          md:px-16 px-10 py-0
         `}
       >
         {/* Sticky Header */}
@@ -115,7 +115,7 @@ const GroupOverviewPage: React.FC = () => {
                   <FaMoneyBillWave className="text-green-500 text-2xl" />
                   <div>
                     <div className="text-lg font-semibold text-green-700 dark:text-green-300">
-                      ₦{groupInfo.totalFunds.toLocaleString()}
+                      CFA {groupInfo.totalFunds.toLocaleString()}
                     </div>
                     <div className="text-sm text-gray-500 dark:text-gray-400">Total Funds</div>
                   </div>

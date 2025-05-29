@@ -31,38 +31,22 @@ type MenuItem = {
   icon: React.ReactNode;
   label: string;
   path: string;
+  roles: Array<"admin" | "user">;
 };
 
-const menuMain: MenuItem[] = [
-  { icon: <FaUserShield />, label: "Admin Dashboard", path: "/admin/dashboard" },
-  { icon: <FaUsersCog />, label: "Manage Members", path: "/admin/manage-members" },
-];
-
-const menuGroups: MenuItem[] = [
-  { icon: <FaUsers />, label: "Groups Overview", path: "/admin/groups" },
-  { icon: <FaInfoCircle />, label: "Group Info", path: "/admin/group-info" },
-  { icon: <FaChartBar />, label: "My Statistics", path: "/admin/stats" },
-  { icon: <FaUserPlus />, label: "Add Member", path: "/admin/add-member" },
-];
-
-// NEW: Notifications menu
-const menuNotifications: MenuItem[] = [
-  { icon: <FaBell />, label: "Notifications", path: "/admin/notifications" },
-];
-
-const menuSettings: MenuItem[] = [
-  { icon: <FaCog />, label: "Group Settings", path: "/admin/group-settings" },
-];
-
 const allMenu: MenuItem[] = [
-  ...menuMain,
-  ...menuGroups,
-  ...menuNotifications, // Add here for collapsed view
-  ...menuSettings,
+  { icon: <FaUserShield />, label: "Dashboard",      path: "/admin/dashboard",     roles: ["user", "admin"] },
+  { icon: <FaUsers />,      label: "My Groups",      path: "/user/groups",        roles: ["user", "admin"] },
+  { icon: <FaChartBar />,   label: "Payment",        path: "/user/payments",      roles: ["user", "admin"] },
+  { icon: <FaCog />,        label: "Settings",       path: "/user/settings",      roles: ["user", "admin"] },
+  { icon: <FaUsersCog />,   label: "Manage Members",  path: "/admin/manage-members",roles: ["admin"] },
+  { icon: <FaUsers />,      label: "Groups Overview",  path: "/admin/groups",       roles: ["admin"] },
+  { icon: <FaInfoCircle />, label: "Group Info",       path: "/admin/group-info",   roles: ["admin"] },
+  { icon: <FaChartBar />,   label: "My Statistics",    path: "/admin/stats",        roles: ["admin"] },
+  { icon: <FaUserPlus />,   label: "Add Member",       path: "/admin/add-member",   roles: ["admin"] },
+  { icon: <FaCog />,        label: "Group Settings",   path: "/admin/group-settings", roles: ["admin"] },
+  { icon: <FaBell />,       label: "Notifications",    path: "/admin/notifications",roles: ["admin"] },
 ];
-
-
-
 
 const Sidebar: React.FC<SidebarProps> = ({
   isOpen,
@@ -74,6 +58,43 @@ const Sidebar: React.FC<SidebarProps> = ({
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Sidebar manages its own state for user and loading
+  const [user, setUser] = React.useState<{ role: "admin" | "user" } | null>(null);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    // put the real API here
+    
+    const fetchUser = async () => {
+      setLoading(true);
+      try {
+        // Simulate backend API call
+        const response = await new Promise<{ role: "admin" | "user" }>((resolve) =>
+          setTimeout(() => resolve({ role: "admin" }), 500)
+        );
+        setUser(response);
+      } catch {
+        setUser(null);
+      }
+      setLoading(false);
+    };
+    fetchUser();
+  }, []);
+
+  // Filter menu by user role
+  const menu = React.useMemo(
+    () => user ? allMenu.filter(item => item.roles.includes(user.role)) : [],
+    [user]
+  );
+
+  if (loading) {
+    return null; // or a spinner
+  }
+
+  if (!user) {
+    return null; // or a "not logged in" message
+  }
+
   const handleNav = (path: string) => {
     navigate(path);
     onTabChange?.(path);
@@ -82,9 +103,8 @@ const Sidebar: React.FC<SidebarProps> = ({
     }
   };
 
-  // Render icon-only buttons for collapsed sidebar or mobile bottom bar
   const renderCollapsedIcons = () =>
-    allMenu.map(({ icon, label, path }) => (
+    menu.map(({ icon, label, path }) => (
       <SidebarItem
         key={path}
         icon={icon}
@@ -96,9 +116,21 @@ const Sidebar: React.FC<SidebarProps> = ({
       />
     ));
 
+  const renderItems = (showLabels: boolean) =>
+    menu.map(({ icon, label, path }) => (
+      <SidebarItem
+        key={path}
+        icon={icon}
+        label={label}
+        active={location.pathname === path}
+        showLabels={showLabels}
+        onClick={() => handleNav(path)}
+      />
+    ));
+
   return (
     <>
-      {/* Toggle button (visible when collapsed, desktop only) */}
+      {/* Toggle button (collapsed desktop) */}
       {!isOpen && (
         <button
           onClick={onToggle}
@@ -111,21 +143,12 @@ const Sidebar: React.FC<SidebarProps> = ({
         </button>
       )}
 
-      {/* Sidebar (Desktop side) */}
+      {/* Desktop Sidebar */}
       <div
-        className={`
-          fixed inset-y-0 left-0 z-30
-          bg-blue-700 text-white border-r
-          transform transition-transform duration-300 ease-in-out
-          flex flex-col
-          ${isOpen ? "translate-x-0 w-64" : "-translate-x-full md:translate-x-0 md:w-16"}
-          md:top-0 md:bottom-0 md:left-0
-          hidden md:flex
-        `}
+        className={`fixed inset-y-0 left-0 z-30 bg-blue-700 text-white border-r flex flex-col transform transition-transform duration-300 ease-in-out
+          ${isOpen ? "translate-x-0 w-64" : "-translate-x-full md:translate-x-0 md:w-16"} hidden md:flex`}
       >
-        {/* Logo and Collapse button */}
         <div className="flex items-center h-16 px-4 border-b border-blue-800 relative">
-          
           {isOpen && (
             <button
               onClick={onToggle}
@@ -138,137 +161,48 @@ const Sidebar: React.FC<SidebarProps> = ({
             </button>
           )}
         </div>
-        {/* Menu Items */}
-        <nav className="mt-2 flex-1 overflow-y-auto">
-          {/* Main */}
-          {menuMain.map(({ icon, label, path }) => (
-            <SidebarItem
-              key={path}
-              icon={icon}
-              label={label}
-              active={location.pathname === path}
-              showLabels={isOpen}
-              onClick={() => handleNav(path)}
-            />
-          ))}
-          {/* Groups */}
-          <div className="mt-6 px-2">
-            <p
-              className={`uppercase text-xs text-blue-200 mb-2 px-2 transition-opacity duration-200 ${
-                !isOpen && "opacity-0"
-              }`}
-            >
-              My Groups
-            </p>
-            {menuGroups.map(({ icon, label, path }) => (
-              <SidebarItem
-                key={path}
-                icon={icon}
-                label={label}
-                active={location.pathname === path}
-                showLabels={isOpen}
-                onClick={() => handleNav(path)}
-              />
-            ))}
-          </div>
-          
-          {/* Settings */}
-          <div className="mt-6 px-2">
-            <p
-              className={`uppercase text-xs text-blue-200 mb-2 px-2 transition-opacity duration-200 ${
-                !isOpen && "opacity-0"
-              }`}
-            >
-              Settings
-            </p>
-            {menuSettings.map(({ icon, label, path }) => (
-              <SidebarItem
-                key={path}
-                icon={icon}
-                label={label}
-                active={location.pathname === path}
-                showLabels={isOpen}
-                onClick={() => handleNav(path)}
-              />
-            ))}
-          </div>
-          {/* Notifications */}
-          <div className="mt-6 px-2">
-            <p
-              className={`uppercase text-xs text-blue-200 mb-2 px-2 transition-opacity duration-200 ${
-                !isOpen && "opacity-0"
-              }`}
-            >
-              Notifications
-            </p>
-            {menuNotifications.map(({ icon, label, path }) => (
-              <SidebarItem
-                key={path}
-                icon={icon}
-                label={label}
-                active={location.pathname === path}
-                showLabels={isOpen}
-                onClick={() => handleNav(path)}
-              />
-            ))}
-          </div>
+        <nav className="mt-2 flex-1 overflow-y-auto px-2">
+          {renderItems(isOpen)}
         </nav>
-        {/* Notifications preview */}
-        <div className="mt-auto mb-4 px-2">
-          <NotificationsPreview
-            notifications={notifications || []}
-            onViewAll={() => handleNav("/admin/notifications")}
-            showLabels={isOpen}
-          />
-        </div>
+        {/* optional notifications preview for admins only */}
+        {user.role === "admin" && notifications && (
+          <div className="mt-auto center-content mb-4 px-2">
+            <NotificationsPreview
+              notifications={notifications}
+              onViewAll={() => handleNav("/admin/notifications")}
+              showLabels={isOpen}
+            />
+          </div>
+        )}
       </div>
 
-      {/* Collapsed vertical sidebar (Desktop only) */}
+      {/* Collapsed desktop vertical */}
       {!isOpen && (
-        <div
-          className="
-            fixed left-0 top-0 bottom-0 z-20 bg-blue-700 border-r text-white flex-col items-center
-            w-16 pt-20
-            md:flex
-            hidden
-          "
-        >
+        <div className="fixed left-0 top-0 bottom-0 z-20 bg-blue-700 text-white flex-col items-center w-16 pt-20 md:flex hidden">
           {renderCollapsedIcons()}
         </div>
       )}
 
-      {/* Bottom bar (Mobile only, collapsed) */}
+      {/* Mobile bottom bar */}
       {!isOpen && (
-        <div
-          className="
-            fixed bottom-0 left-0 right-0 z-40 bg-blue-700 border-t text-white flex md:hidden
-            h-16
-          "
-        >
+        <div className="fixed bottom-0 left-0 right-0 z-40 bg-blue-700 text-white flex md:hidden h-16">
           {renderCollapsedIcons()}
         </div>
       )}
 
-      {/* Open sidebar overlay (Mobile only) */}
+      {/* Mobile overlay */}
       {isOpen && (
         <div
           className="fixed inset-0 z-40 bg-black bg-opacity-40 md:hidden"
           onClick={onClose}
-        ></div>
+        />
       )}
 
-      {/* Sidebar drawer (Mobile only) */}
+      {/* Mobile drawer */}
       <div
-        className={`
-          fixed top-0 left-0 bottom-0 z-50 bg-blue-700 text-white border-r
-          transform transition-transform duration-300 ease-in-out
-          w-64
-          md:hidden
-          ${isOpen ? "translate-x-0" : "-translate-x-full"}
-          flex flex-col
-        `}
+        className={`fixed top-0 left-0 bottom-0 z-50 bg-blue-700 text-white border-r transform transition-transform duration-300 ease-in-out w-64 md:hidden flex flex-col
+          ${isOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
-        {/* Logo and Collapse button */}
         <div className="flex items-center h-16 px-4 border-b border-blue-800 relative">
           <img src="/logo2.png" alt="Logo" className="h-10 w-auto" />
           {isOpen && (
@@ -283,73 +217,8 @@ const Sidebar: React.FC<SidebarProps> = ({
             </button>
           )}
         </div>
-        {/* Menu Items */}
-        <nav className="mt-2 flex-1 overflow-y-auto">
-          {/* Main */}
-          {menuMain.map(({ icon, label, path }) => (
-            <SidebarItem
-              key={path}
-              icon={icon}
-              label={label}
-              active={location.pathname === path}
-              showLabels={true}
-              onClick={() => handleNav(path)}
-            />
-          ))}
-          {/* Groups */}
-          <div className="mt-6 px-2">
-            <p className="uppercase text-xs text-blue-200 mb-2 px-2">
-              My Groups
-            </p>
-            {menuGroups.map(({ icon, label, path }) => (
-              <SidebarItem
-                key={path}
-                icon={icon}
-                label={label}
-                active={location.pathname === path}
-                showLabels={true}
-                onClick={() => handleNav(path)}
-              />
-            ))}
-          </div>
-          {/* Settings */}
-          <div className="mt-6 px-2">
-            <p className="uppercase text-xs text-blue-200 mb-2 px-2">
-              Settings
-            </p>
-            {menuSettings.map(({ icon, label, path }) => (
-              <SidebarItem
-                key={path}
-                icon={icon}
-                label={label}
-                active={location.pathname === path}
-                showLabels={true}
-                onClick={() => handleNav(path)}
-              />
-            ))}
-          </div>
-           {/* Notifications */}
-          <div className="mt-6 px-2">
-            <p className="uppercase text-xs text-blue-200 mb-2 px-2">
-              Notifications
-            </p>
-            {menuNotifications.map(({ icon, label, path }) => (
-              <SidebarItem
-                key={path}
-                icon={icon}
-                label={label}
-                active={location.pathname === path}
-                showLabels={true}
-                onClick={() => handleNav(path)}
-              />
-            ))}
-          </div>
-          {/* Notifications preview */}
-          <NotificationsPreview
-            notifications={notifications || []}
-            onViewAll={() => handleNav("/admin/notifications")}
-            showLabels={true}
-          />
+        <nav className="mt-2 flex-1 overflow-y-auto px-2">
+          {renderItems(true)}
         </nav>
       </div>
     </>

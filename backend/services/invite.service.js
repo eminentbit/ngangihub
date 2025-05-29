@@ -5,9 +5,14 @@ import Invite from "../models/invite.model.js";
 import NjangiGroup from "../models/njangigroup.model.js";
 import User from "../models/user.model.js";
 import { sendNjangiAleadyAddMemberEmail } from "../mail/emails.js";
+import dotenv from "dotenv";
+dotenv.config();
 
-// Utility function to generate a random token for invites
 const generateToken = () => crypto.randomBytes(20).toString("hex");
+
+// Utility functions
+const isEmail = (value) => /\S+@\S+\.\S+/.test(value);
+const isPhone = (value) => /^\+?\d{7,15}$/.test(value);
 
 export const inviteMembersToGroup = async (
   inviteMembers,
@@ -24,47 +29,67 @@ export const inviteMembersToGroup = async (
 
   const invites = await Promise.all(
     inviteMembers.invites.map(async (invite) => {
-      const contact = invite.contact || invite.emailOrPhone;
-      if (!contact) throw new Error("Missing contact for invite");
+      // Accept both email and phone in the invite object
+      const email =
+        invite.email || (isEmail(invite.contact) ? invite.contact : null);
+      const phone =
+        invite.phone || (!isEmail(invite.contact) ? invite.contact : null);
 
-      // Avoid duplicate invites
+      if (!email && !phone) throw new Error("Missing contact for invite");
+
+      // Avoid duplicate invites (by email or phone)
       const existingInvite = await Invite.findOne({
         groupId,
-        emailOrPhone: contact,
+        $or: [email ? { email } : {}, phone ? { phone } : {}],
       });
       if (existingInvite) return existingInvite;
 
-      // Check if user exists (just for logging or future use)
-      const user = await User.findOne({
-        $or: [{ email: contact }, { phoneNumber: contact }],
-      });
+      // Check if the user already exists in the group
+      // Only build $or array with non-null values
+      const userOrConditions = [];
+      if (email) userOrConditions.push({ email });
+      if (phone) userOrConditions.push({ phoneNumber: phone });
+
+      let existingUser = null;
+      if (userOrConditions.length > 0) {
+        existingUser = await User.findOne({ $or: userOrConditions });
+      }
+
+      if (existingUser) {
+        // Optionally, check if an invite already exists for this user in this group
+        const inviteOrConditions = [];
+        if (email) inviteOrConditions.push({ email });
+        if (phone) inviteOrConditions.push({ phone });
+        const existingInvite = await Invite.findOne({
+          groupId,
+          $or: inviteOrConditions,
+        });
+        if (existingInvite) return existingInvite;
+      }
 
       // Generate invite token
       const Invitetoken = generateToken();
 
-      // Construct the registration URL with the invite token
-      const registrationUrl = `${process.env.REGISTER_URL}/members?inviteToken=${Invitetoken}`;
-
-      // Utility function to check if a string is an email
-      const isEmail = (contact) => /\S+@\S+\.\S+/.test(contact);
+      // Build registration URL
+      let registrationUrl = `${process.env.REGISTER_URL}/members?inviteToken=${Invitetoken}`;
+      if (email) registrationUrl += `&email=${encodeURIComponent(email)}`;
+      if (phone) registrationUrl += `&phone=${encodeURIComponent(phone)}`;
 
       // Save invite
       const newInvite = await Invite.create({
         groupId,
-        emailOrPhone: contact,
+        email: email || undefined,
+        phone: phone || undefined,
         inviteToken: Invitetoken,
         invitedBy: adminId,
         status: "pending",
         expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24), // 24h
       });
 
-      // Print the contact for debugging
-      console.log("Inviting contact form invite.servic: ", contact);
-
-      // Send email invite only if contact is an email. Will implement SMS invite later
-      if (isEmail(contact)) {
+      // Send email invite if contact is email
+      if (email) {
         await sendNjangiAleadyAddMemberEmail(
-          contact,
+          email,
           "Hi there",
           `${adminFirstName} ${adminLastName}`,
           contributionAmount,
@@ -72,6 +97,13 @@ export const inviteMembersToGroup = async (
           groupName,
           registrationUrl
         );
+      }
+
+      // Send SMS invite if contact is phone
+      if (phone) {
+        // Here you would integrate with an SMS service to send the invite
+        // For example, using Twilio or another SMS provider
+        console.log(`SMS invite sent to ${phone}: ${registrationUrl}`);
       }
 
       return newInvite;

@@ -71,7 +71,7 @@ const GroupRequestRow: React.FC<GroupRequestRowProps> = ({
             fontWeight: "bold",
           }}
         >
-          {request.groupDetails.state && request.groupDetails.state}
+          {request.groupDetails.status && request.groupDetails.status}
         </span>
       </div>
       <div style={columnStyle("0 0 200px")}>

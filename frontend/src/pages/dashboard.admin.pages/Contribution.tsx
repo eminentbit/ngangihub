@@ -74,8 +74,8 @@ const ContributionPage: React.FC = () => {
           {/* Campaign Details */}
           <div className="grid grid-cols-2 gap-6 mb-8">
             {[
-              { label: "Total Raised", value: `FCFA${stats.totalRaised.toLocaleString()}` },
-              { label: "Goal", value: `FCFA${stats.goal.toLocaleString()}` },
+              { label: "Total Raised", value: `CFA ${stats.totalRaised.toLocaleString()}` },
+              { label: "Goal", value: `CFA ${stats.goal.toLocaleString()}` },
               { label: "Contributions", value: stats.contributionsCount },
               { label: "Deadline", value: stats.deadline },
             ].map(({ label, value }) => (
@@ -125,7 +125,7 @@ const ContributionPage: React.FC = () => {
 
             <div>
               <label htmlFor="amount" className="block text-gray-700 dark:text-gray-200 font-medium mb-2">
-                Amount (FCFA)
+                Amount (CFA)
               </label>
               <input
                 id="amount"
@@ -134,7 +134,7 @@ const ContributionPage: React.FC = () => {
                 step={500}
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                placeholder="Enter amount (minimum FCFA500)"
+                placeholder="Enter amount (minimum CFA500)"
                 required
                 className="w-full px-5 py-3 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />

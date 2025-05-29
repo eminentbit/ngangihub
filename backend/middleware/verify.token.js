@@ -18,7 +18,7 @@ export const verifyToken = (req, res, next) => {
       });
     }
 
-    req.user.id = decoded.userId;
+    req.user = { id: decoded.userId };
     next();
   } catch (error) {
     console.error(`Error verifying token: ${error}`);

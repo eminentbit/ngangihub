@@ -7,6 +7,7 @@ import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js
 
 const acceptInvite = async (req, res) => {
   const { token } = req.query;
+  console.log("Accepting invite with token from query:", token);
   const { firstName, lastName, email, phoneNumber, password } = req.body;
 
   try {
@@ -27,7 +28,7 @@ const acceptInvite = async (req, res) => {
     }
 
     // Hash password
-    const passwordHash = await bcrypt.hash(password, 12);
+    const passwordHash = await bcrypt.hash(password, 20);
 
     // 1. Create user
     const newUser = await User.create({
@@ -35,7 +36,8 @@ const acceptInvite = async (req, res) => {
       lastName,
       email,
       phoneNumber,
-      passwordHash,
+      password: passwordHash,
+      role: "member",
       status: "active",
       isVerified: false,
       groups: [invite.groupId],
