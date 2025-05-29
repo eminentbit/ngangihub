@@ -7,8 +7,12 @@ interface BodStoreState {
   requests: GroupRequest[];
   isLoading: boolean;
   error: string | null;
-  notifications: { _id: string; message: string; createdAt: string }[];
-  fetchNotifications: () => Promise<void>;
+  notifications: {
+    isRead: boolean;
+    _id: string;
+    message: string;
+    createdAt: string;
+  }[];
 
   fetchRequests: () => Promise<void>;
   acceptRequest: (id: string, reason: string) => Promise<void>;
@@ -36,23 +40,6 @@ export const useBodStore = create<BodStoreState>((set) => ({
     } catch (err) {
       console.error("Failed to fetch requests:", err);
       set({ error: "Could not fetch requests", isLoading: false });
-    }
-  },
-
-  fetchNotifications: async () => {
-    set({ isLoading: true, error: null });
-    try {
-      const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/bod/notifications`,
-        { withCredentials: true }
-      );
-      set({
-        notifications: res.data.data,
-        isLoading: false,
-      });
-    } catch (err) {
-      console.error("Failed to fetch notifications:", err);
-      set({ error: "Could not fetch notifications", isLoading: false });
     }
   },
 

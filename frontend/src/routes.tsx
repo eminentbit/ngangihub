@@ -85,6 +85,7 @@ const router = createBrowserRouter([
       { path: "group-info", element: <GroupInfoPage /> },
       { path: "stats", element: <StatisticsPage /> },
       { path: "add-member", element: <AddMemberPage /> },
+      { path: "payments", element: <PaymentsPage /> },
       { path: "group-settings", element: <GroupSettingsPage /> },
       { path: "notifications", element: <NotificationsPage /> },
       { path: "contributions", element: <ContributionPage /> },

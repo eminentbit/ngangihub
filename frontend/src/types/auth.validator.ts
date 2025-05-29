@@ -8,4 +8,5 @@ export const userSchema = z.object({
 export type ValidatedUser = {
   email: string;
   role: "bod" | "user" | "admin";
+  image?: string;
 };

@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTheme } from "./ThemeContext"; // Adjust path as needed
 import Header from "../../components/dashboard.bod.components/Header";
 import Sidebar from "../../components/dashboard.bod.components/Sidebar";
 import NotificationsList from "../../components/dashboard.bod.components/NotificationsList";
 import { useBodStore } from "../../store/create.bod.store";
+import useUserStore from "../../store/create.user.store";
 
 const Notifications: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -12,17 +13,20 @@ const Notifications: React.FC = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  const { fetchNotifications, isLoading, notifications, error } = useBodStore(); // Assuming fetchNotifications is a function in BodStore
+  const { isLoading, notifications, error } = useBodStore();
+  const { fetchNotifications } = useUserStore();
 
-  const notificationCount = notifications.length;
+  // Fetch notifications on component mount
+  useEffect(() => {
+    fetchNotifications();
+  }, [fetchNotifications]);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
       <Header
-        // style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }}
         toggleTheme={toggleTheme}
         isDarkMode={isDarkMode}
-        notificationCount={notificationCount}
+        notificationCount={notifications.length}
       />
       <div style={{ display: "flex", flex: "1" }}>
         <Sidebar
@@ -44,10 +48,18 @@ const Notifications: React.FC = () => {
               fontWeight: "bold",
               marginBottom: "16px",
             }}
-          >
-            Notifications
-          </h1>
-          <NotificationsList isDarkMode={isDarkMode} />
+          ></h1>
+
+          {isLoading ? (
+            <p>Loading notifications...</p>
+          ) : error ? (
+            <p style={{ color: "red" }}>Error: {error}</p>
+          ) : (
+            <NotificationsList
+              isDarkMode={isDarkMode}
+              notifications={notifications}
+            />
+          )}
         </main>
       </div>
     </div>

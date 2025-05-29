@@ -1,12 +1,12 @@
 // hooks/useLogin.ts
 import { useMutation } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
-import { userSchema } from "../types/auth.validator";
 import { useAuthStore } from "../store/create.auth.store";
 import { useNavigate } from "react-router-dom";
 
 export const useLogin = (setError?: (message: string) => void) => {
   const setUser = useAuthStore((s) => s.setUser);
+  const setAuth = useAuthStore((s) => s.setIsAuthenticated);
   const navigate = useNavigate();
 
   return useMutation({
@@ -15,15 +15,17 @@ export const useLogin = (setError?: (message: string) => void) => {
         `${import.meta.env.VITE_LOGIN_API_URL}`,
         credentials
       );
-      const user = userSchema.parse(res.data.user);
-      return user;
+      console.log(res.data);
+      return res.data.user;
     },
     onSuccess: (user) => {
+      console.log(user);
+      setAuth(true);
       setUser(user);
       if (user.role == "bod") {
         navigate("/board/dashboard");
       } else {
-        navigate(`${user.role}/dashboard`);
+        navigate(`/${user.role}/dashboard`);
       }
       if (setError) setError("");
     },

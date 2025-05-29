@@ -7,6 +7,7 @@ import createNjangiRoutes from "./routes/create.njangi.route.js";
 import validationRoutes from "./routes/validation.js";
 import actionNjangiRoutes from "./routes/bod.njangi.route.js";
 import authRoutes from "./routes/auth.routes.js";
+import notificationRoutes from "./routes/notification.routes.js";
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
@@ -23,9 +24,10 @@ app.use(cookieParser()); // allow cookie parsing
 
 //routes
 app.use("/api/create-njangi", createNjangiRoutes);
-app.use("/api/bod", actionNjangiRoutes); // handles BOD approval and rejection of njangi
-app.use("/api", validationRoutes); // validates upon filling form
+app.use("/api/bod", actionNjangiRoutes);
+app.use("/api", validationRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 const startServer = async () => {
   try {
