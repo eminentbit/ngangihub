@@ -35,15 +35,18 @@ import GroupReqest from "./pages/dashboard.bod.pages/GroupRequest";
 import PaymentsPage from "./pages/dashboard.user.pages/PaymentPage";
 import SettingsPage from "./pages/dashboard.user.pages/SettingsPage";
 import InviteMemberRegistrationForm from "./pages/invites.member.register.form";
+import NjangiStateDashBoard from "./pages/njangi-state-dashboard";
+import ProtectedRoute from "./components/protected.route";
 
 // eslint-disable-next-line react-refresh/only-export-components
 const LandingSections: React.FC = () => <App />;
 
 // ----- Build the router -----
-export const router = createBrowserRouter([
+ const router = createBrowserRouter([
   // Public routes
   {
     path: "/",
+    caseSensitive: false,
     children: [
       { index: true, element: <LandingSections /> },
       { path: "about", element: <AboutPage /> },
@@ -60,6 +63,8 @@ export const router = createBrowserRouter([
 
   {
     path: "/user",
+    caseSensitive: false,
+    element: <ProtectedRoute allowedRoles={["user"]} />,
     children: [
       { path: "dashboard", element: <UserDashboard /> },
       { path: "groups", element: <MyGroups /> },
@@ -82,6 +87,7 @@ export const router = createBrowserRouter([
       { path: "group-info", element: <GroupInfoPage /> },
       { path: "stats", element: <StatisticsPage /> },
       { path: "add-member", element: <AddMemberPage /> },
+      { path: "payments", element: <PaymentsPage /> },
       { path: "group-settings", element: <GroupSettingsPage /> },
       { path: "notifications", element: <NotificationsPage /> },
       { path: "contributions", element: <ContributionPage /> },
@@ -92,6 +98,7 @@ export const router = createBrowserRouter([
   // Board of Directors routes
   {
     path: "/board",
+    caseSensitive: false,
     children: [
       { path: "dashboard", element: <Dashboard /> },
       { path: "notifications", element: <Notifications /> },
@@ -112,9 +119,17 @@ export const router = createBrowserRouter([
     element: <InviteMemberRegistrationForm />,
   },
 
+  // state dashboard route where user visit after njangi form submission
+  {
+    path: "/njangi-state-dashboard",
+    element: <NjangiStateDashBoard />,
+  },
+
   // Catch-all route for 404
   {
     path: "*",
     element: <NotFoundPage />,
   },
 ]);
+
+export default router;

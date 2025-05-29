@@ -20,7 +20,8 @@ type InviteMembersFormData = {
 export const useBatchValidateInvites = (
   invites: Invite[],
   setError: UseFormSetError<InviteMembersFormData>,
-  clearErrors: UseFormClearErrors<InviteMembersFormData>
+  clearErrors: UseFormClearErrors<InviteMembersFormData>,
+  manualErrorsRef?: React.MutableRefObject<{ [key: number]: string }>
 ) => {
   const query = useQuery({
     queryKey: ["batch-validate-invites", invites],
@@ -53,11 +54,14 @@ export const useBatchValidateInvites = (
             message: result.message || "Invalid contact",
           });
         } else {
-          clearErrors(`invites.${index}.value`);
+          // Only clear error if there is no manual error set by frontend logic
+          if (!manualErrorsRef?.current?.[index]) {
+            clearErrors(`invites.${index}.value`);
+          }
         }
       });
     }
-  }, [query.data, setError, clearErrors]);
+  }, [query.data, setError, clearErrors, manualErrorsRef]);
 
   return {
     isFetching: query.isFetching,

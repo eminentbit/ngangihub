@@ -7,7 +7,7 @@ import dotenv from "dotenv";
 import emailQueue from "../bullMQ/queues/emailQueue.js";
 dotenv.config();
 
-const viewURL = process.env.FRONTEND_URL;
+const viewURL = process.env.CREATED_NJANGI_STATE_URL;
 
 /**
  * Creates a Njangi draft document from the given form data
@@ -67,7 +67,7 @@ const createNjangiFlow = async (formData, njangiId) => {
         ...accountSetup,
         password: hashedPassword,
         role: "admin", // Default role for the creator
-        status: "pending", 
+        status: "pending",
       },
       groupDetails: { ...parsedGroupDetails },
       inviteMembers,
@@ -89,8 +89,7 @@ const createNjangiFlow = async (formData, njangiId) => {
         creationDate: draft.createdAt,
         memberCount: groupDetails.numberOfMember || null,
         contributionAmount: groupDetails.contributionAmount,
-        viewURL,
-        inviteURL: "http://localhost:5173/invite", // Replace with the actual invite URL
+        viewURL: `${viewURL}?draftId=${draft._id}`,
       },
       {
         removeOnComplete: true,
@@ -101,7 +100,11 @@ const createNjangiFlow = async (formData, njangiId) => {
     console.timeEnd("📬 Add email job to Redis");
 
     console.log("Njangi draft created:", draft._id);
-    return { draftId: draft._id, njangiId: draft.njangiRouteId };
+    return {
+      draftId: draft._id,
+      njangiId: draft.njangiRouteId,
+      njangiURL: `${viewURL}?draftId=${draft._id}`,
+    };
   } catch (error) {
     console.error("Error creating Njangi draft:", error.message);
     throw error;

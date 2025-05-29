@@ -10,7 +10,8 @@ interface CreateNjangiState {
   isLoading: boolean;
   errors: string | null;
   success: boolean;
-  createdNjangiId: string | null;
+  createdNjangiId: string | null; //Didnot really use it
+  njangiStatusURL: string | null; 
   message: string | null;
   createNjangi: (submissionData: NjangiSetup) => Promise<void>;
 }
@@ -20,6 +21,7 @@ export const useCreateNjangiStore = create<CreateNjangiState>((set) => ({
   errors: null,
   success: false,
   createdNjangiId: null,
+  njangiStatusURL: null, 
   message: null,
   createNjangi: async (submissionData: NjangiSetup) => {
     set({ isLoading: true, errors: null, success: false });
@@ -30,6 +32,7 @@ export const useCreateNjangiStore = create<CreateNjangiState>((set) => ({
         isLoading: false,
         success: true,
         createdNjangiId: response.data.njangiId,
+        njangiStatusURL: response.data.njangiURL,
         message: response.data.message,
       });
     } catch (errors) {

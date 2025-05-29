@@ -21,12 +21,13 @@ export const validateEmail = async (req, res) => {
   try {
     console.log(`Validating email: ${email}`);
 
-    const [inDraft, inUsers] = await Promise.all([
+    const [inDraft, inInviteMembers, inUsers] = await Promise.all([
       NjangiDrafts.exists({ "accountSetup.email": email }),
+      NjangiDrafts.exists({ "inviteMembers.value": email }),
       User.exists({ email }),
     ]);
 
-    const exists = inDraft || inUsers;
+    const exists = inDraft || inInviteMembers || inUsers;
 
     return res.json({ valid: !exists });
   } catch (error) {
@@ -152,7 +153,7 @@ export const validateInviteContact = async (req, res) => {
   }
 
   try {
-    console.log(`Validating invite contact: ${sanitizedContact}`);
+    console.log(`Validating invite contact from backend: ${sanitizedContact}`);
 
     // Check if contact already exists in a Njangi draft's invite list
     const draftConflict = await NjangiDrafts.exists({

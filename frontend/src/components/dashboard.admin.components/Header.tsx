@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FaBell, FaSun, FaMoon, FaUserCircle, FaSearch } from "react-icons/fa";
-import { notifications } from "../../utils/data.admin.dashboard";
-import { Link } from 'react-router-dom';
-
+import { Link } from "react-router-dom";
+import { useAuthStore } from "../../store/create.auth.store";
+import { ChevronDown, ChevronRight } from "lucide-react";
+import useUserStore from "../../store/create.user.store";
 
 interface HeaderProps {
   darkMode: boolean;
@@ -12,11 +13,13 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ darkMode, setDarkMode }) => {
   // Notification popover
   const [showNotifications, setShowNotifications] = useState(false);
+  const { notifications } = useUserStore();
   const notificationRef = useRef<HTMLDivElement | null>(null);
 
   // Profile popover
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const profileRef = useRef<HTMLDivElement | null>(null);
+  const { user } = useAuthStore();
 
   // Search state
   const [searchQuery, setSearchQuery] = useState("");
@@ -118,7 +121,7 @@ const Header: React.FC<HeaderProps> = ({ darkMode, setDarkMode }) => {
                   ) : (
                     notifications.map((n) => (
                       <li
-                        key={n.id}
+                        key={n._id}
                         className={`px-4 py-2 flex items-center gap-2 cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700 rounded transition ${
                           !n.isRead
                             ? "font-bold text-blue-800 dark:text-blue-300"
@@ -132,7 +135,7 @@ const Header: React.FC<HeaderProps> = ({ darkMode, setDarkMode }) => {
                         ></span>
                         <span>{n.message}</span>
                         <span className="ml-auto text-xs text-gray-400">
-                          {n.time}
+                          {n.createdAt}
                         </span>
                       </li>
                     ))
@@ -156,35 +159,41 @@ const Header: React.FC<HeaderProps> = ({ darkMode, setDarkMode }) => {
           <div className="relative ml-4" ref={profileRef}>
             <button
               type="button"
-              className="flex items-center text-gray-700 dark:text-gray-200 hover:text-blue-600 focus:outline-none"
               onClick={() => setShowProfileMenu((v) => !v)}
+              className="flex items-center text-gray-700 dark:text-gray-200 focus:outline-none"
               aria-label="User menu"
+              aria-haspopup="true"
+              aria-expanded={showProfileMenu}
             >
               <FaUserCircle size={28} />
               <span className="ml-2 font-medium hidden md:inline">
-                John Doe
+                {user?.email?.split("@")[0]}
               </span>
+              {showProfileMenu ? (
+                <ChevronRight className="ml-1 hover:text-blue-600" />
+              ) : (
+                <ChevronDown className="ml-1 hover:text-blue-600" />
+              )}
             </button>
             {showProfileMenu && (
               <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
                 <ul className="py-1">
                   <li>
                     <Link
-                     to="/profile"
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                  Profile
-              </Link>
-               </li>
-                <li>
-                  <Link
-                    to="/logout"
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600"
-                  >
-                    Logout
-                  </Link>
-                </li>
-                
+                      to="/profile"
+                      className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
+                      Profile
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/logout"
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600"
+                    >
+                      Logout
+                    </Link>
+                  </li>
                 </ul>
               </div>
             )}

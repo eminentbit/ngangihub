@@ -7,6 +7,12 @@ interface BodStoreState {
   requests: GroupRequest[];
   isLoading: boolean;
   error: string | null;
+  notifications: {
+    isRead: boolean;
+    _id: string;
+    message: string;
+    createdAt: string;
+  }[];
 
   fetchRequests: () => Promise<void>;
   acceptRequest: (id: string, reason: string) => Promise<void>;
@@ -17,6 +23,7 @@ export const useBodStore = create<BodStoreState>((set) => ({
   requests: [],
   isLoading: false,
   error: null,
+  notifications: [],
 
   fetchRequests: async () => {
     set({ isLoading: true, error: null });

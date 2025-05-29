@@ -11,7 +11,7 @@ export const checkSession = async (req, res) => {
   }
 
   try {
-    const user = await User.findById(req.user.id);
+    const user = await User.findById(req.user.id).select("-password");
     if (!user) {
       return res.status(401).json({ message: "Unauthorized: User not found" });
     }
@@ -76,8 +76,7 @@ export const login = async (req, res) => {
     }
 
     // generate token and set cookie for the user
-    const token = generateTokenAndSetCookie(res, user.id);
-    console.log(token);
+    generateTokenAndSetCookie(res, user.id);
 
     LastLogin.create({
       email: user.email,

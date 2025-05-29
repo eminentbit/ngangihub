@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { useForm, useFieldArray, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, Trash2, Info } from "lucide-react";
@@ -17,13 +17,13 @@ const MAX_MEMBERS = 3;
 
 const Step3InviteMembers: React.FC = () => {
   const { state, updateInviteMembers, nextStep, prevStep } = useFormContext();
+  const manualPhoneErrors = useRef<{ [key: number]: string }>({});
 
   const {
     register,
     control,
     handleSubmit,
     setValue,
-    trigger,
     clearErrors,
     setError,
     formState: { errors, isSubmitting },
@@ -34,6 +34,10 @@ const Step3InviteMembers: React.FC = () => {
       : { invites: [{ type: "email", value: "" }] },
   });
   const tempData = JSON.parse(sessionStorage.getItem("tempData") ?? "{}");
+  const creatorPhoneObj = JSON.parse(
+    sessionStorage.getItem("tempPhone") ?? "{}"
+  );
+  const creatorPhone = creatorPhoneObj.senderPhone || "";
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -62,14 +66,55 @@ const Step3InviteMembers: React.FC = () => {
   const { isFetching } = useBatchValidateInvites(
     debouncedInvites,
     setError,
-    clearErrors
+    clearErrors,
+    manualPhoneErrors
   );
 
+  // Update handlePhoneChange
   const handlePhoneChange = (index: number, value: string) => {
     const formatted = `+${value.replace(/^\+/, "")}`;
+    const isDuplicate = watchedInvites?.some(
+      (invite, i) =>
+        i !== index &&
+        invite?.type === "phone" &&
+        invite?.value?.replace(/^\+/, "") === value.replace(/^\+/, "")
+    );
+    const isCreatorPhone =
+      creatorPhone &&
+      formatted.replace(/^\+/, "") === creatorPhone.replace(/^\+/, "");
+
     setValue(`invites.${index}.value`, formatted);
-    trigger(`invites.${index}.value`);
+
+    if (isCreatorPhone) {
+      setError(`invites.${index}.value`, {
+        type: "manual",
+        message: "Cannot be the same as creator's phone number",
+      });
+      manualPhoneErrors.current[index] =
+        "Cannot be the same as creator's phone number";
+      return;
+    }
+    if (isDuplicate) {
+      setError(`invites.${index}.value`, {
+        type: "manual",
+        message: "This phone number is already added.",
+      });
+      manualPhoneErrors.current[index] = "This phone number is already added.";
+      return;
+    }
+    clearErrors(`invites.${index}.value`);
+    delete manualPhoneErrors.current[index];
   };
+
+  // Re-apply manual errors after debounce
+  useEffect(() => {
+    Object.entries(manualPhoneErrors.current).forEach(([index, message]) => {
+      setError(`invites.${Number(index)}.value`, {
+        type: "manual",
+        message,
+      });
+    });
+  }, [watchedInvites, setError]);
 
   return (
     <div className="max-w-2xl mx-auto w-full transition-all duration-300 animate-fadeIn">

@@ -49,6 +49,7 @@ const UserDashboard = () => {
   const handleTabChange = (tab: SetStateAction<string>) => {
     setActiveTab(tab);
   };
+
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add("dark");

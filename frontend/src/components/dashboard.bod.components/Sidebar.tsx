@@ -1,3 +1,4 @@
+import { Bell } from "lucide-react";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -141,7 +142,7 @@ const Sidebar: React.FC<SidebarProps> = ({ style, isOpen, toggleSidebar }) => {
             </Link>
           </li>
         </ul>
-        <h3
+        {/* <h3
           style={{ fontSize: "18px", marginBottom: "16px", marginTop: "24px" }}
         >
           DOCUMENTS
@@ -167,7 +168,7 @@ const Sidebar: React.FC<SidebarProps> = ({ style, isOpen, toggleSidebar }) => {
               📜 Policies
             </Link>
           </li>
-        </ul>
+        </ul> */}
         <h3
           style={{ fontSize: "18px", marginBottom: "16px", marginTop: "24px" }}
         >
@@ -214,7 +215,9 @@ const Sidebar: React.FC<SidebarProps> = ({ style, isOpen, toggleSidebar }) => {
                 onMouseLeave={() => setHoveredLink(null)}
                 style={getLinkStyle("/board/notifications")}
               >
-                🔔 View Notifications
+                <span className="flex gap-2">
+                  <Bell /> View Notifications
+                </span>
               </Link>
             </li>
           </ul>

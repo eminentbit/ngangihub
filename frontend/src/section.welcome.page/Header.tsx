@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Container from "../components/Container";
 import Button from "../components/Button";
 import { Menu, X } from "lucide-react";
+import { useAuthStore } from "../store/create.auth.store";
 
 interface NavLinkItem {
   label: string;
@@ -23,6 +24,7 @@ const navLinks: NavLinkItem[] = [
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const { user } = useAuthStore();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -83,9 +85,19 @@ const Header: React.FC = () => {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => navigate("/login")}
+              onClick={() => {
+                if (!user) {
+                  navigate("/login");
+                  return;
+                }
+                if (user.role == "bod") {
+                  navigate("/board/dashboard");
+                  return;
+                }
+                navigate(`${user.role}/dashboard`);
+              }}
             >
-              Log in
+              {!user ? "Login" : "Dashboard"}
             </Button>
           </div>
 
