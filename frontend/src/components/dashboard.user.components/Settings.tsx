@@ -11,13 +11,13 @@ import SettingsSecurity from "./Security";
 
 export default function Settings() {
   const [activeTab, setActiveTab] = useState("profile");
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
 
   return (
     <div className="flex">
       <Sidebar
         isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
+        onClose={() => setIsOpen(true)}
         onToggle={() => setIsOpen((o) => !o)}
        
       />

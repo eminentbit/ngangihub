@@ -21,12 +21,12 @@ export default function PaymentsPage() {
   const toggleDarkMode = () => setDarkMode((prev) => !prev);
 
   // Sidebar state
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
-  const closeSidebar  = () => setSidebarOpen(false);
+  const closeSidebar = () => setSidebarOpen(false);
 
-  // slide-over class for both header & main
-  const slideClass = sidebarOpen ? "md:ml-64" : "md:ml-16";
+  // Match margin to Sidebar width: when open, Sidebar uses w-60 (15rem); when closed, w-16 (4rem)
+  const slideClass = sidebarOpen ? "md:ml-60" : "md:ml-16";
 
   return (
     <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
@@ -37,20 +37,20 @@ export default function PaymentsPage() {
         onClose={closeSidebar}
       />
 
-      {/* Content wrapper (slides with sidebar) */}
-      <div className={`flex-1 flex flex-col transition-all duration-300 ${slideClass}`}>
+      {/* Content wrapper slides with Sidebar width */}
+      <div className={`flex-1 flex flex-col transition-all duration-300 ${slideClass}`}>  
+
         {/* Header */}
         <Header
           darkMode={darkMode}
           setDarkMode={toggleDarkMode}
-          // add a menu button in Header that calls onMenuClick={toggleSidebar} if you need one
+          
         />
 
         {/* Main content */}
-        <main className="flex-1 overflow-auto p-6 sm:p-8 md:p-10">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-10 gap-4">
-            <Payments />
-          </div>
+       <main className="flex flex-col flex-1 overflow-auto max-w-5xl w-full mx-auto px-2 sm:px-4 lg:px-8 py-8 bg-white dark:bg-gray-800 rounded-lg shadow transition-all duration-300">
+
+          <Payments />
         </main>
       </div>
     </div>

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { HiOutlineChat, HiOutlineUserGroup, HiX } from "react-icons/hi";
 import Sidebar from "../../components/dashboard.admin.components/Sidebar";
 import Header from "../../components/dashboard.admin.components/Header";
 import ChatInterface from "../../components/dashboard.user.components/chat-interface";
+import { Link } from "react-router-dom";
 
 // Dummy group data type
 type Group = {
@@ -24,7 +24,6 @@ const groups: Group[] = [
 ];
 
 const MyGroups: React.FC = () => {
-  const navigate = useNavigate();
 
   // Modal state
   const [chatModalGroupId, setChatModalGroupId] = useState<string | null>(null);
@@ -152,12 +151,14 @@ const MyGroups: React.FC = () => {
                   </button>
                 </div>
 
-                <button
-                  className="w-full flex items-center justify-center gap-2 border border-gray-300 dark:border-gray-600 rounded-lg px-5 py-2 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 font-medium shadow-md transition"
-                  onClick={() => navigate(`/groups/${group.id}`)}
-                >
-                  Details
-                </button>
+    <Link
+  to={`/user/groups/${group.id}`}
+  state={{ group }}
+  className="…"
+>
+  Details
+</Link>
+
               </div>
             ))}
           </section>

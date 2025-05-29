@@ -10,7 +10,7 @@ import {
   ArrowUpDown,
   Check,
 } from "lucide-react";
-import Sidebar from "../dashboard.admin.components/Sidebar";
+//import Sidebar from "../dashboard.admin.components/Sidebar";
 
 // Exchange rate: 1 USD = approximately 600 CFA
 const CFA_EXCHANGE_RATE = 600;
@@ -108,7 +108,7 @@ const Payments = () => {
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
-  const [isOpen, setIsOpen] = useState(false);
+  // const [isOpen, setIsOpen] = useState(true);
   const [filteredPayments, setFilteredPayments] = useState<
     {
       id: number;
@@ -315,18 +315,9 @@ Method: ${payment?.method}
   };
 
   return (
-    <div className="flex">
-      <Sidebar
-        isOpen={isOpen}
-        onToggle={() => setIsOpen((o) => !o)}
-        onClose={() => setIsOpen(false)}
-        // setIsOpen={setIsOpen}
-        //activeTab="user/payments"
-      />
+    
       <div
-        className={`mx-auto  px-20 py-5 space-y-6 ${
-          isOpen ? "lg:ml-[20%]" : "lg:ml-[10%]"
-        } transition-all duration-300`}
+        className="mx-auto  px-20 py-5 space-y-6 lg:ml-[20%] transition-all duration-300"
       >
         <div className="pt-6 w-full">
           <h1 className="text-3xl font-bold text-blue-700">Payments</h1>
@@ -766,7 +757,6 @@ Method: ${payment?.method}
           </div>
         )}
       </div>
-    </div>
   );
 };
 
