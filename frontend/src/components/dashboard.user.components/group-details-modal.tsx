@@ -1,33 +1,54 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { X, Users, DollarSign, Calendar, Mail, Phone, ArrowUpDown } from "lucide-react"
+import { useState } from "react";
+import {
+  X,
+  Users,
+  DollarSign,
+  Calendar,
+  Mail,
+  Phone,
+  ArrowUpDown,
+} from "lucide-react";
 
 // Exchange rate: 1 USD = approximately 600 CFA
-const CFA_EXCHANGE_RATE = 600
+const CFA_EXCHANGE_RATE = 600;
 
 interface GroupMember {
-  id: number
-  name: string
-  email: string
-  phone: string
-  role: string
-  joinedDate: string
-  paymentStatus: "Paid" | "Pending"
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  role: string;
+  joinedDate: string;
+  paymentStatus: "Paid" | "Pending";
+}
+
+interface GroupDetails {
+  name: string;
+  description?: string;
+  members: number;
+  totalAmount?: number;
+  createdAt: string;
+  isAdmin: boolean;
+  paid: number;
 }
 
 interface GroupDetailsModalProps {
-  group: any
-  onClose: () => void
+  group: GroupDetails;
+  onClose: () => void;
 }
 
-const GroupDetailsModal = ({ group, onClose }: GroupDetailsModalProps) => {
-  const [activeTab, setActiveTab] = useState<"overview" | "members" | "payments">("overview")
-  const [sortField, setSortField] = useState<string | null>(null)
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc")
-
-  // Sample members data
-  const [members, setMembers] = useState<GroupMember[]>(
+const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
+  group,
+  onClose,
+}) => {
+  const [sortField, setSortField] = useState<string>("");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [activeTab, setActiveTab] = useState<
+    "overview" | "members" | "payments"
+  >("overview");
+  const [members] = useState<GroupMember[]>(
     [
       {
         id: 1,
@@ -36,7 +57,7 @@ const GroupDetailsModal = ({ group, onClose }: GroupDetailsModalProps) => {
         phone: "+237 6XX XXX XXX",
         role: "Admin",
         joinedDate: "Jan 15, 2023",
-        paymentStatus: "Paid",
+        paymentStatus: "Paid" as const,
       },
       {
         id: 2,
@@ -45,7 +66,7 @@ const GroupDetailsModal = ({ group, onClose }: GroupDetailsModalProps) => {
         phone: "+237 6XX XXX XXX",
         role: "Member",
         joinedDate: "Jan 20, 2023",
-        paymentStatus: "Paid",
+        paymentStatus: "Paid" as const,
       },
       {
         id: 3,
@@ -54,7 +75,7 @@ const GroupDetailsModal = ({ group, onClose }: GroupDetailsModalProps) => {
         phone: "+237 6XX XXX XXX",
         role: "Member",
         joinedDate: "Feb 05, 2023",
-        paymentStatus: "Paid",
+        paymentStatus: "Paid" as const,
       },
       {
         id: 4,
@@ -63,10 +84,10 @@ const GroupDetailsModal = ({ group, onClose }: GroupDetailsModalProps) => {
         phone: "+237 6XX XXX XXX",
         role: "Member",
         joinedDate: "Mar 10, 2023",
-        paymentStatus: "Pending",
+        paymentStatus: "Pending" as const,
       },
-    ].slice(0, group.members),
-  )
+    ].slice(0, group.members)
+  );
 
   // Sample payments data
   const payments = [
@@ -98,34 +119,35 @@ const GroupDetailsModal = ({ group, onClose }: GroupDetailsModalProps) => {
       date: "May 15, 2023",
       status: "Pending",
     },
-  ].slice(0, group.paid + 1)
+  ].slice(0, group.paid + 1);
 
   const handleSort = (field: string) => {
     if (sortField === field) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc")
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
-      setSortField(field)
-      setSortDirection("asc")
+      setSortField(field);
+      setSortDirection("asc");
     }
-  }
+  };
 
   // Apply sorting to members
   const sortedMembers = [...members].sort((a, b) => {
-    if (!sortField) return 0
+    if (!sortField) return 0;
 
-    let comparison = 0
+    let comparison = 0;
     if (sortField === "name") {
-      comparison = a.name.localeCompare(b.name)
+      comparison = a.name.localeCompare(b.name);
     } else if (sortField === "role") {
-      comparison = a.role.localeCompare(b.role)
+      comparison = a.role.localeCompare(b.role);
     } else if (sortField === "joinedDate") {
-      comparison = new Date(a.joinedDate).getTime() - new Date(b.joinedDate).getTime()
+      comparison =
+        new Date(a.joinedDate).getTime() - new Date(b.joinedDate).getTime();
     } else if (sortField === "paymentStatus") {
-      comparison = a.paymentStatus.localeCompare(b.paymentStatus)
+      comparison = a.paymentStatus.localeCompare(b.paymentStatus);
     }
 
-    return sortDirection === "asc" ? comparison : -comparison
-  })
+    return sortDirection === "asc" ? comparison : -comparison;
+  });
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -138,10 +160,16 @@ const GroupDetailsModal = ({ group, onClose }: GroupDetailsModalProps) => {
             </div>
             <div>
               <h2 className="text-xl font-bold">{group.name}</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">{group.description || "No description"}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {group.description || "No description"}
+              </p>
             </div>
           </div>
-          <button className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700" onClick={onClose}>
+          <button
+            type="button"
+            className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
+            onClick={onClose}
+          >
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -150,6 +178,7 @@ const GroupDetailsModal = ({ group, onClose }: GroupDetailsModalProps) => {
         <div className="border-b dark:border-gray-700">
           <div className="flex">
             <button
+              type="button"
               className={`px-4 py-2 text-sm font-medium ${
                 activeTab === "overview"
                   ? "border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400"
@@ -200,7 +229,9 @@ const GroupDetailsModal = ({ group, onClose }: GroupDetailsModalProps) => {
                     <DollarSign className="h-4 w-4" />
                     <span>Total Amount</span>
                   </div>
-                  <p className="text-2xl font-bold">{(group.totalAmount || 0).toLocaleString()} CFA</p>
+                  <p className="text-2xl font-bold">
+                    {(group.totalAmount || 0).toLocaleString()} CFA
+                  </p>
                 </div>
 
                 <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
@@ -222,38 +253,63 @@ const GroupDetailsModal = ({ group, onClose }: GroupDetailsModalProps) => {
                     </span>
                   </div>
                   <div className="progress-bar">
-                    <div className="progress-value" style={{ width: `${(group.paid / group.members) * 100}%` }}></div>
+                    <div
+                      className="progress-value"
+                      style={{
+                        width: `${(group.paid / group.members) * 100}%`,
+                      }}
+                    ></div>
                   </div>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-                    {((group.paid / group.members) * 100).toFixed(0)}% of members have paid their contributions
+                    {((group.paid / group.members) * 100).toFixed(0)}% of
+                    members have paid their contributions
                   </p>
                 </div>
               </div>
 
               <div>
-                <h3 className="text-lg font-semibold mb-3">Group Information</h3>
+                <h3 className="text-lg font-semibold mb-3">
+                  Group Information
+                </h3>
                 <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
                   <div className="space-y-3">
                     <div className="flex justify-between">
-                      <span className="text-gray-500 dark:text-gray-400">Group Name:</span>
+                      <span className="text-gray-500 dark:text-gray-400">
+                        Group Name:
+                      </span>
                       <span className="font-medium">{group.name}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500 dark:text-gray-400">Description:</span>
-                      <span className="font-medium">{group.description || "No description"}</span>
+                      <span className="text-gray-500 dark:text-gray-400">
+                        Description:
+                      </span>
+                      <span className="font-medium">
+                        {group.description || "No description"}
+                      </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500 dark:text-gray-400">Admin:</span>
-                      <span className="font-medium">{group.isAdmin ? "You" : "Other"}</span>
+                      <span className="text-gray-500 dark:text-gray-400">
+                        Admin:
+                      </span>
+                      <span className="font-medium">
+                        {group.isAdmin ? "You" : "Other"}
+                      </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500 dark:text-gray-400">Created:</span>
+                      <span className="text-gray-500 dark:text-gray-400">
+                        Created:
+                      </span>
                       <span className="font-medium">{group.createdAt}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500 dark:text-gray-400">Contribution per member:</span>
+                      <span className="text-gray-500 dark:text-gray-400">
+                        Contribution per member:
+                      </span>
                       <span className="font-medium">
-                        {((group.totalAmount || 0) / group.members).toLocaleString()} CFA
+                        {(
+                          (group.totalAmount || 0) / group.members
+                        ).toLocaleString()}{" "}
+                        CFA
                       </span>
                     </div>
                   </div>
@@ -266,7 +322,11 @@ const GroupDetailsModal = ({ group, onClose }: GroupDetailsModalProps) => {
             <div>
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold">Group Members</h3>
-                {group.isAdmin && <button className="btn btn-primary text-sm py-1.5 px-3">Add Member</button>}
+                {group.isAdmin && (
+                  <button className="btn btn-primary text-sm py-1.5 px-3">
+                    Add Member
+                  </button>
+                )}
               </div>
 
               <div className="overflow-x-auto">
@@ -341,7 +401,9 @@ const GroupDetailsModal = ({ group, onClose }: GroupDetailsModalProps) => {
                                 .join("")}
                             </div>
                             <div className="ml-3">
-                              <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{member.name}</div>
+                              <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                {member.name}
+                              </div>
                             </div>
                           </div>
                         </td>
@@ -402,7 +464,11 @@ const GroupDetailsModal = ({ group, onClose }: GroupDetailsModalProps) => {
             <div>
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold">Payment History</h3>
-                {group.isAdmin && <button className="btn btn-primary text-sm py-1.5 px-3">Record Payment</button>}
+                {group.isAdmin && (
+                  <button className="btn btn-primary text-sm py-1.5 px-3">
+                    Record Payment
+                  </button>
+                )}
               </div>
 
               <div className="overflow-x-auto">
@@ -447,7 +513,9 @@ const GroupDetailsModal = ({ group, onClose }: GroupDetailsModalProps) => {
                     {payments.map((payment) => (
                       <tr key={payment.id}>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{payment.member}</div>
+                          <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                            {payment.member}
+                          </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
@@ -485,7 +553,7 @@ const GroupDetailsModal = ({ group, onClose }: GroupDetailsModalProps) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default GroupDetailsModal
+export default GroupDetailsModal;

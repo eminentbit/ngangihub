@@ -177,11 +177,16 @@ export const FormProvider: React.FC<{ children: ReactNode }> = ({
         groupDetails: {
           groupName: state.groupDetails.groupName || "",
           contributionAmount:
-            Number(state.groupDetails.contributionAmount) || 0,
+            Number(
+              (state.groupDetails.contributionAmount || "0").replace(/,/g, "")
+            ) || 0,
           contributionFrequency: state.groupDetails.contributionFrequency || "",
           payoutMethod: state.groupDetails.payoutMethod || "",
           startDate: state.groupDetails.startDate || "",
           endDate: state.groupDetails.endDate || "",
+          numberOfMember: state.groupDetails.numOfMembers
+            ? Number(state.groupDetails.numOfMembers)
+            : 0,
           rules: state.groupDetails.rules || "",
         },
         inviteMembers: (state.inviteMembers.invites || []).map((invite) => ({

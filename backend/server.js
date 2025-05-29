@@ -4,8 +4,15 @@ import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import createNjangiRoutes from "./routes/create.njangi.route.js";
-import validationRoutes from "./routes/validation.js";
-import approveNjangiRoutes from "./routes/bod.approve.njangi.route.js";
+import validationRoutes from "./routes/validation.routes.js";
+import actionNjangiRoutes from "./routes/bod.njangi.route.js";
+import authRoutes from "./routes/auth.routes.js";
+import notificationRoutes from "./routes/notification.routes.js";
+import acceptInvite from "./routes/accept.invite.member.route.js";
+import limiter from "./middleware/limiter.js";
+import helmet from "helmet";
+import ValidateInviteToken from "./routes/validate.invite.token.route.js";
+import validateDraftId from "./routes/validate.draft.id.route.js";
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
@@ -22,8 +29,16 @@ app.use(cookieParser()); // allow cookie parsing
 
 //routes
 app.use("/api/create-njangi", createNjangiRoutes);
-app.use("/api/approve-njangi", approveNjangiRoutes); // handles BOD approval of njangi
-app.use("/api", validationRoutes); // validates upon filling form
+app.use("/api/bod", actionNjangiRoutes);
+app.use("/api", validationRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/member", acceptInvite);
+app.use(helmet());
+
+app.use("/", limiter);;
+app.use("/api/invites", ValidateInviteToken); // validates invite token
+app.use("/api/admin", validateDraftId)
 
 const startServer = async () => {
   try {

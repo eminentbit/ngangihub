@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Mail, User, Lock, EyeOff, Eye } from "lucide-react";
+import { Mail, User } from "lucide-react";
 import {
   accountSetupSchema,
   AccountSetupFormData,
@@ -16,22 +16,11 @@ import {
   useValidatePhoneNumber,
 } from "../../hooks/useValidateEmail";
 import { useDebouncedValidation } from "../../hooks/useDebouncedValidationPhone&Email";
+import PasswordForm from "./PasswordForm";
 
 const Step1AccountInfo: React.FC = () => {
   const { state, updateAccountSetup, nextStep } = useFormContext();
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [phone, setPhone] = useState("");
-
-  // Function to toggle password visibility
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-
-  // Function to toggle confirm password visibility
-  const toggleConfirmPasswordVisibility = () => {
-    setShowConfirmPassword(!showConfirmPassword);
-  };
 
   const {
     register,
@@ -82,8 +71,32 @@ const Step1AccountInfo: React.FC = () => {
       console.log("Validation failed, not proceeding to next step.");
       return;
     }
-
     updateAccountSetup(data);
+    state.accountSetup = data;
+
+    if ("credentials" in navigator && "PasswordCredential" in window) {
+      // console.log(state);
+      const credential = new window.PasswordCredential({
+        id: data.email,
+        password: data.password,
+        name: `${data.firstName} ${data.lastName}`,
+      });
+      navigator.credentials
+        .store(credential)
+        .catch((err) => console.error("Error storing credential:", err));
+    }
+
+    sessionStorage.setItem(
+      "tempData",
+      JSON.stringify({ senderEmail: data.email })
+    );
+
+    //session storage for phone number. for validating duplicate phone number
+    sessionStorage.setItem(
+      "tempPhone",
+      JSON.stringify({ senderPhone: data.phoneNum })
+    );
+
     nextStep();
   };
 
@@ -144,7 +157,7 @@ const Step1AccountInfo: React.FC = () => {
             <div className="relative">
               {/* Using react-phone-input-2 library with custom styling */}
               <PhoneInput
-                country={"us"}
+                country={"cm"}
                 value={phone}
                 onChange={handlePhoneChange}
                 inputProps={{
@@ -155,7 +168,7 @@ const Step1AccountInfo: React.FC = () => {
                 searchPlaceholder="Search countries..."
                 countryCodeEditable={false}
                 disableSearchIcon={false}
-                preferredCountries={["us", "ca", "gb", "cm"]}
+                preferredCountries={["cm", "us", "ca", "gb"]}
               />
               {isPhoneChecking && (
                 <span className="text-sm text-blue-600 animate-pulse">
@@ -192,59 +205,7 @@ const Step1AccountInfo: React.FC = () => {
             </div>
           </div>
 
-          <div>
-            <label className="form-label">Password</label>
-            <div className="relative">
-              <Lock size={18} className="form-icon" />
-              <input
-                type={showPassword ? "text" : "password"}
-                {...register("password")}
-                className={`form-input ${
-                  errors.password ? "form-input-error" : ""
-                }`}
-                placeholder="••••••••"
-                required
-              />
-              <button
-                type="button"
-                className="absolute right-3 top-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
-                onClick={togglePasswordVisibility}
-                tabIndex={-1}
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-              {errors.password && (
-                <p className="form-error">{errors.password.message}</p>
-              )}
-            </div>
-          </div>
-
-          <div>
-            <label className="form-label">Confirm Password</label>
-            <div className="relative">
-              <Lock size={18} className="form-icon" />
-              <input
-                type={showConfirmPassword ? "text" : "password"}
-                {...register("confirmPassword")}
-                className={`form-input ${
-                  errors.confirmPassword ? "form-input-error" : ""
-                }`}
-                placeholder="••••••••"
-                required
-              />
-              <button
-                type="button"
-                className="absolute right-3 top-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
-                onClick={toggleConfirmPasswordVisibility}
-                tabIndex={-1}
-              >
-                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-              {errors.confirmPassword && (
-                <p className="form-error">{errors.confirmPassword.message}</p>
-              )}
-            </div>
-          </div>
+          <PasswordForm errors={errors} register={register} />
           <FormFileInput
             label="Profile Picture (Optional)"
             error={errors.profilePic?.message}
@@ -258,13 +219,15 @@ const Step1AccountInfo: React.FC = () => {
                 isSubmitting ||
                 isEmailChecking ||
                 !!errors.email ||
-                isPhoneChecking
+                isPhoneChecking ||
+                !!errors.phoneNum
               }
               className={`form-button ${
                 isSubmitting ||
                 isEmailChecking ||
                 !!errors.email ||
-                isPhoneChecking
+                isPhoneChecking ||
+                !!errors.phoneNum
                   ? "form-button-disabled"
                   : ""
               }`}

@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 
-export const verifyToken = (req, res, next) => {
+const verifyToken = (req, res, next) => {
   const token = req.cookies.token;
 
   if (!token)
@@ -18,7 +18,7 @@ export const verifyToken = (req, res, next) => {
       });
     }
 
-    req.userId = decoded.userId;
+    req.user = { id: decoded.userId };
     next();
   } catch (error) {
     console.error(`Error verifying token: ${error}`);
@@ -28,3 +28,5 @@ export const verifyToken = (req, res, next) => {
     });
   }
 };
+
+export default verifyToken;

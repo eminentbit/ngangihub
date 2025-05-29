@@ -4,8 +4,9 @@ import GroupMember from "../models/group.member.model.js";
 import NjangiGroup from "../models/njangigroup.model.js";
 import bcrypt from "bcryptjs";
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
+import { sendWelcomeEmail } from "../mail/emails.js";
 
-export const acceptInvite = async (req, res) => {
+const acceptInvite = async (req, res) => {
   const { token } = req.query;
   const { firstName, lastName, email, phoneNumber, password } = req.body;
 
@@ -27,7 +28,7 @@ export const acceptInvite = async (req, res) => {
     }
 
     // Hash password
-    const passwordHash = await bcrypt.hash(password, 12);
+    const passwordHash = await bcrypt.hash(password, 20);
 
     // 1. Create user
     const newUser = await User.create({
@@ -35,7 +36,8 @@ export const acceptInvite = async (req, res) => {
       lastName,
       email,
       phoneNumber,
-      passwordHash,
+      password: passwordHash,
+      role: "member",
       status: "active",
       isVerified: false,
       groups: [invite.groupId],
@@ -71,6 +73,13 @@ export const acceptInvite = async (req, res) => {
     invite.status = "accepted";
     await invite.save();
 
+    //send welcome email to the new user
+    await sendWelcomeEmail(
+      newUser.email,
+      `${newUser.firstName} ${newUser.lastName}`,
+      `${process.env.USER_DASHBOARD_URL}?groupId=${invite.groupId}`,
+    );
+
     return res.status(201).json({
       success: true,
       message: `Account created successfully. Redirecting to ${group.name} group dashboard!`,
@@ -81,3 +90,5 @@ export const acceptInvite = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export default acceptInvite;

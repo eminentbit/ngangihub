@@ -1,10 +1,11 @@
-import React from 'react';
+import { Trash } from "lucide-react";
+import React from "react";
 
 interface Member {
   id: number;
   name: string;
   role: string;
-  status: 'Active' | 'Inactive';
+  status: "Active" | "Inactive";
 }
 
 interface MemberRowProps {
@@ -22,13 +23,23 @@ const MemberRow: React.FC<MemberRowProps> = ({ member, onDelete }) => (
     </td>
     <td className="py-3 px-4">{member.role}</td>
     <td className="py-3 px-4">
-      <span className={`text-xs px-2 py-1 rounded-full ${
-        member.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-      }`}>{member.status}</span>
+      <span
+        className={`text-xs px-2 py-1 rounded-full ${
+          member.status === "Active"
+            ? "bg-green-100 text-green-800"
+            : "bg-gray-100 text-gray-800"
+        }`}
+      >
+        {member.status}
+      </span>
     </td>
     <td className="py-3 px-4 text-right">
-      <button onClick={() => onDelete(member.id)} className="text-red-600 hover:text-red-800">
-        🗑️
+      <button
+        type="button"
+        onClick={() => onDelete(member.id)}
+        className="text-red-600 hover:text-red-800"
+      >
+        <Trash />
       </button>
     </td>
   </tr>

@@ -212,6 +212,7 @@ const MemberManagement = ({
         <div className="p-4 border-b dark:border-gray-700 flex justify-between items-center">
           <h2 className="text-xl font-bold">Manage Members - {groupName}</h2>
           <button
+            type="button"
             className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
             onClick={onClose}
           >
@@ -245,6 +246,7 @@ const MemberManagement = ({
           </div>
           {isAdmin && (
             <button
+              type="button"
               className="btn btn-primary flex items-center gap-2"
               onClick={() => setShowAddMemberForm(true)}
             >
@@ -377,6 +379,7 @@ const MemberManagement = ({
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex justify-end gap-2">
                           <button
+                            type="button"
                             className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300"
                             onClick={() =>
                               setShowRoleChangeConfirm({
@@ -392,6 +395,7 @@ const MemberManagement = ({
                               : "Make Admin"}
                           </button>
                           <button
+                            type="button"
                             className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
                             onClick={() =>
                               setShowRemoveMemberConfirm(member.id)

@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { UseFormClearErrors, UseFormSetError } from "react-hook-form";
 import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL;
+const INVITE_API_URL = import.meta.env.VITE_API_URL;
 
 export type Invite = {
   type: "email" | "phone";
@@ -20,7 +20,8 @@ type InviteMembersFormData = {
 export const useBatchValidateInvites = (
   invites: Invite[],
   setError: UseFormSetError<InviteMembersFormData>,
-  clearErrors: UseFormClearErrors<InviteMembersFormData>
+  clearErrors: UseFormClearErrors<InviteMembersFormData>,
+  manualErrorsRef?: React.MutableRefObject<{ [key: number]: string }>
 ) => {
   const query = useQuery({
     queryKey: ["batch-validate-invites", invites],
@@ -28,7 +29,7 @@ export const useBatchValidateInvites = (
       const results = await Promise.all(
         invites.map(async (invite) => {
           const { data } = await axios.get(
-            `${API_URL}/validate-invite-contact`,
+            `${INVITE_API_URL}/validate-invite-contact`,
             {
               params: { contact: invite.value },
             }
@@ -53,11 +54,14 @@ export const useBatchValidateInvites = (
             message: result.message || "Invalid contact",
           });
         } else {
-          clearErrors(`invites.${index}.value`);
+          // Only clear error if there is no manual error set by frontend logic
+          if (!manualErrorsRef?.current?.[index]) {
+            clearErrors(`invites.${index}.value`);
+          }
         }
       });
     }
-  }, [query.data, setError, clearErrors]);
+  }, [query.data, setError, clearErrors, manualErrorsRef]);
 
   return {
     isFetching: query.isFetching,

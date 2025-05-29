@@ -1,142 +1,92 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Bell, ChevronDown, LogOut, Moon, Sun, User } from "lucide-react";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { useAuthStore } from "../../store/create.auth.store";
 
 interface HeaderProps {
-  style?: React.CSSProperties;
   toggleTheme: () => void;
   isDarkMode: boolean;
   notificationCount: number;
 }
 
-const Header: React.FC<HeaderProps> = ({ style, toggleTheme, isDarkMode, notificationCount }) => {
+const Header: React.FC<HeaderProps> = ({
+  toggleTheme,
+  isDarkMode,
+  notificationCount,
+}) => {
   const [showNotifications, setShowNotifications] = useState(false);
-
-  const isMobile = window.innerWidth < 768;
-  const isTablet = window.innerWidth >= 768 && window.innerWidth <= 1024;
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const { user, logout } = useAuthStore();
 
   return (
-    <header style={{
-      backgroundColor: isDarkMode ? '#1f2937' : '#6b21a8',
-      color: 'white',
-      padding: isMobile ? '8px' : (isTablet ? '12px' : '16px'),
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      position: 'relative',
-      ...style
-    }}>
-      {/* Left Section: Logo */}
-      <div style={{ display: 'flex', alignItems: 'center' }}>
-        <img src="/logo.png" alt="Logo" style={{ 
-          height: isMobile ? '32px' : (isTablet ? '36px' : '40px'), 
-          marginRight: isMobile ? '8px' : (isTablet ? '12px' : '16px') 
-        }} />
-      </div>
-
-      {/* Center Section: Search Bar */}
-      <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
+    <header
+      className={`${
+        isDarkMode ? "bg-gray-900 text-white" : "bg-purple-700 text-white"
+      } p-4 flex justify-between items-center relative`}
+    >
+      <div className="flex items-center space-x-4">
+        <img src="/logo.png" alt="Logo" className="h-10" />
         <input
           type="text"
           placeholder="Search..."
-          style={{
-            padding: isMobile ? '6px' : (isTablet ? '7px' : '8px'),
-            borderRadius: '8px',
-            color: isDarkMode ? 'white' : 'black',
-            backgroundColor: isDarkMode ? '#374151' : 'white',
-            border: 'none',
-            width: isMobile ? '60%' : (isTablet ? '50%' : '40%'), // Desktop (> 1024px) uses 40%
-            fontSize: isMobile ? '12px' : (isTablet ? '14px' : '16px')
-          }}
+          className={`${
+            isDarkMode
+              ? "bg-gray-800 placeholder-gray-400 text-white"
+              : "bg-white placeholder-gray-500 text-gray-900"
+          } px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500`}
         />
       </div>
 
-      {/* Right Section: Notifications, Theme Toggle, User */}
-      <div style={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        gap: isMobile ? '8px' : (isTablet ? '12px' : '16px'), 
-        position: 'relative' 
-      }}>
-        <div style={{ position: 'relative' }}>
-          <button 
-            onClick={() => setShowNotifications(!showNotifications)} 
-            style={{ 
-              background: 'none', 
-              border: 'none', 
-              color: 'white', 
-              cursor: 'pointer', 
-              fontSize: isMobile ? '20px' : (isTablet ? '22px' : '24px'), 
-              position: 'relative' 
-            }}
+      <div className="flex items-center space-x-6">
+        {/* Notifications */}
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => setShowNotifications((prev) => !prev)}
+            className="relative focus:outline-none"
           >
-            🔔
+            <span className="text-xl">
+              <Bell />
+            </span>
             {notificationCount > 0 && (
-              <span style={{
-                backgroundColor: '#ef4444',
-                color: 'white',
-                borderRadius: '50%',
-                width: isMobile ? '16px' : (isTablet ? '18px' : '20px'),
-                height: isMobile ? '16px' : (isTablet ? '18px' : '20px'),
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                position: 'absolute',
-                top: '-10px',
-                right: '-10px',
-                fontSize: isMobile ? '10px' : (isTablet ? '11px' : '12px')
-              }}>
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
                 {notificationCount}
               </span>
             )}
           </button>
+
           {showNotifications && (
-            <div style={{
-              position: 'absolute',
-              top: isMobile ? '36px' : (isTablet ? '38px' : '40px'),
-              right: '0',
-              backgroundColor: isDarkMode ? '#374151' : 'white',
-              color: isDarkMode ? 'white' : 'black',
-              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-              borderRadius: '4px',
-              padding: isMobile ? '6px' : (isTablet ? '7px' : '8px'),
-              width: isMobile ? '200px' : (isTablet ? '250px' : '300px'),
-              zIndex: 10
-            }}>
-              <h4 style={{ 
-                margin: '0 0 8px 0', 
-                fontSize: isMobile ? '14px' : (isTablet ? '15px' : '16px') 
-              }}>
+            <div
+              className={`${
+                isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"
+              } absolute right-0 mt-2 w-72 rounded-md shadow-lg z-20`}
+            >
+              <h4 className="px-4 py-2 font-semibold border-b border-gray-200 dark:border-gray-700">
                 Notifications
               </h4>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                <li style={{ 
-                  padding: isMobile ? '6px' : (isTablet ? '7px' : '8px'), 
-                  backgroundColor: isDarkMode ? '#4b5563' : '#e9d5ff', 
-                  borderRadius: '4px', 
-                  marginBottom: '4px',
-                  fontSize: isMobile ? '12px' : (isTablet ? '13px' : '14px')
-                }}>
-                  🚨 Board meeting scheduled for next week (2 hours ago)
+              <ul className="max-h-60 overflow-auto">
+                <li
+                  className={`${
+                    isDarkMode ? "bg-gray-700" : "bg-purple-100"
+                  } px-4 py-2 rounded-lg m-2`}
+                >
+                  🚨 Board meeting scheduled for next week{" "}
+                  <span className="text-xs text-gray-400">(2 hours ago)</span>
                 </li>
-                <li style={{ 
-                  padding: isMobile ? '6px' : (isTablet ? '7px' : '8px'), 
-                  backgroundColor: isDarkMode ? '#4b5563' : '#e9d5ff', 
-                  borderRadius: '4px', 
-                  marginBottom: '4px',
-                  fontSize: isMobile ? '12px' : (isTablet ? '13px' : '14px')
-                }}>
-                  🚨 Annual report review pending (5 hours ago)
+                <li
+                  className={`${
+                    isDarkMode ? "bg-gray-700" : "bg-purple-100"
+                  } px-4 py-2 rounded-lg m-2`}
+                >
+                  🚨 Annual report review pending{" "}
+                  <span className="text-xs text-gray-400">(5 hours ago)</span>
                 </li>
-                <li>
-                  <Link 
-                    to="/board/notifications" 
-                    style={{ 
-                      display: 'block', 
-                      padding: isMobile ? '6px' : (isTablet ? '7px' : '8px'), 
-                      color: isDarkMode ? '#93c5fd' : '#2563eb', 
-                      textDecoration: 'none',
-                      fontSize: isMobile ? '12px' : (isTablet ? '13px' : '14px')
-                    }}
+                <li className="px-4 py-2 mt-2">
+                  <Link
+                    to="/board/notifications"
+                    className={`${
+                      isDarkMode ? "text-indigo-300" : "text-indigo-600"
+                    } hover:underline block`}
                   >
                     View all notifications
                   </Link>
@@ -145,24 +95,67 @@ const Header: React.FC<HeaderProps> = ({ style, toggleTheme, isDarkMode, notific
             </div>
           )}
         </div>
-        <button 
-          onClick={toggleTheme} 
-          style={{ 
-            background: 'none', 
-            border: 'none', 
-            color: 'white', 
-            cursor: 'pointer', 
-            fontSize: isMobile ? '20px' : (isTablet ? '22px' : '24px') 
-          }}
+
+        {/* Theme Toggle */}
+        <button
+          type="button"
+          onClick={toggleTheme}
+          className="focus:outline-none text-xl"
         >
-          {isDarkMode ? '☀️' : '🌙'}
+          {isDarkMode ? (
+            <Sun className="text-yellow-300" />
+          ) : (
+            <Moon className="text-blue-300" />
+          )}
         </button>
-        <span style={{ 
-          marginRight: '8px', 
-          fontSize: isMobile ? '12px' : (isTablet ? '14px' : '16px') 
-        }}>
-          👤 Wepngong Shalom
-        </span>
+
+        {/* User Profile */}
+        <div className="relative">
+          <div className="flex justify-center items-center cursor-pointer">
+            <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center focus:outline-none">
+              {user?.image ? <img src={user.image} alt="User" /> : <User />}
+            </div>
+            <ChevronDown onClick={() => setShowUserMenu((prev) => !prev)} />
+          </div>
+          {showUserMenu && (
+            <div
+              className={`${
+                isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"
+              } absolute right-0 mt-2 w-48 rounded-md shadow-lg z-20`}
+            >
+              <div className="py-1">
+                <Link
+                  to="/profile"
+                  className={`${
+                    isDarkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"
+                  } block px-4 py-2 text-sm`}
+                >
+                  Profile
+                </Link>
+                <Link
+                  to="/settings"
+                  className={`${
+                    isDarkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"
+                  } block px-4 py-2 text-sm`}
+                >
+                  Settings
+                </Link>
+                <button
+                  type="button"
+                  className={`${
+                    isDarkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"
+                  } block w-full text-left px-4 py-2 text-sm text-red-600 hover:text-red-700`}
+                  onClick={logout}
+                >
+                  <span className="flex items-center">
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Logout
+                  </span>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );

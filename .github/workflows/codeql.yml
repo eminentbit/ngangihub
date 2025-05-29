@@ -1,0 +1,38 @@
+name: "CodeQL - Simple Analysis"
+
+on:
+  push:
+    branches: [ "*" ]
+  pull_request:
+    branches: [ "*" ]
+  schedule:
+    - cron: '18 23 * * 4'
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      packages: read
+      actions: read
+      contents: read
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # Initializes the CodeQL tools for scanning.
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+
+    # If the analyze step fails for one of the languages you are analyzing with
+    # "We were unable to automatically build your code", you might need to add a build step here
+    # For JavaScript/TypeScript, this might involve:
+    # - name: Install Dependencies
+    #   run: npm install
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:javascript-typescript" 

@@ -1,159 +1,174 @@
-import React, { useState, useEffect } from 'react';
-import { useTheme } from './ThemeContext';
-import Header from '../../components/dashboard.bod.components/Header';
-import Sidebar from '../../components/dashboard.bod.components/Sidebar';
-import GroupRequestTable from '../../components/dashboard.bod.components/GroupRequestTable';
-import GroupRequestDetails from '../../components/dashboard.bod.components/GroupRequestDetails';
-import DecisionModal from '../../components/dashboard.bod.components/DecisionModal';
+import React, { useState, useEffect } from "react";
+import { useTheme } from "./ThemeContext"; // Adjust path as needed
+import Header from "../../components/dashboard.bod.components/Header";
+import Sidebar from "../../components/dashboard.bod.components/Sidebar";
+import GroupRequestTable from "../../components/dashboard.bod.components/GroupRequestTable";
+import GroupRequestDetails from "../../components/dashboard.bod.components/GroupRequestDetails";
+import DecisionModal from "../../components/dashboard.bod.components/DecisionModal";
+import { useBodStore } from "../../store/create.bod.store";
+import { GroupDetails } from "../../types/create-njangi-types";
 
 const GroupRequests: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [selectedRequestId, setSelectedRequestId] = useState<number | null>(null);
-  const [modalState, setModalState] = useState<{
-    isOpen: boolean;
-    action: 'Accept' | 'Reject' | null;
-    requestId: number | null;
-  }>({
-    isOpen: false,
-    action: null,
-    requestId: null,
-  });
+  const [selectedRequestId, setSelectedRequestId] = useState<string | null>(
+    null
+  );
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalAction, setModalAction] = useState<"approve" | "reject" | null>(
+    null
+  );
+  const [modalRequestId, setModalRequestId] = useState<string | null>(null);
   const { isDarkMode, toggleTheme } = useTheme();
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
+  const {
+    requests,
+    isLoading,
+    error,
+    fetchRequests,
+    acceptRequest,
+    rejectRequest,
+  } = useBodStore();
 
+  // Toggle sidebar on window resize
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 768) {
-        setIsSidebarOpen(false);
-      } else {
-        setIsSidebarOpen(true);
-      }
+      setIsSidebarOpen(window.innerWidth >= 768);
     };
+
     handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Fetch requests once on mount
+  useEffect(() => {
+    fetchRequests();
+  }, [fetchRequests]);
+
   const notifications = [
-    '🚨 Board meeting scheduled for next week (2 hours ago)',
-    '🚨 Annual report review pending (5 hours ago)'
+    "🚨 Board meeting scheduled for next week (2 hours ago)",
+    "🚨 Annual report review pending (5 hours ago)",
   ];
   const notificationCount = notifications.length;
-
   const isMobile = window.innerWidth < 768;
-  const isTablet = window.innerWidth >= 768 && window.innerWidth <= 1024;
-  const isDesktop = window.innerWidth > 1024;
 
-  const requestsData = [
-    {
-      id: 1,
-      leaderName: 'John Doe',
-      groupName: 'Innovation Team',
-      maxMembers: 10,
-      description: 'Our group is mainly focused on driving innovation and creativity within the organization by exploring new ideas and technologies.',
-      state: 'Pending...',
-    },
-    {
-      id: 2,
-      leaderName: 'Jane Smith',
-      groupName: 'Sustainability Committee',
-      maxMembers: 15,
-      description: 'This group aims to promote sustainable practices and reduce the organization’s carbon footprint through actionable initiatives.',
-      state: 'Pending...',
-    },
-    {
-      id: 3,
-      leaderName: 'Alice Johnson',
-      groupName: 'Marketing Task Force',
-      maxMembers: 8,
-      description: 'A task force dedicated to enhancing our marketing strategies and increasing brand visibility in competitive markets.',
-      state: 'Pending...',
-    },
-  ];
+  const selectedRequest = requests.find((req) => req._id === selectedRequestId);
 
-  const selectedRequest = requestsData.find(request => request.id === selectedRequestId);
-
-  const handleShowModal = (action: 'Accept' | 'Reject', requestId: number) => {
-    setModalState({
-      isOpen: true,
-      action,
-      requestId,
-    });
+  const openDecisionModal = (
+    action: "approve" | "reject",
+    requestId: string
+  ) => {
+    setModalAction(action);
+    setModalRequestId(requestId);
+    setIsModalOpen(true);
   };
 
   const handleModalSubmit = (reason: string) => {
-    if (modalState.action && modalState.requestId) {
-      console.log(`Group request with ID: ${modalState.requestId} has been ${modalState.action.toLowerCase()}ed. Reason: ${reason}`);
+    if (modalAction && modalRequestId !== null) {
+      if (modalAction === "approve") {
+        acceptRequest(modalRequestId, reason);
+      } else {
+        rejectRequest(modalRequestId, reason);
+      }
     }
-    setModalState({ isOpen: false, action: null, requestId: null });
-  };
-
-  const handleModalClose = () => {
-    setModalState({ isOpen: false, action: null, requestId: null });
+    setIsModalOpen(false);
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+    <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
       <Header
-        style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }}
         toggleTheme={toggleTheme}
         isDarkMode={isDarkMode}
         notificationCount={notificationCount}
       />
-      <div style={{ display: 'flex', flex: '1', flexDirection: isMobile ? 'column' : 'row', transition: 'all 0.3s ease' }}>
+      <div
+        style={{
+          display: "flex",
+          flex: 1,
+          flexDirection: isMobile ? "column" : "row",
+          transition: "all 0.3s ease",
+        }}
+      >
         <Sidebar
-          style={{ boxShadow: '2px 0 4px rgba(0, 0, 0, 0.1)' }}
+          style={{ boxShadow: "2px 0 4px rgba(0, 0, 0, 0.1)" }}
           isOpen={isSidebarOpen}
-          toggleSidebar={toggleSidebar}
+          toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
         />
-        <main style={{
-          flex: isSidebarOpen ? '1' : '100%',
-          padding: isMobile ? '8px' : (isTablet ? '12px' : (isDesktop ? '24px' : '16px')),
-          backgroundColor: isDarkMode ? '#374151' : '#f3f4f6',
-          color: isDarkMode ? 'white' : 'black',
-          overflowY: 'auto',
-          transition: 'flex 0.3s ease, padding 0.3s ease'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '8px' : (isTablet ? '12px' : '16px'), marginBottom: isMobile ? '8px' : (isTablet ? '12px' : '16px') }}>
+        <main
+          style={{
+            flex: isSidebarOpen ? 1 : 100,
+            padding: isMobile ? "16px" : "24px",
+            backgroundColor: isDarkMode ? "#374151" : "#f3f4f6",
+            color: isDarkMode ? "white" : "black",
+            overflowY: "auto",
+            transition: "flex 0.3s ease, padding 0.3s ease",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 16,
+              marginBottom: 16,
+            }}
+          >
             {!isSidebarOpen && (
-              <button onClick={toggleSidebar} style={{ background: 'none', border: 'none', color: isDarkMode ? 'white' : '#5b1a89', cursor: 'pointer', fontSize: isMobile ? '20px' : (isTablet ? '22px' : '24px') }}>
+              <button
+                onClick={() => setIsSidebarOpen(true)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  fontSize: 24,
+                  color: isDarkMode ? "#fff" : "#5b1a89",
+                }}
+              >
                 ☰
               </button>
             )}
-            <h1 style={{
-              fontSize: isMobile ? '18px' : (isTablet ? '20px' : '24px'),
-              fontWeight: 'bold',
-              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-              padding: isMobile ? '4px' : (isTablet ? '6px' : '8px'),
-              backgroundColor: isDarkMode ? '#4b5563' : '#ffffff',
-              borderRadius: '4px',
-              display: 'inline-block'
-            }}>
-              Creation Of Group Requests <span style={{ color: '#10b981' }}>👥</span>
+            <h1
+              style={{
+                fontSize: isMobile ? 20 : 24,
+                fontWeight: "bold",
+                padding: 8,
+                borderRadius: 4,
+                backgroundColor: isDarkMode ? "#4b5563" : "#fff",
+              }}
+            >
+              Group Requests <span style={{ color: "#10b981" }}>👥</span>
             </h1>
           </div>
-          {selectedRequest ? (
+
+          {isLoading ? (
+            <p>Loading requests...</p>
+          ) : error ? (
+            <p>Error loading requests: {error}</p>
+          ) : selectedRequest ? (
             <GroupRequestDetails
               request={selectedRequest}
               isDarkMode={isDarkMode}
               onBack={() => setSelectedRequestId(null)}
+              // setAction={openDecisionModal}
             />
           ) : (
             <GroupRequestTable
-              requests={requestsData}
+              selectedGroup={
+                (selectedRequest as unknown as GroupDetails) ||
+                ({} as GroupDetails)
+              }
+              requests={requests}
               isDarkMode={isDarkMode}
               onSelectRequest={setSelectedRequestId}
-              onShowModal={handleShowModal}
+              onAccept={(id: string) => openDecisionModal("approve", id)}
+              onReject={(id: string) => openDecisionModal("reject", id)}
             />
           )}
+
           <DecisionModal
-            isOpen={modalState.isOpen}
-            action={modalState.action}
+            isOpen={isModalOpen}
+            action={"approve"}
             isDarkMode={isDarkMode}
-            onClose={handleModalClose}
+            onClose={() => setIsModalOpen(false)}
             onSubmit={handleModalSubmit}
           />
         </main>

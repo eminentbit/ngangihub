@@ -24,7 +24,7 @@ import {
 import Header from "../../components/dashboard.admin.components/Header";
 
 export const AdminDashboardPage: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(true); 
   const [activeTab, setActiveTab] = useState("admin");
   const [darkMode, setDarkMode] = useState(false);
 
@@ -61,10 +61,9 @@ export const AdminDashboardPage: React.FC = () => {
 
       <Sidebar
         isOpen={isOpen}
-        activeTab={activeTab}
         onToggle={() => setSidebarOpen((o) => !o)}
         onTabChange={setActiveTab}
-        onClose={() => setIsOpen(false)}
+        onClose={() => setIsOpen(true)}
       />
 
       {/* Main Content */}
@@ -77,12 +76,12 @@ export const AdminDashboardPage: React.FC = () => {
 
         {/* DASHBOARD BODY */}
         {activeTab === "admin" && (
-          <div className="px-2 md:px-6 py-8 max-w-[1500px] mx-auto">
+          <div className="px-2 md:px-6 py-8 max-w-[1100px] mx-auto">
             {/* Greeting & Overview */}
             <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div>
                 <h1 className="text-3xl font-bold text-blue-700 dark:text-blue-300 mb-1">
-                  Admin Dashboard
+                  Dashboard
                 </h1>
               </div>
               <div className="flex space-x-4">
@@ -94,7 +93,7 @@ export const AdminDashboardPage: React.FC = () => {
       if (action.label === "View Contributions") {
         navigate("/admin/contributions");
       } else if (action.label === "Request Loan") {
-        navigate("/admin/loans/request");
+        navigate("/admin/loans-request");
       } else {
         action.onClick();
       }
@@ -119,7 +118,7 @@ export const AdminDashboardPage: React.FC = () => {
               />
               <StatCard
                 label="Total Contributions"
-                value="2,450,000 FCFA"
+                value="2,450,000 CFA"
                 icon={<FaHandHoldingUsd className="text-blue-500" size={28} />}
                 className="bg-gradient-to-tr from-blue-100 to-blue-300 dark:from-blue-900 dark:to-blue-800 shadow"
               />
@@ -218,7 +217,7 @@ export const AdminDashboardPage: React.FC = () => {
                     Next Njangi Payout
                   </h3>
                   <div className="text-4xl font-bold text-blue-600 dark:text-blue-300 mb-1">
-                    250,000 FCFA
+                    250,000 CFA
                   </div>
                   <div className="text-gray-600 dark:text-gray-300 text-sm mb-4">
                     To:{" "}

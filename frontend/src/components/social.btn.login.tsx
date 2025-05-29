@@ -17,6 +17,7 @@ export default function SocialBtnLogin() {
           <p>Login with Google</p>
         </button>
         <button
+          type="button"
           aria-label="Login with GitHub"
           role="button"
           className="flex items-center justify-center w-full p-4 space-x-4 border rounded-md focus:ring-2 focus:ring-offset-1 dark:border-gray-600 focus:dark:ring-blue-600"
@@ -31,6 +32,7 @@ export default function SocialBtnLogin() {
           <p>Login with GitHub</p>
         </button>
         <button
+          type="button"
           aria-label="Login with Twitter"
           role="button"
           className="flex items-center justify-center w-full p-4 space-x-4 border rounded-md focus:ring-2 focus:ring-offset-1 dark:border-gray-600 focus:dark:ring-blue-600"

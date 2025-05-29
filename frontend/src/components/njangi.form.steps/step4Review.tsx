@@ -1,10 +1,16 @@
-import React from "react";
-import { ChevronRight, CheckCircle2 } from "lucide-react";
+import React, { useState } from "react";
+import { ChevronRight, CheckCircle2, ArrowRight } from "lucide-react";
 import { useFormContext } from "../../context/njangi.form.context";
 import Button from "../ExtraButton";
+import { useNavigate } from "react-router-dom";
+import { useCreateNjangiStore } from "../../store/create.njangi.store";
+import ErrorPopup from "../error";
 
 const Step4Review: React.FC = () => {
   const { state, prevStep, submitForm, goToStep } = useFormContext();
+  const navigate = useNavigate();
+  const [, setisError] = useState(false);
+  const { njangiStatusURL, errors } = useCreateNjangiStore();
   const {
     accountSetup,
     groupDetails,
@@ -24,7 +30,8 @@ const Step4Review: React.FC = () => {
     });
   };
 
-  if (isSubmitted) {
+  if (isSubmitted && !error) {
+    sessionStorage.clear();
     return (
       <div className="max-w-2xl mx-auto w-full transition-all duration-300 animate-fadeIn">
         <div className="bg-white p-8 rounded-lg shadow-lg text-center">
@@ -44,9 +51,41 @@ const Step4Review: React.FC = () => {
             decision is made.
           </p>
           <p className="text-gray-500 text-sm">
-            Approvals typically take <strong>24–48 hours or less</strong>. No further
-            action is needed for now.
+            Approvals typically take <strong>24–48 hours or less</strong>. No
+            further action is needed for now.
           </p>
+          <div className="mt-6">
+            <Button
+              type="button"
+              variant="primary"
+              onClick={() => {
+                if (
+                  njangiStatusURL &&
+                  (njangiStatusURL.startsWith("http://") ||
+                    njangiStatusURL.startsWith("https://"))
+                ) {
+                  // Parse the URL and extract the pathname + search
+                  try {
+                    const url = new URL(njangiStatusURL);
+                    // Only navigate internally if the host matches your app
+                    if (url.host === window.location.host) {
+                      navigate(url.pathname + url.search);
+                    } else {
+                      window.location.href = njangiStatusURL;
+                    }
+                  } catch {
+                    window.location.href = njangiStatusURL;
+                  }
+                } else if (njangiStatusURL) {
+                  navigate(njangiStatusURL);
+                }
+              }}
+              className="transition-transform hover:scale-105 flex items-center gap-2"
+            >
+              View Your Njangi State
+              <ArrowRight size={18} />
+            </Button>
+          </div>
         </div>
       </div>
     );
@@ -66,6 +105,10 @@ const Step4Review: React.FC = () => {
           </div>
         )}
 
+        {errors && (
+          <>{<ErrorPopup error={errors} onClose={() => setisError(false)} />}</>
+        )}
+
         <div className="space-y-6">
           <section>
             <div className="flex justify-between items-center mb-2">
@@ -73,6 +116,7 @@ const Step4Review: React.FC = () => {
                 Account Information
               </h3>
               <Button
+                disabled={isSubmitting}
                 type="button"
                 variant="outline"
                 size="sm"
@@ -126,6 +170,7 @@ const Step4Review: React.FC = () => {
                 Group Details
               </h3>
               <Button
+                disabled={isSubmitting}
                 type="button"
                 variant="outline"
                 size="sm"
@@ -151,7 +196,7 @@ const Step4Review: React.FC = () => {
                     Contribution
                   </dt>
                   <dd className="mt-1 text-sm text-gray-900">
-                    ${groupDetails.contributionAmount} (
+                    FCFA {groupDetails.contributionAmount} (
                     {groupDetails.contributionFrequency})
                   </dd>
                 </div>
@@ -212,6 +257,7 @@ const Step4Review: React.FC = () => {
                 Invited Members
               </h3>
               <Button
+                disabled={isSubmitting}
                 type="button"
                 variant="outline"
                 size="sm"
@@ -234,6 +280,7 @@ const Step4Review: React.FC = () => {
 
           <div className="border-t pt-6 mt-6 flex max-sm:flex-col max-sm:gap-y-3 justify-between">
             <Button
+              disabled={isSubmitting}
               type="button"
               variant="outline"
               onClick={prevStep}
@@ -249,7 +296,9 @@ const Step4Review: React.FC = () => {
               isLoading={isSubmitting}
               className="transition-transform hover:scale-105"
             >
-              Submit Njangi Request
+              {isSubmitting
+                ? "Submitting, Please wait..."
+                : "Submit Njangi Request"}
             </Button>
           </div>
         </div>

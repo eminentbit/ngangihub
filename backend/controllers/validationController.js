@@ -1,11 +1,11 @@
-import NjangiDrafts from "../models/NjangiDrafts.js";
+import NjangiDrafts from "../models/njangi.draft.model.js";
 import User from "../models/user.model.js";
 import NjangiGroup from "../models/njangigroup.model.js";
 import Invite from "../models/invite.model.js";
 
 const isValidEmail = (contact) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact);
 
-const isValidPhone = (contact) => /^\+?[1-9]\d{6,14}$/.test(contact); // E.164 format more strictly
+const isValidPhone = (contact) => /^\+?[1-9]\d{6,14}$/.test(contact);
 
 /**
  * Validates whether an email is already used in a NjangiDraft (temporary creation).
@@ -21,14 +21,15 @@ export const validateEmail = async (req, res) => {
   try {
     console.log(`Validating email: ${email}`);
 
-    const [inDraft, inUsers] = await Promise.all([
+    const [inDraft, inInviteMembers, inUsers] = await Promise.all([
       NjangiDrafts.exists({ "accountSetup.email": email }),
+      NjangiDrafts.exists({ "inviteMembers.value": email }),
       User.exists({ email }),
     ]);
 
-    const exists = inDraft || inUsers;
+    const exists = inDraft || inInviteMembers || inUsers;
 
-    res.json({ valid: !exists });
+    return res.json({ valid: !exists });
   } catch (error) {
     res
       .status(500)
@@ -40,7 +41,7 @@ export const validateEmail = async (req, res) => {
  * Validates whether a phone number is already used in a NjangiDraft, NjangiGroup or User.
  * This helps prevent duplicate signups during the Njangi creation process.
  */
-export const validatPhoneNumber = async (req, res) => {
+export const validatePhoneNumber = async (req, res) => {
   let { phoneNumber } = req.query;
 
   if (!phoneNumber || typeof phoneNumber !== "string") {
@@ -70,7 +71,7 @@ export const validatPhoneNumber = async (req, res) => {
     ]);
 
     const exists = inDrafts || inGroups || inUsers;
-    res.json({ valid: !exists });
+    return res.json({ valid: !exists });
   } catch (error) {
     console.error("Phone number validation error:", error);
     res.status(500).json({
@@ -111,6 +112,7 @@ export const validateGroupName = async (req, res) => {
     ]);
 
     const exists = inDrafts || inGroups;
+    console.log({ inDrafts, inGroups, exists });
     res.json({ valid: !exists });
   } catch (error) {
     res
@@ -123,7 +125,6 @@ export const validateGroupName = async (req, res) => {
  * Validates whether a contact (email or phone) is already used in a NjangiDraft.
  * This helps prevent duplicate signups or invites during the Njangi creation process.
  */
-
 export const validateInviteContact = async (req, res) => {
   let { contact } = req.query;
 
@@ -152,7 +153,7 @@ export const validateInviteContact = async (req, res) => {
   }
 
   try {
-    console.log(`Validating invite contact: ${sanitizedContact}`);
+    console.log(`Validating invite contact from backend: ${sanitizedContact}`);
 
     // Check if contact already exists in a Njangi draft's invite list
     const draftConflict = await NjangiDrafts.exists({
@@ -167,11 +168,18 @@ export const validateInviteContact = async (req, res) => {
       ],
     });
 
-    // Already has a pending invite?
-    const pendingInvite = await Invite.exists({
-      emailOrPhone: sanitizedContact,
-      status: "pending" || "accepted" || "expired",
-    });
+    // Check for pending invite by email or phone
+    const inviteOrConditions = [];
+    if (isEmail) inviteOrConditions.push({ email: sanitizedContact });
+    if (isPhone) inviteOrConditions.push({ phone: sanitizedContact });
+
+    let pendingInvite = null;
+    if (inviteOrConditions.length > 0) {
+      pendingInvite = await Invite.exists({
+        $or: inviteOrConditions,
+        status: { $in: ["pending", "accepted", "expired"] },
+      });
+    }
 
     if (pendingInvite) {
       return res.status(200).json({

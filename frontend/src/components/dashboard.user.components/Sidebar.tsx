@@ -1,164 +1,205 @@
-"use client";
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import SidebarItem from "../dashboard.admin.components/SidebarItem";
 
-import { useLocation, useNavigate, Link } from "react-router-dom";
 import {
-  LayoutDashboard,
-  Users,
-  CreditCard,
-  Settings,
-  Menu,
-  X,
-} from "lucide-react";
-import { useState, useEffect } from "react";
-import Logo from "/logo2.png";
+  FaUserShield,
+  FaUsers,
+  FaChartBar,
+  FaCog,
+  FaBars,
+  FaBell,
+} from "react-icons/fa";
 
-const Sidebar = ({
-  activeTab: propActive,
-  isOpen,
-  setIsOpen,
-  onToggle,
-}: {
-  activeTab?: string;
+interface SidebarProps {
   isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
+  activeTab: string;
   onToggle: () => void;
+  onTabChange?: (tab: string) => void;
+  onClose: () => void;
+}
+
+type MenuItem = {
+  icon: React.ReactNode;
+  label: string;
+  path: string;
+};
+
+const menuMain: MenuItem[] = [
+  { icon: <FaUserShield />, label: "Dashboard", path: "/user/dashboard" },
+  { icon: <FaUsers />, label: "My Groups", path: "/user/groups" },
+  { icon: <FaChartBar />, label: "Payment", path: "/user/payments" },
+  { icon: <FaCog />, label: "Settings", path: "/user/settings" },
+];
+
+const menuNotifications: MenuItem[] = [
+  { icon: <FaBell />, label: "Notifications", path: "user/notifications" },
+];
+
+const allMenu = [...menuMain, ...menuNotifications];
+
+const Sidebar: React.FC<SidebarProps> = ({
+  isOpen,
+  activeTab,
+  onToggle,
+  onTabChange,
+  onClose,
 }) => {
-  const { pathname } = useLocation();
   const navigate = useNavigate();
-  const [expandedNotifications, setExpandedNotifications] = useState(false);
 
-  // Close sidebar on small screens
-  useEffect(() => {
-    const onResize = () => setIsOpen(window.innerWidth >= 768);
-    onResize();
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, [setIsOpen]);
-
-  const menuItems = [
-    { name: "Dashboard", icon: LayoutDashboard, path: "/user/dashboard" },
-    { name: "My Groups", icon: Users, path: "/user/groups" },
-    { name: "Payments", icon: CreditCard, path: "/user/payments" },
-    { name: "Settings", icon: Settings, path: "/user/settings" },
-  ];
-
-  const notifications = [
-    { id: 1, message: "John added you to Team Alpha", time: "2 hours ago" },
-    {
-      id: 2,
-      message: "Sarah paid her contribution to Project Beta",
-      time: "5 hours ago",
-    },
-  ];
-
-  interface MenuItem {
-    name: string;
-    icon: React.ComponentType;
-    path: string;
-  }
-
-  const active = (item: MenuItem): boolean => {
-    if (propActive) return propActive === item.name.toLowerCase();
-    return pathname === item.path;
+  const handleNav = (path: string) => {
+    navigate(path);
+    onTabChange?.(path);
+    if (window.innerWidth < 768) onClose();
   };
 
-  return (
-    <aside
-      className={`flex fixed flex-col h-screen bg-indigo-700 text-white transition-width duration-300 ${
-        isOpen ? "w-56" : "w-16"
-      }`}
-    >
-      {/* Toggle */}
-      <button
-        type="button"
-        onClick={onToggle}
-        aria-label={isOpen ? "Collapse sidebar" : "Expand sidebar"}
-        className="absolute top-4 right-4 p-1 hover:text-indigo-200 focus:outline-none"
-      >
-        {isOpen ? <X size={20} /> : <Menu size={20} />}
-      </button>
+  const renderCollapsedIcons = () =>
+    allMenu.map(({ icon, label, path }) => (
+      <SidebarItem
+        key={path}
+        icon={icon}
+        label={label}
+        showLabels={false}
+        active={activeTab === path}
+        onClick={() => handleNav(path)}
+        className="flex-1 justify-center"
+      />
+    ));
 
-      {/* Logo */}
-      {isOpen && (
-        <div
-          className="flex items-center p-4 hover:bg-indigo-600 transition-colors justify-center w-20 cursor-pointer mx-au"
-          onClick={() => navigate("/user/dashboard")}
+  return (
+    <>
+      {/* Toggle Button */}
+      {!isOpen && (
+        <button
+          type="button"
+          onClick={onToggle}
+          className="fixed top-4 left-4 z-40 text-white bg-blue-800 p-2 rounded-full shadow md:block hidden"
+          aria-label="Expand sidebar"
         >
-          <img src={Logo} alt="Logo" className="h-10 w-full" />
+          <FaBars size={20} />
+        </button>
+      )}
+
+      {/* Desktop Sidebar */}
+      <div
+        className={`fixed inset-y-0 left-0 z-30 bg-blue-700 text-white border-r flex flex-col transform transition-transform duration-300 ease-in-out
+          ${
+            isOpen
+              ? "translate-x-0 w-64"
+              : "-translate-x-full md:translate-x-0 md:w-16"
+          } hidden md:flex`}
+      >
+        <div className="flex items-center h-16 px-4 border-b border-blue-800 relative">
+          {isOpen && (
+            <button
+              type="button"
+              onClick={onToggle}
+              className="absolute top-1/2 right-4 -translate-y-1/2 text-white hover:text-blue-200"
+              aria-label="Collapse sidebar"
+            >
+              <FaBars size={20} />
+            </button>
+          )}
+        </div>
+        <nav className="mt-2 flex-1 overflow-y-auto px-2">
+          {menuMain.map(({ icon, label, path }) => (
+            <SidebarItem
+              key={path}
+              icon={icon}
+              label={label}
+              active={activeTab === path}
+              showLabels={isOpen}
+              onClick={() => handleNav(path)}
+            />
+          ))}
+          <div className="mt-6">
+            <p
+              className={`uppercase text-xs text-blue-200 mb-2 transition-opacity duration-200 ${
+                !isOpen && "opacity-0"
+              }`}
+            >
+              Notifications
+            </p>
+            {menuNotifications.map(({ icon, label, path }) => (
+              <SidebarItem
+                key={path}
+                icon={icon}
+                label={label}
+                active={activeTab === path}
+                showLabels={isOpen}
+                onClick={() => handleNav(path)}
+              />
+            ))}
+          </div>
+        </nav>
+        
+      </div>
+
+      {/* Collapsed Desktop */}
+      {!isOpen && (
+        <div className="fixed left-0 top-0 bottom-0 z-20 bg-blue-700 text-white flex-col items-center w-16 pt-20 md:flex hidden">
+          {renderCollapsedIcons()}
         </div>
       )}
 
-      {/* Menu */}
-      <nav className="mt-6 flex-1 px-2 py-10 overflow-y-auto">
-        {menuItems.map((item) => (
-          <Link
-            key={item.name}
-            to={item.path}
-            className={`flex items-center gap-3 p-2 rounded-lg mb-1 hover:bg-indigo-600 transition-colors ${
-              active(item) ? "bg-indigo-800" : ""
-            } ${!isOpen && "justify-center"}`}
-            title={!isOpen ? item.name : undefined}
-          >
-            <item.icon className="h-6 w-6" />
-            {isOpen && <span>{item.name}</span>}
-          </Link>
-        ))}
-      </nav>
-
-      {/* Notifications */}
-      {isOpen && (
-        <section className="px-2">
-          <div
-            className="flex items-center justify-between p-2 mt-4 text-sm font-semibold text-indigo-200 cursor-pointer hover:text-white transition-colors"
-            onClick={() => setExpandedNotifications(!expandedNotifications)}
-          >
-            <span>Notifications</span>
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs">
-              {notifications.length}
-            </span>
-          </div>
-          {expandedNotifications && (
-            <div className="mt-2 space-y-1 max-h-40 overflow-y-auto px-2">
-              {notifications.map((n) => (
-                <div
-                  key={n.id}
-                  className="p-2 rounded-md hover:bg-indigo-600 transition-colors cursor-pointer"
-                  onClick={() => {
-                    console.log("Notification:", n);
-                    if (n.message.includes("Team Alpha"))
-                      navigate("/user/groups");
-                    else if (n.message.includes("contribution"))
-                      navigate("/payments");
-                  }}
-                >
-                  <p className="text-sm">{n.message}</p>
-                  <p className="text-xs text-indigo-300">{n.time}</p>
-                </div>
-              ))}
-              <Link
-                to="/notifications"
-                className="block p-2 text-sm text-indigo-300 hover:text-white"
-              >
-                View all
-              </Link>
-            </div>
-          )}
-        </section>
+      {/* Mobile Bottom Bar */}
+      {!isOpen && (
+        <div className="fixed bottom-0 left-0 right-0 z-40 bg-blue-700 text-white flex md:hidden h-16">
+          {renderCollapsedIcons()}
+        </div>
       )}
 
-      {/* Footer */}
-      <div className="p-4">
-        {isOpen && (
+      {/* Mobile Overlay & Drawer */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black bg-opacity-40 md:hidden"
+          onClick={onClose}
+        />
+      )}
+      <div
+        className={`fixed top-0 left-0 bottom-0 z-50 bg-blue-700 text-white border-r transform transition-transform duration-300 ease-in-out w-64 md:hidden flex flex-col
+          ${isOpen ? "translate-x-0" : "-translate-x-full"}`}
+      >
+        <div className="flex items-center h-16 px-4 border-b border-blue-800 relative">
+          <img src="/logo2.png" alt="Logo" className="h-10 w-auto" />
           <button
-            onClick={() => navigate("/settings")}
-            className="flex items-center gap-3 p-2 w-full rounded-lg hover:bg-indigo-600 transition-colors"
+            type="button"
+            onClick={onClose}
+            className="absolute top-1/2 right-4 -translate-y-1/2 text-white hover:text-blue-200"
+            aria-label="Close sidebar"
           >
-            <Settings className="h-6 w-6" />
-            <span>Settings</span>
+            <FaBars size={20} />
           </button>
-        )}
+        </div>
+        <nav className="mt-2 flex-1 overflow-y-auto px-2">
+          {menuMain.map(({ icon, label, path }) => (
+            <SidebarItem
+              key={path}
+              icon={icon}
+              label={label}
+              active={activeTab === path}
+              showLabels={true}
+              onClick={() => handleNav(path)}
+            />
+          ))}
+          <div className="mt-6">
+            <p className="uppercase text-xs text-blue-200 mb-2">
+              Notifications
+            </p>
+            {menuNotifications.map(({ icon, label, path }) => (
+              <SidebarItem
+                key={path}
+                icon={icon}
+                label={label}
+                active={activeTab === path}
+                showLabels={true}
+                onClick={() => handleNav(path)}
+              />
+            ))}
+          </div>
+        </nav>
       </div>
-    </aside>
+    </>
   );
 };
 
