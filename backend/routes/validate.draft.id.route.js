@@ -3,6 +3,6 @@ import { validateDraftId } from '../controllers/validate.draft.id.controller.js'
 
 const router = express.Router();
 
-router.get("/", validateDraftId);
+router.get("/validate-draft-id", validateDraftId);
 
 export default router;

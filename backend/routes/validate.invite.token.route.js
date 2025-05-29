@@ -1,8 +1,8 @@
 import express from "express";
-import { validateInviteToken } from "../controllers/validate.invite.token.controller.js";
+import { validateInviteToken }  from "../controllers/validate.invite.token.controller.js";
 
 const router = express.Router();
 
-router.get("/validate-draft-id", validateInviteToken);
+router.get("/validate-invite-token", validateInviteToken);
 
 export default router;
