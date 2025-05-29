@@ -1,4 +1,3 @@
-// Invite model for Njangi Group invitations
 import mongoose from "mongoose";
 
 const inviteSchema = new mongoose.Schema(
@@ -8,7 +7,8 @@ const inviteSchema = new mongoose.Schema(
       ref: "NjangiGroup",
       required: true,
     },
-    emailOrPhone: { type: String, required: true },
+    email: { type: String, sparse: true },
+    phone: { type: String, sparse: true },
     inviteToken: { type: String, required: true, unique: true },
     status: {
       type: String,
@@ -20,6 +20,10 @@ const inviteSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+// Compound unique indexes for group+email and group+phone
+inviteSchema.index({ groupId: 1, email: 1 }, { unique: true, sparse: true });
+inviteSchema.index({ groupId: 1, phone: 1 }, { unique: true, sparse: true });
 
 const Invite = mongoose.model("Invite", inviteSchema);
 

@@ -51,7 +51,7 @@ export const login = async (req, res) => {
         .status(401)
         .json({ success: false, message: "Invalid email or password!" });
     }
-    console.log(user);
+    // console.log(user);
     const isPasswordValid = await bcryptjs.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(400).json({
@@ -85,7 +85,7 @@ export const login = async (req, res) => {
     });
 
     req.user = { id: user.id, role: user.role };
-    console.log(req.user);
+    // console.log(req.user);
 
     // Send role in response so frontend can redirect
     return res.status(200).json({

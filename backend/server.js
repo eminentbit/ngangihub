@@ -8,6 +8,7 @@ import validationRoutes from "./routes/validation.js";
 import actionNjangiRoutes from "./routes/bod.njangi.route.js";
 import authRoutes from "./routes/auth.routes.js";
 import notificationRoutes from "./routes/notification.routes.js";
+import acceptInvite from "./routes/accept.invite.member.route.js";
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
@@ -28,6 +29,7 @@ app.use("/api/bod", actionNjangiRoutes);
 app.use("/api", validationRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/member", acceptInvite)
 
 const startServer = async () => {
   try {
