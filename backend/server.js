@@ -4,11 +4,13 @@ import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import createNjangiRoutes from "./routes/create.njangi.route.js";
-import validationRoutes from "./routes/validation.js";
+import validationRoutes from "./routes/validation.routes.js";
 import actionNjangiRoutes from "./routes/bod.njangi.route.js";
 import authRoutes from "./routes/auth.routes.js";
 import notificationRoutes from "./routes/notification.routes.js";
 import acceptInvite from "./routes/accept.invite.member.route.js";
+import limiter from "./middleware/limiter.js";
+import helmet from "helmet";
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
@@ -29,7 +31,10 @@ app.use("/api/bod", actionNjangiRoutes);
 app.use("/api", validationRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/notifications", notificationRoutes);
-app.use("/api/member", acceptInvite)
+app.use("/api/member", acceptInvite);
+app.use(helmet());
+
+app.use("/", limiter);
 
 const startServer = async () => {
   try {
