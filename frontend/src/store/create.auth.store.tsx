@@ -4,7 +4,7 @@ import { persist } from "zustand/middleware";
 
 type User = {
   email: string;
-  role: "bod" | "user" | "admin";
+  role: "bod" | "user" | "member" | "admin";
   image: string;
 };
 

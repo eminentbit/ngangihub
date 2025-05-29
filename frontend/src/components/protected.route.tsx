@@ -1,9 +1,9 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuthStore } from "../store/create.auth.store";
 
-interface Props {
-  allowedRoles: string[];
-}
+type Props = {
+  allowedRoles: ("user" | "admin" | "bod" | "member")[];
+};
 
 export default function ProtectedRoute({ allowedRoles }: Props) {
   const { isAuthenticated, user } = useAuthStore();

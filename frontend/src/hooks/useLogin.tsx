@@ -24,6 +24,8 @@ export const useLogin = (setError?: (message: string) => void) => {
       setUser(user);
       if (user.role == "bod") {
         navigate("/board/dashboard");
+      } else if (user.role == "member") {
+        navigate("/user/dashboard");
       } else {
         navigate(`/${user.role}/dashboard`);
       }

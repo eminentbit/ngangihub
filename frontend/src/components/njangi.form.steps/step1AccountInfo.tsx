@@ -102,6 +102,12 @@ const Step1AccountInfo: React.FC = () => {
       JSON.stringify({ senderEmail: data.email })
     );
 
+    //session storage for phone number. for validating duplicate phone number
+    sessionStorage.setItem(
+      "tempPhone",
+      JSON.stringify({ senderPhone: data.phoneNum })
+    )
+
     nextStep();
   };
 
