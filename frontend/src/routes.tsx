@@ -36,6 +36,7 @@ import PaymentsPage from "./pages/dashboard.user.pages/PaymentPage";
 import SettingsPage from "./pages/dashboard.user.pages/SettingsPage";
 import InviteMemberRegistrationForm from "./pages/invites.member.register.form";
 import NjangiStateDashBoard from "./pages/njangi-state-dashboard";
+import ProtectedRoute from "./components/protected.route";
 
 // eslint-disable-next-line react-refresh/only-export-components
 const LandingSections: React.FC = () => <App />;
