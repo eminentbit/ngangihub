@@ -1,123 +1,69 @@
 import React, { useState, useEffect } from "react";
-import { useTheme } from "./ThemeContext"; // Adjust path as needed
-import Header from "../../components/dashboard.bod.components/Header";
+import { motion, AnimatePresence } from "framer-motion";
+import { useTheme } from "../../context/theme.context";
 import Sidebar from "../../components/dashboard.bod.components/Sidebar";
+import Header from "../../components/dashboard.bod.components/Header";
 import AttendanceOverview from "../../components/dashboard.bod.components/AttendanceOverview";
-import AttendanceList from "../../components/dashboard.bod.components/AttendanceList";
 import AttendanceFilter from "../../components/dashboard.bod.components/AttendanceFilter";
+import AttendanceList from "../../components/dashboard.bod.components/AttendanceList";
 import MemberAttendanceDetails from "../../components/dashboard.bod.components/MemberAttendanceDetails";
 
 const Attendance: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [filter, setFilter] = useState({ period: "All", member: "All" });
   const [selectedMember, setSelectedMember] = useState<string | null>(null);
+  const [showFilter, setShowFilter] = useState(true);
   const { isDarkMode, toggleTheme } = useTheme();
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
+  const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
   useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 768) {
-        setIsSidebarOpen(false);
-      } else {
-        setIsSidebarOpen(true);
-      }
-    };
+    const handleResize = () => setIsSidebarOpen(window.innerWidth >= 768);
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const notifications = [
-    "🚨 Board meeting scheduled for next week (2 hours ago)",
-    "🚨 Annual report review pending (5 hours ago)",
-  ];
-  const notificationCount = notifications.length;
-
-  const isMobile = window.innerWidth < 768;
-
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
-      <Header
-        // style={{ boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)" }}
-        toggleTheme={toggleTheme}
-        isDarkMode={isDarkMode}
-        notificationCount={notificationCount}
-      />
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
+      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
       <div
-        style={{
-          display: "flex",
-          flex: "1",
-          flexDirection: isMobile ? "column" : "row",
-          transition: "all 0.3s ease",
-        }}
+        className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ${
+          isSidebarOpen ? "ml-64" : "ml-16"
+        }`}
       >
-        <Sidebar
-          style={{ boxShadow: "2px 0 4px rgba(0, 0, 0, 0.1)" }}
-          isOpen={isSidebarOpen}
-          toggleSidebar={toggleSidebar}
-        />
-        <main
-          style={{
-            flex: isSidebarOpen ? "1" : "100%",
-            padding: isMobile ? "16px" : isSidebarOpen ? "24px" : "24px 0",
-            backgroundColor: isDarkMode ? "#374151" : "#f3f4f6",
-            color: isDarkMode ? "white" : "black",
-            overflowY: "auto",
-            transition: "flex 0.3s ease, padding 0.3s ease",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "16px",
-              marginBottom: "16px",
-            }}
-          >
-            {!isSidebarOpen && (
-              <button
-                type="button"
-                onClick={toggleSidebar}
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: isDarkMode ? "white" : "#5b1a89",
-                  cursor: "pointer",
-                  fontSize: "24px",
-                }}
-              >
-                ☰
-              </button>
-            )}
-            <h1
-              style={{
-                fontSize: isMobile ? "20px" : "24px",
-                fontWeight: "bold",
-                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-                padding: "8px",
-                backgroundColor: isDarkMode ? "#4b5563" : "#ffffff",
-                borderRadius: "4px",
-                display: "inline-block",
-              }}
-            >
-              Attendance <span style={{ color: "#10b981" }}>👥</span>
+        {/* Header below sidebar */}
+        <Header isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
+
+        <main className={`flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 `}>
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 px-4 py-2 rounded-md shadow">
+              Attendance <span className="text-green-500">👥</span>
             </h1>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setShowFilter((prev) => !prev)}
+              className="inline-flex items-center px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              {showFilter ? "Hide Filters" : "Show Filters"}
+            </motion.button>
           </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: isMobile ? "column" : "row",
-              justifyContent: "space-between",
-              alignItems: isMobile ? "stretch" : "center",
-              gap: "16px",
-              marginBottom: "16px",
-            }}
-          >
-            <AttendanceFilter filter={filter} setFilter={setFilter} />
-          </div>
+
+          <AnimatePresence>
+            {showFilter && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+                className="mb-6"
+              >
+                <AttendanceFilter filter={filter} setFilter={setFilter} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {selectedMember ? (
             <MemberAttendanceDetails
               member={selectedMember}

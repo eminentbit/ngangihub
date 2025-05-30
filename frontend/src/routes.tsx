@@ -43,7 +43,7 @@ import GroupDetailPage from "./pages/dashboard.user.pages/DetialPage";
 const LandingSections: React.FC = () => <App />;
 
 // ----- Build the router -----
- const router = createBrowserRouter([
+const router = createBrowserRouter([
   // Public routes
   {
     path: "/",
@@ -81,6 +81,7 @@ const LandingSections: React.FC = () => <App />;
   {
     path: "/admin",
     caseSensitive: false,
+    element: <ProtectedRoute allowedRoles={["admin"]} />,
     children: [
       { path: "dashboard", element: <AdminDashboardPage /> },
       { path: "manage-members", element: <MemberManagement /> },
@@ -102,6 +103,7 @@ const LandingSections: React.FC = () => <App />;
   {
     path: "/board",
     caseSensitive: false,
+    element: <ProtectedRoute allowedRoles={["bod"]} />,
     children: [
       { path: "dashboard", element: <Dashboard /> },
       { path: "notifications", element: <Notifications /> },

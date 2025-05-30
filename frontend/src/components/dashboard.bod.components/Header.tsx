@@ -1,160 +1,209 @@
-import { Bell, ChevronDown, LogOut, Moon, Sun, User } from "lucide-react";
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import {
+  Bell,
+  LogOut,
+  Sun,
+  Moon,
+  User as UserIcon,
+  ChevronDown,
+} from "lucide-react";
+import React, { useState, useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/create.auth.store";
+import { useBodStore } from "../../store/create.bod.store";
+import { motion, AnimatePresence } from "framer-motion";
+import useOnClickOutside from "../../hooks/useOnClickOutside";
 
 interface HeaderProps {
   toggleTheme: () => void;
   isDarkMode: boolean;
-  notificationCount: number;
 }
 
-const Header: React.FC<HeaderProps> = ({
-  toggleTheme,
-  isDarkMode,
-  notificationCount,
-}) => {
+const dropdownAnimation = {
+  initial: { opacity: 0, scale: 0.95 },
+  animate: { opacity: 1, scale: 1 },
+  exit: { opacity: 0, scale: 0.95 },
+  transition: { duration: 0.2 },
+};
+
+const Header: React.FC<HeaderProps> = ({ toggleTheme, isDarkMode }) => {
+  const { user } = useAuthStore();
+  const { notifications } = useBodStore();
+  const navigate = useNavigate();
+
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const { user, logout } = useAuthStore();
+
+  const notifRef = useRef<HTMLDivElement>(
+    null
+  ) as React.RefObject<HTMLDivElement>;
+  const userMenuRef = useRef<HTMLDivElement>(
+    null
+  ) as React.RefObject<HTMLDivElement>;
+
+  useOnClickOutside(notifRef, () => setShowNotifications(false));
+  useOnClickOutside(userMenuRef, () => setShowUserMenu(false));
 
   return (
-    <header
-      className={`${
-        isDarkMode ? "bg-gray-900 text-white" : "bg-purple-700 text-white"
-      } p-4 flex justify-between items-center relative`}
-    >
-      <div className="flex items-center space-x-4">
-        <img src="/logo.png" alt="Logo" className="h-10" />
-        <input
-          type="text"
-          placeholder="Search..."
-          className={`${
-            isDarkMode
-              ? "bg-gray-800 placeholder-gray-400 text-white"
-              : "bg-white placeholder-gray-500 text-gray-900"
-          } px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500`}
-        />
-      </div>
+    <header className="sticky top-0 z-10 bg-white dark:bg-gray-900 shadow">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-16 items-center">
+          {/* Left Section */}
+          <div className="flex items-center space-x-4">
+            <Link to="/" className="flex-shrink-0">
+              <img src="/logo.png" alt="Logo" className="h-8 w-auto" />
+            </Link>
 
-      <div className="flex items-center space-x-6">
-        {/* Notifications */}
-        <div className="relative">
-          <button
-            type="button"
-            onClick={() => setShowNotifications((prev) => !prev)}
-            className="relative focus:outline-none"
-          >
-            <span className="text-xl">
-              <Bell />
-            </span>
-            {notificationCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
-                {notificationCount}
+            <div className="relative text-gray-600 dark:text-gray-300">
+              <input
+                type="search"
+                placeholder="Search..."
+                className="block w-full bg-gray-100 dark:bg-gray-800 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-100 rounded-full pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+              <span className="absolute inset-y-0 left-3 flex items-center">
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z"
+                  />
+                </svg>
               </span>
-            )}
-          </button>
-
-          {showNotifications && (
-            <div
-              className={`${
-                isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"
-              } absolute right-0 mt-2 w-72 rounded-md shadow-lg z-20`}
-            >
-              <h4 className="px-4 py-2 font-semibold border-b border-gray-200 dark:border-gray-700">
-                Notifications
-              </h4>
-              <ul className="max-h-60 overflow-auto">
-                <li
-                  className={`${
-                    isDarkMode ? "bg-gray-700" : "bg-purple-100"
-                  } px-4 py-2 rounded-lg m-2`}
-                >
-                  🚨 Board meeting scheduled for next week{" "}
-                  <span className="text-xs text-gray-400">(2 hours ago)</span>
-                </li>
-                <li
-                  className={`${
-                    isDarkMode ? "bg-gray-700" : "bg-purple-100"
-                  } px-4 py-2 rounded-lg m-2`}
-                >
-                  🚨 Annual report review pending{" "}
-                  <span className="text-xs text-gray-400">(5 hours ago)</span>
-                </li>
-                <li className="px-4 py-2 mt-2">
-                  <Link
-                    to="/board/notifications"
-                    className={`${
-                      isDarkMode ? "text-indigo-300" : "text-indigo-600"
-                    } hover:underline block`}
-                  >
-                    View all notifications
-                  </Link>
-                </li>
-              </ul>
             </div>
-          )}
-        </div>
-
-        {/* Theme Toggle */}
-        <button
-          type="button"
-          onClick={toggleTheme}
-          className="focus:outline-none text-xl"
-        >
-          {isDarkMode ? (
-            <Sun className="text-yellow-300" />
-          ) : (
-            <Moon className="text-blue-300" />
-          )}
-        </button>
-
-        {/* User Profile */}
-        <div className="relative">
-          <div className="flex justify-center items-center cursor-pointer">
-            <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center focus:outline-none">
-              {user?.image ? <img src={user.image} alt="User" /> : <User />}
-            </div>
-            <ChevronDown onClick={() => setShowUserMenu((prev) => !prev)} />
           </div>
-          {showUserMenu && (
-            <div
-              className={`${
-                isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"
-              } absolute right-0 mt-2 w-48 rounded-md shadow-lg z-20`}
-            >
-              <div className="py-1">
-                <Link
-                  to="/profile"
-                  className={`${
-                    isDarkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"
-                  } block px-4 py-2 text-sm`}
-                >
-                  Profile
-                </Link>
-                <Link
-                  to="/settings"
-                  className={`${
-                    isDarkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"
-                  } block px-4 py-2 text-sm`}
-                >
-                  Settings
-                </Link>
-                <button
-                  type="button"
-                  className={`${
-                    isDarkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"
-                  } block w-full text-left px-4 py-2 text-sm text-red-600 hover:text-red-700`}
-                  onClick={logout}
-                >
-                  <span className="flex items-center">
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Logout
+
+          {/* Right Section */}
+          <div className="flex items-center space-x-4">
+            {/* Notifications */}
+            <div className="relative" ref={notifRef}>
+              <button
+                onClick={() => setShowNotifications((prev) => !prev)}
+                className="relative focus:outline-none"
+              >
+                <Bell className="h-6 w-6 text-gray-700 dark:text-gray-300" />
+                {notifications.length > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+                    {notifications.length}
                   </span>
-                </button>
-              </div>
+                )}
+              </button>
+
+              <AnimatePresence>
+                {showNotifications && (
+                  <motion.div
+                    {...dropdownAnimation}
+                    className="absolute right-0 mt-2 w-80 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-20"
+                  >
+                    <div className="py-2">
+                      <h3 className="px-4 py-2 text-sm font-semibold border-b border-gray-200 dark:border-gray-700">
+                        Notifications
+                      </h3>
+                      {notifications.length === 0 ? (
+                        <div className="px-4 py-4 text-center text-gray-500">
+                          No new notifications
+                        </div>
+                      ) : (
+                        <div className="max-h-60 overflow-y-auto">
+                          {notifications.map((n, idx) => (
+                            <div
+                              key={idx}
+                              className="px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+                            >
+                              <p className="text-sm text-gray-800 dark:text-gray-200">
+                                {n.message}
+                              </p>
+                              <p className="text-xs text-gray-400">
+                                {n.createdAt}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      <div className="px-4 py-2 border-t border-gray-200 dark:border-gray-700">
+                        <Link
+                          to="/board/notifications"
+                          className="text-indigo-600 dark:text-indigo-400 text-sm hover:underline"
+                        >
+                          View all notifications
+                        </Link>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
-          )}
+
+            {/* Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-full bg-gray-200 dark:bg-gray-700 focus:outline-none"
+              aria-label="Toggle theme"
+            >
+              {isDarkMode ? (
+                <Sun className="h-5 w-5 text-yellow-400" />
+              ) : (
+                <Moon className="h-5 w-5 text-blue-400" />
+              )}
+            </button>
+
+            {/* User Menu */}
+            <div className="relative" ref={userMenuRef}>
+              <button
+                onClick={() => setShowUserMenu((prev) => !prev)}
+                className="flex items-center space-x-2 focus:outline-none"
+              >
+                <div className="h-8 w-8 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
+                  {user?.image ? (
+                    <img
+                      src={user.image}
+                      alt="avatar"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <UserIcon className="h-6 w-6 text-gray-700 dark:text-gray-300" />
+                  )}
+                </div>
+                <ChevronDown className="h-4 w-4 text-gray-700 dark:text-gray-300" />
+              </button>
+
+              <AnimatePresence>
+                {showUserMenu && (
+                  <motion.div
+                    {...dropdownAnimation}
+                    className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-20"
+                  >
+                    <div className="py-1">
+                      <Link
+                        to="/profile"
+                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      >
+                        Profile
+                      </Link>
+                      <Link
+                        to="/settings"
+                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      >
+                        Settings
+                      </Link>
+                      <button
+                        onClick={() => navigate("/logout")}
+                        className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100 dark:hover:bg-red-700"
+                      >
+                        <div className="flex items-center">
+                          <LogOut className="h-4 w-4 mr-2" /> Logout
+                        </div>
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
         </div>
       </div>
     </header>

@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { FaBell, FaSun, FaMoon, FaUserCircle, FaSearch } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useAuthStore } from "../../store/create.auth.store";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronRight, LogOut } from "lucide-react";
 import useUserStore from "../../store/create.user.store";
 
 interface HeaderProps {
@@ -181,17 +181,19 @@ const Header: React.FC<HeaderProps> = ({ darkMode, setDarkMode }) => {
                   <li>
                     <Link
                       to="/profile"
-                      className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      className="block w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-center"
                     >
                       Profile
                     </Link>
                   </li>
-                  <li>
+                  <li className="bg-red-500 hover:bg-red-600 dark:hover:bg-red-700">
                     <Link
                       to="/logout"
-                      className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600"
+                      className="block w-full text-left px-4 py-2"
                     >
-                      Logout
+                      <span className="flex gap-2 items-center justify-center">
+                        <LogOut /> Logout
+                      </span>
                     </Link>
                   </li>
                 </ul>

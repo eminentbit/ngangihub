@@ -1,148 +1,104 @@
 import React, { useState, useEffect } from "react";
-import { useTheme } from "./ThemeContext"; // Adjust path as needed
+import { motion, AnimatePresence } from "framer-motion";
+import { useTheme } from "../../context/theme.context";
 import Header from "../../components/dashboard.bod.components/Header";
 import Sidebar from "../../components/dashboard.bod.components/Sidebar";
 import ResolutionList from "../../components/dashboard.bod.components/ResolutionList";
 import ResolutionFilter from "../../components/dashboard.bod.components/ResolutionFilter";
 import NewResolutionModal from "../../components/dashboard.bod.components/NewResolutionModal";
+import { Plus } from "lucide-react";
+
+const modalBackdrop = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1 },
+};
+
+const modalContent = {
+  hidden: { opacity: 0, scale: 0.95 },
+  visible: { opacity: 1, scale: 1 },
+  exit: { opacity: 0, scale: 0.95 },
+};
 
 const Resolutions: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [filter, setFilter] = useState("All");
-
   const { isDarkMode, toggleTheme } = useTheme();
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
-
-  const toggleModal = () => {
-    setIsModalOpen(!isModalOpen);
-  };
+  const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 768) {
-        setIsSidebarOpen(false);
-      } else {
-        setIsSidebarOpen(true);
-      }
-    };
+    const handleResize = () => setIsSidebarOpen(window.innerWidth >= 768);
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const notifications = [
-    "🚨 Board meeting scheduled for next week (2 hours ago)",
-    "🚨 Annual report review pending (5 hours ago)",
-  ];
-  const notificationCount = notifications.length;
-
-  const isMobile = window.innerWidth < 768;
-
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
-      <Header
-        // style={{ boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)" }}
-        toggleTheme={toggleTheme}
-        isDarkMode={isDarkMode}
-        notificationCount={notificationCount}
-      />
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
+      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+
       <div
-        style={{
-          display: "flex",
-          flex: "1",
-          flexDirection: isMobile ? "column" : "row",
-          transition: "all 0.3s ease",
-        }}
+        className={`flex-1 flex flex-col overflow-hidden ${
+          isSidebarOpen ? "ml-64" : "ml-16"
+        }`}
       >
-        <Sidebar
-          style={{ boxShadow: "2px 0 4px rgba(0, 0, 0, 0.1)" }}
-          isOpen={isSidebarOpen}
-          toggleSidebar={toggleSidebar}
-        />
-        <main
-          style={{
-            flex: isSidebarOpen ? "1" : "100%", // Expand to full width when sidebar is closed
-            padding: isMobile ? "16px" : isSidebarOpen ? "24px" : "24px 0", // Adjust padding when sidebar closes
-            backgroundColor: isDarkMode ? "#374151" : "#f3f4f6",
-            color: isDarkMode ? "white" : "black",
-            transition: "flex 0.3s ease, padding 0.3s ease", // Smooth adjustment
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "16px",
-              marginBottom: "16px",
-            }}
-          >
-            {!isSidebarOpen && (
-              <button
-                type="button"
-                onClick={toggleSidebar}
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: isDarkMode ? "white" : "#5b1a89",
-                  cursor: "pointer",
-                  fontSize: "24px",
-                }}
-              >
-                ☰
-              </button>
-            )}
-            <h1
-              style={{
-                fontSize: isMobile ? "20px" : "24px",
-                fontWeight: "bold",
-                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-                padding: "8px",
-                backgroundColor: isDarkMode ? "#4b5563" : "#ffffff",
-                borderRadius: "4px",
-                display: "inline-block",
-              }}
-            >
-              Resolutions <span style={{ color: "#10b981" }}>📋</span>
+        <Header isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
+
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              Resolutions <span className="text-green-500">📋</span>
             </h1>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: isMobile ? "column" : "row",
-              justifyContent: "space-between",
-              alignItems: isMobile ? "stretch" : "center",
-              gap: "16px",
-              marginBottom: "16px",
-            }}
-          >
-            <ResolutionFilter filter={filter} setFilter={setFilter} />
-            <button
-              type="button"
-              onClick={toggleModal}
-              style={{
-                backgroundColor: "#9333ea",
-                color: "white",
-                padding: "8px 16px",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-              }}
+
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={openModal}
+              className="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
-              <span role="img" aria-label="plus">
-                ➕
+              <span className="mr-2 flex">
+                <Plus />
+                New Resolution
               </span>{" "}
-              New Resolution
-            </button>
+            </motion.button>
           </div>
+
+          <div className="flex flex-col md:flex-row md:justify-between items-start md:items-center gap-4 mb-6">
+            <ResolutionFilter filter={filter} setFilter={setFilter} />
+          </div>
+
           <ResolutionList isDarkMode={isDarkMode} filter={filter} />
-          {isModalOpen && (
-            <NewResolutionModal isDarkMode={isDarkMode} onClose={toggleModal} />
-          )}
+
+          {/* Modal using Framer Motion */}
+          <AnimatePresence>
+            {isModalOpen && (
+              <motion.div
+                className="fixed inset-0 z-40 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm"
+                variants={modalBackdrop}
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+                onClick={closeModal}
+              >
+                <motion.div
+                  className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full p-6 z-50"
+                  variants={modalContent}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <NewResolutionModal
+                    isDarkMode={isDarkMode}
+                    onClose={closeModal}
+                  />
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </main>
       </div>
     </div>

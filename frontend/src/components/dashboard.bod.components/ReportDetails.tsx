@@ -1,7 +1,7 @@
 import React from "react";
 
 interface ReportDetailsProps {
-  reportId: number;
+  reportId: string;
   isDarkMode: boolean;
   onBack: () => void;
 }
@@ -47,7 +47,7 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({
     },
   };
 
-  const report = reportsDetails[reportId as keyof typeof reportsDetails] || {};
+  const report = reportsDetails[reportId as unknown as keyof typeof reportsDetails] || {};
 
   const isMobile = window.innerWidth < 768;
 
