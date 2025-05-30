@@ -5,8 +5,11 @@ import {
   validateInviteContact,
   validatePhoneNumber,
 } from "../controllers/validationController.js";
+import limiter from "../middleware/limiter.js";
 
 const router = express.Router();
+
+router.use("/", limiter);
 
 router.get("/validate-email", validateEmail);
 router.get("/validate-group-name", validateGroupName);

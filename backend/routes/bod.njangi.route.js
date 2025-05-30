@@ -7,8 +7,11 @@ import {
   createReport,
   listReports,
 } from "../controllers/bod.general.controller.js";
+import limiter from "../middleware/limiter.js";
 
 const router = express.Router();
+
+router.use("/", limiter);
 
 // Route to handle approving a Njangi draft
 router.post("/approve", verifyToken, verifyIfBod, actionNjangi);
