@@ -12,8 +12,9 @@ import {
   FaCog,
   FaBars,
   FaBell,
-  FaTimes
+  FaTimes,
 } from "react-icons/fa";
+import { useAuthStore } from "../../store/create.auth.store";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -32,21 +33,76 @@ type MenuItem = {
   icon: React.ReactNode;
   label: string;
   path: string;
-  roles: Array<"admin" | "user">;
+  roles: Array<"admin" | "user" | "bod" | "member">;
 };
 
 const allMenu: MenuItem[] = [
-  { icon: <FaUserShield />, label: "Dashboard",      path: "/admin/dashboard",     roles: ["user", "admin"] },
-  { icon: <FaUsers />,      label: "My Groups",      path: "/user/groups",        roles: ["user", "admin"] },
-  { icon: <FaChartBar />,   label: "Payment",        path: "/user/payments",      roles: ["user", "admin"] },
-  { icon: <FaCog />,        label: "Settings",       path: "/user/settings",      roles: ["user", "admin"] },
-  { icon: <FaUsersCog />,   label: "Manage Members",  path: "/admin/manage-members",roles: ["admin"] },
-  { icon: <FaUsers />,      label: "Groups Overview",  path: "/admin/groups",       roles: ["admin"] },
-  { icon: <FaInfoCircle />, label: "Group Info",       path: "/admin/group-info",   roles: ["admin"] },
-  { icon: <FaChartBar />,   label: "My Statistics",    path: "/admin/stats",        roles: ["admin"] },
-  { icon: <FaUserPlus />,   label: "Add Member",       path: "/admin/add-member",   roles: ["admin"] },
-  { icon: <FaCog />,        label: "Group Settings",   path: "/admin/group-settings", roles: ["admin"] },
-  { icon: <FaBell />,       label: "Notifications",    path: "/admin/notifications",roles: ["admin"] },
+  {
+    icon: <FaUserShield />,
+    label: "Dashboard",
+    path: "dashboard",
+    roles: ["user", "admin"],
+  },
+  {
+    icon: <FaUsers />,
+    label: "My Groups",
+    path: "groups",
+    roles: ["user", "admin"],
+  },
+  {
+    icon: <FaChartBar />,
+    label: "Payment",
+    path: "payments",
+    roles: ["user", "admin"],
+  },
+  {
+    icon: <FaCog />,
+    label: "Settings",
+    path: "settings",
+    roles: ["user", "admin"],
+  },
+  {
+    icon: <FaUsersCog />,
+    label: "Manage Members",
+    path: "manage-members",
+    roles: ["admin"],
+  },
+  {
+    icon: <FaUsers />,
+    label: "Groups Overview",
+    path: "groups",
+    roles: ["admin"],
+  },
+  {
+    icon: <FaInfoCircle />,
+    label: "Group Info",
+    path: "group-info",
+    roles: ["admin"],
+  },
+  {
+    icon: <FaChartBar />,
+    label: "My Statistics",
+    path: "stats",
+    roles: ["admin"],
+  },
+  {
+    icon: <FaUserPlus />,
+    label: "Add Member",
+    path: "add-member",
+    roles: ["admin"],
+  },
+  {
+    icon: <FaCog />,
+    label: "Group Settings",
+    path: "group-settings",
+    roles: ["admin"],
+  },
+  {
+    icon: <FaBell />,
+    label: "Notifications",
+    path: "notifications",
+    roles: ["admin"],
+  },
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({
@@ -75,20 +131,21 @@ const Sidebar: React.FC<SidebarProps> = ({
     return () => window.removeEventListener("resize", checkIfMobile);
   }, [isOpen, onClose]);
 
-  const [user] = useState<{ role: "admin" | "user" }>({ role: "admin" });
+  const { user } = useAuthStore();
   const loading = false; // Simplified for demo
 
   // Filter menu by user role
   const menu = React.useMemo(
-    () => user ? allMenu.filter(item => item.roles.includes(user.role)) : [],
+    () =>
+      user ? allMenu.filter((item) => item.roles.includes(user.role)) : [],
     [user]
   );
 
   // FIXED NAVIGATION HANDLER
   const handleNav = (path: string) => {
-    navigate(path);
+    navigate(`/${user?.role}/${path}`);
     onTabChange?.(path);
-    
+
     // Only close sidebar on mobile devices
     if (isMobile) {
       onClose();
