@@ -21,13 +21,13 @@ const inviteSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-inviteSchema.index(
-  { groupId: 1, phone: 1 },
-  {
-    unique: true,
-    partialFilterExpression: { phone: { $type: "string" } },
-  }
-);
+// inviteSchema.index(
+//   { groupId: 1, phone: 1 },
+//   {
+//     unique: true,
+//     partialFilterExpression: { phone: { $type: "string" } },
+//   }
+// );
 
 // Compound unique indexes for group+email and group+phone
 inviteSchema.index({ groupId: 1, email: 1 }, { unique: true, sparse: true });
