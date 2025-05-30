@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { HiOutlineChat, HiOutlineUserGroup, HiX } from "react-icons/hi";
 import Sidebar from "../../components/dashboard.admin.components/Sidebar";
 import Header from "../../components/dashboard.admin.components/Header";
 import ChatInterface from "../../components/dashboard.user.components/chat-interface";
+import { Link } from "react-router-dom";
+import { Plus } from "lucide-react";
 
 // Dummy group data type
 type Group = {
@@ -24,8 +25,6 @@ const groups: Group[] = [
 ];
 
 const MyGroups: React.FC = () => {
-  const navigate = useNavigate();
-
   // Modal state
   const [chatModalGroupId, setChatModalGroupId] = useState<string | null>(null);
 
@@ -53,14 +52,14 @@ const MyGroups: React.FC = () => {
   }, [darkMode]);
 
   const toggleDarkMode = () => setDarkMode((prev) => !prev);
-  const toggleSidebar  = () => setSidebarOpen((prev) => !prev);
-  const closeSidebar   = () => setSidebarOpen(false);
+  const toggleSidebar = () => setSidebarOpen((prev) => !prev);
+  const closeSidebar = () => setSidebarOpen(false);
 
   // For shifting content with sidebar
   const offsetClass = sidebarOpen ? "lg:ml-64" : "lg:ml-16";
 
   // Find the group being chatted
-  const chatGroup = groups.find(g => g.id === chatModalGroupId);
+  const chatGroup = groups.find((g) => g.id === chatModalGroupId);
 
   return (
     <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
@@ -73,18 +72,17 @@ const MyGroups: React.FC = () => {
       />
 
       {/* Main content area */}
-      <div className={`flex-1 flex flex-col transition-all duration-300 ${offsetClass}`}>
+      <div
+        className={`flex-1 flex flex-col transition-all duration-300 ${offsetClass}`}
+      >
         {/* Header */}
-        <Header
-         darkMode={darkMode} 
-        setDarkMode={toggleDarkMode}
-         />
+        <Header darkMode={darkMode} setDarkMode={toggleDarkMode} />
 
         {/* Page content */}
-       <main
-        className={`flex-1 transition-all duration-300 min-h-screen bg-gray-50 dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-800 overflow-auto 
+        <main
+          className={`flex-1 transition-all duration-300 min-h-screen bg-gray-50 dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-800 overflow-auto 
           ${sidebarOpen ? "lg:ml-4" : "lg:ml-6"}`}
-      >
+        >
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-10 gap-6">
             <h1 className="text-3xl md:text-4xl font-bold text-blue-700 dark:text-white">
               My Groups
@@ -93,7 +91,10 @@ const MyGroups: React.FC = () => {
               className="bg-primary-600 hover:bg-primary-700 active:bg-primary-800 text-blue-400 font-semibold rounded-lg px-6 py-3 shadow-lg transition-all duration-150"
               // onClick={createGroup}
             >
-              + Create New Group
+              <span className="flex">
+                <Plus />
+                Create New Group
+              </span>
             </button>
           </div>
 
@@ -135,7 +136,9 @@ const MyGroups: React.FC = () => {
                   <div className="relative h-3 rounded-full bg-gray-200 dark:bg-gray-700 mb-2 overflow-hidden">
                     <div
                       className="absolute top-0 left-0 h-3 rounded-full bg-green-500 transition-all"
-                      style={{ width: `${(group.paid / group.members) * 100}%` }}
+                      style={{
+                        width: `${(group.paid / group.members) * 100}%`,
+                      }}
                     />
                   </div>
                   <p className="text-sm text-gray-700 dark:text-gray-300 font-medium">
@@ -152,12 +155,13 @@ const MyGroups: React.FC = () => {
                   </button>
                 </div>
 
-                <button
-                  className="w-full flex items-center justify-center gap-2 border border-gray-300 dark:border-gray-600 rounded-lg px-5 py-2 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 font-medium shadow-md transition"
-                  onClick={() => navigate(`/groups/${group.id}`)}
+                <Link
+                  to={`/user/groups/${group.id}`}
+                  state={{ group }}
+                  className="…"
                 >
                   Details
-                </button>
+                </Link>
               </div>
             ))}
           </section>
@@ -177,7 +181,7 @@ const MyGroups: React.FC = () => {
             {/* Close button */}
             <button
               className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-              onClick={()=> setChatModalGroupId(null)}
+              onClick={() => setChatModalGroupId(null)}
               aria-label="Close chat"
             >
               <HiX className="w-6 h-6" />
@@ -190,7 +194,11 @@ const MyGroups: React.FC = () => {
 
             {/* Chat content */}
             <div className="max-h-[60vh] overflow-y-auto">
-              <ChatInterface groupId={chatGroup.id} groupName={""} onClose={() => setChatModalGroupId(null)} />
+              <ChatInterface
+                groupId={chatGroup.id}
+                groupName={""}
+                onClose={() => setChatModalGroupId(null)}
+              />
             </div>
           </div>
         </div>

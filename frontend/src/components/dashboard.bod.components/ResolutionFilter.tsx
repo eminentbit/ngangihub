@@ -1,5 +1,5 @@
 import React from "react";
-import { useTheme } from "../../pages/dashboard.bod.pages/ThemeContext"; // Adjust path as needed
+import { useTheme } from "../../context/theme.context"; // Adjust path as needed
 
 interface ResolutionFilterProps {
   filter: string;

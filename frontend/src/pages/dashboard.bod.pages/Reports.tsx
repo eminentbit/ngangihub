@@ -1,112 +1,88 @@
-import React, { useState, useEffect } from 'react';
-import { useTheme } from './ThemeContext'; // Adjust path as needed
-import Header from '../../components/dashboard.bod.components/Header';
-import Sidebar from '../../components/dashboard.bod.components/Sidebar';
-import ReportOverview from '../../components/dashboard.bod.components/ReportOverview';
-import ReportList from '../../components/dashboard.bod.components/ReportList';
-import ReportFilter from '../../components/dashboard.bod.components/ReportFilter';
-import AddReportForm from '../../components/dashboard.bod.components/AddReportForm';
-import ReportDetails from '../../components/dashboard.bod.components/ReportDetails';
+import React, { useState, useEffect } from "react";
+import { useTheme } from "../../context/theme.context";
+import Header from "../../components/dashboard.bod.components/Header";
+import Sidebar from "../../components/dashboard.bod.components/Sidebar";
+import ReportOverview from "../../components/dashboard.bod.components/ReportOverview";
+import ReportList from "../../components/dashboard.bod.components/ReportList";
+import ReportFilter from "../../components/dashboard.bod.components/ReportFilter";
+import AddReportForm from "../../components/dashboard.bod.components/AddReportForm";
+import ReportDetails from "../../components/dashboard.bod.components/ReportDetails";
 
 const Reports: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [filter, setFilter] = useState({ type: 'All', status: 'All' });
-  const [selectedReportId, setSelectedReportId] = useState<number | null>(null);
+  const [filter, setFilter] = useState({ type: "All", status: "All" });
+  const [selectedReportId, setSelectedReportId] = useState<string | null>(null);
+  const [showForm, setShowForm] = useState(false);
   const { isDarkMode, toggleTheme } = useTheme();
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
+  const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
+  const toggleForm = () => setShowForm((prev) => !prev);
 
   useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 768) {
-        setIsSidebarOpen(false);
-      } else {
-        setIsSidebarOpen(true);
-      }
-    };
+    const handleResize = () => setIsSidebarOpen(window.innerWidth >= 768);
     handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const notifications = [
-    '🚨 Board meeting scheduled for next week (2 hours ago)',
-    '🚨 Annual report review pending (5 hours ago)'
-  ];
-  const notificationCount = notifications.length;
-
-  const isMobile = window.innerWidth < 768;
-
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-      <Header
-        style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }}
-        toggleTheme={toggleTheme}
-        isDarkMode={isDarkMode}
-        notificationCount={notificationCount}
-      />
-      <div style={{ display: 'flex', flex: '1', flexDirection: isMobile ? 'column' : 'row', transition: 'all 0.3s ease' }}>
+    <div className="flex flex-col h-screen">
+      <div className="flex flex-1 overflow-hidden">
         <Sidebar
-          style={{ boxShadow: '2px 0 4px rgba(0, 0, 0, 0.1)' }}
           isOpen={isSidebarOpen}
           toggleSidebar={toggleSidebar}
+          // className="shadow-md"
         />
-        <main style={{
-          flex: isSidebarOpen ? '1' : '100%',
-          padding: isMobile ? '16px' : (isSidebarOpen ? '24px' : '24px 0'),
-          backgroundColor: isDarkMode ? '#374151' : '#f3f4f6',
-          color: isDarkMode ? 'white' : 'black',
-          overflowY: 'auto',
-          transition: 'flex 0.3s ease, padding 0.3s ease'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
-            {!isSidebarOpen && (
-              <button onClick={toggleSidebar} style={{ background: 'none', border: 'none', color: isDarkMode ? 'white' : '#5b1a89', cursor: 'pointer', fontSize: '24px' }}>
-                ☰
+        <div
+          className={`flex flex-col w-full ${
+            isSidebarOpen ? "ml-64" : "ml-16"
+          }`}
+        >
+          <Header toggleTheme={toggleTheme} isDarkMode={isDarkMode} />
+          <main
+            className={`flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 transition-all bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100`}
+          >
+            {/* Title Bar */}
+            <div className="flex items-center justify-between mb-6">
+              <h1 className="text-2xl font-bold">
+                Reports <span className="text-green-500">📊</span>
+              </h1>
+              <button
+                onClick={toggleForm}
+                className="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-purple-500"
+              >
+                {showForm ? "Cancel" : "Add New Report"}
               </button>
+            </div>
+            {/* Form & Filters */}
+            {showForm ? (
+              <div className="mb-6">
+                <AddReportForm isDarkMode={isDarkMode} />
+              </div>
+            ) : (
+              <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
+                <ReportFilter filter={filter} setFilter={setFilter} />
+              </div>
             )}
-            <h1 style={{
-              fontSize: isMobile ? '20px' : '24px',
-              fontWeight: 'bold',
-              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-              padding: '8px',
-              backgroundColor: isDarkMode ? '#4b5563' : '#ffffff',
-              borderRadius: '4px',
-              display: 'inline-block'
-            }}>
-              Reports <span style={{ color: '#10b981' }}>📊</span>
-            </h1>
-          </div>
-          <div style={{
-            display: 'flex',
-            flexDirection: isMobile ? 'column' : 'row',
-            justifyContent: 'space-between',
-            alignItems: isMobile ? 'stretch' : 'center',
-            gap: '16px',
-            marginBottom: '16px'
-          }}>
-            <ReportFilter filter={filter} setFilter={setFilter} />
-            <AddReportForm isDarkMode={isDarkMode} />
-          </div>
-          {selectedReportId ? (
-            <ReportDetails
-              reportId={selectedReportId}
-              isDarkMode={isDarkMode}
-              onBack={() => setSelectedReportId(null)}
-            />
-          ) : (
-            <>
-              <ReportOverview isDarkMode={isDarkMode} filter={filter} />
-              <ReportList
+            {/* Content */}
+            {selectedReportId ? (
+              <ReportDetails
+                reportId={selectedReportId}
                 isDarkMode={isDarkMode}
-                filter={filter}
-                onSelectReport={setSelectedReportId}
+                onBack={() => setSelectedReportId(null)}
               />
-            </>
-          )}
-        </main>
+            ) : (
+              <>
+                <ReportOverview isDarkMode={isDarkMode} filter={filter} />
+                <ReportList
+                  isDarkMode={isDarkMode}
+                  filter={filter}
+                  onSelectReport={setSelectedReportId}
+                />
+              </>
+            )}
+          </main>
+        </div>
       </div>
     </div>
   );

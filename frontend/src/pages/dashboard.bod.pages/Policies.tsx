@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useTheme } from "./ThemeContext"; // Adjust path as needed
+import { useTheme } from "../../context/theme.context"; // Adjust path as needed
 import Header from "../../components/dashboard.bod.components/Header";
 import Sidebar from "../../components/dashboard.bod.components/Sidebar";
 import PolicyList from "../../components/dashboard.bod.components/PolicyList";
@@ -30,11 +30,11 @@ const Policies: React.FC = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const notifications = [
-    "🚨 Board meeting scheduled for next week (2 hours ago)",
-    "🚨 Annual report review pending (5 hours ago)",
-  ];
-  const notificationCount = notifications.length;
+  // const notifications = [
+  //   "🚨 Board meeting scheduled for next week (2 hours ago)",
+  //   "🚨 Annual report review pending (5 hours ago)",
+  // ];
+  // const notificationCount = notifications.length;
 
   const isMobile = window.innerWidth < 768;
 
@@ -44,7 +44,7 @@ const Policies: React.FC = () => {
         // style={{ boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)" }}
         toggleTheme={toggleTheme}
         isDarkMode={isDarkMode}
-        notificationCount={notificationCount}
+        // notificationCount={notificationCount}
       />
       <div
         style={{

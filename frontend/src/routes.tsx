@@ -21,7 +21,7 @@ import LoanRequestPage from "./pages/dashboard.admin.pages/LoanRequested";
 import VerifyEmail from "./pages/very.email";
 import ForgotPassword from "./pages/forgot.password";
 import Dashboard from "./pages/dashboard.bod.pages/Dashboard";
-import UserDashboard from "./pages/dashboard.user.pages/dashboard";
+//import UserDashboard from "./pages/dashboard.user.pages/dashboard";
 import MyGroups from "./pages/dashboard.user.pages/MYGroup";
 import Notifications from "./pages/dashboard.bod.pages/Notifications";
 import Resolutions from "./pages/dashboard.bod.pages/Resolutions";
@@ -37,12 +37,13 @@ import SettingsPage from "./pages/dashboard.user.pages/SettingsPage";
 import InviteMemberRegistrationForm from "./pages/invites.member.register.form";
 import NjangiStateDashBoard from "./pages/njangi-state-dashboard";
 import ProtectedRoute from "./components/protected.route";
+import GroupDetailPage from "./pages/dashboard.user.pages/DetialPage";
 
 // eslint-disable-next-line react-refresh/only-export-components
 const LandingSections: React.FC = () => <App />;
 
 // ----- Build the router -----
- const router = createBrowserRouter([
+const router = createBrowserRouter([
   // Public routes
   {
     path: "/",
@@ -66,11 +67,13 @@ const LandingSections: React.FC = () => <App />;
     caseSensitive: false,
     element: <ProtectedRoute allowedRoles={["user"]} />,
     children: [
-      { path: "dashboard", element: <UserDashboard /> },
+     
       { path: "groups", element: <MyGroups /> },
+      { path: "groups/:groupId", element: <GroupDetailPage /> },
       { path: "payments", element: <PaymentsPage /> },
       { path: "settings", element: <SettingsPage /> },
       { path: "notifications", element: <NotificationsPage /> },
+      
     ],
   },
 
@@ -78,6 +81,7 @@ const LandingSections: React.FC = () => <App />;
   {
     path: "/admin",
     caseSensitive: false,
+    element: <ProtectedRoute allowedRoles={["admin"]} />,
     children: [
       { path: "dashboard", element: <AdminDashboardPage /> },
       { path: "manage-members", element: <MemberManagement /> },
@@ -99,6 +103,7 @@ const LandingSections: React.FC = () => <App />;
   {
     path: "/board",
     caseSensitive: false,
+    element: <ProtectedRoute allowedRoles={["bod"]} />,
     children: [
       { path: "dashboard", element: <Dashboard /> },
       { path: "notifications", element: <Notifications /> },

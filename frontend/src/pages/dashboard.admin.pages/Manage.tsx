@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import { FaSearch, FaTrash, FaEdit } from "react-icons/fa";
 import Sidebar from "../../components/dashboard.admin.components/Sidebar";
 import Header from "../../components/dashboard.admin.components/Header";
+import { Plus } from "lucide-react";
 
 /**
  * Member interface
@@ -40,8 +41,20 @@ const ManageMembersPage: React.FC = () => {
 
   // Members list
   const [members, setMembers] = useState<Member[]>([
-    { id: 1, initials: "JD", name: "John Doe", role: "Admin", status: "Active" },
-    { id: 2, initials: "AS", name: "Alice Smith", role: "Member", status: "Inactive" },
+    {
+      id: 1,
+      initials: "JD",
+      name: "John Doe",
+      role: "Admin",
+      status: "Active",
+    },
+    {
+      id: 2,
+      initials: "AS",
+      name: "Alice Smith",
+      role: "Member",
+      status: "Inactive",
+    },
   ]);
 
   // Modal state for add/edit
@@ -129,10 +142,7 @@ const ManageMembersPage: React.FC = () => {
         `}
       >
         {/* Sticky Header */}
-        <Header
-          darkMode={isDarkMode}
-          setDarkMode={setIsDarkMode}
-        />
+        <Header darkMode={isDarkMode} setDarkMode={setIsDarkMode} />
 
         {/* Scrollable Main */}
         <main className="flex-1 pt-20 px-2 md:px-16 bg-white overflow-y-auto transition-all duration-200">
@@ -162,7 +172,9 @@ const ManageMembersPage: React.FC = () => {
               onClick={openAddModal}
               className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
             >
-              + Add New Member
+              <span className="flex">
+                <Plus /> Add New Member
+              </span>
             </button>
           </div>
 
@@ -298,7 +310,10 @@ const ManageMembersPage: React.FC = () => {
                 </h2>
                 <form onSubmit={handleSave} className="space-y-4">
                   <div>
-                    <label htmlFor="fullName" className="block mb-1 text-sm font-medium">
+                    <label
+                      htmlFor="fullName"
+                      className="block mb-1 text-sm font-medium"
+                    >
                       Full Name
                     </label>
                     <input
@@ -311,7 +326,10 @@ const ManageMembersPage: React.FC = () => {
                     />
                   </div>
                   <div>
-                    <label htmlFor="role" className="block mb-1 text-sm font-medium">
+                    <label
+                      htmlFor="role"
+                      className="block mb-1 text-sm font-medium"
+                    >
                       Role
                     </label>
                     <input
@@ -324,7 +342,10 @@ const ManageMembersPage: React.FC = () => {
                     />
                   </div>
                   <div>
-                    <label htmlFor="status" className="block mb-1 text-sm font-medium">
+                    <label
+                      htmlFor="status"
+                      className="block mb-1 text-sm font-medium"
+                    >
                       Status
                     </label>
                     <select

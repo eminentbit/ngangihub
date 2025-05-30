@@ -7,8 +7,11 @@ import {
   markAsRead,
 } from "../controllers/notification.controller.js";
 import verifyToken from "../middleware/verify.token.js";
+import limiter from "../middleware/limiter.js";
 
 const router = express.Router();
+
+router.use("/", limiter);
 
 router.get("/", getAllNotifications);
 
