@@ -1,8 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+// import axios from "axios";
+import { secureGet } from "../utils/axiosClient";
 
-const API_URL = import.meta.env.VITE_VALIDATE_API_URL;
-console.log("API_URL from useValidateGroupName", API_URL);
+// const API_URL = import.meta.env.VITE_VALIDATE_API_URL;
+// console.log("API_URL from useValidateGroupName", API_URL);
 
 export const useValidateGroupName = (groupName: string) => {
   console.log("groupName from useValidateGroupName", groupName);
@@ -10,7 +11,7 @@ export const useValidateGroupName = (groupName: string) => {
     queryKey: ["validate-group-name", groupName],
     queryFn: async () => {
       try {
-        const { data } = await axios.get(`${API_URL}/validate-group-name`, {
+        const { data } = await secureGet(`validate-group-name`, {
           params: { groupName },
         });
         // Always return a boolean value

@@ -1,16 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+// import axios from "axios";
+import { secureGet } from "../utils/axiosClient";
 
 const VALIDATE_API_URL = import.meta.env.VITE_VALIDATE_API_URL;
 
-
-const buildUrl = (path: string) => { //Ensure that there is no duplicate // of avoid where its
+const buildUrl = (path: string) => {
+  //Ensure that there is no duplicate // of avoid where its
   return `${VALIDATE_API_URL.replace(/\/+$/, "")}/${path.replace(/^\/+/, "")}`;
 };
 
-console.log("Calling validate email URL:", `${VALIDATE_API_URL}/validate-email`);
-console.log("BuildUrl: " + buildUrl("validate-email"))
-
+console.log(
+  "Calling validate email URL:",
+  `${VALIDATE_API_URL}/validate-email`
+);
+console.log("BuildUrl: " + buildUrl("validate-email"));
 
 /**
  *
@@ -20,7 +23,7 @@ export const useValidateEmail = (email: string) => {
   return useQuery({
     queryKey: ["validate-email", email],
     queryFn: async () => {
-      const { data } = await axios.get(buildUrl("validate-email"), {
+      const { data } = await secureGet(buildUrl("validate-email"), {
         params: { email },
       });
       return data.valid;
@@ -40,7 +43,7 @@ export const useValidatePhoneNumber = (phoneNumber: string) => {
     queryKey: ["validate-phoneNumber", phoneNumber],
     queryFn: async () => {
       try {
-        const { data } = await axios.get(
+        const { data } = await secureGet(
           `${VALIDATE_API_URL}/validate-phone-number`,
           { params: { phoneNumber } }
         );

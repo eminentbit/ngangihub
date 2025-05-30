@@ -1,7 +1,8 @@
 import { create } from "zustand";
 import axios from "axios";
+import { securePost } from "../utils/axiosClient";
 
-const ACCEPT_INVITE_API = import.meta.env.VITE_ACCEPT_INVITE_MEMBER_API_URL;
+const ACCEPT_INVITE_API = `/member/accept-member-invite`;
 
 interface MemberDataInfo {
   memberInfo: MemberInfo;
@@ -36,8 +37,8 @@ export const useAcceptInviteStore = create<AcceptInviteState>((set) => ({
   acceptInvite: async (inviteToken: string, memberInfo: MemberInfo) => {
     set({ isLoading: true, isErrors: null, success: false });
     try {
-      const response = await axios.post(
-        `${ACCEPT_INVITE_API}?token=${inviteToken}`,
+      const response = await securePost(
+        `/${ACCEPT_INVITE_API}?token=${inviteToken}`,
         memberInfo
       );
       set({ isLoading: false, success: true, isErrors: null });

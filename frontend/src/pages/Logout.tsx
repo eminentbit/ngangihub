@@ -7,17 +7,12 @@ const LogoutPage: React.FC = () => {
   const { logout, setUser, setIsAuthenticated, user, isAuthenticated } =
     useAuthStore();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     sessionStorage.clear();
     setUser(null);
     setIsAuthenticated(false);
     console.log(user);
-    logout();
-    // axios.post(
-    //   `${import.meta.env.VITE_API_URL}/auth/logout`,
-    //   {},
-    //   { withCredentials: true }
-    // );
+    await logout();
   };
 
   return (

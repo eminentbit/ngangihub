@@ -9,13 +9,27 @@ import AttendanceRate from "../../components/dashboard.bod.components/Attendance
 import RecentResolutions from "../../components/dashboard.bod.components/RecentResolutions";
 import { useNavigate } from "react-router-dom";
 import { Plus } from "lucide-react";
+import { useBodStore } from "../../store/create.bod.store";
 
 const Dashboard: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const { isDarkMode, toggleTheme } = useTheme();
   const navigate = useNavigate();
+  const { fetchMembers, fetchReports, fetchResolutions } = useBodStore();
 
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
+
+  useEffect(() => {
+    fetchMembers();
+  }, [fetchMembers]);
+
+  useEffect(() => {
+    fetchReports();
+  }, [fetchReports]);
+
+  useEffect(() => {
+    fetchResolutions();
+  }, [fetchResolutions]);
 
   // Auto-close sidebar on mobile
   useEffect(() => {
@@ -50,7 +64,7 @@ const Dashboard: React.FC = () => {
           <div className="flex items-center justify-between">
             <button
               onClick={toggleSidebar}
-              className="md:hidden p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="md:hidden p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
               aria-label="Toggle sidebar"
             >
               <span className="text-2xl">☰</span>
@@ -69,12 +83,10 @@ const Dashboard: React.FC = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="w-full sm:w-auto inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="w-full sm:w-auto inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+              onClick={() => navigate("/board/resolutions")}
             >
-              <span
-                onClick={() => navigate("/board/resolutions")}
-                className="mr-2"
-              >
+              <span className="mr-2">
                 <Plus />
               </span>{" "}
               New Resolution
@@ -83,7 +95,8 @@ const Dashboard: React.FC = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="w-full sm:w-auto inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="w-full sm:w-auto inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+              onClick={() => navigate("/board/schedule")}
             >
               <span className="mr-2">📅</span> Schedule Meeting
             </motion.button>

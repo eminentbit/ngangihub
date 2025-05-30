@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useTheme } from "../../context/theme.context"; // Adjust path as needed
+import { motion, AnimatePresence } from "framer-motion";
+import { useTheme } from "../../context/theme.context";
 import Header from "../../components/dashboard.bod.components/Header";
 import Sidebar from "../../components/dashboard.bod.components/Sidebar";
 import PolicyList from "../../components/dashboard.bod.components/PolicyList";
@@ -11,115 +12,70 @@ const Policies: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [filter, setFilter] = useState({ category: "All", status: "All" });
   const [selectedPolicyId, setSelectedPolicyId] = useState<number | null>(null);
+  const [showForm, setShowForm] = useState(false);
   const { isDarkMode, toggleTheme } = useTheme();
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
+  const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
+  const toggleForm = () => setShowForm((prev) => !prev);
 
   useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 768) {
-        setIsSidebarOpen(false);
-      } else {
-        setIsSidebarOpen(true);
-      }
-    };
+    const handleResize = () => setIsSidebarOpen(window.innerWidth >= 768);
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // const notifications = [
-  //   "🚨 Board meeting scheduled for next week (2 hours ago)",
-  //   "🚨 Annual report review pending (5 hours ago)",
-  // ];
-  // const notificationCount = notifications.length;
-
-  const isMobile = window.innerWidth < 768;
-
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
-      <Header
-        // style={{ boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)" }}
-        toggleTheme={toggleTheme}
-        isDarkMode={isDarkMode}
-        // notificationCount={notificationCount}
-      />
-      <div
-        style={{
-          display: "flex",
-          flex: "1",
-          flexDirection: isMobile ? "column" : "row",
-          transition: "all 0.3s ease",
-        }}
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
+      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      <motion.div
+        className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ${
+          isSidebarOpen ? "ml-64" : "ml-16"
+        } bg-gray-100 dark:bg-gray-800`}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1, transition: { duration: 0.3 } }}
       >
-        <Sidebar
-          style={{ boxShadow: "2px 0 4px rgba(0, 0, 0, 0.1)" }}
-          isOpen={isSidebarOpen}
-          toggleSidebar={toggleSidebar}
-        />
-        <main
-          style={{
-            flex: isSidebarOpen ? "1" : "100%",
-            padding: isMobile ? "16px" : isSidebarOpen ? "24px" : "24px 0",
-            backgroundColor: isDarkMode ? "#374151" : "#f3f4f6",
-            color: isDarkMode ? "white" : "black",
-            overflowY: "auto",
-            transition: "flex 0.3s ease, padding 0.3s ease",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "16px",
-              marginBottom: "16px",
-            }}
-          >
-            {!isSidebarOpen && (
-              <button
-                type="button"
-                onClick={toggleSidebar}
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: isDarkMode ? "white" : "#5b1a89",
-                  cursor: "pointer",
-                  fontSize: "24px",
-                }}
-              >
-                ☰
-              </button>
-            )}
-            <h1
-              style={{
-                fontSize: isMobile ? "20px" : "24px",
-                fontWeight: "bold",
-                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-                padding: "8px",
-                backgroundColor: isDarkMode ? "#4b5563" : "#ffffff",
-                borderRadius: "4px",
-                display: "inline-block",
-              }}
-            >
-              Policies <span style={{ color: "#10b981" }}>📜</span>
+        <Header isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 space-y-6">
+          {/* Top bar */}
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 px-4 py-2 rounded shadow">
+              Policies <span className="text-purple-500">📜</span>
             </h1>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={toggleForm}
+              className="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+            >
+              {showForm ? "Cancel" : "Add Policy"}
+            </motion.button>
           </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: isMobile ? "column" : "row",
-              justifyContent: "space-between",
-              alignItems: isMobile ? "stretch" : "center",
-              gap: "16px",
-              marginBottom: "16px",
-            }}
-          >
-            <PolicyFilter filter={filter} setFilter={setFilter} />
-            <CreatePolicyForm isDarkMode={isDarkMode} />
-          </div>
-          {selectedPolicyId ? (
+
+          {/* Form */}
+          <AnimatePresence>
+            {showForm && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+                className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6"
+              >
+                <CreatePolicyForm isDarkMode={isDarkMode} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Filters */}
+          {!showForm && (
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+              <PolicyFilter filter={filter} setFilter={setFilter} />
+            </div>
+          )}
+
+          {/* Content */}
+          {selectedPolicyId !== null ? (
             <PolicyDetails
               policyId={selectedPolicyId}
               isDarkMode={isDarkMode}
@@ -133,7 +89,7 @@ const Policies: React.FC = () => {
             />
           )}
         </main>
-      </div>
+      </motion.div>
     </div>
   );
 };

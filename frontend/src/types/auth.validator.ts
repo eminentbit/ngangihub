@@ -10,3 +10,12 @@ export type ValidatedUser = {
   role: "bod" | "user" | "member" | "admin";
   image?: string;
 };
+
+export interface User {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  image?: string;
+  role: "user" | "admin" | "bod" | "member";
+}

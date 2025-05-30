@@ -1,12 +1,8 @@
 // store/useAuthStore.ts
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-
-type User = {
-  email: string;
-  role: "bod" | "user" | "member" | "admin";
-  image: string;
-};
+import { User } from "../types/auth.validator";
+import { securePost } from "../utils/axiosClient";
 
 type AuthState = {
   isAuthenticated: boolean;
@@ -14,7 +10,7 @@ type AuthState = {
   loading: boolean;
   setUser: (user: User | null) => void;
   setIsAuthenticated: (isAuthenticated: boolean) => void;
-  logout: () => void;
+  logout: () => Promise<void>;
 };
 
 export const useAuthStore = create(
@@ -26,7 +22,10 @@ export const useAuthStore = create(
       setUser: (user: User | null) => set({ user }),
       setIsAuthenticated: (auth: boolean) => set({ isAuthenticated: auth }),
       setLoading: (loading: boolean) => set({ loading }),
-      logout: () => set({ user: null, isAuthenticated: false }),
+      logout: async () => {
+        set({ user: null, isAuthenticated: false });
+        await securePost("/auth/logout", {});
+      },
     }),
     {
       name: "auth-storage",

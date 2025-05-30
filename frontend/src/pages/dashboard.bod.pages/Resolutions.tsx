@@ -7,6 +7,7 @@ import ResolutionList from "../../components/dashboard.bod.components/Resolution
 import ResolutionFilter from "../../components/dashboard.bod.components/ResolutionFilter";
 import NewResolutionModal from "../../components/dashboard.bod.components/NewResolutionModal";
 import { Plus } from "lucide-react";
+import { useBodStore } from "../../store/create.bod.store";
 
 const modalBackdrop = {
   hidden: { opacity: 0 },
@@ -28,6 +29,7 @@ const Resolutions: React.FC = () => {
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
+  const { fetchResolutions } = useBodStore();
 
   useEffect(() => {
     const handleResize = () => setIsSidebarOpen(window.innerWidth >= 768);
@@ -35,6 +37,10 @@ const Resolutions: React.FC = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  useEffect(() => {
+    fetchResolutions();
+  }, [fetchResolutions]);
 
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
@@ -57,7 +63,7 @@ const Resolutions: React.FC = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={openModal}
-              className="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
             >
               <span className="mr-2 flex">
                 <Plus />

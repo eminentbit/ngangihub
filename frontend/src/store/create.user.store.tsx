@@ -1,7 +1,8 @@
 import { create } from "zustand";
-import axios from "axios";
+// import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { GroupDetails } from "../types/create-njangi-types";
+import { secureGet } from "../utils/axiosClient";
 
 interface Notification {
   isRead: boolean;
@@ -30,10 +31,7 @@ const useUserStore = create<UserState>((set) => ({
   fetchNotifications: async () => {
     set({ isLoading: true, error: null });
     try {
-      const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/notifications/user`,
-        { withCredentials: true }
-      );
+      const res = await secureGet(`/notifications/user`);
       set({
         notifications: res.data,
         isLoading: false,
@@ -50,7 +48,7 @@ export const useGroupsQuery = () => {
   return useQuery({
     queryKey: ["groups"],
     queryFn: async () => {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/groups`);
+      const res = await secureGet(`/groups`);
       setGroups(res.data); // Sync Zustand store
       return res.data;
     },

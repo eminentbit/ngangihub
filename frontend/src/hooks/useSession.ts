@@ -1,19 +1,17 @@
 // hooks/useSession.ts
 import { useQuery } from "@tanstack/react-query";
 import { useAuthStore } from "../store/create.auth.store";
-import { userSchema, ValidatedUser } from "../types/auth.validator";
-import axios from "axios";
+import { User } from "../types/auth.validator";
+// import axios from "axios";
+import { secureGet } from "../utils/axiosClient";
 
 const fetchSession = async (
-  setUser: (user: ValidatedUser) => void,
+  setUser: (user: User | null) => void,
   logout: () => void
-): Promise<ValidatedUser> => {
+): Promise<User | null> => {
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/session`, {
-      withCredentials: true,
-    });
-
-    const user = userSchema.parse(res.data.user);
+    const res = await secureGet("/api/session");
+    const user = res.data.user;
     setUser(user);
     return user;
   } catch (err) {

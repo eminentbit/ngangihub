@@ -1,6 +1,7 @@
 // ForgotPassword.tsx
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { securePost } from "../utils/axiosClient";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -21,9 +22,14 @@ export default function ForgotPassword() {
           password.
         </p>
         <form
-          onSubmit={(e) => {
+          onSubmit={async (e) => {
             e.preventDefault();
-            console.log("Reset link sent to:", email);
+            try {
+              await securePost("/auth/forgot-password", { email });
+              console.log("Reset link sent to:", email);
+            } catch (error) {
+              console.error("Error sending reset link:", error);
+            }
           }}
           className="space-y-4"
         >

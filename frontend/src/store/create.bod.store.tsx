@@ -1,10 +1,11 @@
 // store/use.bod.store.ts
 import { create } from "zustand";
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import { GroupRequest } from "../types/group.request.ts";
-import { post } from "../utils/axiosClient.ts";
+import { post, secureGet, securePost } from "../utils/axiosClient.ts";
+import { User } from "../types/auth.validator.ts";
 
-interface Report {
+export interface Report {
   id: string;
   type: string;
   content: string;
@@ -14,24 +15,47 @@ interface Report {
   uploaded: string;
 }
 
-interface Metrics {
+export interface Metrics {
   profit: number;
   expenses: number;
   revenue: number;
+}
+
+export interface Resolution {
+  id: string;
+  status: string;
+  title: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Meeting {
+  id: string;
+  title: string;
+  date: string;
+  agenda: string;
+  minutes: string;
+  status: string;
+  attendees?: User[];
 }
 
 interface BodStoreState {
   requests: GroupRequest[];
   isLoading: boolean;
   error: string | null;
+  members: User[];
+  meetings: Meeting[];
   notifications: {
     isRead: boolean;
     _id: string;
     message: string;
     createdAt: string;
   }[];
+  resolutions: Resolution[];
   reports: Report[];
   fetchReports: () => Promise<void>;
+  listMeetings: () => Promise<void>;
   createReport: (
     title: string,
     type: string,
@@ -41,25 +65,118 @@ interface BodStoreState {
     metrics: Metrics,
     summary?: string
   ) => Promise<void>;
+  createMeeting: (
+    title: string,
+    date: string,
+    agenda: string,
+    minutes: string,
+    status: string,
+    attendees?: User[]
+  ) => Promise<void>;
   fetchRequests: () => Promise<void>;
+  fetchResolutions: () => Promise<void>;
+  fetchMembers: () => Promise<void>;
+  createResolution: (title: string, description: string) => Promise<void>;
   acceptRequest: (id: string, reason: string) => Promise<void>;
   rejectRequest: (id: string, reason: string) => Promise<void>;
 }
 
 export const useBodStore = create<BodStoreState>((set) => ({
   requests: [],
+  members: [],
   reports: [],
   isLoading: false,
   error: null,
   notifications: [],
+  resolutions: [],
+  meetings: [],
+
+  createMeeting: async (
+    title: string,
+    date: string,
+    agenda: string,
+    minutes: string,
+    status: string,
+    attendees?: User[]
+  ) => {
+    try {
+      const res = await securePost("/bod/meetings", {
+        title,
+        date,
+        agenda,
+        minutes,
+        status,
+        attendees,
+      });
+
+      set((state) => ({ meetings: [...state.meetings, res.data] }));
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        set({ error: err.response?.data });
+      } else {
+        console.error("An unknown error occured");
+      }
+    }
+  },
+  createResolution: async (title: string, description: string) => {
+    try {
+      const res = await securePost("/bod/resolutions", { title, description });
+      console.log(res.data);
+      set((state) => ({
+        resolutions: [...state.resolutions, res.data],
+      }));
+    } catch (err) {
+      console.error("Failed to create resolution:", err);
+      set({ error: "Could not create resolution" });
+    }
+  },
+
+  fetchResolutions: async () => {
+    try {
+      const res = await secureGet("/bod/resolutions");
+      set({ resolutions: res.data });
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        set({ error: error.response?.data });
+      }
+      console.log(error);
+    }
+  },
+
+  listMeetings: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const res = await secureGet(`/bod/meetings`);
+      console.log(res.data);
+      set({
+        meetings: res.data,
+        isLoading: false,
+      });
+    } catch (err) {
+      console.error("Failed to fetch meetings:", err);
+      set({ error: "Could not fetch meetings", isLoading: false });
+    }
+  },
+
+  fetchMembers: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const res = await secureGet(`/bod/members`);
+      console.log(res.data);
+      set({
+        members: res.data,
+        isLoading: false,
+      });
+    } catch (err) {
+      console.error("Failed to fetch members:", err);
+      set({ error: "Could not fetch members", isLoading: false });
+    }
+  },
 
   fetchRequests: async () => {
     set({ isLoading: true, error: null });
     try {
-      const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/bod/drafts`,
-        { withCredentials: true }
-      );
+      const res = await secureGet(`/bod/drafts`);
 
       console.log(res.data);
 
@@ -75,11 +192,11 @@ export const useBodStore = create<BodStoreState>((set) => ({
 
   acceptRequest: async (id: string, reason: string) => {
     try {
-      await axios.post(
-        `${import.meta.env.VITE_API_URL}/bod/approve`,
-        { reason, action: "approve", draftId: id },
-        { withCredentials: true }
-      );
+      await securePost(`/bod/approve`, {
+        reason,
+        action: "approve",
+        draftId: id,
+      });
       set((state) => ({
         requests: state.requests.filter((req) => req._id !== id),
       }));
@@ -92,12 +209,9 @@ export const useBodStore = create<BodStoreState>((set) => ({
     set({ isLoading: true, error: null });
 
     try {
-      const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/bod/reports`,
-        { withCredentials: true }
-      );
+      const res = await secureGet(`/bod/reports`);
       console.log(res.data);
-      set({ reports: res.data, isLoading: false });
+      set({ reports: res.data.reports, isLoading: false });
     } catch (error) {
       if (error instanceof AxiosError) {
         set({ error: error.response?.data });
@@ -132,11 +246,11 @@ export const useBodStore = create<BodStoreState>((set) => ({
 
   rejectRequest: async (id: string, reason: string) => {
     try {
-      await axios.post(
-        `${import.meta.env.VITE_API_URL}/bod/reject`,
-        { reason, action: "reject", draftId: id },
-        { withCredentials: true }
-      );
+      await securePost(`/bod/reject`, {
+        reason,
+        action: "reject",
+        draftId: id,
+      });
       set((state) => ({
         requests: state.requests.filter((req) => req._id !== id),
       }));

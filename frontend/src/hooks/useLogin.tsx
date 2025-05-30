@@ -1,8 +1,9 @@
 // hooks/useLogin.ts
 import { useMutation } from "@tanstack/react-query";
-import axios, { AxiosError } from "axios";
 import { useAuthStore } from "../store/create.auth.store";
 import { useNavigate } from "react-router-dom";
+import { securePost } from "../utils/axiosClient";
+import { AxiosError } from "axios";
 
 export const useLogin = (setError?: (message: string) => void) => {
   const setUser = useAuthStore((s) => s.setUser);
@@ -11,15 +12,13 @@ export const useLogin = (setError?: (message: string) => void) => {
 
   return useMutation({
     mutationFn: async (credentials: { email: string; password: string }) => {
-      const res = await axios.post(
-        `${import.meta.env.VITE_LOGIN_API_URL}`,
-        credentials
-      );
-      console.log(res.data);
+      const res = await securePost("/auth/login", credentials);
+      if (res.status !== 200) {
+        throw new Error("Login failed");
+      }
       return res.data.user;
     },
     onSuccess: (user) => {
-      console.log(user);
       setAuth(true);
       setUser(user);
       if (user.role == "bod") {
