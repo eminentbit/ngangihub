@@ -9,6 +9,7 @@ import DecisionModal from "../../components/dashboard.bod.components/DecisionMod
 import { useBodStore } from "../../store/create.bod.store";
 import { GroupRequest } from "../../types/group.request";
 import { GroupDetails } from "../../types/create-njangi-types";
+import toast from "react-hot-toast";
 
 const GroupRequests: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -55,6 +56,9 @@ const GroupRequests: React.FC = () => {
     if (modalAction && modalRequestId) {
       if (modalAction === "approve") {
         acceptRequest(modalRequestId, reason);
+        toast.success("Request approved successfully!", {
+          position: "top-right",
+        });
       } else {
         rejectRequest(modalRequestId, reason);
       }
