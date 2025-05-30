@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { useAuthStore } from "../store/create.auth.store";
 
 const LogoutPage: React.FC = () => {
   const [isLoggedOut, setIsLoggedOut] = useState(false);
+  const { logout } = useAuthStore();
 
   const handleLogout = () => {
-    // call your logout logic here (e.g., clear tokens, call API)
     setIsLoggedOut(true);
+    logout();
   };
 
   return (
@@ -32,8 +34,12 @@ const LogoutPage: React.FC = () => {
                   />
                 </svg>
               </div>
-              <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2">Ready to Logout?</h1>
-              <p className="text-sm sm:text-base text-gray-600 mb-6">Click the button below to sign out of your NJANGI account.</p>
+              <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2">
+                Ready to Logout?
+              </h1>
+              <p className="text-sm sm:text-base text-gray-600 mb-6">
+                Click the button below to sign out of your NJANGI account.
+              </p>
               <button
                 onClick={handleLogout}
                 className="inline-block px-4 sm:px-6 py-2 sm:py-3 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition w-full sm:w-auto"
@@ -60,7 +66,9 @@ const LogoutPage: React.FC = () => {
                   />
                 </svg>
               </div>
-              <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2">You’ve been logged out</h1>
+              <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2">
+                You’ve been logged out
+              </h1>
               <p className="text-sm sm:text-base text-gray-600 mb-6">
                 Thanks for visiting NJANGI. We hope to see you again soon.
               </p>

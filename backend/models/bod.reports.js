@@ -14,8 +14,8 @@ const reportSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["Draft", "Submitted", "Approved", "Rejected"],
-      default: "Draft",
+      enum: ["Submitted", "Approved", "Rejected", "Pending"],
+      default: "Pending",
     },
     summary: {
       type: String,
@@ -44,6 +44,6 @@ const reportSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Report = mongoose.model("Report", reportSchema);
+const BodReport = mongoose.model("Report", reportSchema);
 
-export default Report;
+export default BodReport;
