@@ -25,7 +25,6 @@ const groups: Group[] = [
 ];
 
 const MyGroups: React.FC = () => {
-
   // Modal state
   const [chatModalGroupId, setChatModalGroupId] = useState<string | null>(null);
 
@@ -156,14 +155,13 @@ const MyGroups: React.FC = () => {
                   </button>
                 </div>
 
-    <Link
-  to={`/user/groups/${group.id}`}
-  state={{ group }}
-  className="…"
->
-  Details
-</Link>
-
+                <Link
+                  to={`/user/groups/${group.id}`}
+                  state={{ group }}
+                  className="…"
+                >
+                  Details
+                </Link>
               </div>
             ))}
           </section>
