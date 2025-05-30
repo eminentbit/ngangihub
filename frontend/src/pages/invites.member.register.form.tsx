@@ -17,6 +17,7 @@ import { useNavigate } from "react-router-dom";
 import { useValidateInvitationToken } from "../store/validate.registration.token.draftid.tsx";
 import InviteTokenStatusUi from "../components/ui.messages/invalid.token.ui.msg";
 import UILoader from "../components/ui.messages/ui.loader";
+import toast from "react-hot-toast";
 
 export default function InviteMemberRegistrationForm() {
   const [phone, setPhone] = useState("");
@@ -122,11 +123,21 @@ export default function InviteMemberRegistrationForm() {
       });
       // Redirect based on response (e.g., to group dashboard)
       if (response && response.userId && response.message) {
-        navigate(`/user/dashboard`);
+        navigate(`/user/dashboard?userId=${response.userId}`);
         console.log(`/user/dashboard?userId=${response.userId}`);
-        alert(`Success: ${response.message}`);
+        toast.success(
+          `Welcome ${data.firstName}, you have successfully joined ${response.groupName}`,
+          {
+            duration: 5000,
+            position: "top-right",
+          }
+        );
       } else {
-        alert(`Error: ${response?.message || "Unknown error occurred"}`);
+        toast.error("Failed to join the group. Please try again.", {
+          duration: 5000,
+          position: "top-right",
+        })
+        console.log(`Error: ${response?.message || "Unknown error occurred"}`);
       }
     } catch (error) {
       console.error("Submission error:", error);

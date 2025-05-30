@@ -9,6 +9,7 @@ interface MemberDataInfo {
   inviteToken: string;
   message: string;
   userId: string;
+  groupName:string
 }
 
 interface AcceptInviteState {
