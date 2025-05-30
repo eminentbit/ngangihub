@@ -1,229 +1,139 @@
-import { Bell } from "lucide-react";
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Bell, Menu, X } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { NavLink } from "react-router-dom";
 
 interface SidebarProps {
-  style?: React.CSSProperties;
   isOpen: boolean;
   toggleSidebar: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ style, isOpen, toggleSidebar }) => {
-  const currentPath = window.location.pathname;
-  const [hoveredLink, setHoveredLink] = useState<string | null>(null);
+const sections = [
+  {
+    label: "Board Menu",
+    items: [
+      { to: "/board/dashboard", icon: "📊", label: "Dashboard" },
+      { to: "/board/resolutions", icon: "📋", label: "Resolutions" },
+    ],
+  },
+  {
+    label: "Meetings",
+    items: [
+      { to: "/board/schedule", icon: "📅", label: "Schedule" },
+      { to: "/board/minutes", icon: "📝", label: "Minutes" },
+      { to: "/board/attendance", icon: "👥", label: "Attendance" },
+    ],
+  },
+  {
+    label: "Reports",
+    items: [{ to: "/board/reports", icon: "📊", label: "Reports" }],
+  },
+  {
+    label: "Group Requests",
+    items: [{ to: "/board/group-requests", icon: "👥", label: "Requests" }],
+  },
+];
 
-  const getLinkStyle = (path: string) => ({
-    display: "block",
-    padding: "8px",
-    backgroundColor:
-      currentPath === path
-        ? "#7c3aed"
-        : hoveredLink === path
-        ? "#9333ea"
-        : isOpen
-        ? "transparent"
-        : "none",
-    borderRadius: "4px",
-    textDecoration: "none",
-    color:
-      currentPath === path
-        ? "white"
-        : hoveredLink === path
-        ? "white"
-        : isOpen
-        ? "white"
-        : "transparent",
-    transition: "background-color 0.3s ease, color 0.3s ease",
-  });
+const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
+  const [isMobile, setIsMobile] = useState<boolean>(false);
 
-  const isMobile = window.innerWidth < 768;
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 768);
+    onResize();
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   return (
-    <aside
-      style={{
-        backgroundColor: isOpen ? "#5b1a89" : "transparent",
-        color: "white",
-        width: isMobile ? (isOpen ? "100%" : "0") : isOpen ? "auto" : "0", // Dynamic width for desktop
-        minWidth: isMobile ? "100%" : isOpen ? "256px" : "0", // Ensure minimum width for readability
-        minHeight: "100vh", // At least fill the viewport, but can grow
-        padding: isOpen ? "16px" : "0",
-        overflow: "hidden",
-        overflowY: "auto", // Enable scrolling if content overflows
-        opacity: isOpen ? 1 : 0, // Fade in/out
-        visibility: isOpen ? "visible" : "hidden", // Hide when fully closed
-        transition:
-          "width 0.3s ease, padding 0.3s ease, opacity 0.3s ease, background-color 0.3s ease, visibility 0.3s ease", // Smooth transitions
-        position: "relative",
-        ...style,
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "16px",
-        }}
-      >
-        <h3 style={{ fontSize: "18px", display: isOpen ? "block" : "none" }}>
-          BOARD MENU
-        </h3>
+    <div>
+      {!isOpen ? (
         <button
           type="button"
+          className="fixed top-4 left-4 p-2 rounded-lg hover:bg-purple-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 z-30"
           onClick={toggleSidebar}
-          style={{
-            background: "none",
-            border: "none",
-            color: "white",
-            cursor: "pointer",
-            fontSize: "24px",
-          }}
+          aria-label="Open sidebar"
         >
-          {isOpen ? "✖" : "☰"}
+          <Menu className="h-6 w-6 text-purple-600" />
         </button>
-      </div>
-      <nav style={{ display: isOpen ? "block" : "none" }}>
-        <ul style={{ marginBottom: "24px", listStyle: "none", padding: 0 }}>
-          <li>
-            <Link
-              to="/board/dashboard"
-              onMouseEnter={() => setHoveredLink("/board/dashboard")}
-              onMouseLeave={() => setHoveredLink(null)}
-              style={getLinkStyle("/board/dashboard")}
-            >
-              📊 Board Dashboard
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/board/resolutions"
-              onMouseEnter={() => setHoveredLink("/board/resolutions")}
-              onMouseLeave={() => setHoveredLink(null)}
-              style={getLinkStyle("/board/resolutions")}
-            >
-              📋 Resolutions
-            </Link>
-          </li>
-        </ul>
-        <h3
-          style={{ fontSize: "18px", marginBottom: "16px", marginTop: "24px" }}
+      ) : (
+        <aside
+          className={`fixed top-0 left-0 h-full z-20 transform bg-gradient-to-b from-purple-600 to-purple-800 text-white
+          ${isOpen ? "translate-x-0" : "-translate-x-full"}
+          transition-transform duration-300 ease-in-out w-64 shadow-lg`}
         >
-          MEETINGS
-        </h3>
-        <ul style={{ marginBottom: "24px", listStyle: "none", padding: 0 }}>
-          <li>
-            <Link
-              to="/board/schedule"
-              onMouseEnter={() => setHoveredLink("/board/schedule")}
-              onMouseLeave={() => setHoveredLink(null)}
-              style={getLinkStyle("/board/schedule")}
+          <div className="flex items-center justify-between p-4">
+            <h2 className="text-lg font-semibold tracking-wide">Board</h2>
+            <button
+              type="button"
+              className="p-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-300"
+              onClick={toggleSidebar}
+              aria-label="Close sidebar"
             >
-              📅 Meeting Schedule
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/board/minutes"
-              onMouseEnter={() => setHoveredLink("/board/minutes")}
-              onMouseLeave={() => setHoveredLink(null)}
-              style={getLinkStyle("/board/minutes")}
-            >
-              📝 Meeting Minutes
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/board/attendance"
-              onMouseEnter={() => setHoveredLink("/board/attendance")}
-              onMouseLeave={() => setHoveredLink(null)}
-              style={getLinkStyle("/board/attendance")}
-            >
-              👥 Attendance
-            </Link>
-          </li>
-        </ul>
-        {/* <h3
-          style={{ fontSize: "18px", marginBottom: "16px", marginTop: "24px" }}
-        >
-          DOCUMENTS
-        </h3>
-        <ul style={{ marginBottom: "24px", listStyle: "none", padding: 0 }}>
-          <li>
-            <Link
-              to="/board/documents"
-              onMouseEnter={() => setHoveredLink("/board/documents")}
-              onMouseLeave={() => setHoveredLink(null)}
-              style={getLinkStyle("/board/documents")}
-            >
-              📑 Documents
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/board/policies"
-              onMouseEnter={() => setHoveredLink("/board/policies")}
-              onMouseLeave={() => setHoveredLink(null)}
-              style={getLinkStyle("/board/policies")}
-            >
-              📜 Policies
-            </Link>
-          </li>
-        </ul> */}
-        <h3
-          style={{ fontSize: "18px", marginBottom: "16px", marginTop: "24px" }}
-        >
-          REPORTS
-        </h3>
-        <ul style={{ marginBottom: "24px", listStyle: "none", padding: 0 }}>
-          <li>
-            <Link
-              to="/board/reports"
-              onMouseEnter={() => setHoveredLink("/board/reports")}
-              onMouseLeave={() => setHoveredLink(null)}
-              style={getLinkStyle("/board/reports")}
-            >
-              📊 Reports
-            </Link>
-          </li>
-        </ul>
-        <h3
-          style={{ fontSize: "18px", marginBottom: "16px", marginTop: "24px" }}
-        >
-          GROUP REQUESTS
-        </h3>
-        <ul style={{ marginBottom: "24px", listStyle: "none", padding: 0 }}>
-          <li>
-            <Link
-              to="/board/group-requests"
-              onMouseEnter={() => setHoveredLink("/board/group-requests")}
-              onMouseLeave={() => setHoveredLink(null)}
-              style={getLinkStyle("/board/group-requests")}
-            >
-              👥 Group Requests
-            </Link>
-          </li>
-        </ul>
-        <div style={{ marginTop: "24px" }}>
-          <h3 style={{ fontSize: "18px", marginBottom: "8px" }}>
-            NOTIFICATIONS
-          </h3>
-          <ul style={{ listStyle: "none", padding: 0 }}>
-            <li>
-              <Link
+              <X size={20} />
+            </button>
+          </div>
+
+          <nav className="flex flex-col space-y-6 px-4 overflow-y-auto h-[calc(100%-64px)]">
+            {sections.map((section) => (
+              <div key={section.label}>
+                <h3 className="text-sm uppercase tracking-wider text-purple-200 mb-2 mt-4">
+                  {section.label}
+                </h3>
+                <ul className="space-y-1">
+                  {section.items.map(({ to, icon, label }) => (
+                    <li key={to}>
+                      <NavLink
+                        to={to}
+                        className={({ isActive }) =>
+                          `flex items-center gap-3 px-3 py-2 rounded-lg transition-colors duration-200 ${
+                            isActive
+                              ? "bg-white bg-opacity-20 text-white font-medium"
+                              : "text-purple-100 hover:bg-white hover:bg-opacity-10"
+                          }`
+                        }
+                      >
+                        <span className="text-lg">{icon}</span>
+                        <span className="flex-1 truncate">{label}</span>
+                      </NavLink>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+
+            <div className="mt-auto">
+              <h3 className="text-sm uppercase tracking-wider text-purple-200 mb-2">
+                Notifications
+              </h3>
+              <NavLink
                 to="/board/notifications"
-                onMouseEnter={() => setHoveredLink("/board/notifications")}
-                onMouseLeave={() => setHoveredLink(null)}
-                style={getLinkStyle("/board/notifications")}
+                className={({ isActive }) =>
+                  `flex items-center gap-2 px-3 py-2 rounded-lg transition-colors duration-200 ${
+                    isActive
+                      ? "bg-white bg-opacity-20 text-white font-medium"
+                      : "text-purple-100 hover:bg-white hover:bg-opacity-10"
+                  }`
+                }
               >
-                <span className="flex gap-2">
-                  <Bell /> View Notifications
-                </span>
-              </Link>
-            </li>
-          </ul>
-        </div>
-      </nav>
-    </aside>
+                <Bell size={18} />
+                <span className="truncate">View Notifications</span>
+              </NavLink>
+            </div>
+          </nav>
+
+          {isMobile && (
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
+              <button
+                onClick={toggleSidebar}
+                className="text-white opacity-70 hover:opacity-100 focus:outline-none"
+                aria-label="Close sidebar"
+              >
+                <X size={24} />
+              </button>
+            </div>
+          )}
+        </aside>
+      )}
+    </div>
   );
 };
 

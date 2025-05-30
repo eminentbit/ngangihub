@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useTheme } from "./ThemeContext"; // Adjust path as needed
+import { motion, AnimatePresence } from "framer-motion";
+import { useTheme } from "../../context/theme.context";
 import Header from "../../components/dashboard.bod.components/Header";
 import Sidebar from "../../components/dashboard.bod.components/Sidebar";
 import MinutesList from "../../components/dashboard.bod.components/MinutesList";
@@ -10,119 +11,64 @@ import MinutesDetails from "../../components/dashboard.bod.components/MinutesDet
 const MeetingMinutes: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [filter, setFilter] = useState("All");
+  const [showForm, setShowForm] = useState(false);
   const [selectedMinutesId, setSelectedMinutesId] = useState<number | null>(
     null
   );
   const { isDarkMode, toggleTheme } = useTheme();
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
+  const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
+  const toggleForm = () => setShowForm((prev) => !prev);
 
   useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 768) {
-        setIsSidebarOpen(false);
-      } else {
-        setIsSidebarOpen(true);
-      }
-    };
+    const handleResize = () => setIsSidebarOpen(window.innerWidth >= 768);
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const notifications = [
-    "🚨 Board meeting scheduled for next week (2 hours ago)",
-    "🚨 Annual report review pending (5 hours ago)",
-  ];
-  const notificationCount = notifications.length;
-
-  const isMobile = window.innerWidth < 768;
-  const isTablet = window.innerWidth >= 768 && window.innerWidth <= 1024;
-  const isDesktop = window.innerWidth > 1024;
-
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
-      <Header
-        // style={{ boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)" }}
-        toggleTheme={toggleTheme}
-        isDarkMode={isDarkMode}
-        notificationCount={notificationCount}
-      />
-      <div
-        style={{
-          display: "flex",
-          flex: "1",
-          flexDirection: isMobile ? "column" : "row",
-          transition: "all 0.3s ease",
-        }}
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
+      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      <main
+        className={`flex-1 overflow-y-auto pb-4 md:pb-6 lg:pb-8 transition-all duration-300 ${
+          isSidebarOpen ? "ml-64" : "ml-16"
+        } bg-gray-100 dark:bg-gray-800`}
       >
-        <Sidebar
-          style={{ boxShadow: "2px 0 4px rgba(0, 0, 0, 0.1)" }}
-          isOpen={isSidebarOpen}
-          toggleSidebar={toggleSidebar}
-        />
-        <main
-          style={{
-            flex: isSidebarOpen ? "1" : "100%",
-            padding: isMobile ? "16px" : isSidebarOpen ? "24px" : "24px 0",
-            backgroundColor: isDarkMode ? "#374151" : "#f3f4f6",
-            color: isDarkMode ? "white" : "black",
-            overflowY: "auto",
-            transition: "flex 0.3s ease, padding 0.3s ease",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "16px",
-              marginBottom: "16px",
-            }}
-          >
-            {!isSidebarOpen && (
-              <button
-                type="button"
-                onClick={toggleSidebar}
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: isDarkMode ? "white" : "#5b1a89",
-                  cursor: "pointer",
-                  fontSize: "24px",
-                }}
-              >
-                ☰
-              </button>
-            )}
-            <h1
-              style={{
-                fontSize: isMobile ? "20px" : "24px",
-                fontWeight: "bold",
-                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-                padding: "8px",
-                backgroundColor: isDarkMode ? "#4b5563" : "#ffffff",
-                borderRadius: "4px",
-                display: "inline-block",
-              }}
-            >
-              Meeting Minutes <span style={{ color: "#10b981" }}>📝</span>
+        <Header toggleTheme={toggleTheme} isDarkMode={isDarkMode} />
+
+        <div className="flex flex-col p-4">
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-2xl font-bold px-4 py-2 rounded-md shadow bg-white dark:bg-gray-700">
+              Meeting Minutes <span className="text-green-500">📝</span>
             </h1>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={toggleForm}
+              className="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              {showForm ? "Cancel" : "Add Minutes"}
+            </motion.button>
           </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: isMobile ? "column" : "row",
-              justifyContent: "space-between",
-              alignItems: isMobile ? "stretch" : "center",
-              gap: "16px",
-              marginBottom: "16px",
-            }}
-          >
-            <MinutesFilter filter={filter} setFilter={setFilter} />
-            <AddMinutesForm isDarkMode={isDarkMode} />
-          </div>
+          <AnimatePresence>
+            {showForm && (
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+                className="mb-6"
+              >
+                <AddMinutesForm isDarkMode={isDarkMode} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+          {!showForm && (
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
+              <MinutesFilter filter={filter} setFilter={setFilter} />
+            </div>
+          )}
           {selectedMinutesId ? (
             <MinutesDetails
               minutesId={selectedMinutesId}
@@ -136,8 +82,8 @@ const MeetingMinutes: React.FC = () => {
               onSelectMinutes={setSelectedMinutesId}
             />
           )}
-        </main>
-      </div>
+        </div>
+      </main>
     </div>
   );
 };

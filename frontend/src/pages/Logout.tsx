@@ -1,21 +1,30 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import { useAuthStore } from "../store/create.auth.store";
+// import axios from "axios";
 
 const LogoutPage: React.FC = () => {
-  const [isLoggedOut, setIsLoggedOut] = useState(false);
-  const { logout } = useAuthStore();
+  const { logout, setUser, setIsAuthenticated, user, isAuthenticated } =
+    useAuthStore();
 
   const handleLogout = () => {
-    setIsLoggedOut(true);
+    sessionStorage.clear();
+    setUser(null);
+    setIsAuthenticated(false);
+    console.log(user);
     logout();
+    // axios.post(
+    //   `${import.meta.env.VITE_API_URL}/auth/logout`,
+    //   {},
+    //   { withCredentials: true }
+    // );
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-100 to-gray-200 p-4">
       <div className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl bg-white rounded-2xl shadow-lg overflow-hidden">
         <div className="p-6 sm:p-8 md:p-10 text-center">
-          {!isLoggedOut ? (
+          {isAuthenticated ? (
             <>
               {/* Logout Prompt */}
               <div className="mx-auto mb-4 w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center bg-yellow-100 rounded-full">

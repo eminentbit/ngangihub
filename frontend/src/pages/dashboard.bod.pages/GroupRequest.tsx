@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { useTheme } from "./ThemeContext"; // Adjust path as needed
-import Header from "../../components/dashboard.bod.components/Header";
+import { motion, AnimatePresence } from "framer-motion";
+import { useTheme } from "../../context/theme.context";
 import Sidebar from "../../components/dashboard.bod.components/Sidebar";
+import Header from "../../components/dashboard.bod.components/Header";
 import GroupRequestTable from "../../components/dashboard.bod.components/GroupRequestTable";
 import GroupRequestDetails from "../../components/dashboard.bod.components/GroupRequestDetails";
 import DecisionModal from "../../components/dashboard.bod.components/DecisionModal";
 import { useBodStore } from "../../store/create.bod.store";
+import { GroupRequest } from "../../types/group.request";
 import { GroupDetails } from "../../types/create-njangi-types";
 
 const GroupRequests: React.FC = () => {
@@ -29,30 +31,16 @@ const GroupRequests: React.FC = () => {
     rejectRequest,
   } = useBodStore();
 
-  // Toggle sidebar on window resize
-  useEffect(() => {
-    const handleResize = () => {
-      setIsSidebarOpen(window.innerWidth >= 768);
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  // Fetch requests once on mount
   useEffect(() => {
     fetchRequests();
   }, [fetchRequests]);
 
-  const notifications = [
-    "🚨 Board meeting scheduled for next week (2 hours ago)",
-    "🚨 Annual report review pending (5 hours ago)",
-  ];
-  const notificationCount = notifications.length;
-  const isMobile = window.innerWidth < 768;
-
-  const selectedRequest = requests.find((req) => req._id === selectedRequestId);
+  useEffect(() => {
+    const onResize = () => setIsSidebarOpen(window.innerWidth >= 768);
+    onResize();
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   const openDecisionModal = (
     action: "approve" | "reject",
@@ -64,7 +52,7 @@ const GroupRequests: React.FC = () => {
   };
 
   const handleModalSubmit = (reason: string) => {
-    if (modalAction && modalRequestId !== null) {
+    if (modalAction && modalRequestId) {
       if (modalAction === "approve") {
         acceptRequest(modalRequestId, reason);
       } else {
@@ -74,104 +62,72 @@ const GroupRequests: React.FC = () => {
     setIsModalOpen(false);
   };
 
+  const selectedRequest = requests.find((r) => r._id === selectedRequestId);
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
-      <Header
-        toggleTheme={toggleTheme}
-        isDarkMode={isDarkMode}
-        notificationCount={notificationCount}
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
+      <Sidebar
+        isOpen={isSidebarOpen}
+        toggleSidebar={() => setIsSidebarOpen((p) => !p)}
       />
       <div
-        style={{
-          display: "flex",
-          flex: 1,
-          flexDirection: isMobile ? "column" : "row",
-          transition: "all 0.3s ease",
-        }}
+        className={`flex-1 flex flex-col transition-all duration-300 ${
+          isSidebarOpen ? "ml-64" : "ml-16"
+        }`}
       >
-        <Sidebar
-          style={{ boxShadow: "2px 0 4px rgba(0, 0, 0, 0.1)" }}
-          isOpen={isSidebarOpen}
-          toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
-        />
-        <main
-          style={{
-            flex: isSidebarOpen ? 1 : 100,
-            padding: isMobile ? "16px" : "24px",
-            backgroundColor: isDarkMode ? "#374151" : "#f3f4f6",
-            color: isDarkMode ? "white" : "black",
-            overflowY: "auto",
-            transition: "flex 0.3s ease, padding 0.3s ease",
-          }}
+        <Header isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
+        <motion.main
+          className={`flex-1 overflow-auto p-4 md:p-6 lg:p-8 bg-white dark:bg-gray-800 transition-all duration-300 `}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
         >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 16,
-              marginBottom: 16,
-            }}
-          >
-            {!isSidebarOpen && (
-              <button
-                onClick={() => setIsSidebarOpen(true)}
-                style={{
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  fontSize: 24,
-                  color: isDarkMode ? "#fff" : "#5b1a89",
-                }}
-              >
-                ☰
-              </button>
-            )}
-            <h1
-              style={{
-                fontSize: isMobile ? 20 : 24,
-                fontWeight: "bold",
-                padding: 8,
-                borderRadius: 4,
-                backgroundColor: isDarkMode ? "#4b5563" : "#fff",
-              }}
-            >
-              Group Requests <span style={{ color: "#10b981" }}>👥</span>
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              Group Requests <span className="text-green-500">👥</span>
             </h1>
           </div>
 
           {isLoading ? (
-            <p>Loading requests...</p>
+            <div className="text-center py-10">Loading requests...</div>
           ) : error ? (
-            <p>Error loading requests: {error}</p>
-          ) : selectedRequest ? (
-            <GroupRequestDetails
-              request={selectedRequest}
-              isDarkMode={isDarkMode}
-              onBack={() => setSelectedRequestId(null)}
-              // setAction={openDecisionModal}
-            />
+            <div className="text-red-500 py-10 text-center">Error: {error}</div>
           ) : (
-            <GroupRequestTable
-              selectedGroup={
-                (selectedRequest as unknown as GroupDetails) ||
-                ({} as GroupDetails)
-              }
-              requests={requests}
-              isDarkMode={isDarkMode}
-              onSelectRequest={setSelectedRequestId}
-              onAccept={(id: string) => openDecisionModal("approve", id)}
-              onReject={(id: string) => openDecisionModal("reject", id)}
-            />
+            <>
+              {selectedRequest ? (
+                <GroupRequestDetails
+                  request={selectedRequest as GroupRequest}
+                  isDarkMode={isDarkMode}
+                  onBack={() => setSelectedRequestId(null)}
+                />
+              ) : (
+                <GroupRequestTable
+                  requests={requests}
+                  isDarkMode={isDarkMode}
+                  onSelectRequest={setSelectedRequestId}
+                  onAccept={(id) => openDecisionModal("approve", id)}
+                  onReject={(id) => openDecisionModal("reject", id)}
+                  selectedGroup={
+                    (selectedRequest as unknown as GroupDetails) ||
+                    ({} as GroupDetails)
+                  }
+                />
+              )}
+            </>
           )}
 
-          <DecisionModal
-            isOpen={isModalOpen}
-            action={"approve"}
-            isDarkMode={isDarkMode}
-            onClose={() => setIsModalOpen(false)}
-            onSubmit={handleModalSubmit}
-          />
-        </main>
+          <AnimatePresence>
+            {isModalOpen && (
+              <DecisionModal
+                isOpen={isModalOpen}
+                action={modalAction!}
+                isDarkMode={isDarkMode}
+                onClose={() => setIsModalOpen(false)}
+                onSubmit={handleModalSubmit}
+              />
+            )}
+          </AnimatePresence>
+        </motion.main>
       </div>
     </div>
   );

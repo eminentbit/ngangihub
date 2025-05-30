@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useTheme } from "./ThemeContext"; // Adjust path as needed
+import { useTheme } from "../../context/theme.context";
 import Header from "../../components/dashboard.bod.components/Header";
 import Sidebar from "../../components/dashboard.bod.components/Sidebar";
 import DocumentList from "../../components/dashboard.bod.components/DocumentList";
@@ -15,127 +15,65 @@ const Documents: React.FC = () => {
   );
   const { isDarkMode, toggleTheme } = useTheme();
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 768) {
-        setIsSidebarOpen(false);
-      } else {
-        setIsSidebarOpen(true);
-      }
+      setIsSidebarOpen(window.innerWidth >= 768);
     };
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const notifications = [
-    "🚨 Board meeting scheduled for next week (2 hours ago)",
-    "🚨 Annual report review pending (5 hours ago)",
-  ];
-  const notificationCount = notifications.length;
-
-  const isMobile = window.innerWidth < 768;
-  const isTablet = window.innerWidth >= 768 && window.innerWidth <= 1024;
-  const isDesktop = window.innerWidth > 1024;
-
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
-      <Header
-        // style={{ boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)" }}
-        toggleTheme={toggleTheme}
-        isDarkMode={isDarkMode}
-        notificationCount={notificationCount}
-      />
-      <div
-        style={{
-          display: "flex",
-          flex: "1",
-          flexDirection: isMobile ? "column" : "row",
-          transition: "all 0.3s ease",
-        }}
-      >
-        <Sidebar
-          style={{ boxShadow: "2px 0 4px rgba(0, 0, 0, 0.1)" }}
-          isOpen={isSidebarOpen}
-          toggleSidebar={toggleSidebar}
-        />
+    <div className="flex flex-col h-screen">
+      <Header toggleTheme={toggleTheme} isDarkMode={isDarkMode} />
+
+      <div className="flex flex-1 flex-col md:flex-row transition-all duration-300">
+        <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+
         <main
-          style={{
-            flex: isSidebarOpen ? "1" : "100%",
-            padding: isMobile ? "16px" : isSidebarOpen ? "24px" : "24px 0",
-            backgroundColor: isDarkMode ? "#374151" : "#f3f4f6",
-            color: isDarkMode ? "white" : "black",
-            overflowY: "auto",
-            transition: "flex 0.3s ease, padding 0.3s ease",
-          }}
+          className={`flex-1 overflow-y-auto transition-all duration-300 p-4 md:p-6 ${
+            isDarkMode ? "bg-gray-800 text-white" : "bg-gray-100 text-gray-900"
+          }`}
         >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "16px",
-              marginBottom: "16px",
-            }}
-          >
+          <div className="flex items-center gap-4 mb-6">
             {!isSidebarOpen && (
               <button
-                type="button"
                 onClick={toggleSidebar}
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: isDarkMode ? "white" : "#5b1a89",
-                  cursor: "pointer",
-                  fontSize: "24px",
-                }}
+                className={`text-2xl focus:outline-none ${
+                  isDarkMode ? "text-white" : "text-purple-800"
+                }`}
               >
                 ☰
               </button>
             )}
-            <h1
-              style={{
-                fontSize: isMobile ? "20px" : "24px",
-                fontWeight: "bold",
-                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-                padding: "8px",
-                backgroundColor: isDarkMode ? "#4b5563" : "#ffffff",
-                borderRadius: "4px",
-                display: "inline-block",
-              }}
-            >
-              Documents <span style={{ color: "#10b981" }}>📑</span>
+            <h1 className="text-2xl font-bold px-3 py-1 bg-white dark:bg-gray-700 shadow rounded-md">
+              Documents <span className="text-green-500">📑</span>
             </h1>
           </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: isMobile ? "column" : "row",
-              justifyContent: "space-between",
-              alignItems: isMobile ? "stretch" : "center",
-              gap: "16px",
-              marginBottom: "16px",
-            }}
-          >
+
+          <div className="flex flex-col md:flex-row justify-between gap-4 items-start md:items-center mb-6">
             <DocumentFilter filter={filter} setFilter={setFilter} />
             <UploadDocumentForm isDarkMode={isDarkMode} />
           </div>
-          {selectedDocumentId ? (
-            <DocumentPreview
-              documentId={selectedDocumentId}
-              isDarkMode={isDarkMode}
-              onBack={() => setSelectedDocumentId(null)}
-            />
-          ) : (
-            <DocumentList
-              isDarkMode={isDarkMode}
-              filter={filter}
-              onSelectDocument={setSelectedDocumentId}
-            />
-          )}
+
+          <div className="rounded-xl shadow-inner border border-gray-200 dark:border-gray-600 p-4 bg-white dark:bg-gray-700">
+            {selectedDocumentId ? (
+              <DocumentPreview
+                documentId={selectedDocumentId}
+                isDarkMode={isDarkMode}
+                onBack={() => setSelectedDocumentId(null)}
+              />
+            ) : (
+              <DocumentList
+                isDarkMode={isDarkMode}
+                filter={filter}
+                onSelectDocument={setSelectedDocumentId}
+              />
+            )}
+          </div>
         </main>
       </div>
     </div>

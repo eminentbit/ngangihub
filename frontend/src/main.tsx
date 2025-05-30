@@ -8,7 +8,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Toaster } from "react-hot-toast";
 
 const queryClient = new QueryClient();
-import { ThemeProvider } from "./pages/dashboard.bod.pages/ThemeContext";
+import { ThemeProvider } from "./context/theme.context";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
