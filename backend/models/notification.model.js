@@ -20,16 +20,16 @@ const notificationSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    relatedItem: {
-      itemId: {
-        type: mongoose.Schema.Types.ObjectId,
-        refPath: "relatedItem.itemType",
-      },
-      itemType: {
-        type: String,
-        enum: ["Post", "Comment", "User"],
-      },
-    },
+    // relatedItem: {
+    //   itemId: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     refPath: "relatedItem.itemType",
+    //   },
+    //   itemType: {
+    //     type: String,
+    //     enum: ["Post", "Comment", "User"],
+    //   },
+    // },
     sender: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

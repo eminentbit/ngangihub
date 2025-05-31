@@ -17,5 +17,12 @@ export interface User {
   firstName: string;
   lastName: string;
   image?: string;
+  phone?: string;
   role: "user" | "admin" | "bod" | "member";
+  location?: string;
+  groupName?: string;
+  monthlyContributions?: number;
+  totalPayouts?: number;
+  profilePicUrl?: string;
+  createdAt?: string;
 }

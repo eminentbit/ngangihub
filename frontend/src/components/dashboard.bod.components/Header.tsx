@@ -33,6 +33,14 @@ const Header: React.FC<HeaderProps> = ({ toggleTheme, isDarkMode }) => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
 
+  const getUserRole = (role: string | null | undefined) => {
+    if (role == "member") {
+      return "user";
+    } else if (role == "bod") {
+      return "board";
+    } else return role ?? "user";
+  };
+
   const notifRef = useRef<HTMLDivElement>(
     null
   ) as React.RefObject<HTMLDivElement>;
@@ -179,7 +187,7 @@ const Header: React.FC<HeaderProps> = ({ toggleTheme, isDarkMode }) => {
                   >
                     <div className="py-1">
                       <Link
-                        to="/profile"
+                        to={`/${getUserRole(user?.role)}/profile`}
                         className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                       >
                         Profile

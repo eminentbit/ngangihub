@@ -2,15 +2,16 @@ import { create } from "zustand";
 // import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { GroupDetails } from "../types/create-njangi-types";
-import { secureGet } from "../utils/axiosClient";
+import { secureGet, securePost } from "../utils/axiosClient";
+import { User } from "../types/auth.validator";
 
-interface Notification {
+export interface Notification {
   isRead: boolean;
   _id: string;
-  message: string;
+  content: string;
   createdAt: string;
+  user: User;
 }
-
 interface UserState {
   groups: GroupDetails[];
   notifications: Notification[];
@@ -18,6 +19,16 @@ interface UserState {
   error: string | null;
   setGroups: (groups: GroupDetails[]) => void;
   fetchNotifications: () => Promise<void>;
+  setNotifications: (notifications: Notification[]) => void;
+  setError: (error: string | null) => void;
+  setIsLoading: (isLoading: boolean) => void;
+  markNotificationAsRead: (id: string) => void;
+  markNotificationAsUnread: (id: string) => void;
+  markAllNotificationsAsRead: () => void;
+  markAllNotificationsAsUnread: () => void;
+  clearNotifications: () => void;
+  setNotification: (notification: Notification) => void;
+  removeNotification: (id: string) => void;
 }
 
 const useUserStore = create<UserState>((set) => ({
@@ -27,6 +38,79 @@ const useUserStore = create<UserState>((set) => ({
   error: null,
 
   setGroups: (groups) => set({ groups }),
+  setNotifications: (
+    notifications: Notification[] | ((prev: Notification[]) => Notification[])
+  ) =>
+    set((state) => ({
+      notifications:
+        typeof notifications === "function"
+          ? notifications(state.notifications)
+          : notifications,
+    })),
+  setError: (error) => set({ error }),
+  setIsLoading: (isLoading) => set({ isLoading }),
+  markNotificationAsRead: async (id) => {
+    try {
+      await securePost(`/notifications/${id}/read`, {});
+      set((state) => ({
+        notifications: state.notifications.map((n) =>
+          n._id === id ? { ...n, isRead: true } : n
+        ),
+      }));
+    } catch (err) {
+      console.error("Failed to mark notification as read:", err);
+    }
+  },
+  markNotificationAsUnread: async (id) => {
+    try {
+      await securePost(`/notifications/${id}/unread`, {});
+      set((state) => ({
+        notifications: state.notifications.map((n) =>
+          n._id === id ? { ...n, isRead: false } : n
+        ),
+      }));
+    } catch (err) {
+      console.error("Failed to mark notification as unread:", err);
+    }
+  },
+  markAllNotificationsAsRead: async () => {
+    try {
+      await securePost(`/notifications/read-all`, {});
+      set((state) => ({
+        notifications: state.notifications.map((n) => ({ ...n, isRead: true })),
+      }));
+    } catch (err) {
+      console.error("Failed to mark all notifications as read:", err);
+    }
+  },
+  markAllNotificationsAsUnread: async () => {
+    try {
+      await securePost(`/notifications/unread-all`, {});
+      set((state) => ({
+        notifications: state.notifications.map((n) => ({
+          ...n,
+          isRead: false,
+        })),
+      }));
+    } catch (err) {
+      console.error("Failed to mark all notifications as unread:", err);
+    }
+  },
+  clearNotifications: () => set({ notifications: [] }),
+  setNotification: (notification) =>
+    set((state) => ({
+      notifications: [...state.notifications, notification],
+    })),
+  removeNotification: async (id) => {
+    try {
+      await secureGet(`/notifications/${id}/delete`);
+      set((state) => ({
+        notifications: state.notifications.filter((n) => n._id !== id),
+      }));
+    } catch (err) {
+      console.error("Failed to remove notification:", err);
+    }
+  },
 
   fetchNotifications: async () => {
     set({ isLoading: true, error: null });

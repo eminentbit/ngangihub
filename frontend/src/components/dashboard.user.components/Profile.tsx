@@ -1,27 +1,23 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { User, Mail, Phone, Save, Check } from "lucide-react";
-
-type ProfileFormData = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-};
+import InputField, { ProfileFormData } from "../InputField";
+import { useAuthStore } from "../../store/create.auth.store";
 
 const Profile = () => {
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const { user } = useAuthStore();
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting }
+    formState: { errors, isSubmitting },
   } = useForm<ProfileFormData>({
     defaultValues: {
-      firstName: "John",
-      lastName: "Doe",
-      email: "john.doe@example.com",
-      phone: "+1 (555) 123-4567"
-    }
+      firstName: user?.firstName || "N/A",
+      lastName: user?.lastName || "N/A",
+      email: user?.email || "N/A",
+      phone: user?.phone || "N/A",
+    },
   });
 
   const onSubmit = async (data: ProfileFormData) => {
@@ -94,44 +90,12 @@ const Profile = () => {
             className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition"
           >
             <Save className="h-4 w-4" />
-            {isSubmitting ? 'Saving...' : 'Save Changes'}
+            {isSubmitting ? "Saving..." : "Save Changes"}
           </button>
         </div>
       </form>
     </div>
   );
 };
-
-interface InputFieldProps {
-  label: string;
-  icon: React.ComponentType<{ className: string }>;
-  type?: string;
-  register: ReturnType<typeof useForm<ProfileFormData>>['register'];
-  name: keyof ProfileFormData;
-  error?: { message?: string };
-}
-
-const InputField: React.FC<InputFieldProps> = ({ label, icon: Icon, type = "text", register, name, error }) => (
-  <div>
-    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
-      {label}
-    </label>
-    <div className="relative">
-      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-        <Icon className="h-5 w-5 text-gray-400" />
-      </div>
-      <input
-        type={type}
-        {...register(name, { required: `${label} is required` })}
-        className={`block w-full pl-10 pr-3 py-2 border ${error ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'} rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition`}
-      />
-    </div>
-    {error?.message && (
-      <p className="text-red-500 text-sm mt-1">
-        {error.message}
-      </p>
-    )}
-  </div>
-);
 
 export default Profile;

@@ -323,7 +323,10 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold">Group Members</h3>
                 {group.isAdmin && (
-                  <button className="btn btn-primary text-sm py-1.5 px-3">
+                  <button
+                    type="button"
+                    className="btn btn-primary text-sm py-1.5 px-3"
+                  >
                     Add Member
                   </button>
                 )}
