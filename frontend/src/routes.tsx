@@ -35,7 +35,7 @@ import GroupReqest from "./pages/dashboard.bod.pages/GroupRequest";
 import PaymentsPage from "./pages/dashboard.user.pages/PaymentPage";
 import SettingsPage from "./pages/dashboard.user.pages/SettingsPage";
 import InviteMemberRegistrationForm from "./pages/invites.member.register.form";
-import NjangiStateDashBoard from "./pages/njangi-state-dashboard";
+import NjangiStateDashBoard from "./pages/admin-state-dashboard";
 import ProtectedRoute from "./components/protected.route";
 import GroupDetailPage from "./pages/dashboard.user.pages/DetialPage";
 
