@@ -13,6 +13,7 @@ import limiter from "./middleware/limiter.js";
 import helmet from "helmet";
 import ValidateInviteToken from "./routes/validate.invite.token.route.js";
 import validateDraftId from "./routes/validate.draft.id.route.js";
+import adminRoutes from "./routes/admin.routes.js";
 import pkg from "lusca";
 import session from "express-session";
 const { csrf } = pkg;
@@ -59,8 +60,9 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/member", acceptInvite);
 app.use(helmet());
 
-app.use("/api/invites", ValidateInviteToken); // validates invite token
+app.use("/api/invites", ValidateInviteToken);
 app.use("/api/admin", validateDraftId);
+app.use("/api/admin", adminRoutes);
 
 const startServer = async () => {
   try {

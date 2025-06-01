@@ -1,7 +1,7 @@
 import Invite from "../models/invite.model.js";
 import User from "../models/user.model.js";
 import GroupMember from "../models/group.member.model.js";
-import NjangiGroup from "../models/njangigroup.model.js";
+import NjangiGroup from "../models/njangi.group.model.js";
 import bcrypt from "bcryptjs";
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
 import { sendWelcomeEmail } from "../mail/emails.js";
@@ -106,7 +106,9 @@ const acceptInvite = async (req, res) => {
     });
   } catch (err) {
     console.log("Error accepting invite:", err);
-    return res.status(500).json({ message: "Internal server error! Please try again later" });
+    return res
+      .status(500)
+      .json({ message: "Internal server error! Please try again later" });
   }
 };
 

@@ -1,5 +1,5 @@
 // services/njangi.service.js
-import NjangiGroup from "../models/njangigroup.model.js";
+import NjangiGroup from "../models/njangi.group.model.js";
 export const createNjangiGroup = async (groupDetails, adminId, draftId) => {
   // check if njangi group with the same name already exists
   const existingGroup = await NjangiGroup.findOne({
