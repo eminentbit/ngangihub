@@ -2,6 +2,13 @@
 import axios, { AxiosRequestConfig } from "axios";
 import toast from "react-hot-toast";
 
+declare module "axios" {
+  export interface InternalAxiosRequestConfig {
+    successMessage?: string;
+    silent?: boolean;
+  }
+}
+
 const axiosClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   withCredentials: true,
@@ -13,7 +20,12 @@ const axiosClient = axios.create({
 // Global error handler
 axiosClient.interceptors.response.use(
   (response) => {
-    toast.success("Sucess");
+    const successMessage = response.config?.successMessage as
+      | string
+      | undefined;
+    if (successMessage) {
+      toast.success(successMessage);
+    }
     return response;
   },
   (error) => {
@@ -50,10 +62,11 @@ async function ensureCsrfToken() {
 export const securePost = async (
   url: string,
   payload: unknown,
-  config?: { headers?: Record<string, string> }
+  config?: { headers?: Record<string, string>; silent?: boolean }
 ) => {
   const token = await ensureCsrfToken();
   return axiosClient.post(url, payload, {
+    ...config,
     withCredentials: true,
     headers: {
       "X-CSRF-Token": token,
@@ -83,7 +96,7 @@ export const secureGet = async (
 
 export const secureDelete = async (
   url: string,
-  config: { headers?: Record<string, string> } = {}
+  config: { headers?: Record<string, string>; silent?: boolean }
 ) => {
   const token = await ensureCsrfToken();
   return axiosClient.delete(url, {
@@ -99,7 +112,7 @@ export const secureDelete = async (
 export const securePut = async (
   url: string,
   payload: unknown,
-  config: { headers?: Record<string, string> } = {}
+  config: { headers?: Record<string, string>; silent?: boolean }
 ) => {
   const token = await ensureCsrfToken();
   return axiosClient.put(url, payload, {
