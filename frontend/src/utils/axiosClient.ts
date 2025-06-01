@@ -80,7 +80,7 @@ export const secureGet = async (
   config: {
     headers?: Record<string, string>;
     params?: Record<string, unknown>;
-    silent?: boolean;
+    silent?: true;
   } = {}
 ) => {
   const token = await ensureCsrfToken();

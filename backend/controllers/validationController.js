@@ -2,6 +2,7 @@ import NjangiDrafts from "../models/njangi.draft.model.js";
 import User from "../models/user.model.js";
 import NjangiGroup from "../models/njangi.group.model.js";
 import Invite from "../models/invite.model.js";
+import validator from "validator";
 
 const isValidEmail = (contact) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact);
 
@@ -14,6 +15,10 @@ const isValidPhone = (contact) => /^\+?[1-9]\d{6,14}$/.test(contact);
 export const validateEmail = async (req, res) => {
   const { email } = req.query;
 
+  if (!email || !validator.isEmail(email)) {
+    return res.status(400).json({ message: "Invalid email address" });
+  }
+
   if (!email) {
     return res.status(400).json({ valid: false, message: "Email is required" });
   }
@@ -24,7 +29,7 @@ export const validateEmail = async (req, res) => {
     const [inDraft, inInviteMembers, inUsers] = await Promise.all([
       NjangiDrafts.exists({ "accountSetup.email": email }),
       NjangiDrafts.exists({ "inviteMembers.value": email }),
-      User.exists({ email }),
+      User.exists({ email: { $eq: email } }),
     ]);
 
     const exists = inDraft || inInviteMembers || inUsers;
