@@ -11,7 +11,7 @@ import NjangiForm from "./pages/njangi.form.page";
 import Login from "./pages/login";
 import MemberManagement from "./pages/dashboard.admin.pages/Manage";
 import GroupOverviewPage from "./pages/dashboard.admin.pages/GroupOverview";
-import GroupInfoPage from "./pages/dashboard.admin.pages/GroupInfo";
+import GroupInfoPage from "./pages/dashboard.admin.pages/Groups";
 import StatisticsPage from "./pages/dashboard.admin.pages/MyStatistics";
 import AddMemberPage from "./pages/dashboard.admin.pages/AddMember";
 import GroupSettingsPage from "./pages/dashboard.admin.pages/GroupSetting";
@@ -35,7 +35,7 @@ import GroupReqest from "./pages/dashboard.bod.pages/GroupRequest";
 import PaymentsPage from "./pages/dashboard.user.pages/PaymentPage";
 import SettingsPage from "./pages/dashboard.user.pages/SettingsPage";
 import InviteMemberRegistrationForm from "./pages/invites.member.register.form";
-import NjangiStateDashBoard from "./pages/njangi-state-dashboard";
+import NjangiStateDashBoard from "./pages/admin-state-dashboard";
 import ProtectedRoute from "./components/protected.route";
 import GroupDetailPage from "./pages/dashboard.user.pages/DetialPage";
 
@@ -52,7 +52,6 @@ const router = createBrowserRouter([
       { index: true, element: <LandingSections /> },
       { path: "about", element: <AboutPage /> },
       { path: "contact", element: <ContactPage /> },
-      { path: "profile", element: <ProfilePage /> },
       { path: "logout", element: <LogoutPage /> },
       { path: "login", element: <Login /> },
       { path: "njangi-form", element: <NjangiForm /> },
@@ -65,15 +64,15 @@ const router = createBrowserRouter([
   {
     path: "/user",
     caseSensitive: false,
-    element: <ProtectedRoute allowedRoles={["user"]} />,
+    element: <ProtectedRoute allowedRoles={["member"]} />,
     children: [
-     
+      { path: "dashboard", element: <AdminDashboardPage /> },
       { path: "groups", element: <MyGroups /> },
       { path: "groups/:groupId", element: <GroupDetailPage /> },
       { path: "payments", element: <PaymentsPage /> },
       { path: "settings", element: <SettingsPage /> },
+      { path: "profile", element: <ProfilePage /> },
       { path: "notifications", element: <NotificationsPage /> },
-      
     ],
   },
 
@@ -84,17 +83,18 @@ const router = createBrowserRouter([
     element: <ProtectedRoute allowedRoles={["admin"]} />,
     children: [
       { path: "dashboard", element: <AdminDashboardPage /> },
-      { path: "manage-members", element: <MemberManagement /> },
+      { path: "group/:groupId/members", element: <MemberManagement /> },
       { path: "njangi-form", element: <NjangiForm /> },
       { path: "login", element: <Login /> },
-      { path: "groups", element: <GroupOverviewPage /> },
-      { path: "group-info", element: <GroupInfoPage /> },
+      { path: "group/:groupId", element: <GroupOverviewPage /> },
+      { path: "groups", element: <GroupInfoPage /> },
       { path: "stats", element: <StatisticsPage /> },
       { path: "add-member", element: <AddMemberPage /> },
       { path: "payments", element: <PaymentsPage /> },
-      { path: "group-settings", element: <GroupSettingsPage /> },
+      { path: "group/:groupId/settings", element: <GroupSettingsPage /> },
       { path: "notifications", element: <NotificationsPage /> },
       { path: "contributions", element: <ContributionPage /> },
+      { path: "profile", element: <ProfilePage /> },
       { path: "loans-request", element: <LoanRequestPage /> },
     ],
   },
@@ -114,6 +114,7 @@ const router = createBrowserRouter([
       { path: "documents", element: <Documents /> },
       { path: "policies", element: <Policies /> },
       { path: "reports", element: <Reports /> },
+      { path: "profile", element: <ProfilePage /> },
       { path: "group-requests", element: <GroupReqest /> },
     ],
   },

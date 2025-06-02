@@ -7,6 +7,7 @@ import ReportList from "../../components/dashboard.bod.components/ReportList";
 import ReportFilter from "../../components/dashboard.bod.components/ReportFilter";
 import AddReportForm from "../../components/dashboard.bod.components/AddReportForm";
 import ReportDetails from "../../components/dashboard.bod.components/ReportDetails";
+import { useBodStore } from "../../store/create.bod.store";
 
 const Reports: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -24,6 +25,12 @@ const Reports: React.FC = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  const { fetchReports } = useBodStore();
+
+  useEffect(() => {
+    fetchReports();
+  }, [fetchReports]);
 
   return (
     <div className="flex flex-col h-screen">
@@ -48,6 +55,7 @@ const Reports: React.FC = () => {
                 Reports <span className="text-green-500">📊</span>
               </h1>
               <button
+                type="button"
                 onClick={toggleForm}
                 className="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-purple-500"
               >

@@ -45,6 +45,14 @@ const Header: React.FC<HeaderProps> = ({ darkMode, setDarkMode }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const getUserRole = (role: string | null | undefined) => {
+    if (role == "member") {
+      return "user";
+    } else if (role == "bod") {
+      return "board";
+    } else return role ?? "user";
+  };
+
   // Handle search submit
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -180,7 +188,7 @@ const Header: React.FC<HeaderProps> = ({ darkMode, setDarkMode }) => {
                 <ul className="py-1">
                   <li>
                     <Link
-                      to="/profile"
+                      to={`/${getUserRole(user?.role)}/profile`}
                       className="block w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-center"
                     >
                       Profile

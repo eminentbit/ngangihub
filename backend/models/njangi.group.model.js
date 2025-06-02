@@ -36,6 +36,8 @@ const njangiGroupSchema = new mongoose.Schema(
       enum: ["pending", "approved", "rejected"],
       default: "pending",
     },
+    isPublic: { type: Boolean, default: false },
+    description: { type: String },
   },
   { timestamps: true }
 );

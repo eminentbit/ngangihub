@@ -1,7 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { UseFormClearErrors, UseFormSetError } from "react-hook-form";
-import axios from "axios";
+// import axios from "axios";
+import { secureGet } from "../utils/axiosClient";
 
 const INVITE_API_URL = import.meta.env.VITE_API_URL;
 
@@ -28,7 +29,7 @@ export const useBatchValidateInvites = (
     queryFn: async () => {
       const results = await Promise.all(
         invites.map(async (invite) => {
-          const { data } = await axios.get(
+          const { data } = await secureGet(
             `${INVITE_API_URL}/validate-invite-contact`,
             {
               params: { contact: invite.value },

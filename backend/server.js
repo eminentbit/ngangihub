@@ -13,7 +13,10 @@ import limiter from "./middleware/limiter.js";
 import helmet from "helmet";
 import ValidateInviteToken from "./routes/validate.invite.token.route.js";
 import validateDraftId from "./routes/validate.draft.id.route.js";
-import { csrf } from "lusca";
+import adminRoutes from "./routes/admin.routes.js";
+import pkg from "lusca";
+import session from "express-session";
+const { csrf } = pkg;
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
@@ -28,8 +31,26 @@ app.use(
 ); // allow cross-origin requests
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
+
+app.use(
+  session({
+    name: "njangi_session",
+    secret: process.env.SESSION_SECRET || "your-secret-key",
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+    },
+  })
+);
 app.use(csrf());
 
+app.use("/", limiter);
+
+app.get("/api/csrf-token", (req, res) => {
+  res.json({ csrfToken: req.csrfToken() });
+});
 //routes
 app.use("/api/create-njangi", createNjangiRoutes);
 app.use("/api/bod", actionNjangiRoutes);
@@ -39,9 +60,9 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/member", acceptInvite);
 app.use(helmet());
 
-app.use("/", limiter);
-app.use("/api/invites", ValidateInviteToken); // validates invite token
+app.use("/api/invites", ValidateInviteToken);
 app.use("/api/admin", validateDraftId);
+app.use("/api/admin", adminRoutes);
 
 const startServer = async () => {
   try {

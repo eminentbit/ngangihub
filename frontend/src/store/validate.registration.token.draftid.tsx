@@ -1,7 +1,8 @@
 import { create } from "zustand";
 import axios from "axios";
+import { secureGet } from "../utils/axiosClient";
 
-axios.defaults.withCredentials = true;
+// axios.defaults.withCredentials = true;
 
 type ValidateTokenResponse = {
   success: boolean;
@@ -22,7 +23,9 @@ interface ValidateTokenState {
   success: boolean;
   message: string | null;
   validateInvitationToken: (token: string) => Promise<ValidateTokenResponse>;
-  validateAdminStateDasboardId: (draftId: string) => Promise<ValidateTokenResponse>; // for admin special dashbooard
+  validateAdminStateDasboardId: (
+    draftId: string
+  ) => Promise<ValidateTokenResponse>; // for admin special dashbooard
 }
 
 export const useValidateInvitationToken = create<ValidateTokenState>((set) => ({
@@ -34,9 +37,7 @@ export const useValidateInvitationToken = create<ValidateTokenState>((set) => ({
     set({ isLoading: true, errors: null, success: false });
     try {
       const url = import.meta.env.VITE_VALIDATE_INVITE_TOKEN_API_URL;
-      const response = await axios.get(
-        `${url}?token=${token}`
-      );
+      const response = await secureGet(`${url}?token=${token}`);
       set({
         isLoading: false,
         success: true,
@@ -53,13 +54,11 @@ export const useValidateInvitationToken = create<ValidateTokenState>((set) => ({
       });
     }
   },
-   validateAdminStateDasboardId: async (draftId: string) => {
+  validateAdminStateDasboardId: async (draftId: string) => {
     set({ isLoading: true, errors: null, success: false });
     try {
       const url = import.meta.env.VITE_VALIDATE_DRAFTID_API_URL;
-      const response = await axios.get(
-        `${url}?draftId=${draftId}`
-      );
+      const response = await secureGet(`${url}?draftId=${draftId}`);
       set({
         isLoading: false,
         success: true,

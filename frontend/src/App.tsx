@@ -8,8 +8,9 @@ import FAQ from "./section.welcome.page/FAQ";
 import CTA from "./section.welcome.page/CTA";
 import Footer from "./section.welcome.page/Footer";
 import { useEffect } from "react";
-import axios from "axios";
+// import axios from "axios";
 import { useAuthStore } from "./store/create.auth.store";
+import { secureGet } from "./utils/axiosClient";
 
 function App() {
   const { setUser, setIsAuthenticated } = useAuthStore();
@@ -17,12 +18,9 @@ function App() {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_API_URL}/auth/session`,
-          {
-            withCredentials: true,
-          }
-        );
+        const res = await secureGet("/auth/session", {
+          silent: true,
+        });
         setUser(res.data.user);
         setIsAuthenticated(true);
       } catch (err) {

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import ReportCard from "./ReportCard";
 import { useBodStore } from "../../store/create.bod.store";
 
@@ -19,11 +19,7 @@ const ReportList: React.FC<ReportListProps> = ({
   //   { id: 3, title: 'Strategic Plan 2025', type: 'Strategic', status: 'Archived', uploaded: '2025-03-10T09:00', summary: 'Strategic goals and initiatives for 2025.' },
   // ];
 
-  const { reports, fetchReports } = useBodStore();
-
-  useEffect(() => {
-    fetchReports();
-  }, [fetchReports]);
+  const { reports } = useBodStore();
 
   const filteredReports = reports.filter((report) => {
     const matchesType = filter.type === "All" || report.type === filter.type;

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useBodStore } from "../../store/create.bod.store";
 
 interface NewResolutionModalProps {
   isDarkMode: boolean;
@@ -12,9 +13,10 @@ const NewResolutionModal: React.FC<NewResolutionModalProps> = ({
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
-  const handleSubmit = () => {
-    // In a real app, this would save the new resolution (e.g., via API)
-    console.log("New Resolution:", { title, description });
+  const { createResolution } = useBodStore();
+
+  const handleSubmit = async () => {
+    await createResolution(title, description);
     onClose();
   };
 
