@@ -1,32 +1,57 @@
 import { CheckCircle, Clock, XCircle, Users } from "lucide-react";
+import { useAdminState } from "../../store/create.admin.store";
+import { useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 
 export function NjangiOverview() {
+  const { submissionStats, fetchSubmissionStats, setGroupId } = useAdminState();
   const stats = [
     {
       title: "Total Submissions",
-      value: "12",
+      value: submissionStats?.total,
       icon: Users,
       color: "bg-blue-500",
     },
     {
       title: "Approved",
-      value: "8",
+      value: submissionStats?.approved,
       icon: CheckCircle,
       color: "bg-green-500",
     },
     {
       title: "Pending",
-      value: "3",
+      value: submissionStats?.pending,
       icon: Clock,
       color: "bg-yellow-500",
     },
     {
       title: "Rejected",
-      value: "1",
+      value: submissionStats?.rejected,
       icon: XCircle,
       color: "bg-red-500",
     },
   ];
+
+  const [searchParams] = useSearchParams();
+  const draftId = searchParams.get("draftId");
+
+  useEffect(() => {
+    if (draftId) {
+      setGroupId(draftId);
+    }
+  }, [draftId, setGroupId]);
+
+  useEffect(() => {
+    // const fetchStats = async () => {
+    //   try {
+    //     await fetchSubmissionStats();
+    //   } catch (error) {
+    //     console.error("Error fetching submission stats:", error);
+    //   }
+    // };
+    // fetchStats();
+    fetchSubmissionStats();
+  }, [fetchSubmissionStats]);
 
   return (
     <div className="space-y-6 p-4 md:p-6">

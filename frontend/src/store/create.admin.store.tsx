@@ -25,12 +25,22 @@ interface AdminState {
   groupId: string | null;
   members: Member[];
   groups: Group[];
+  email: string;
   selectedMember: Member | null;
   isEditingSettings: boolean;
   groupInfo: Group | null;
   nextMeeting: string | null;
   loading: boolean;
   error: string | null;
+  // Submission stats
+  submissionStats: {
+    total: number;
+    pending: number;
+    approved: number;
+    rejected: number;
+  } | null;
+
+  fetchSubmissionStats: () => Promise<void>;
 
   // Setters
   setGroupId: (id: string) => void;
@@ -56,6 +66,7 @@ interface AdminState {
 
 export const useAdminState = create<AdminState>((set, get) => ({
   groupId: null,
+  email: "",
   members: [],
   groups: [],
   selectedMember: null,
@@ -64,6 +75,7 @@ export const useAdminState = create<AdminState>((set, get) => ({
   loading: false,
   nextMeeting: null,
   error: null,
+  submissionStats: null,
 
   setGroupId: (id: string) => set({ groupId: id }),
   setMembers: (members: Member[]) => set({ members }),
@@ -169,7 +181,6 @@ export const useAdminState = create<AdminState>((set, get) => ({
       }
     }
   },
-
   updateGroup: async (group: {
     id: string;
     name: string;
@@ -182,6 +193,25 @@ export const useAdminState = create<AdminState>((set, get) => ({
     } catch (err) {
       if (err instanceof AxiosError) {
         set({ error: err.message || "Failed to update group", loading: false });
+      }
+    }
+  },
+
+  fetchSubmissionStats: async () => {
+    set({ loading: true, error: null });
+    try {
+      set({ email: localStorage.getItem("tempAdminEmail") || "" });
+      const response = await secureGet("/admin/submission-stats", {
+        params: { groupId: get().groupId, email: get().email },
+      });
+      console.log("Fetched submission stats:", response.data);
+      set({ submissionStats: response.data, loading: false });
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        set({
+          error: err.message || "Failed to fetch submission stats",
+          loading: false,
+        });
       }
     }
   },

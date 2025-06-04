@@ -12,7 +12,7 @@ interface GroupItemProps {
 function GroupItem({ group, setChatModalGroupId }: GroupItemProps) {
   const { user } = useAuthStore();
 
-  const paidMembersCount = group.memberContributions.filter(
+  const paidMembersCount = group.memberContributions?.filter(
     (contribution) => contribution.paymentsCount > 0
   ).length;
   return (
@@ -54,7 +54,7 @@ function GroupItem({ group, setChatModalGroupId }: GroupItemProps) {
             className="absolute top-0 left-0 h-3 rounded-full bg-green-500 transition-all"
             style={{
               width: `${
-                (paidMembersCount / (group.groupMembers?.length || 1)) * 100
+                (paidMembersCount! / (group.groupMembers?.length || 1)) * 100
               }%`,
             }}
           />

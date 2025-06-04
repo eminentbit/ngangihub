@@ -1,5 +1,10 @@
+import njangiDraftModel from "../models/njangi.draft.model.js";
 import NjangiGroup from "../models/njangi.group.model.js";
 import User from "../models/user.model.js";
+import jwt from "jsonwebtoken";
+import { config } from "dotenv";
+
+config();
 
 /**
  * Fetch members of a specific group created by an admin
@@ -118,5 +123,49 @@ export const fetchGroupById = async (req, res) => {
     res.status(200).json(group);
   } catch (error) {
     res.status(500).json({ message: "Error fetching group", error });
+  }
+};
+
+/**
+ * Get submission statistics for a group
+ */
+export const getSubmissionStats = async (req, res) => {
+  const { groupId, email } = req.query;
+  console.log(
+    "Fetching submission stats for groupId:",
+    groupId,
+    "and email:",
+    email
+  );
+
+  try {
+    const user = await User.findOne({ email });
+
+    const createdGroups = await NjangiGroup.find({
+      adminId: user._id,
+    });
+
+    const drafts = await njangiDraftModel.find({
+      accountSetup: { email: user.email },
+    });
+
+    if (!createdGroups || createdGroups.length === 0) {
+      return res.status(404).json({
+        message: "Group not found or not owned by this admin.",
+      });
+    }
+
+    const createdGroupsCount = createdGroups.length;
+    const draftGroupsCount = drafts.length;
+    res.status(200).json({
+      approved: createdGroupsCount,
+      pending: draftGroupsCount,
+      rejected: 0,
+      total: createdGroupsCount + draftGroupsCount,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error fetching submission statistics", error });
   }
 };

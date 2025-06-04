@@ -8,7 +8,7 @@ export interface AccountSetUp {
 }
 
 export interface GroupDetails {
-  memberContributions: {
+  memberContributions?: {
     userId: string;
     paymentsCount: number;
   }[];

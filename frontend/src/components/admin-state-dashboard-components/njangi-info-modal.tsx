@@ -43,6 +43,7 @@ export function DashboardInfoModal({
         {/* Header */}
         <div className="relative bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6 rounded-t-xl">
           <button
+            type="button"
             onClick={handleClose}
             className="absolute top-4 right-4 text-white hover:text-gray-200 transition-colors"
           >
@@ -195,6 +196,7 @@ export function DashboardInfoModal({
 
           {/* Action Button */}
           <button
+            type="button"
             onClick={handleClose}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
