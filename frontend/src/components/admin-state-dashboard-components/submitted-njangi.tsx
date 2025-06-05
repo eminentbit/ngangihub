@@ -23,11 +23,15 @@ const getStatusColor = (status: string) => {
   }
 };
 
-export function SubmittedNjangis() {
+export function SubmittedNjangis({
+  setActiveTab,
+}: {
+  setActiveTab: React.Dispatch<React.SetStateAction<string>>;
+}) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedNjangi, setSelectedNjangi] = useState<any>(null);
 
-  const { recentActivity } = useAdminState();
+  const { recentActivity, setGroupId } = useAdminState();
   const { user } = useAuthStore();
   const [openModal, setOpenModal] = useState(false);
 
@@ -118,10 +122,7 @@ export function SubmittedNjangis() {
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div className="text-sm text-gray-600">
                   <p>
-                    Submitted:{" "}
-                    {new Date(
-                      njangi.groupDetails.createdAt
-                    ).toLocaleDateString()}
+                    Submitted: {new Date(njangi.createdAt).toLocaleDateString()}
                   </p>
                   <p>
                     Start Date:{" "}
@@ -134,6 +135,10 @@ export function SubmittedNjangis() {
                   <button
                     type="button"
                     className="border border-blue-200 text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center"
+                    onClick={() => {
+                      setActiveTab("details");
+                      setGroupId(njangi._id);
+                    }}
                   >
                     <Eye className="h-4 w-4 mr-2" />
                     View Details

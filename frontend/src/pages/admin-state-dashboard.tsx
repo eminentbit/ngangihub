@@ -131,7 +131,9 @@ export default function NjangiStateDashBoard() {
 
             <div className="mt-4 sm:mt-6">
               {activeTab === "overview" && <NjangiOverview />}
-              {activeTab === "submitted" && <SubmittedNjangis />}
+              {activeTab === "submitted" && (
+                <SubmittedNjangis setActiveTab={setActiveTab} />
+              )}
               {activeTab === "details" && <NjangiDetails />}
               {activeTab === "tracking" && <StatusTracking />}
             </div>

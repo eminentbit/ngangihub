@@ -155,22 +155,22 @@ export const getSubmissionStats = async (req, res) => {
 
   try {
     const user = await User.findOne({ email });
+    console.log("User:", user);
 
-    const createdGroups = await NjangiGroup.find({
-      adminId: user._id,
-    });
-
-    const drafts = await njangiDraftModel.find({
-      accountSetup: { email: user.email },
-    });
-
-    if (!createdGroups || createdGroups.length === 0) {
-      return res.status(404).json({
-        message: "Group not found or not owned by this admin.",
+    let createdGroups = [];
+    if (user) {
+      createdGroups = await NjangiGroup.find({
+        adminId: user._id,
       });
     }
 
-    const createdGroupsCount = createdGroups.length;
+    const drafts = await njangiDraftModel.find({
+      "accountSetup.email": email,
+    });
+
+    let createdGroupsCount = 0;
+    if (createdGroups && createdGroups.length)
+      createdGroupsCount = createdGroups.length;
     const draftGroupsCount = drafts.length;
     res.status(200).json({
       approved: createdGroupsCount,
@@ -186,28 +186,101 @@ export const getSubmissionStats = async (req, res) => {
 };
 
 export const getRecentActivity = async (req, res) => {
-  console.log(req.query);
   const { email } = req.query;
 
   try {
     const user = await User.findOne({ email });
-    const createdGroups = await NjangiGroup.find({
-      adminId: user.id,
-    });
-
-    if (!createdGroups || createdGroups.length === 0) {
-      return res.status(404).json({
-        message: "Group not found or not owned by this admin.",
-      });
-    }
+    const createdGroups = user
+      ? await NjangiGroup.find({
+          adminId: user?.id,
+        })
+      : [];
 
     const pendingGroups = await njangiDraftModel.find({
-      accountSetup: { email },
-      status: "pending",
+      "accountSetup.email": email,
     });
 
     return res.status(200).json({ createdGroups, pendingGroups });
   } catch (error) {
     res.status(500).json({ message: "Error fetching recent activity", error });
+  }
+};
+
+export const getDraftInfo = async (req, res) => {
+  const { groupId } = req.query;
+  try {
+    const draft = await njangiDraftModel.findOne({
+      _id: groupId,
+    });
+
+    if (!draft || draft.length === 0) {
+      return res.status(404).json({
+        message: "No drafts found for this user.",
+      });
+    }
+
+    res.status(200).json(draft);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching drafts", error });
+  }
+};
+
+export const getStatusHistory = async (req, res) => {
+  const { email } = req.query;
+  try {
+    const user = await User.findOne({ email });
+
+    const createdGroups = user
+      ? await NjangiGroup.find({ adminId: user._id })
+          .select("name status createdAt")
+          .sort({ createdAt: -1 })
+      : [];
+
+    const drafts = await njangiDraftModel
+      .find({
+        "accountSetup.email": email,
+      })
+      .sort({ createdAt: -1 });
+
+    const formatGroup = (group, isDraft = false) => {
+      const timeline = [
+        {
+          status: "submitted",
+          date: new Date(group.createdAt).toLocaleDateString(),
+          time: new Date(group.createdAt).toLocaleTimeString(),
+          description: "Application submitted successfully",
+          completed: true,
+        },
+      ];
+
+      // For approved groups (in createdGroups)
+      if (!isDraft) {
+        timeline.push({
+          status: "approved",
+          date: new Date(group.createdAt).toLocaleDateString(),
+          time: new Date(group.createdAt).toLocaleTimeString(),
+          description: "Application approved by board",
+          completed: true,
+        });
+      }
+
+      return {
+        id: group._id,
+        groupName: isDraft ? group.groupDetails.groupName : group.name,
+        currentStatus: isDraft ? "pending" : "approved",
+        timeline,
+      };
+    };
+
+    const formattedGroups = createdGroups.map((group) => formatGroup(group));
+    const formattedDrafts = drafts.map((draft) => formatGroup(draft, true));
+
+    const combinedHistory = [...formattedGroups, ...formattedDrafts].sort(
+      (a, b) => new Date(b.timeline[0].date) - new Date(a.timeline[0].date)
+    );
+
+    res.status(200).json(combinedHistory);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching status history", error });
   }
 };

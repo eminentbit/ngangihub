@@ -92,14 +92,14 @@ export function NjangiOverview() {
                 <div className="space-y-1">
                   <p className="font-medium text-gray-900">{group.name}</p>
                   <p className="text-sm text-gray-600">
-                    Submitted {new Date(group.createdAt).toLocaleDateString()}
+                    Submitted {group.name}
                   </p>
                 </div>
                 <span
                   className={`${
-                    group.status === "APPROVED"
+                    group.status.toUpperCase() === "APPROVED"
                       ? "bg-green-100 text-green-800"
-                      : group.status === "PENDING"
+                      : group.status.toUpperCase() === "PENDING"
                       ? "bg-yellow-100 text-yellow-800"
                       : "bg-blue-100 text-blue-800"
                   } px-2 py-1 rounded-full text-xs font-medium mt-2 sm:mt-0 w-fit min-w-[80px] text-center`}
@@ -117,13 +117,10 @@ export function NjangiOverview() {
               >
                 <div className="space-y-1">
                   <p className="font-medium text-gray-900">
-                    {group.groupDetails.name}
+                    {group.groupDetails.groupName}
                   </p>
                   <p className="text-sm text-gray-600">
-                    Submitted{" "}
-                    {new Date(
-                      group.groupDetails.createdAt
-                    ).toLocaleDateString()}
+                    Submitted {new Date(group.createdAt).toLocaleDateString()}
                   </p>
                 </div>
                 <span

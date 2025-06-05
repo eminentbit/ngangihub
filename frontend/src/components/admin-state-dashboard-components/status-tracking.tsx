@@ -1,51 +1,59 @@
 import { CheckCircle, Clock, AlertCircle, FileText } from "lucide-react";
+import { useAdminState } from "../../store/create.admin.store";
+import { useEffect } from "react";
 
 const StatusTracking = () => {
-  const statusHistory = [
-    {
-      id: "NJ002",
-      groupName: "Monthly Contribution Circle",
-      currentStatus: "pending",
-      timeline: [
-        {
-          status: "submitted",
-          date: "2024-01-20",
-          time: "10:30 AM",
-          description: "Application submitted successfully",
-          completed: true,
-        },
-        {
-          status: "under_review",
-          date: "2024-01-21",
-          time: "2:15 PM",
-          description: "BOD started reviewing your application",
-          completed: true,
-        },
-        {
-          status: "pending_documents",
-          date: "2024-01-22",
-          time: "9:45 AM",
-          description: "Additional documents requested",
-          completed: true,
-        },
-        {
-          status: "final_review",
-          date: "2024-01-25",
-          time: "11:20 AM",
-          description: "Application in final review stage",
-          completed: false,
-          current: true,
-        },
-        {
-          status: "decision",
-          date: "Expected: 2024-01-27",
-          time: "",
-          description: "Final decision will be communicated",
-          completed: false,
-        },
-      ],
-    },
-  ];
+  // const statusHistory = [
+  //   {
+  //     id: "NJ002",
+  //     groupName: "Monthly Contribution Circle",
+  //     currentStatus: "pending",
+  //     timeline: [
+  //       {
+  //         status: "submitted",
+  //         date: "2024-01-20",
+  //         time: "10:30 AM",
+  //         description: "Application submitted successfully",
+  //         completed: true,
+  //       },
+  //       {
+  //         status: "under_review",
+  //         date: "2024-01-21",
+  //         time: "2:15 PM",
+  //         description: "BOD started reviewing your application",
+  //         completed: true,
+  //       },
+  //       {
+  //         status: "pending_documents",
+  //         date: "2024-01-22",
+  //         time: "9:45 AM",
+  //         description: "Additional documents requested",
+  //         completed: true,
+  //       },
+  //       {
+  //         status: "final_review",
+  //         date: "2024-01-25",
+  //         time: "11:20 AM",
+  //         description: "Application in final review stage",
+  //         completed: false,
+  //         current: true,
+  //       },
+  //       {
+  //         status: "decision",
+  //         date: "Expected: 2024-01-27",
+  //         time: "",
+  //         description: "Final decision will be communicated",
+  //         completed: false,
+  //       },
+  //     ],
+  //   },
+  // ];
+
+  const { statusHistory, fetchStatusHistory } = useAdminState();
+
+  useEffect(() => {
+    fetchStatusHistory();
+  }, [fetchStatusHistory]);
 
   const getStatusIcon = (
     status: string,
@@ -117,7 +125,7 @@ const StatusTracking = () => {
         </div>
       </div>
 
-      {statusHistory.map((njangi) => (
+      {statusHistory?.map((njangi) => (
         <div key={njangi.id} className="bg-white rounded-lg shadow p-6">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
             <div>
@@ -147,11 +155,7 @@ const StatusTracking = () => {
                 <div key={index} className="flex gap-4 pb-6 last:pb-0">
                   <div className="flex flex-col items-center">
                     <div className="flex items-center justify-center">
-                      {getStatusIcon(
-                        step.status,
-                        step.completed,
-                        step.current || false
-                      )}
+                      {getStatusIcon(step.status, step.completed, false)}
                     </div>
                     {index < njangi.timeline.length - 1 && (
                       <div

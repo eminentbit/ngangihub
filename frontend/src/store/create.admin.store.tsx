@@ -31,6 +31,7 @@ interface AdminState {
   selectedMember: Member | null;
   isEditingSettings: boolean;
   groupInfo: Group | null;
+  draftInfo: GroupRequest | null;
   nextMeeting: string | null;
   loading: boolean;
   error: string | null;
@@ -41,8 +42,25 @@ interface AdminState {
     approved: number;
     rejected: number;
   } | null;
+  statusHistory:
+    | null
+    | {
+        id: string;
+        groupName: string;
+        currentStatus: string;
+        timeline: {
+          current: boolean;
+          status: string;
+          date: string;
+          time: string;
+          description: string;
+          completed: boolean;
+        }[];
+      }[];
 
   fetchSubmissionStats: () => Promise<void>;
+  fetchDraftInfo: () => Promise<void>;
+  fetchStatusHistory: () => Promise<void>;
 
   // Setters
   setGroupId: (id: string) => void;
@@ -84,6 +102,8 @@ export const useAdminState = create<AdminState>((set, get) => ({
   error: null,
   submissionStats: null,
   recentActivity: null,
+  draftInfo: null,
+  statusHistory: null,
 
   setGroupId: (id: string) => set({ groupId: id }),
   setMembers: (members: Member[]) => set({ members }),
@@ -169,6 +189,24 @@ export const useAdminState = create<AdminState>((set, get) => ({
     }
   },
 
+  fetchDraftInfo: async () => {
+    set({ loading: true, error: null });
+    try {
+      const response = await secureGet("/admin/drafts", {
+        silent: true,
+        params: { groupId: get().groupId },
+      });
+      set({ draftInfo: response.data, loading: false });
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        set({
+          error: err.message || "Failed to fetch draft info",
+          loading: false,
+        });
+      }
+    }
+  },
+
   fetchGroups: async () => {
     set({ loading: true, error: null });
     try {
@@ -224,6 +262,24 @@ export const useAdminState = create<AdminState>((set, get) => ({
       if (err instanceof AxiosError) {
         set({
           error: err.message || "Failed to fetch submission stats",
+          loading: false,
+        });
+      }
+    }
+  },
+
+  fetchStatusHistory: async () => {
+    set({ loading: true, error: null });
+    try {
+      const response = await secureGet("/admin/status-history", {
+        params: { groupId: get().groupId, email: get().email },
+      });
+      console.log("Fetched status history:", response.data);
+      set({ statusHistory: response.data, loading: false });
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        set({
+          error: err.message || "Failed to fetch status history",
           loading: false,
         });
       }
