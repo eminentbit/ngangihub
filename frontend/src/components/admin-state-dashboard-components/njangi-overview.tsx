@@ -2,9 +2,16 @@ import { CheckCircle, Clock, XCircle, Users } from "lucide-react";
 import { useAdminState } from "../../store/create.admin.store";
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+import { capitalizeFirstLetter } from "../../utils/capitalize";
 
 export function NjangiOverview() {
-  const { submissionStats, fetchSubmissionStats, setGroupId } = useAdminState();
+  const {
+    submissionStats,
+    fetchSubmissionStats,
+    setGroupId,
+    fetchRecentActivity,
+    recentActivity,
+  } = useAdminState();
   const stats = [
     {
       title: "Total Submissions",
@@ -42,16 +49,12 @@ export function NjangiOverview() {
   }, [draftId, setGroupId]);
 
   useEffect(() => {
-    // const fetchStats = async () => {
-    //   try {
-    //     await fetchSubmissionStats();
-    //   } catch (error) {
-    //     console.error("Error fetching submission stats:", error);
-    //   }
-    // };
-    // fetchStats();
     fetchSubmissionStats();
   }, [fetchSubmissionStats]);
+
+  useEffect(() => {
+    fetchRecentActivity();
+  }, [fetchRecentActivity]);
 
   return (
     <div className="space-y-6 p-4 md:p-6">
@@ -79,41 +82,65 @@ export function NjangiOverview() {
           Recent Activity
         </h2>
         <div className="space-y-4">
-          <div className="flex flex-col space-y-2 sm:space-y-0 sm:flex-row sm:items-center justify-between p-4 bg-blue-50 rounded-lg">
-            <div className="space-y-1">
-              <p className="font-medium text-gray-900">
-                Community Savings Group
-              </p>
-              <p className="text-sm text-gray-600">Submitted 2 days ago</p>
-            </div>
-            <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium mt-2 sm:mt-0 w-fit min-w-[80px] text-center">
-              Approved
-            </span>
-          </div>
-
-          <div className="flex flex-col space-y-2 sm:space-y-0 sm:flex-row sm:items-center justify-between p-4 bg-blue-50 rounded-lg">
-            <div className="space-y-1">
-              <p className="font-medium text-gray-900">
-                Monthly Contribution Circle
-              </p>
-              <p className="text-sm text-gray-600">Submitted 5 days ago</p>
-            </div>
-            <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium mt-2 sm:mt-0 w-fit min-w-[80px] text-center">
-              Pending Review
-            </span>
-          </div>
-
-          <div className="flex flex-col space-y-2 sm:space-y-0 sm:flex-row sm:items-center justify-between p-4 bg-blue-50 rounded-lg">
-            <div className="space-y-1">
-              <p className="font-medium text-gray-900">
-                Family Investment Group
-              </p>
-              <p className="text-sm text-gray-600">Submitted 1 week ago</p>
-            </div>
-            <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium mt-2 sm:mt-0 w-fit min-w-[80px] text-center">
-              Under Review
-            </span>
-          </div>
+          {[...(recentActivity?.createdGroups || [])]
+            .slice(0, 3)
+            .map((group, index) => (
+              <div
+                key={index}
+                className="flex flex-col space-y-2 sm:space-y-0 sm:flex-row sm:items-center justify-between p-4 bg-blue-50 rounded-lg"
+              >
+                <div className="space-y-1">
+                  <p className="font-medium text-gray-900">{group.name}</p>
+                  <p className="text-sm text-gray-600">
+                    Submitted {new Date(group.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+                <span
+                  className={`${
+                    group.status === "APPROVED"
+                      ? "bg-green-100 text-green-800"
+                      : group.status === "PENDING"
+                      ? "bg-yellow-100 text-yellow-800"
+                      : "bg-blue-100 text-blue-800"
+                  } px-2 py-1 rounded-full text-xs font-medium mt-2 sm:mt-0 w-fit min-w-[80px] text-center`}
+                >
+                  {group.status}
+                </span>
+              </div>
+            ))}
+          {[...(recentActivity?.pendingGroups || [])]
+            .slice(0, 3)
+            .map((group, index) => (
+              <div
+                key={index}
+                className="flex flex-col space-y-2 sm:space-y-0 sm:flex-row sm:items-center justify-between p-4 bg-blue-50 rounded-lg"
+              >
+                <div className="space-y-1">
+                  <p className="font-medium text-gray-900">
+                    {group.groupDetails.name}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    Submitted{" "}
+                    {new Date(
+                      group.groupDetails.createdAt
+                    ).toLocaleDateString()}
+                  </p>
+                </div>
+                <span
+                  className={`${
+                    group.groupDetails.status?.toUpperCase() === "APPROVED"
+                      ? "bg-green-100 text-green-800"
+                      : group.groupDetails.status?.toUpperCase() === "PENDING"
+                      ? "bg-yellow-100 text-yellow-800"
+                      : "bg-blue-100 text-blue-800"
+                  } px-2 py-1 rounded-full text-xs font-medium mt-2 sm:mt-0 w-fit min-w-[80px] text-center`}
+                >
+                  {capitalizeFirstLetter(
+                    group.groupDetails.status || "Pending"
+                  )}
+                </span>
+              </div>
+            ))}
         </div>
       </div>
     </div>

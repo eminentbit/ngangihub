@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { securePost, secureGet } from "../utils/axiosClient";
 import { AxiosError } from "axios";
+import { GroupRequest } from "../types/group.request";
 
 export interface Member {
   id: string;
@@ -17,6 +18,7 @@ export interface Group {
   groupMembers: Member[];
   nextMeeting: string;
   rules: string;
+  status: string;
   totalFunds: number;
   createdAt: string;
 }
@@ -51,7 +53,7 @@ interface AdminState {
   // CRUD actions
   fetchMembers: () => Promise<void>;
   fetchGroups: () => Promise<void>;
-  fetchGroupInfo: (groupId: string) => Promise<void>;
+  fetchGroupInfo: (groupId: string, withToken: boolean) => Promise<void>;
   createGroup: (group: { name: string; description: string }) => Promise<void>;
   updateGroup: (group: {
     id: string;
@@ -62,6 +64,11 @@ interface AdminState {
   addMember: (member: Member) => Promise<void>;
   removeMember: (memberId: string) => void;
   updateMember: (member: Member) => void;
+  recentActivity: {
+    createdGroups: Group[];
+    pendingGroups: GroupRequest[];
+  } | null;
+  fetchRecentActivity: () => Promise<void>;
 }
 
 export const useAdminState = create<AdminState>((set, get) => ({
@@ -76,6 +83,7 @@ export const useAdminState = create<AdminState>((set, get) => ({
   nextMeeting: null,
   error: null,
   submissionStats: null,
+  recentActivity: null,
 
   setGroupId: (id: string) => set({ groupId: id }),
   setMembers: (members: Member[]) => set({ members }),
@@ -137,11 +145,18 @@ export const useAdminState = create<AdminState>((set, get) => ({
     }));
   },
 
-  fetchGroupInfo: async (groupId: string) => {
+  fetchGroupInfo: async (groupId: string, withToken = true) => {
     set({ loading: true, error: null });
     try {
-      const response = await secureGet(`/admin/group/${groupId}`, {
+      let url;
+      if (withToken) {
+        url = `/admin/group/${groupId}`;
+      } else {
+        url = "/admin/group/get-info";
+      }
+      const response = await secureGet(url, {
         silent: true,
+        params: { groupId },
       });
       set({ loading: false, groupInfo: response.data });
     } catch (err) {
@@ -204,12 +219,30 @@ export const useAdminState = create<AdminState>((set, get) => ({
       const response = await secureGet("/admin/submission-stats", {
         params: { groupId: get().groupId, email: get().email },
       });
-      console.log("Fetched submission stats:", response.data);
       set({ submissionStats: response.data, loading: false });
     } catch (err) {
       if (err instanceof AxiosError) {
         set({
           error: err.message || "Failed to fetch submission stats",
+          loading: false,
+        });
+      }
+    }
+  },
+
+  fetchRecentActivity: async () => {
+    set({ loading: true, error: null });
+    try {
+      set({ email: localStorage.getItem("tempAdminEmail") || "" });
+      const res = await secureGet("/admin/recent-activity", {
+        params: { email: get().email, groupId: get().groupId },
+      });
+      console.log("Fetched submission stats:", res.data);
+      set({ recentActivity: res.data, loading: false });
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        set({
+          error: error.message || "Failed to fetch recent activity",
           loading: false,
         });
       }

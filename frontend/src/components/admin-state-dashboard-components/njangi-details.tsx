@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Edit,
   Calendar,
@@ -9,47 +9,56 @@ import {
   MapPin,
 } from "lucide-react";
 import { EditNjangiModal } from "./edit-njangi-modal";
+import { useAdminState } from "../../store/create.admin.store";
 
 export function NjangiDetails() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
-  const njangiData = {
-    id: "NJ002",
-    status: "pending",
-    submittedAt: "2024-01-20",
-    canEdit: true,
-    editDeadline: "2024-01-27",
-    groupName: "Monthly Contribution Circle",
-    contributionAmount: 25000,
-    frequency: "Monthly",
-    members: 8,
-    startDate: "2024-03-01",
-    accountSetup: {
-      firstName: "John",
-      lastName: "Doe",
-      email: "john.doe@email.com",
-      phoneNumber: "+234 801 234 5678",
-      role: "admin",
-      status: "pending",
-    },
-    groupDetails: {
-      groupName: "Monthly Contribution Circle",
-      contributionAmount: 25000,
-      contributionFrequency: "Monthly",
-      payoutMethod: "Bank Transfer",
-      startDate: "2024-03-01",
-      endDate: "2024-12-31",
-      numberOfMember: 8,
-      rules:
-        "All members must contribute by the 5th of each month. Late payments incur a 5% penalty.",
-      status: "pending",
-    },
-    inviteMembers: [
-      { type: "email", value: "member1@email.com", contact: "Alice Johnson" },
-      { type: "email", value: "member2@email.com", contact: "Bob Smith" },
-      { type: "phone", value: "+234 802 345 6789", contact: "Carol Williams" },
-    ],
-  };
+  // const groupInfo = {
+  //   id: "NJ002",
+  //   status: "pending",
+  //   submittedAt: "2024-01-20",
+  //   canEdit: true,
+  //   editDeadline: "2024-01-27",
+  //   groupName: "Monthly Contribution Circle",
+  //   contributionAmount: 25000,
+  //   frequency: "Monthly",
+  //   members: 8,
+  //   startDate: "2024-03-01",
+  //   accountSetup: {
+  //     firstName: "John",
+  //     lastName: "Doe",
+  //     email: "john.doe@email.com",
+  //     phoneNumber: "+234 801 234 5678",
+  //     role: "admin",
+  //     status: "pending",
+  //   },
+  //   groupDetails: {
+  //     groupName: "Monthly Contribution Circle",
+  //     contributionAmount: 25000,
+  //     contributionFrequency: "Monthly",
+  //     payoutMethod: "Bank Transfer",
+  //     startDate: "2024-03-01",
+  //     endDate: "2024-12-31",
+  //     numberOfMember: 8,
+  //     rules:
+  //       "All members must contribute by the 5th of each month. Late payments incur a 5% penalty.",
+  //     status: "pending",
+  //   },
+  //   inviteMembers: [
+  //     { type: "email", value: "member1@email.com", contact: "Alice Johnson" },
+  //     { type: "email", value: "member2@email.com", contact: "Bob Smith" },
+  //     { type: "phone", value: "+234 802 345 6789", contact: "Carol Williams" },
+  //   ],
+  // };
+
+  const { fetchGroupInfo, groupId, groupInfo } = useAdminState();
+
+  useEffect(() => {
+    fetchGroupInfo(groupId!, false);
+  }, [fetchGroupInfo, groupId]);
+
+  console.log(groupInfo);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -79,18 +88,18 @@ export function NjangiDetails() {
           <h2 className="text-xl font-semibold text-gray-900">
             Njangi Details
           </h2>
-          <p className="text-sm text-gray-600">ID: {njangiData.id}</p>
+          <p className="text-sm text-gray-600">ID: {groupInfo?._id}</p>
         </div>
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
           <span
             className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
-              njangiData.status
+              groupInfo?.status || ""
             )}`}
           >
-            {njangiData.status.charAt(0).toUpperCase() +
-              njangiData.status.slice(1)}
+            {(groupInfo?.status || "").charAt(0).toUpperCase() +
+              (groupInfo?.status || "").slice(1)}
           </span>
-          {njangiData.canEdit && (
+          {groupInfo?.status == "pending" && (
             <button
               type="button"
               onClick={handleEdit}
@@ -103,17 +112,17 @@ export function NjangiDetails() {
         </div>
       </div>
 
-      {njangiData.canEdit && (
+      {/* {groupInfo?.status == "pending" && (
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
           <div className="flex items-center gap-2 text-yellow-800">
             <Calendar className="h-4 w-4" />
             <span className="text-sm font-medium">
               Edit deadline:{" "}
-              {new Date(njangiData.editDeadline).toLocaleDateString()}
+              {new Date(groupInfo.updatedAt).toLocaleDateString()}
             </span>
           </div>
         </div>
-      )}
+      )} */}
 
       <div className="grid gap-4 md:gap-6 lg:grid-cols-2">
         {/* Account Setup */}
@@ -125,21 +134,21 @@ export function NjangiDetails() {
             <div className="flex items-center gap-4">
               <div className="h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center">
                 <span className="text-blue-600 font-semibold">
-                  {njangiData.accountSetup.firstName[0]}
-                  {njangiData.accountSetup.lastName[0]}
+                  {groupInfo?.firstName[0]}
+                  {groupInfo?.accountSetup.lastName[0]}
                 </span>
               </div>
               <div>
                 <p className="font-medium text-gray-900">
-                  {njangiData.accountSetup.firstName}{" "}
-                  {njangiData.accountSetup.lastName}
+                  {groupInfo?.accountSetup.firstName}{" "}
+                  {groupInfo?.accountSetup.lastName}
                 </p>
                 <span
                   className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                    njangiData.accountSetup.status
+                    groupInfo?.accountSetup.status
                   )}`}
                 >
-                  {njangiData.accountSetup.role}
+                  {groupInfo?.accountSetup.role}
                 </span>
               </div>
             </div>
@@ -150,13 +159,13 @@ export function NjangiDetails() {
               <div className="flex items-center gap-2 text-sm">
                 <Mail className="h-4 w-4 text-gray-500" />
                 <span className="text-gray-600">
-                  {njangiData.accountSetup.email}
+                  {groupInfo?.accountSetup.email}
                 </span>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <Phone className="h-4 w-4 text-gray-500" />
                 <span className="text-gray-600">
-                  {njangiData.accountSetup.phoneNumber}
+                  {groupInfo?.accountSetup.phoneNumber}
                 </span>
               </div>
             </div>
@@ -171,14 +180,14 @@ export function NjangiDetails() {
           <div className="space-y-4">
             <div>
               <h4 className="font-medium text-gray-900 mb-2">
-                {njangiData.groupDetails.groupName}
+                {groupInfo?.groupDetails.groupName}
               </h4>
               <span
                 className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                  njangiData.groupDetails.status
+                  groupInfo?.groupDetails.status
                 )}`}
               >
-                {njangiData.groupDetails.status}
+                {groupInfo?.groupDetails.status}
               </span>
             </div>
 
@@ -191,7 +200,7 @@ export function NjangiDetails() {
                   <p className="text-gray-600">Contribution</p>
                   <p className="font-medium">
                     ₦
-                    {njangiData.groupDetails.contributionAmount.toLocaleString()}
+                    {groupInfo?.groupDetails.contributionAmount.toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -200,7 +209,7 @@ export function NjangiDetails() {
                 <div>
                   <p className="text-gray-600">Frequency</p>
                   <p className="font-medium">
-                    {njangiData.groupDetails.contributionFrequency}
+                    {groupInfo?.groupDetails.contributionFrequency}
                   </p>
                 </div>
               </div>
@@ -209,7 +218,7 @@ export function NjangiDetails() {
                 <div>
                   <p className="text-gray-600">Members</p>
                   <p className="font-medium">
-                    {njangiData.groupDetails.numberOfMember}
+                    {groupInfo?.groupDetails.numberOfMember}
                   </p>
                 </div>
               </div>
@@ -218,7 +227,7 @@ export function NjangiDetails() {
                 <div>
                   <p className="text-gray-600">Payout Method</p>
                   <p className="font-medium">
-                    {njangiData.groupDetails.payoutMethod}
+                    {groupInfo?.groupDetails.payoutMethod}
                   </p>
                 </div>
               </div>
@@ -228,10 +237,10 @@ export function NjangiDetails() {
               <p className="text-gray-600 mb-1">Duration</p>
               <p className="font-medium">
                 {new Date(
-                  njangiData.groupDetails.startDate
+                  groupInfo?.groupDetails.startDate
                 ).toLocaleDateString()}{" "}
                 -{" "}
-                {new Date(njangiData.groupDetails.endDate).toLocaleDateString()}
+                {new Date(groupInfo?.groupDetails.endDate).toLocaleDateString()}
               </p>
             </div>
           </div>
@@ -244,17 +253,17 @@ export function NjangiDetails() {
           Group Rules
         </h3>
         <p className="text-gray-700 leading-relaxed">
-          {njangiData.groupDetails.rules}
+          {groupInfo?.groupDetails.rules}
         </p>
       </div>
 
       {/* Invited Members */}
       <div className="bg-white rounded-lg shadow p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          Invited Members ({njangiData.inviteMembers.length})
+          Invited Members ({groupInfo?.inviteMembers.length})
         </h3>
         <div className="space-y-3">
-          {njangiData.inviteMembers.map((member, index) => (
+          {groupInfo?.inviteMembers.map((member, index) => (
             <div
               key={index}
               className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-blue-50 rounded-lg"
@@ -280,7 +289,7 @@ export function NjangiDetails() {
 
       {/* Edit Modal */}
       {isEditModalOpen && (
-        <EditNjangiModal njangi={njangiData} onClose={handleCloseModal} />
+        <EditNjangiModal njangi={groupInfo} onClose={handleCloseModal} />
       )}
     </div>
   );

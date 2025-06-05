@@ -126,17 +126,32 @@ export const fetchGroupById = async (req, res) => {
   }
 };
 
+export const fetchGroupByIdWithoutToken = async (req, res) => {
+  console.log(req.query);
+  const { groupId } = req.query;
+
+  try {
+    const group = await NjangiGroup.findOne({
+      _id: groupId,
+    });
+
+    if (!group) {
+      return res.status(404).json({
+        message: "Group not found or not owned by this admin.",
+      });
+    }
+
+    res.status(200).json(group);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching group", error });
+  }
+};
+
 /**
  * Get submission statistics for a group
  */
 export const getSubmissionStats = async (req, res) => {
-  const { groupId, email } = req.query;
-  console.log(
-    "Fetching submission stats for groupId:",
-    groupId,
-    "and email:",
-    email
-  );
+  const { email } = req.query;
 
   try {
     const user = await User.findOne({ email });
@@ -167,5 +182,32 @@ export const getSubmissionStats = async (req, res) => {
     res
       .status(500)
       .json({ message: "Error fetching submission statistics", error });
+  }
+};
+
+export const getRecentActivity = async (req, res) => {
+  console.log(req.query);
+  const { email } = req.query;
+
+  try {
+    const user = await User.findOne({ email });
+    const createdGroups = await NjangiGroup.find({
+      adminId: user.id,
+    });
+
+    if (!createdGroups || createdGroups.length === 0) {
+      return res.status(404).json({
+        message: "Group not found or not owned by this admin.",
+      });
+    }
+
+    const pendingGroups = await njangiDraftModel.find({
+      accountSetup: { email },
+      status: "pending",
+    });
+
+    return res.status(200).json({ createdGroups, pendingGroups });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching recent activity", error });
   }
 };
