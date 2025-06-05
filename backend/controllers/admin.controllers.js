@@ -1,7 +1,7 @@
 import njangiDraftModel from "../models/njangi.draft.model.js";
 import NjangiGroup from "../models/njangi.group.model.js";
 import User from "../models/user.model.js";
-import jwt from "jsonwebtoken";
+import validator from "validator";
 import { config } from "dotenv";
 
 config();
@@ -14,7 +14,7 @@ export const getMembersOfGroup = async (req, res) => {
 
   try {
     const group = await NjangiGroup.findOne({
-      _id: groupId,
+      _id: { $eq: groupId },
       adminId: req.user.id,
     }).populate("groupMembers", "-password"); // exclude password
 
@@ -110,7 +110,7 @@ export const fetchGroupById = async (req, res) => {
 
   try {
     const group = await NjangiGroup.findOne({
-      _id: groupId,
+      _id: { $eq: groupId },
       adminId: req.user.id,
     });
 
@@ -132,7 +132,7 @@ export const fetchGroupByIdWithoutToken = async (req, res) => {
 
   try {
     const group = await NjangiGroup.findOne({
-      _id: groupId,
+      _id: { $eq: groupId },
     });
 
     if (!group) {
@@ -152,9 +152,12 @@ export const fetchGroupByIdWithoutToken = async (req, res) => {
  */
 export const getSubmissionStats = async (req, res) => {
   const { email } = req.query;
+  if (!email || !validator.isEmail(email)) {
+    return res.status(400).json({ message: "Invalid email address" });
+  }
 
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: { $eq: email } });
     console.log("User:", user);
 
     let createdGroups = [];
@@ -165,7 +168,7 @@ export const getSubmissionStats = async (req, res) => {
     }
 
     const drafts = await njangiDraftModel.find({
-      "accountSetup.email": email,
+      "accountSetup.email": { $eq: email },
     });
 
     let createdGroupsCount = 0;
@@ -188,8 +191,12 @@ export const getSubmissionStats = async (req, res) => {
 export const getRecentActivity = async (req, res) => {
   const { email } = req.query;
 
+  if (!email || !validator.isEmail(email)) {
+    return res.status(400).json({ message: "Invalid email address" });
+  }
+
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: { $eq: email } });
     const createdGroups = user
       ? await NjangiGroup.find({
           adminId: user?.id,
@@ -197,7 +204,7 @@ export const getRecentActivity = async (req, res) => {
       : [];
 
     const pendingGroups = await njangiDraftModel.find({
-      "accountSetup.email": email,
+      "accountSetup.email": { $eq: email },
     });
 
     return res.status(200).json({ createdGroups, pendingGroups });
@@ -210,7 +217,7 @@ export const getDraftInfo = async (req, res) => {
   const { groupId } = req.query;
   try {
     const draft = await njangiDraftModel.findOne({
-      _id: groupId,
+      _id: { $eq: groupId },
     });
 
     if (!draft || draft.length === 0) {
@@ -227,8 +234,13 @@ export const getDraftInfo = async (req, res) => {
 
 export const getStatusHistory = async (req, res) => {
   const { email } = req.query;
+
+  if (!email || !validator.isEmail(email)) {
+    return res.status(400).json({ message: "Invalid email address" });
+  }
+
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: { $eq: email } });
 
     const createdGroups = user
       ? await NjangiGroup.find({ adminId: user._id })
@@ -238,7 +250,7 @@ export const getStatusHistory = async (req, res) => {
 
     const drafts = await njangiDraftModel
       .find({
-        "accountSetup.email": email,
+        "accountSetup.email": { $eq: email },
       })
       .sort({ createdAt: -1 });
 

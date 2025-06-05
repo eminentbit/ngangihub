@@ -6,8 +6,11 @@ import {
   sendMessage,
 } from "../controllers/message.controllers.js";
 import { uploadChatAttachment } from "../middleware/upload.js";
+import limiter from "../middleware/limiter.js";
 
 const router = express.Router();
+
+router.use("/", limiter);
 
 // Get all messages
 router.get("/", getMessages);
