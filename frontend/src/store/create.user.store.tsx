@@ -19,6 +19,7 @@ interface UserState {
   error: string | null;
   setGroups: (groups: GroupDetails[]) => void;
   fetchNotifications: () => Promise<void>;
+  fetchGroups: () => Promise<void>;
   setNotifications: (notifications: Notification[]) => void;
   setError: (error: string | null) => void;
   setIsLoading: (isLoading: boolean) => void;
@@ -36,6 +37,18 @@ const useUserStore = create<UserState>((set) => ({
   notifications: [],
   isLoading: false,
   error: null,
+
+  fetchGroups: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const res = await secureGet(`/njangi/groups`);
+      console.log("Fetched groups:", res.data.groups);
+      set({ groups: res.data.groups, isLoading: false });
+    } catch (err) {
+      console.error("Failed to fetch groups:", err);
+      set({ error: "Could not fetch groups", isLoading: false });
+    }
+  },
 
   setGroups: (groups) => set({ groups }),
   setNotifications: (

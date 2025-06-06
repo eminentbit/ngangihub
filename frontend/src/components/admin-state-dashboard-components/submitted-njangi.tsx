@@ -5,6 +5,7 @@ import { EditNjangiModal } from "./edit-njangi-modal";
 import { useQuery } from "@tanstack/react-query";
 import { useNjangiStateStore } from "../../store/njangi.state.store";
 import { useNavigate } from "react-router-dom";
+import UpgradeModal from "../upgradePlan";
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -23,8 +24,7 @@ export function SubmittedNjangis({ njangiId }: { njangiId: string | null }) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedNjangi, setSelectedNjangi] = useState<any>(null);
   const { getMyNjangis } = useNjangiStateStore();
-
-  const navigate = useNavigate();
+  const [openModal, setOpenModal] = useState(false);
 
   const {
     data: njangis = [],
@@ -48,6 +48,7 @@ export function SubmittedNjangis({ njangiId }: { njangiId: string | null }) {
     setIsEditModalOpen(false);
     setSelectedNjangi(null);
   };
+  const navigate = useNavigate();
 
   return (
     <div className="space-y-4">
@@ -55,7 +56,10 @@ export function SubmittedNjangis({ njangiId }: { njangiId: string | null }) {
         <h2 className="text-xl font-semibold text-gray-900">
           My Submitted Njangis
         </h2>
-        <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors shrink-0" onClick={() => navigate("/njangi-form")}>
+        <button
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors shrink-0"
+          onClick={() => navigate("/njangi-form")}
+        >
           Create New Njangi
         </button>
       </div>
@@ -66,9 +70,14 @@ export function SubmittedNjangis({ njangiId }: { njangiId: string | null }) {
             Fetching your recent Submitted Njangi, Hang on...
           </p>
         ) : error ? (
-          <p className="text-red-400 font-semibold text-sm animate-pulse">Error: {error.message}</p>
+          <p className="text-red-400 font-semibold text-sm animate-pulse">
+            Error: {error.message}
+          </p>
         ) : njangis.length === 0 ? (
-          <p className="text-sm text-blue-400 animate-pulse">Couldn't find your recent submitted Njangi. Please try again or Create one.</p>
+          <p className="text-sm text-blue-400 animate-pulse">
+            Couldn't find your recent submitted Njangi. Please try again or
+            Create one.
+          </p>
         ) : (
           njangis.map((njangi, idx) => (
             <div
@@ -148,6 +157,7 @@ export function SubmittedNjangis({ njangiId }: { njangiId: string | null }) {
                       View Details
                     </button>
                     <button
+                      type="button"
                       onClick={() => handleEdit(njangi)}
                       className="border border-blue-200 text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center"
                     >
@@ -161,6 +171,10 @@ export function SubmittedNjangis({ njangiId }: { njangiId: string | null }) {
           ))
         )}
       </div>
+
+      {openModal && (
+        <UpgradeModal isOpen={openModal} onClose={() => setOpenModal(false)} />
+      )}
 
       {isEditModalOpen && selectedNjangi && (
         <EditNjangiModal njangi={selectedNjangi} onClose={handleCloseModal} />

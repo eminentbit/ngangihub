@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNjangiStateStore } from "../../store/njangi.state.store";
@@ -28,47 +27,9 @@ export function NjangiDetails({ njangiId }: { njangiId: string | null }) {
     queryFn: () => getMyNjangiDetails(njangiId!),
     enabled: !!njangiId,
     staleTime: 5 * 60 * 1000, // 5 minutes cache
-    refetchInterval: 30 * 1000, // Refetch every 30 seconds in the background
-    refetchOnWindowFocus: true, // Refetch when window/tab regains focus
+    refetchInterval: 30 * 1000, // Refetch every 30 seconds
+    refetchOnWindowFocus: true,
   });
-
-  // const njangiData = {
-  //   id: "NJ002",
-  //   status: "pending",
-  //   submittedAt: "2024-01-20",
-  //   canEdit: true,
-  //   editDeadline: "2024-01-27",
-  //   groupName: "Monthly Contribution Circle",
-  //   contributionAmount: 25000,
-  //   frequency: "Monthly",
-  //   members: 8,
-  //   startDate: "2024-03-01",
-  //   accountSetup: {
-  //     firstName: "John",
-  //     lastName: "Doe",
-  //     email: "john.doe@email.com",
-  //     phoneNumber: "+234 801 234 5678",
-  //     role: "admin",
-  //     status: "pending",
-  //   },
-  //   groupDetails: {
-  //     groupName: "Monthly Contribution Circle",
-  //     contributionAmount: 25000,
-  //     contributionFrequency: "Monthly",
-  //     payoutMethod: "Bank Transfer",
-  //     startDate: "2024-03-01",
-  //     endDate: "2024-12-31",
-  //     numberOfMember: 8,
-  //     rules:
-  //       "All members must contribute by the 5th of each month. Late payments incur a 5% penalty.",
-  //     status: "pending",
-  //   },
-  //   inviteMembers: [
-  //     { type: "email", value: "member1@email.com", contact: "Alice Johnson" },
-  //     { type: "email", value: "member2@email.com", contact: "Bob Smith" },
-  //     { type: "phone", value: "+234 802 345 6789", contact: "Carol Williams" },
-  //   ],
-  // };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -83,7 +44,7 @@ export function NjangiDetails({ njangiId }: { njangiId: string | null }) {
     }
   };
 
-  const handleEdit = (njangi: any) => {
+  const handleEdit = (njangi: MyNjangiResponse) => {
     setIsEditModalOpen(njangi);
   };
 
@@ -106,44 +67,31 @@ export function NjangiDetails({ njangiId }: { njangiId: string | null }) {
           No details available for this Njangi.
         </p>
       ) : (
-        njangiDetails.map((njangiData, idx) => (
-          <div key={njangiData.id || idx} className="space-y-6 mb-8">
+        njangiDetails.map((njangiData) => (
+          <div key={njangiData.id} className="space-y-6 mb-8">
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900">
-                  Njangi Details
-                </h2>
-              </div>
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-                {/* <span
-                  className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                    njangiData.status
-                  )}`}
-                >
-                  {njangiData.status
-                    ? njangiData.status.charAt(0).toUpperCase() +
-                      njangiData.status.slice(1)
-                    : "N/A"}
-                </span> */}
-                <button
-                  onClick={() => handleEdit(njangiData)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors w-full sm:w-auto flex items-center justify-center"
-                >
-                  <Edit className="h-4 w-4 mr-2" />
-                  Edit Details
-                </button>
-              </div>
+              <h2 className="text-xl font-semibold text-gray-900">
+                Njangi Details
+              </h2>
+              <button
+                onClick={() => handleEdit(njangiData)}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors w-full sm:w-auto flex items-center justify-center"
+              >
+                <Edit className="h-4 w-4 mr-2" />
+                Edit Details
+              </button>
             </div>
+
             {/* Edit Deadline */}
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
               <div className="flex items-center gap-2 text-yellow-800">
                 <Calendar className="h-4 w-4" />
                 <span className="text-sm font-medium">
-                  {/* {new Date(njangiData.editDeadline).toLocaleDateString()} */}
                   Edits can only be done within 24 hours
                 </span>
               </div>
             </div>
+
             <div className="grid gap-4 md:gap-6 lg:grid-cols-2">
               {/* Account Setup */}
               <div className="bg-white rounded-lg shadow p-6">
@@ -151,6 +99,7 @@ export function NjangiDetails({ njangiId }: { njangiId: string | null }) {
                   Account Setup
                 </h3>
                 <div className="space-y-4">
+                  {/* Name + Role */}
                   <div className="flex items-center gap-4">
                     <div className="h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center">
                       <span className="text-blue-600 font-semibold">
@@ -175,6 +124,7 @@ export function NjangiDetails({ njangiId }: { njangiId: string | null }) {
 
                   <hr className="border-gray-200" />
 
+                  {/* Email + Phone */}
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-sm">
                       <Mail className="h-4 w-4 text-gray-500" />
@@ -219,7 +169,7 @@ export function NjangiDetails({ njangiId }: { njangiId: string | null }) {
                       <div>
                         <p className="text-gray-600">Contribution</p>
                         <p className="font-medium flex gap-1">
-                          {njangiData.groupDetails.contributionAmount.toLocaleString()}
+                          {njangiData.groupDetails.contributionAmount.toLocaleString()}{" "}
                           <span>FCFA</span>
                         </p>
                       </div>

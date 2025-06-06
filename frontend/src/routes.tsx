@@ -11,7 +11,6 @@ import NjangiForm from "./pages/njangi.form.page";
 import Login from "./pages/login";
 import MemberManagement from "./pages/dashboard.admin.pages/Manage";
 import GroupOverviewPage from "./pages/dashboard.admin.pages/GroupOverview";
-import GroupInfoPage from "./pages/dashboard.admin.pages/Groups";
 import StatisticsPage from "./pages/dashboard.admin.pages/MyStatistics";
 import AddMemberPage from "./pages/dashboard.admin.pages/AddMember";
 import GroupSettingsPage from "./pages/dashboard.admin.pages/GroupSetting";
@@ -87,7 +86,7 @@ const router = createBrowserRouter([
       { path: "njangi-form", element: <NjangiForm /> },
       { path: "login", element: <Login /> },
       { path: "group/:groupId", element: <GroupOverviewPage /> },
-      { path: "groups", element: <GroupInfoPage /> },
+      { path: "groups", element: <MyGroups /> },
       { path: "stats", element: <StatisticsPage /> },
       { path: "add-member", element: <AddMemberPage /> },
       { path: "payments", element: <PaymentsPage /> },

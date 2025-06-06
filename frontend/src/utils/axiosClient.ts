@@ -96,14 +96,14 @@ export const secureGet = async (
 
 export const secureDelete = async (
   url: string,
-  config: { headers?: Record<string, string>; silent?: boolean }
+  config?: { headers?: Record<string, string>; silent: true }
 ) => {
   const token = await ensureCsrfToken();
   return axiosClient.delete(url, {
     ...config,
     withCredentials: true,
     headers: {
-      ...(config.headers || {}),
+      ...(config?.headers || {}),
       "X-CSRF-Token": token,
     },
   });
@@ -112,14 +112,14 @@ export const secureDelete = async (
 export const securePut = async (
   url: string,
   payload: unknown,
-  config: { headers?: Record<string, string>; silent?: boolean }
+  config?: { headers?: Record<string, string>; silent?: true }
 ) => {
   const token = await ensureCsrfToken();
   return axiosClient.put(url, payload, {
     ...config,
     withCredentials: true,
     headers: {
-      ...(config.headers || {}),
+      ...(config?.headers || {}),
       "X-CSRF-Token": token,
     },
   });

@@ -1,19 +1,22 @@
 "use client";
 
-import type React from "react";
-
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { io, Socket } from "socket.io-client";
 import { Send, X, ImageIcon, Paperclip, Smile } from "lucide-react";
 import EmojiPicker from "./emoji-picker";
+import { useAuthStore } from "../../store/create.auth.store";
 
 // Exchange rate: 1 USD = approximately 600 CFA
-const CFA_EXCHANGE_RATE = 600;
+// const CFA_EXCHANGE_RATE = 600;
+
+// Replace with your actual Socket.IO server URL (e.g. NEXT_PUBLIC_SOCKET_URL)
+const SOCKET_SERVER_URL =
+  import.meta.env.VITE_SOCKET_SERVER_URL || "http://localhost:5000";
 
 export interface Message {
-  id: number;
   sender: string;
   content: string;
-  timestamp: Date;
+  timestamp: string; // we'll store ISO strings now
   isCurrentUser: boolean;
   attachment?: {
     type: "image" | "document";
@@ -26,6 +29,10 @@ interface ChatInterfaceProps {
   groupId?: string;
   groupName: string;
   onClose: () => void;
+  currentUser?: {
+    id: string;
+    name: string;
+  };
 }
 
 const ChatInterface = ({ groupId, groupName, onClose }: ChatInterfaceProps) => {
@@ -33,105 +40,134 @@ const ChatInterface = ({ groupId, groupName, onClose }: ChatInterfaceProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+
+  const { user } = useAuthStore();
+
+  const socketRef = useRef<Socket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
 
-  // Simulate initial messages
+  // 1️⃣ Connect to Socket.IO on mount, join room, and handle incoming messages
   useEffect(() => {
-    const initialMessages: Message[] = [
-      {
-        id: 1,
-        sender: "John Doe",
-        content: "Hello everyone! Welcome to the group chat.",
-        timestamp: new Date(Date.now() - 3600000 * 2), // 2 hours ago
-        isCurrentUser: true,
-      },
-      {
-        id: 2,
-        sender: "Sarah Johnson",
-        content: "Thanks for adding me to the group!",
-        timestamp: new Date(Date.now() - 3600000), // 1 hour ago
-        isCurrentUser: false,
-      },
-      {
-        id: 3,
-        sender: "Michael Brown",
-        content: `I've sent my contribution of ${(
-          250 * CFA_EXCHANGE_RATE
-        ).toLocaleString()} CFA.`,
-        timestamp: new Date(Date.now() - 1800000), // 30 minutes ago
-        isCurrentUser: false,
-      },
-      {
-        id: 4,
-        sender: "John Doe",
-        content: "Great! I'll confirm once I receive it.",
-        timestamp: new Date(Date.now() - 900000), // 15 minutes ago
-        isCurrentUser: true,
-      },
-      {
-        id: 5,
-        sender: "Sarah Johnson",
-        content: "I've attached the receipt for my payment.",
-        timestamp: new Date(Date.now() - 600000), // 10 minutes ago
-        isCurrentUser: false,
-        attachment: {
-          type: "document",
-          url: "#",
-          name: "payment_receipt.pdf",
-        },
-      },
-      {
-        id: 6,
-        sender: "John Doe",
-        content: "Here's a photo from our last meeting:",
-        timestamp: new Date(Date.now() - 300000), // 5 minutes ago
-        isCurrentUser: true,
-        attachment: {
-          type: "image",
-          url: "/placeholder.svg?height=200&width=300",
-          name: "meeting_photo.jpg",
-        },
-      },
-    ];
+    if (!groupId) return;
 
-    setMessages(initialMessages);
-  }, [groupId]);
+    // Create a new Socket.IO client
+    const socket = io(SOCKET_SERVER_URL, {
+      transports: ["websocket"],
+      query: { groupId },
+    });
 
-  // Auto-scroll to bottom when messages change
+    socketRef.current = socket;
+
+    // When successfully connected, join the room:
+    socket.on("connect", () => {
+      socket.emit("joinRoom", { groupId, userId: user?.id });
+    });
+
+    // Listen for incoming messages from the server
+    socket.on("receiveMessage", (msg: Message) => {
+      setMessages((prev) => [...prev, msg]);
+    });
+
+    // OPTIONAL: Fetch chat history via HTTP (or via socket) when first joining
+    // If your backend emits a "chatHistory" event upon join, you can handle it:
+    socket.on("chatHistory", (history: Message[]) => {
+      setMessages(history);
+    });
+
+    return () => {
+      socket.disconnect();
+      socketRef.current = null;
+    };
+  }, [groupId, user?.id]);
+
+  // 2️⃣ Scroll to bottom whenever messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // 3️⃣ Handle sending a text message via Socket.IO
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!message.trim() || !socketRef.current || !groupId) return;
 
-    if (message.trim() === "") return;
-
-    const newMessage: Message = {
-      id: messages.length + 1,
-      sender: "John Doe",
+    const newMsg: Message = {
+      sender: user?.lastName || "",
       content: message,
-      timestamp: new Date(),
+      timestamp: new Date().toISOString(),
       isCurrentUser: true,
     };
 
-    setMessages([...messages, newMessage]);
-    setMessage("");
+    // Emit to the server; the server should broadcast it back to everyone in the room
+    socketRef.current.emit("sendMessage", {
+      groupId,
+      message: newMsg,
+    });
 
-    // Simulate response after 1 second
-    if (messages.length % 3 === 0) {
-      setTimeout(() => {
-        const responseMessage: Message = {
-          id: messages.length + 2,
-          sender: "Sarah Johnson",
-          content: "Thanks for the update!",
-          timestamp: new Date(),
-          isCurrentUser: false,
-        };
-        setMessages((prev) => [...prev, responseMessage]);
-      }, 1000);
+    // Optimistically append to our own chat window
+    setMessage("");
+  };
+
+  // 4️⃣ Handle file uploads (still via HTTP), then emit the resulting message via Socket.IO
+  const handleFileUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    type: "document" | "image"
+  ) => {
+    const files = e.target.files;
+    if (!files || files.length === 0 || !socketRef.current || !groupId) return;
+
+    const file = files[0];
+    setIsUploading(true);
+
+    try {
+      // Use FormData for uploading
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("type", type);
+      formData.append("sender", user!.lastName);
+      formData.append("groupId", groupId);
+
+      // Upload to your /api/upload endpoint
+      const res = await fetch(`/api/upload`, {
+        method: "POST",
+        body: formData,
+      });
+      if (!res.ok) throw new Error("Upload failed");
+
+      const uploadedMessage: Message = await res.json();
+      // Example server response:
+      // {
+      //   id: 123,
+      //   sender: "John Doe",
+      //   content: "Shared an image:",
+      //   timestamp: "2025-06-04T12:34:56.789Z",
+      //   isCurrentUser: true,
+      //   attachment: {
+      //     type: "image",
+      //     url: "https://...",
+      //     name: "meeting_photo.jpg"
+      //   }
+      // }
+
+      // Emit the file‐message via socket so everyone sees it
+      socketRef.current.emit("sendMessage", {
+        groupId,
+        message: uploadedMessage,
+      });
+
+      // Add it to our own chat window
+      setMessages((prev) => [...prev, uploadedMessage]);
+    } catch (err) {
+      console.error("File upload error:", err);
+    } finally {
+      setIsUploading(false);
+      // Clear file input value
+      if (type === "document" && fileInputRef.current) {
+        fileInputRef.current.value = "";
+      } else if (type === "image" && imageInputRef.current) {
+        imageInputRef.current.value = "";
+      }
     }
   };
 
@@ -139,47 +175,8 @@ const ChatInterface = ({ groupId, groupName, onClose }: ChatInterfaceProps) => {
     setMessage((prev) => prev + emoji);
   };
 
-  const handleFileUpload = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    type: "document" | "image"
-  ) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-
-    const file = files[0];
-    setIsUploading(true);
-
-    // Simulate file upload
-    setTimeout(() => {
-      const newMessage: Message = {
-        id: messages.length + 1,
-        sender: "John Doe",
-        content:
-          type === "image"
-            ? "Shared an image:"
-            : `Shared a document: ${file.name}`,
-        timestamp: new Date(),
-        isCurrentUser: true,
-        attachment: {
-          type,
-          url: type === "image" ? "/placeholder.svg?height=200&width=300" : "#",
-          name: file.name,
-        },
-      };
-
-      setMessages([...messages, newMessage]);
-      setIsUploading(false);
-
-      // Clear the file input
-      if (type === "document" && fileInputRef.current) {
-        fileInputRef.current.value = "";
-      } else if (type === "image" && imageInputRef.current) {
-        imageInputRef.current.value = "";
-      }
-    }, 1500);
-  };
-
-  const formatTime = (date: Date) => {
+  const formatTime = (isoString: string) => {
+    const date = new Date(isoString);
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
@@ -200,9 +197,9 @@ const ChatInterface = ({ groupId, groupName, onClose }: ChatInterfaceProps) => {
 
         {/* Messages area */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {messages.map((msg) => (
+          {messages.map((msg, index) => (
             <div
-              key={msg.id}
+              key={index}
               className={`flex ${
                 msg.isCurrentUser ? "justify-end" : "justify-start"
               }`}
@@ -225,7 +222,7 @@ const ChatInterface = ({ groupId, groupName, onClose }: ChatInterfaceProps) => {
                   <div className="mt-2">
                     {msg.attachment.type === "image" ? (
                       <img
-                        src={msg.attachment.url || "/placeholder.svg"}
+                        src={msg.attachment.url}
                         alt="Shared image"
                         className="rounded-md max-w-full max-h-48 object-cover"
                       />
@@ -236,12 +233,9 @@ const ChatInterface = ({ groupId, groupName, onClose }: ChatInterfaceProps) => {
                           {msg.attachment.name}
                         </span>
                         <a
-                          href="#"
+                          href={msg.attachment.url}
                           className="text-xs text-indigo-600 dark:text-indigo-400 ml-auto"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            alert(`Downloading ${msg.attachment?.name}...`);
-                          }}
+                          download={msg.attachment.name}
                         >
                           Download
                         </a>
@@ -278,6 +272,7 @@ const ChatInterface = ({ groupId, groupName, onClose }: ChatInterfaceProps) => {
             accept=".pdf,.doc,.docx,.txt,.xls,.xlsx"
             aria-label="Upload document"
             title="Upload document"
+            disabled={isUploading}
           />
           <button
             type="button"
@@ -295,6 +290,7 @@ const ChatInterface = ({ groupId, groupName, onClose }: ChatInterfaceProps) => {
             onChange={(e) => handleFileUpload(e, "image")}
             aria-label="Image upload"
             accept="image/*"
+            disabled={isUploading}
           />
           <button
             type="button"

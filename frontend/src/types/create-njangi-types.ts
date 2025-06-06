@@ -8,6 +8,14 @@ export interface AccountSetUp {
 }
 
 export interface GroupDetails {
+  memberContributions?: {
+    userId: string;
+    paymentsCount: number;
+  }[];
+  _id?: string;
+  name?: string;
+  groupMembers?: string[];
+  isAdmin?: boolean;
   groupName: string;
   contributionAmount: number;
   contributionFrequency: string;
@@ -18,6 +26,7 @@ export interface GroupDetails {
   numberOfMember: number;
   status?: string;
   rules: string;
+  createdAt: string;
 }
 
 export type InviteMember = {

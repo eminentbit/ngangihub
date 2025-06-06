@@ -1,5 +1,5 @@
 import NjangiDraft from "../models/njangi.draft.model.js";
-import NjangiGroup from "../models/njangigroup.model.js";
+import NjangiGroup from "../models/njangi.group.model.js";
 
 export const validateDraftId = async (req, res) => {
   const { draftId } = req.query;

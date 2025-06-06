@@ -147,7 +147,7 @@ const StatusTracking = ({ njangiId }: { njangiId: string | null }) => {
         </div>
       </div>
 
-      {statusHistory.map((njangi) => (
+      {statusHistory?.map((njangi) => (
         <div key={njangi.id} className="bg-white rounded-lg shadow p-6">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
             <div>
@@ -177,11 +177,7 @@ const StatusTracking = ({ njangiId }: { njangiId: string | null }) => {
                 <div key={index} className="flex gap-4 pb-6 last:pb-0">
                   <div className="flex flex-col items-center">
                     <div className="flex items-center justify-center">
-                      {getStatusIcon(
-                        step.status,
-                        step.completed,
-                        step.current || false
-                      )}
+                      {getStatusIcon(step.status, step.completed, false)}
                     </div>
                     {index < njangi.timeline.length - 1 && (
                       <div

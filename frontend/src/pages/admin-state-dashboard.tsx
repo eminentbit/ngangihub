@@ -5,7 +5,7 @@ import UILoader from "../components/ui.messages/ui.loader";
 import InviteTokenStatusUi from "../components/ui.messages/invalid.token.ui.msg";
 import { NjangiOverview } from "../components/admin-state-dashboard-components/njangi-overview";
 import { SubmittedNjangis } from "../components/admin-state-dashboard-components/submitted-njangi";
-import { NjangiDetails } from "../components/admin-state-dashboard-components/njang-details";
+import { NjangiDetails } from "../components/admin-state-dashboard-components/njangi-details";
 import StatusTracking from "../components/admin-state-dashboard-components/status-tracking";
 import { DashboardInfoModal } from "../components/admin-state-dashboard-components/njangi-info-modal";
 import toast from "react-hot-toast";
