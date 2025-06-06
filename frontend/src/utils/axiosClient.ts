@@ -1,5 +1,13 @@
 // axiosClient.js
-import axios from "axios";
+import axios, { AxiosRequestConfig } from "axios";
+import toast from "react-hot-toast";
+
+declare module "axios" {
+  export interface InternalAxiosRequestConfig {
+    successMessage?: string;
+    silent?: boolean;
+  }
+}
 
 const axiosClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -11,9 +19,29 @@ const axiosClient = axios.create({
 
 // Global error handler
 axiosClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    const successMessage = response.config?.successMessage as
+      | string
+      | undefined;
+    if (successMessage) {
+      toast.success(successMessage);
+    }
+    return response;
+  },
   (error) => {
-    console.error("API Error:", error.response?.data || error.message);
+    const errorMessage =
+      error.response?.data?.message ||
+      error.response?.data?.error ||
+      error.message ||
+      "Something went wrong";
+
+    console.error("API Error:", error.response?.data || errorMessage);
+
+    // 🔥 Show toast only if the request is not silent
+    if (!error.config?.silent) {
+      toast.error(errorMessage);
+    }
+
     return Promise.reject(error);
   }
 );
@@ -23,7 +51,9 @@ let csrfToken: string | null = null;
 // Fetch and set CSRF token before making requests
 async function ensureCsrfToken() {
   if (!csrfToken) {
-    const { data } = await axiosClient.get("/csrf-token");
+    const { data } = await axiosClient.get("/csrf-token", {
+      silent: true,
+    } as AxiosRequestConfig);
     csrfToken = data.csrfToken;
   }
   return csrfToken;
@@ -32,10 +62,11 @@ async function ensureCsrfToken() {
 export const securePost = async (
   url: string,
   payload: unknown,
-  config?: { headers?: Record<string, string> }
+  config?: { headers?: Record<string, string>; silent?: boolean }
 ) => {
   const token = await ensureCsrfToken();
   return axiosClient.post(url, payload, {
+    ...config,
     withCredentials: true,
     headers: {
       "X-CSRF-Token": token,
@@ -49,6 +80,7 @@ export const secureGet = async (
   config: {
     headers?: Record<string, string>;
     params?: Record<string, unknown>;
+    silent?: true;
   } = {}
 ) => {
   const token = await ensureCsrfToken();
@@ -64,7 +96,7 @@ export const secureGet = async (
 
 export const secureDelete = async (
   url: string,
-  config: { headers?: Record<string, string> } = {}
+  config: { headers?: Record<string, string>; silent?: boolean }
 ) => {
   const token = await ensureCsrfToken();
   return axiosClient.delete(url, {
@@ -80,7 +112,7 @@ export const secureDelete = async (
 export const securePut = async (
   url: string,
   payload: unknown,
-  config: { headers?: Record<string, string> } = {}
+  config: { headers?: Record<string, string>; silent?: boolean }
 ) => {
   const token = await ensureCsrfToken();
   return axiosClient.put(url, payload, {

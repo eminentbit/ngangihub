@@ -1,194 +1,106 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import SidebarItem from "./SidebarItem";
 import NotificationsPreview from "./NotificationsPreview";
-import {
-  FaUserShield,
-  FaUsersCog,
-  FaUsers,
-  FaInfoCircle,
-  FaChartBar,
-  FaUserPlus,
-  FaCog,
-  FaBars,
-  FaBell,
-  FaTimes,
-} from "react-icons/fa";
+import { FaBars, FaTimes } from "react-icons/fa";
 import { useAuthStore } from "../../store/create.auth.store";
+import { allMenu } from "../../utils/sidebar.items";
 
 interface SidebarProps {
   isOpen: boolean;
   onToggle: () => void;
-  onTabChange?: (tab: string) => void;
-  notifications?: {
-    id: number;
-    message: string;
-    time: string;
-    isRead: boolean;
-  }[];
+  onTabChange?: (path: string) => void;
+  notifications?: NotificationType[];
   onClose: () => void;
 }
 
-type MenuItem = {
-  icon: React.ReactNode;
-  label: string;
-  path: string;
-  roles: Array<"admin" | "user" | "bod" | "member">;
-};
-
-const allMenu: MenuItem[] = [
-  {
-    icon: <FaUserShield />,
-    label: "Dashboard",
-    path: "dashboard",
-    roles: ["user", "admin"],
-  },
-  {
-    icon: <FaUsers />,
-    label: "My Groups",
-    path: "groups",
-    roles: ["user", "admin"],
-  },
-  {
-    icon: <FaChartBar />,
-    label: "Payment",
-    path: "payments",
-    roles: ["user", "admin"],
-  },
-  {
-    icon: <FaCog />,
-    label: "Settings",
-    path: "settings",
-    roles: ["user", "admin"],
-  },
-  {
-    icon: <FaUsersCog />,
-    label: "Manage Members",
-    path: "manage-members",
-    roles: ["admin"],
-  },
-  {
-    icon: <FaUsers />,
-    label: "Groups Overview",
-    path: "groups",
-    roles: ["admin"],
-  },
-  {
-    icon: <FaInfoCircle />,
-    label: "Group Info",
-    path: "group-info",
-    roles: ["admin"],
-  },
-  {
-    icon: <FaChartBar />,
-    label: "My Statistics",
-    path: "stats",
-    roles: ["admin"],
-  },
-  {
-    icon: <FaUserPlus />,
-    label: "Add Member",
-    path: "add-member",
-    roles: ["admin"],
-  },
-  {
-    icon: <FaCog />,
-    label: "Group Settings",
-    path: "group-settings",
-    roles: ["admin"],
-  },
-  {
-    icon: <FaBell />,
-    label: "Notifications",
-    path: "notifications",
-    roles: ["admin"],
-  },
-];
+interface NotificationType {
+  id: string;
+  message: string;
+  isRead: boolean;
+  [key: string]: unknown;
+}
 
 const Sidebar: React.FC<SidebarProps> = ({
   isOpen,
   onToggle,
   onTabChange,
-  notifications,
+  notifications = [],
   onClose,
 }) => {
   const navigate = useNavigate();
-  const location = useLocation();
+  const { pathname } = useLocation();
   const [isMobile, setIsMobile] = useState(false);
+  const { user } = useAuthStore();
 
-  // Detect screen size changes
   useEffect(() => {
-    const checkIfMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-      // Close sidebar when resizing to mobile
-      if (window.innerWidth < 768 && isOpen) {
-        onClose();
-      }
+    const handleResize = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      if (mobile && isOpen) onClose();
     };
-
-    checkIfMobile();
-    window.addEventListener("resize", checkIfMobile);
-    return () => window.removeEventListener("resize", checkIfMobile);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [isOpen, onClose]);
 
-  const { user } = useAuthStore();
-  const loading = false; // Simplified for demo
+  const menu = useMemo(() => {
+    return user ? allMenu.filter((item) => item.roles.includes(user.role)) : [];
+  }, [user]);
 
-  // Filter menu by user role
-  const menu = React.useMemo(
-    () =>
-      user ? allMenu.filter((item) => item.roles.includes(user.role)) : [],
-    [user]
-  );
-
-  // FIXED NAVIGATION HANDLER
   const handleNav = (path: string) => {
-    navigate(`/${user?.role}/${path}`);
-    onTabChange?.(path);
-
-    // Only close sidebar on mobile devices
-    if (isMobile) {
-      onClose();
-    }
+    const base = user?.role === "admin" ? "/admin" : "/user";
+    const fullPath = `${base}/${path}`;
+    navigate(fullPath);
+    onTabChange?.(fullPath);
+    if (isMobile) onClose();
   };
 
-  const renderCollapsedIcons = () =>
+  if (!user) return null;
+
+  const isActive = (path: string) => pathname.endsWith(path);
+
+  const renderItems = (showLabel: boolean) =>
     menu.map(({ icon, label, path }) => (
       <SidebarItem
         key={path}
         icon={icon}
         label={label}
+        showLabels={showLabel}
+        active={isActive(path)}
+        badgeCount={
+          path === "notifications"
+            ? notifications.filter((n) => !n.isRead).length
+            : 0
+        }
+        onClick={() => handleNav(path)}
+      />
+    ));
+
+  const renderCollapsed = () =>
+    menu.map(({ icon, label, path }) => (
+      <SidebarItem
+        key={path}
+        icon={icon}
+        label={label}
+        tooltip
         showLabels={false}
-        active={location.pathname === path}
-        onClick={() => handleNav(path)}
-        className="flex-1 justify-center"
-      />
-    ));
-
-  const renderItems = (showLabels: boolean) =>
-    menu.map(({ icon, label, path }) => (
-      <SidebarItem
-        key={path}
-        icon={icon}
-        label={label}
-        active={location.pathname === path}
-        showLabels={showLabels}
+        active={isActive(path)}
+        badgeCount={
+          path === "notifications"
+            ? notifications.filter((n) => !n.isRead).length
+            : 0
+        }
         onClick={() => handleNav(path)}
       />
     ));
-
-  if (loading || !user) {
-    return null;
-  }
 
   return (
     <>
-      {/* Desktop Toggle Button */}
       {!isOpen && !isMobile && (
         <button
           onClick={onToggle}
-          className="fixed top-4 left-4 z-40 text-white bg-blue-800 p-2 rounded-full shadow focus:outline-none"
-          title="Expand sidebar"
+          className="fixed top-4 left-4 z-40 p-2 rounded-full shadow focus:outline-none"
           aria-label="Expand sidebar"
           type="button"
         >
@@ -196,85 +108,61 @@ const Sidebar: React.FC<SidebarProps> = ({
         </button>
       )}
 
-      {/* Desktop Sidebar - Persistent */}
       <div
-        className={`fixed inset-y-0 left-0 z-30 bg-blue-700 text-white border-r flex flex-col transition-all duration-300 ease-in-out
+        className={`fixed left-0 top-0 bottom-0 z-30 flex flex-col bg-blue-700 text-white border-r transition-width duration-300 ease-in-out
           ${isOpen ? "w-64" : "w-16"} hidden md:flex`}
       >
-        <div className="flex items-center h-16 px-4 border-b border-blue-800 relative">
-          {isOpen ? (
-            <button
-              onClick={onToggle}
-              className="absolute top-1/2 right-4 -translate-y-1/2 text-white hover:text-blue-200 focus:outline-none"
-              title="Collapse sidebar"
-              aria-label="Collapse sidebar"
-              type="button"
-            >
-              <FaBars size={20} />
-            </button>
-          ) : (
-            <div className="flex justify-center w-full">
-              <button
-                onClick={onToggle}
-                className="text-white hover:text-blue-200 focus:outline-none"
-                title="Expand sidebar"
-                aria-label="Expand sidebar"
-                type="button"
-              >
-                <FaBars size={20} />
-              </button>
-            </div>
-          )}
+        <div className="flex items-center justify-between h-16 px-4 border-b border-blue-800">
+          {isOpen && <img src="/logo2.png" alt="Logo" className="h-8 w-auto" />}
+          <button
+            onClick={onToggle}
+            className="p-2 focus:outline-none"
+            aria-label={isOpen ? "Collapse sidebar" : "Expand sidebar"}
+            type="button"
+          >
+            <FaBars size={20} />
+          </button>
         </div>
-        <nav className="mt-2 flex-1 overflow-y-auto px-2">
-          {renderItems(isOpen)}
+        <nav className="flex-1 overflow-y-auto px-2 py-4">
+          {isOpen ? renderItems(true) : renderCollapsed()}
         </nav>
-        {user.role === "admin" && notifications && (
-          <div className="mt-auto center-content mb-4 px-2">
+        {user.role === "admin" && notifications.length > 0 && isOpen && (
+          <div className="px-2 pb-4">
             <NotificationsPreview
-              notifications={notifications}
-              onViewAll={() => handleNav("/admin/notifications")}
-              showLabels={isOpen}
+              onViewAll={() => handleNav("notifications")}
             />
           </div>
         )}
       </div>
 
-      {/* Mobile Bottom Bar - Persistent */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-blue-700 text-white flex md:hidden h-16">
-        {renderCollapsedIcons()}
+      <div className="fixed bottom-0 left-0 right-0 z-40 flex h-16 md:hidden bg-blue-700 text-white">
+        {renderCollapsed()}
       </div>
 
-      {/* Mobile Sidebar Drawer */}
       {isMobile && (
-        <div
-          className={`fixed top-0 left-0 bottom-0 z-50 bg-blue-700 text-white border-r transform transition-transform duration-300 ease-in-out w-64
-            ${isOpen ? "translate-x-0" : "-translate-x-full"}`}
-        >
-          <div className="flex items-center h-16 px-4 border-b border-blue-800 relative">
-            <img src="/logo2.png" alt="Logo" className="h-10 w-auto" />
-            <button
-              onClick={onClose}
-              className="absolute top-1/2 right-4 -translate-y-1/2 text-white hover:text-blue-200 focus:outline-none"
-              title="Close sidebar"
-              aria-label="Close sidebar"
-              type="button"
-            >
-              <FaTimes size={24} />
-            </button>
+        <div className={`fixed inset-0 z-50 flex`}>
+          <div
+            className={`flex flex-col bg-blue-700 text-white w-64 transform transition-transform duration-300 ease-in-out
+              ${isOpen ? "translate-x-0" : "-translate-x-full"}`}
+          >
+            <div className="flex items-center justify-between h-16 px-4 border-b border-blue-800">
+              <img src="/logo2.png" alt="Logo" className="h-10 w-auto" />
+              <button
+                onClick={onClose}
+                aria-label="Close sidebar"
+                type="button"
+              >
+                <FaTimes size={24} />
+              </button>
+            </div>
+            <nav className="flex-1 overflow-y-auto px-2 py-4">
+              {renderItems(true)}
+            </nav>
           </div>
-          <nav className="mt-2 flex-1 overflow-y-auto px-2">
-            {renderItems(true)}
-          </nav>
+          {isOpen && (
+            <div className="flex-1 bg-black bg-opacity-40" onClick={onClose} />
+          )}
         </div>
-      )}
-
-      {/* Mobile Overlay */}
-      {isOpen && isMobile && (
-        <div
-          className="fixed inset-0 z-40 bg-black bg-opacity-40"
-          onClick={onClose}
-        />
       )}
     </>
   );

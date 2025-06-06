@@ -18,7 +18,9 @@ function App() {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const res = await secureGet("/auth/session");
+        const res = await secureGet("/auth/session", {
+          silent: true,
+        });
         setUser(res.data.user);
         setIsAuthenticated(true);
       } catch (err) {

@@ -2,19 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FaUserCircle, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import Sidebar from "../../components/dashboard.admin.components/Sidebar";
 import Header from "../../components/dashboard.admin.components/Header";
-
-interface UserProfile {
-  name: string;
-  avatarUrl?: string;
-}
-
-interface Notification {
-  id: number;
-  user: UserProfile;
-  message: string;
-  time: string;
-  isRead: boolean;
-}
+import useUserStore from "../../store/create.user.store";
 
 const FILTERS = [
   { label: "All", value: "all" },
@@ -22,22 +10,17 @@ const FILTERS = [
   { label: "Read", value: "read" },
 ];
 
-const sampleNotifications: Notification[] = [
-  { id: 1, user: { name: "Alice Johnson" }, message: "New member joined your Njangi", time: "5m ago", isRead: false },
-  { id: 2, user: { name: "Michael Smith" }, message: "Monthly contribution due tomorrow", time: "2h ago", isRead: false },
-  { id: 3, user: { name: "System" }, message: "Group settings updated", time: "1d ago", isRead: true },
-];
-
 const NotificationsPage: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [, setActiveTab] = useState("notifications");
-  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [filter, setFilter] = useState("all");
-
-  useEffect(() => {
-    setNotifications(sampleNotifications);
-  }, []);
+  const {
+    notifications,
+    markAllNotificationsAsRead,
+    markNotificationAsRead,
+    markNotificationAsUnread,
+  } = useUserStore();
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", isDarkMode);
@@ -48,17 +31,6 @@ const NotificationsPage: React.FC = () => {
     if (filter === "unread") return !n.isRead;
     return n.isRead;
   });
-
-  const markAllAsRead = () =>
-    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
-  const markAsRead = (id: number) =>
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
-    );
-  const markAsUnread = (id: number) =>
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, isRead: false } : n))
-    );
 
   const toggleSidebar = () => setIsSidebarOpen((v) => !v);
 
@@ -92,10 +64,7 @@ const NotificationsPage: React.FC = () => {
         )}
 
         {/* Sticky Header */}
-        <Header
-          darkMode={isDarkMode}
-          setDarkMode={setIsDarkMode}
-        />
+        <Header darkMode={isDarkMode} setDarkMode={setIsDarkMode} />
 
         {/* Scrollable Main */}
         <main className="flex-1 pt-20 pb-8 px-2 md:px-6 overflow-auto min-h-[80vh]">
@@ -120,7 +89,8 @@ const NotificationsPage: React.FC = () => {
                   </button>
                 ))}
                 <button
-                  onClick={markAllAsRead}
+                  type="button"
+                  onClick={() => markAllNotificationsAsRead()}
                   className="ml-2 px-3 py-1 rounded-full text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-800 transition"
                 >
                   Mark all as read
@@ -136,7 +106,7 @@ const NotificationsPage: React.FC = () => {
               )}
               {filteredNotifications.map((n) => (
                 <div
-                  key={n.id}
+                  key={n._id}
                   className={`flex items-start space-x-4 p-4 rounded-xl shadow-sm transition-colors group relative overflow-hidden
                     ${
                       n.isRead
@@ -145,10 +115,10 @@ const NotificationsPage: React.FC = () => {
                     } animate-fadein`}
                 >
                   <div className="flex-shrink-0">
-                    {n.user.avatarUrl ? (
+                    {n.user.profilePicUrl ? (
                       <img
-                        src={n.user.avatarUrl}
-                        alt={n.user.name}
+                        src={n.user.profilePicUrl}
+                        alt={n.user.firstName}
                         className="h-12 w-12 rounded-full object-cover"
                       />
                     ) : (
@@ -163,16 +133,17 @@ const NotificationsPage: React.FC = () => {
                             n.isRead ? "" : "font-semibold"
                           }`}
                         >
-                          {n.message}
+                          {n.content}
                         </span>
                         <span className="ml-2 text-xs text-gray-400 dark:text-gray-500">
-                          — {n.user.name}
+                          —{`${n.user.firstName} ${n.user.lastName}`}
                         </span>
                       </div>
                       <div className="flex items-center gap-2 ml-1">
                         {n.isRead ? (
                           <button
-                            onClick={() => markAsUnread(n.id)}
+                            type="button"
+                            onClick={() => markNotificationAsUnread(n._id)}
                             className="text-yellow-500 hover:text-yellow-700 transition"
                             title="Mark as unread"
                           >
@@ -180,7 +151,7 @@ const NotificationsPage: React.FC = () => {
                           </button>
                         ) : (
                           <button
-                            onClick={() => markAsRead(n.id)}
+                            onClick={() => markNotificationAsRead(n._id)}
                             className="text-blue-600 hover:text-blue-800 transition"
                             title="Mark as read"
                           >
@@ -190,7 +161,7 @@ const NotificationsPage: React.FC = () => {
                       </div>
                     </div>
                     <p className="text-gray-500 dark:text-gray-400 text-xs mt-1">
-                      {n.time}
+                      {n.createdAt}
                     </p>
                   </div>
                 </div>

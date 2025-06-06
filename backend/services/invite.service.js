@@ -2,7 +2,7 @@
 // and sending them an invite link. It includes functions to create invites,
 import crypto from "crypto";
 import Invite from "../models/invite.model.js";
-import NjangiGroup from "../models/njangigroup.model.js";
+import NjangiGroup from "../models/njangi.group.model.js";
 import User from "../models/user.model.js";
 import { sendNjangiAleadyAddMemberEmail } from "../mail/emails.js";
 import dotenv from "dotenv";

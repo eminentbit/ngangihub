@@ -1,33 +1,47 @@
-import React, { useState, useEffect } from 'react';
-import Sidebar from '../../components/dashboard.admin.components/Sidebar';
-import MemberTable from '../../components/dashboard.admin.components/MemberTable';
-import Header from '../../components/dashboard.admin.components/Header';
-import PhoneInput from 'react-phone-input-2';
-import 'react-phone-input-2/lib/style.css';
-import { FaUserPlus } from 'react-icons/fa';
+import React, { useState, useEffect } from "react";
+import Sidebar from "../../components/dashboard.admin.components/Sidebar";
+import MemberTable from "../../components/dashboard.admin.components/MemberTable";
+import Header from "../../components/dashboard.admin.components/Header";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+import { FaUserPlus } from "react-icons/fa";
+import { useAdminState } from "../../store/create.admin.store";
 
 const AddMemberPage: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [, setActiveTab] = useState<string>('/members');
+  const [, setActiveTab] = useState<string>("/members");
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
-  const [form, setForm] = useState({ name: '', email: '', phone: '', role: '' });
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    role: "",
+  });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [success, setSuccess] = useState<string | null>(null);
 
+  const { groupId, members, fetchMembers } = useAdminState();
+
+  useEffect(() => {
+    fetchMembers();
+  }, [fetchMembers]);
+
+  console.log(members, groupId);
+
   // Toggle Tailwind dark class on <html>
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', isDarkMode);
+    document.documentElement.classList.toggle("dark", isDarkMode);
   }, [isDarkMode]);
 
-  const toggleSidebar = () => setIsSidebarOpen(prev => !prev);
+  const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
   const validate = () => {
     const errs: { [key: string]: string } = {};
-    if (!form.name.trim()) errs.name = 'Name is required';
-    if (!form.email.trim()) errs.email = 'Email is required';
-    else if (!/\S+@\S+\.\S+/.test(form.email)) errs.email = 'Email is invalid';
-    if (!form.phone.trim()) errs.phone = 'Phone is required';
-    if (!form.role.trim()) errs.role = 'Role is required';
+    if (!form.name.trim()) errs.name = "Name is required";
+    if (!form.email.trim()) errs.email = "Email is required";
+    else if (!/\S+@\S+\.\S+/.test(form.email)) errs.email = "Email is invalid";
+    if (!form.phone.trim()) errs.phone = "Phone is required";
+    if (!form.role.trim()) errs.role = "Role is required";
     return errs;
   };
 
@@ -35,7 +49,7 @@ const AddMemberPage: React.FC = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-    setErrors({ ...errors, [e.target.name]: '' });
+    setErrors({ ...errors, [e.target.name]: "" });
     setSuccess(null);
   };
 
@@ -47,8 +61,8 @@ const AddMemberPage: React.FC = () => {
       setSuccess(null);
       return;
     }
-    setSuccess('Member added successfully!');
-    setForm({ name: '', email: '', phone: '', role: '' });
+    setSuccess("Member added successfully!");
+    setForm({ name: "", email: "", phone: "", role: "" });
     setErrors({});
   };
 
@@ -76,16 +90,13 @@ const AddMemberPage: React.FC = () => {
       <div
         className={`
           flex flex-col flex-1 h-full
-          ${isSidebarOpen ? 'lg:ml-64' : 'ml-0'}
+          ${isSidebarOpen ? "lg:ml-64" : "ml-0"}
           transition-all duration-300
           overflow-y-auto
         `}
       >
         {/* Sticky Header */}
-        <Header
-          darkMode={isDarkMode}
-          setDarkMode={setIsDarkMode}
-        />
+        <Header darkMode={isDarkMode} setDarkMode={setIsDarkMode} />
 
         {/* Scrollable Main */}
         <main className="flex-1 pt-20 px-4 sm:px-6 md:px-8 lg:px-12">
@@ -125,8 +136,8 @@ const AddMemberPage: React.FC = () => {
                     onChange={handleChange}
                     className={`w-full px-4 py-2 rounded border focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-900 dark:text-white ${
                       errors.name
-                        ? 'border-red-500'
-                        : 'border-gray-300 dark:border-gray-700'
+                        ? "border-red-500"
+                        : "border-gray-300 dark:border-gray-700"
                     }`}
                     placeholder="Enter full name"
                   />
@@ -147,8 +158,8 @@ const AddMemberPage: React.FC = () => {
                     onChange={handleChange}
                     className={`w-full px-4 py-2 rounded border focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-900 dark:text-white ${
                       errors.email
-                        ? 'border-red-500'
-                        : 'border-gray-300 dark:border-gray-700'
+                        ? "border-red-500"
+                        : "border-gray-300 dark:border-gray-700"
                     }`}
                     placeholder="e.g. user@email.com"
                   />
@@ -167,14 +178,14 @@ const AddMemberPage: React.FC = () => {
                     value={form.phone}
                     onChange={(phone) => {
                       setForm({ ...form, phone });
-                      setErrors({ ...errors, phone: '' });
+                      setErrors({ ...errors, phone: "" });
                       setSuccess(null);
                     }}
                     containerClass="w-full"
                     inputClass={`w-full px-4 py-2 rounded border focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-900 dark:text-white ${
                       errors.phone
-                        ? 'border-red-500'
-                        : 'border-gray-300 dark:border-gray-700'
+                        ? "border-red-500"
+                        : "border-gray-300 dark:border-gray-700"
                     }`}
                     dropdownClass="dark:bg-gray-800 dark:text-gray-200"
                     buttonClass="dark:bg-gray-900"
@@ -196,8 +207,8 @@ const AddMemberPage: React.FC = () => {
                     onChange={handleChange}
                     className={`w-full px-4 py-2 rounded border focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-900 dark:text-white ${
                       errors.role
-                        ? 'border-red-500'
-                        : 'border-gray-300 dark:border-gray-700'
+                        ? "border-red-500"
+                        : "border-gray-300 dark:border-gray-700"
                     }`}
                     aria-label="Select role"
                   >

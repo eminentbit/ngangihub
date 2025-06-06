@@ -25,6 +25,8 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    groupsCreated: Number,
+    groupsJoined: Number,
     resetPasswordToken: String,
     resetPasswordExpireAt: Date,
     verificationToken: String,
