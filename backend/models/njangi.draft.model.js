@@ -54,11 +54,12 @@ const njangiDraftSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
+     draftUserToken: { type: String, required: true }, //token to count user number of submmision
     createdAt: {
       type: Date,
       default: Date.now,
     },
-    submittedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    submittedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: false },
     submittedAt: { type: Date, default: Date.now },
   },
   { timestamps: true }

@@ -15,6 +15,7 @@ import ValidateInviteToken from "./routes/validate.invite.token.route.js";
 import validateDraftId from "./routes/validate.draft.id.route.js";
 import pkg from "lusca";
 import session from "express-session";
+import getNjangiStateOverview from "./routes/get.njangi.overview.route.js";
 const { csrf } = pkg;
 
 dotenv.config();
@@ -61,6 +62,7 @@ app.use(helmet());
 
 app.use("/api/invites", ValidateInviteToken); // validates invite token
 app.use("/api/admin", validateDraftId);
+app.use("/api/state-dashboard", getNjangiStateOverview);
 
 const startServer = async () => {
   try {

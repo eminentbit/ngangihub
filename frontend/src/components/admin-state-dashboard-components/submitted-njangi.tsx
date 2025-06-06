@@ -1,45 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
-
 import { useState } from "react";
-import { Eye, Edit, Calendar, Users, DollarSign } from "lucide-react";
+import { Eye, Edit, Calendar, Users } from "lucide-react";
 import { EditNjangiModal } from "./edit-njangi-modal";
-
-const njangis = [
-  {
-    id: "NJ001",
-    groupName: "Community Savings Group",
-    contributionAmount: 50000,
-    frequency: "Monthly",
-    members: 12,
-    startDate: "2024-02-01",
-    status: "approved",
-    submittedAt: "2024-01-15",
-    canEdit: false,
-  },
-  {
-    id: "NJ002",
-    groupName: "Monthly Contribution Circle",
-    contributionAmount: 25000,
-    frequency: "Monthly",
-    members: 8,
-    startDate: "2024-03-01",
-    status: "pending",
-    submittedAt: "2024-01-20",
-    canEdit: true,
-  },
-  {
-    id: "NJ003",
-    groupName: "Family Investment Group",
-    contributionAmount: 100000,
-    frequency: "Quarterly",
-    members: 6,
-    startDate: "2024-04-01",
-    status: "rejected",
-    submittedAt: "2024-01-18",
-    canEdit: true,
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import { useNjangiStateStore } from "../../store/njangi.state.store";
+import { useNavigate } from "react-router-dom";
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -54,9 +19,25 @@ const getStatusColor = (status: string) => {
   }
 };
 
-export function SubmittedNjangis() {
+export function SubmittedNjangis({ njangiId }: { njangiId: string | null }) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedNjangi, setSelectedNjangi] = useState<any>(null);
+  const { getMyNjangis } = useNjangiStateStore();
+
+  const navigate = useNavigate();
+
+  const {
+    data: njangis = [],
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["njangis", njangiId],
+    queryFn: () => getMyNjangis(njangiId!),
+    enabled: !!njangiId,
+    staleTime: 5 * 60 * 1000, // 5 minutes cache
+    refetchInterval: 30 * 1000, // Refetch every 30 seconds in the background
+    refetchOnWindowFocus: true, // Refetch when window/tab regains focus
+  });
 
   const handleEdit = (njangi: any) => {
     setSelectedNjangi(njangi);
@@ -74,68 +55,98 @@ export function SubmittedNjangis() {
         <h2 className="text-xl font-semibold text-gray-900">
           My Submitted Njangis
         </h2>
-        <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors shrink-0">
+        <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors shrink-0" onClick={() => navigate("/njangi-form")}>
           Create New Njangi
         </button>
       </div>
 
       <div className="grid gap-4">
-        {njangis.map((njangi) => (
-          <div
-            key={njangi.id}
-            className="bg-white rounded-lg shadow border-l-4 border-l-blue-500"
-          >
-            <div className="p-6">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-                <div className="space-y-2">
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    {njangi.groupName}
-                  </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-600">
-                    <div className="flex items-center gap-1">
-                      <DollarSign className="h-4 w-4" />
-                      <span>₦{njangi.contributionAmount.toLocaleString()}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Calendar className="h-4 w-4" />
-                      <span>{njangi.frequency}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Users className="h-4 w-4" />
-                      <span>{njangi.members} members</span>
+        {isLoading ? (
+          <p className="text-blue-400 text-sm animate-pulse">
+            Fetching your recent Submitted Njangi, Hang on...
+          </p>
+        ) : error ? (
+          <p className="text-red-400 font-semibold text-sm animate-pulse">Error: {error.message}</p>
+        ) : njangis.length === 0 ? (
+          <p className="text-sm text-blue-400 animate-pulse">Couldn't find your recent submitted Njangi. Please try again or Create one.</p>
+        ) : (
+          njangis.map((njangi, idx) => (
+            <div
+              key={idx}
+              className="bg-white rounded-lg shadow border-l-4 border-l-blue-500"
+            >
+              <div className="p-6">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                  <div className="space-y-2">
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {njangi.njangiName}
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-600">
+                      <div className="flex items-center gap-1">
+                        <p className="flex items-center gap-1">
+                          {njangi.contributionAmmount.toLocaleString()}
+                          <span>FCFA</span>
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Calendar className="h-4 w-4" />
+                        <span>{njangi.contributionFrequency}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Users className="h-4 w-4" />
+                        <span>{njangi.numberOfMember} members</span>
+                      </div>
                     </div>
                   </div>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                        njangi.status
+                      )}`}
+                    >
+                      {njangi.status.charAt(0).toUpperCase() +
+                        njangi.status.slice(1)}
+                    </span>
+                  </div>
                 </div>
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                      njangi.status
-                    )}`}
-                  >
-                    {njangi.status.charAt(0).toUpperCase() +
-                      njangi.status.slice(1)}
-                  </span>
-                  <span className="text-xs text-gray-500">ID: {njangi.id}</span>
-                </div>
-              </div>
 
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div className="text-sm text-gray-600">
-                  <p>
-                    Submitted:{" "}
-                    {new Date(njangi.submittedAt).toLocaleDateString()}
-                  </p>
-                  <p>
-                    Start Date:{" "}
-                    {new Date(njangi.startDate).toLocaleDateString()}
-                  </p>
-                </div>
-                <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                  <button className="border border-blue-200 text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center">
-                    <Eye className="h-4 w-4 mr-2" />
-                    View Details
-                  </button>
-                  {njangi.canEdit && (
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                  <div className="text-sm text-gray-600">
+                    <p>
+                      Submitted on{" "}
+                      {njangi.submittonDate
+                        ? `${new Date(njangi.submittonDate).toLocaleDateString(
+                            "en-US"
+                          )} at ${new Date(
+                            njangi.submittonDate
+                          ).toLocaleTimeString("en-US", {
+                            hour: "numeric",
+                            minute: "2-digit",
+                            hour12: true,
+                          })}`
+                        : "N/A"}
+                    </p>
+                    <p>
+                      Njangi Start Date:{" "}
+                      {njangi.startDate
+                        ? `${new Date(njangi.startDate).toLocaleDateString(
+                            "en-US"
+                          )} at ${new Date(njangi.startDate).toLocaleTimeString(
+                            "en-US",
+                            {
+                              hour: "numeric",
+                              minute: "2-digit",
+                              hour12: true,
+                            }
+                          )}`
+                        : "N/A"}
+                    </p>
+                  </div>
+                  <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                    <button className="border border-blue-200 text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center">
+                      <Eye className="h-4 w-4 mr-2" />
+                      View Details
+                    </button>
                     <button
                       onClick={() => handleEdit(njangi)}
                       className="border border-blue-200 text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center"
@@ -143,12 +154,12 @@ export function SubmittedNjangis() {
                       <Edit className="h-4 w-4 mr-2" />
                       Edit
                     </button>
-                  )}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
 
       {isEditModalOpen && selectedNjangi && (
