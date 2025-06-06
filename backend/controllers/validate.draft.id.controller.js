@@ -21,7 +21,7 @@ export const validateDraftId = async (req, res) => {
     const draft = await NjangiDraft.findById({ _id: draftId });
 
     // Fetch the NjangiGroup using the draftId
-    const group = await NjangiGroup.findOne({ draftId });
+    const group = await NjangiGroup.findOne({ draftId: String(draftId) });
     if (!draft) {
       return res.status(404).json({
         valid: false,

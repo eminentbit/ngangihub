@@ -12,6 +12,10 @@ export interface GroupDetails {
     userId: string;
     paymentsCount: number;
   }[];
+  payoutHistory?: {
+    member: string;
+    date: string;
+  }[];
   _id?: string;
   name?: string;
   groupMembers?: string[];

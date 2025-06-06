@@ -15,7 +15,7 @@ export const getNjangiOverview = async (req, res) => {
 
   try {
     // Find the Njangi draft by _id
-    const njangi = await NjangiDraft.findOne({ _id: njangiId });
+    const njangi = await NjangiDraft.findOne({ _id: { $eq: njangiId } });
 
     if (!njangi) {
       return res.status(404).json({ message: "Njangi not found" });
@@ -80,7 +80,7 @@ export const getMyNjangis = async (req, res) => {
   }
   try {
     // Assuming you have a model NjangiState to fetch the state data
-    const njangis = await NjangiDraft.findOne({ _id: njangiId });
+    const njangis = await NjangiDraft.findOne({ _id: { $eq: njangiId } });
     if (!njangis) {
       return res
         .status(404)
@@ -91,7 +91,6 @@ export const getMyNjangis = async (req, res) => {
     const mynjangis = await NjangiDraft.find({
       draftUserToken: njangis.draftUserToken,
     });
-
 
     // Map to the response shape expected by the frontend
     const response = mynjangis.map((njangi) => ({
@@ -123,7 +122,7 @@ export const getMyNjangiDetails = async (req, res) => {
   }
   try {
     // First, find the draft to get the draftUserToken
-    const njangi = await NjangiDraft.findOne({ _id: njangiId });
+    const njangi = await NjangiDraft.findOne({ _id: { $eq: njangiId } });
     if (!njangi) {
       return res
         .status(404)
@@ -151,7 +150,7 @@ export const getMyNjangiStatus = async (req, res) => {
   }
   try {
     // Assuming you have a model NjangiState to fetch the status
-    const njangiStatus = await NjangiDraft.findOne({ _id: njangiId });
+    const njangiStatus = await NjangiDraft.findOne({ _id: { $eq: njangiId } });
 
     if (!njangiStatus) {
       return res

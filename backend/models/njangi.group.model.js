@@ -35,6 +35,12 @@ const njangiGroupSchema = new mongoose.Schema(
         totalAmountPaid: { type: Number, default: 0 },
       },
     ],
+    payoutHistory: [
+      {
+        member: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        date: { type: Date, required: true },
+      },
+    ],
     startDate: { type: Date, required: true },
     endDate: { type: Date },
     expectedMembers: { type: Number },
