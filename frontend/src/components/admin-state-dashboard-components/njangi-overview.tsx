@@ -72,23 +72,6 @@ export function NjangiOverview({ njangiId }: NjangiStateOverviewProps) {
     },
   ];
 
-  const [searchParams] = useSearchParams();
-  const draftId = searchParams.get("draftId");
-
-  useEffect(() => {
-    if (draftId) {
-      setGroupId(draftId);
-    }
-  }, [draftId, setGroupId]);
-
-  useEffect(() => {
-    fetchSubmissionStats();
-  }, [fetchSubmissionStats]);
-
-  useEffect(() => {
-    fetchRecentActivity();
-  }, [fetchRecentActivity]);
-
   return (
     <div className="space-y-6 p-4 md:p-6">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

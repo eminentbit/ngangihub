@@ -19,6 +19,7 @@ import adminRoutes from "./routes/admin.routes.js";
 import njangiRoutes from "./routes/user.njangi.routes.js";
 import Message from "./models/message.model.js";
 import pkg from "lusca";
+import { Server } from "socket.io";
 import session from "express-session";
 import getNjangiStateOverview from "./routes/get.njangi.overview.route.js";
 const { csrf } = pkg;
@@ -35,7 +36,7 @@ app.use(
     origin: [
       "http://localhost:5173",
       "http://localhost:5174",
-      process.env.FRONTEND_URL, // ensure your production URL is allowed
+      process.env.FRONTEND_URL,
     ].filter(Boolean),
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],

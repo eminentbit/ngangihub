@@ -14,19 +14,64 @@ import Sidebar from "../../components/dashboard.admin.components/Sidebar";
 import StatCard from "../../components/dashboard.admin.components/StatCard";
 import ContributionChart from "../../components/dashboard.admin.components/ContributionChart";
 import ActivityChart from "../../components/dashboard.admin.components/ActivityChart";
-import {
-  latestMembers,
-  quickActions,
-  recentActivity,
-} from "../../utils/data.admin.dashboard";
+import { quickActions, recentActivity } from "../../utils/data.admin.dashboard";
 
 // Import the new Header component
 import Header from "../../components/dashboard.admin.components/Header";
+import { useAdminState } from "../../store/create.admin.store";
 
 export const AdminDashboardPage: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(true); 
+  const [isOpen, setIsOpen] = useState(true);
   const [activeTab, setActiveTab] = useState("admin");
   const [darkMode, setDarkMode] = useState(false);
+
+  const { groups, fetchGroups } = useAdminState();
+
+  useEffect(() => {
+    fetchGroups();
+  }, [fetchGroups]);
+  const [totalMembers, setTotalMembers] = useState(0);
+  const [totalContributions, setTotalContribution] = useState(0);
+
+  useEffect(() => {
+    const totalMembersCount = groups.reduce(
+      (total, group) => total + group.groupMembers.length,
+      0
+    );
+    setTotalMembers(totalMembersCount);
+  }, [groups]);
+
+  useEffect(() => {
+    const totalMembersContributions = groups.reduce(
+      (sum, group) =>
+        sum +
+        group.memberContributions.reduce(
+          (groupSum, member) => groupSum + (member.totalAmountPaid || 0),
+          0
+        ),
+      0
+    );
+    setTotalContribution(totalMembersContributions);
+  }, [groups]);
+
+  const allMembers = groups.flatMap((group) =>
+    group.groupMembers.map((member) => ({
+      ...member,
+      joinedAt: member.createdAt,
+    }))
+  );
+
+  // Sort by join date (descending)
+  const sortedMembers = allMembers
+    .filter((m) => m.joinedAt)
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt ?? "").getTime() -
+        new Date(a.createdAt ?? "").getTime()
+    );
+
+  // Get the latest N members (e.g., 5)
+  const latestMembers = sortedMembers.slice(0, 5);
 
   const toggleSidebar = () => setIsOpen((prev) => !prev);
 
@@ -85,26 +130,25 @@ export const AdminDashboardPage: React.FC = () => {
                 </h1>
               </div>
               <div className="flex space-x-4">
-              {quickActions.map((action) => (
-  <button
-    key={action.id}
-    type="button"
-    onClick={() => {
-      if (action.label === "View Contributions") {
-        navigate("/admin/contributions");
-      } else if (action.label === "Request Loan") {
-        navigate("/admin/loans-request");
-      } else {
-        action.onClick();
-      }
-    }}
-    className={`${action.color} flex items-center px-4 py-2 text-white rounded-lg shadow hover:scale-105 hover:shadow-lg transition font-semibold`}
-  >
-    {action.icon}
-    <span className="ml-2">{action.label}</span>
-  </button>
-))}
-
+                {quickActions.map((action) => (
+                  <button
+                    key={action.id}
+                    type="button"
+                    onClick={() => {
+                      if (action.label === "View Contributions") {
+                        navigate("/admin/contributions");
+                      } else if (action.label === "Request Loan") {
+                        navigate("/admin/loans-request");
+                      } else {
+                        action.onClick();
+                      }
+                    }}
+                    className={`${action.color} flex items-center px-4 py-2 text-white rounded-lg shadow hover:scale-105 hover:shadow-lg transition font-semibold`}
+                  >
+                    {action.icon}
+                    <span className="ml-2">{action.label}</span>
+                  </button>
+                ))}
               </div>
             </div>
 
@@ -112,25 +156,25 @@ export const AdminDashboardPage: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               <StatCard
                 label="Total Members"
-                value="127"
+                value={totalMembers.toString()}
                 icon={<FaUsers className="text-blue-500" size={28} />}
                 className="bg-gradient-to-tr from-blue-100 to-blue-300 dark:from-blue-900 dark:to-blue-800 shadow"
               />
               <StatCard
                 label="Total Contributions"
-                value="2,450,000 CFA"
+                value={totalContributions.toString()}
                 icon={<FaHandHoldingUsd className="text-blue-500" size={28} />}
                 className="bg-gradient-to-tr from-blue-100 to-blue-300 dark:from-blue-900 dark:to-blue-800 shadow"
               />
               <StatCard
                 label="Active Loans"
-                value="14"
+                value="0"
                 icon={<FaMoneyBillWave className="text-yellow-500" size={28} />}
                 className="bg-gradient-to-tr from-yellow-100 to-yellow-300 dark:from-yellow-900 dark:to-yellow-800 shadow"
               />
               <StatCard
                 label="Pending Payouts"
-                value="3"
+                value="0"
                 icon={<FaChartPie className="text-purple-500" size={28} />}
                 className="bg-gradient-to-tr from-purple-100 to-purple-300 dark:from-purple-900 dark:to-purple-800 shadow"
               />
@@ -189,10 +233,10 @@ export const AdminDashboardPage: React.FC = () => {
                       key={member.id}
                       className="flex items-center py-2 border-b last:border-b-0 border-gray-100 dark:border-gray-700"
                     >
-                      {member.avatar ? (
+                      {member.profilePicUrl ? (
                         <img
-                          src={member.avatar}
-                          alt={member.name}
+                          src={member.profilePicUrl}
+                          alt={member.profilePicUrl}
                           className="w-8 h-8 rounded-full mr-3"
                         />
                       ) : (
@@ -200,10 +244,10 @@ export const AdminDashboardPage: React.FC = () => {
                       )}
                       <div>
                         <div className="text-gray-900 dark:text-gray-100 font-semibold">
-                          {member.name}
+                          {member.lastName}
                         </div>
                         <div className="text-xs text-gray-500">
-                          {member.joined}
+                          {member.createdAt}
                         </div>
                       </div>
                     </li>

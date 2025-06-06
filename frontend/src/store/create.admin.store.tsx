@@ -2,20 +2,14 @@ import { create } from "zustand";
 import { securePost, secureGet } from "../utils/axiosClient";
 import { AxiosError } from "axios";
 import { GroupRequest } from "../types/group.request";
-
-export interface Member {
-  id: string;
-  initials: string;
-  name: string;
-  role: string;
-  status: "active" | "inactive";
-}
+import { User } from "../types/auth.validator";
 
 export interface Group {
+  memberContributions: { totalAmountPaid: number; member: User }[];
   _id: string;
   name: string;
   description: string;
-  groupMembers: Member[];
+  groupMembers: User[];
   nextMeeting: string;
   rules: string;
   status: string;
@@ -25,10 +19,10 @@ export interface Group {
 
 interface AdminState {
   groupId: string | null;
-  members: Member[];
+  members: User[];
   groups: Group[];
   email: string;
-  selectedMember: Member | null;
+  selectedMember: User | null;
   isEditingSettings: boolean;
   groupInfo: Group | null;
   draftInfo: GroupRequest | null;
@@ -64,8 +58,8 @@ interface AdminState {
 
   // Setters
   setGroupId: (id: string) => void;
-  setMembers: (members: Member[]) => void;
-  selectMember: (member: Member) => void;
+  setMembers: (members: User[]) => void;
+  selectMember: (member: User) => void;
   toggleEditSettings: () => void;
 
   // CRUD actions
@@ -79,9 +73,9 @@ interface AdminState {
     description: string;
     nextMeeting?: string;
   }) => Promise<void>;
-  addMember: (member: Member) => Promise<void>;
+  addMember: (member: User) => Promise<void>;
   removeMember: (memberId: string) => void;
-  updateMember: (member: Member) => void;
+  updateMember: (member: User) => void;
   recentActivity: {
     createdGroups: Group[];
     pendingGroups: GroupRequest[];
@@ -106,8 +100,8 @@ export const useAdminState = create<AdminState>((set, get) => ({
   statusHistory: null,
 
   setGroupId: (id: string) => set({ groupId: id }),
-  setMembers: (members: Member[]) => set({ members }),
-  selectMember: (member: Member) => set({ selectedMember: member }),
+  setMembers: (members: User[]) => set({ members }),
+  selectMember: (member: User) => set({ selectedMember: member }),
   toggleEditSettings: () =>
     set((state) => ({ isEditingSettings: !state.isEditingSettings })),
 
@@ -131,7 +125,7 @@ export const useAdminState = create<AdminState>((set, get) => ({
     }
   },
 
-  addMember: async (member: Member) => {
+  addMember: async (member: User) => {
     set({ loading: true, error: null });
     try {
       await securePost(
@@ -159,7 +153,7 @@ export const useAdminState = create<AdminState>((set, get) => ({
     }));
   },
 
-  updateMember: (updated: Member) => {
+  updateMember: (updated: User) => {
     set((state) => ({
       members: state.members.map((m) => (m.id === updated.id ? updated : m)),
     }));

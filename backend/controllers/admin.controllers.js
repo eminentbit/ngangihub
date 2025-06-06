@@ -72,7 +72,9 @@ export const getAllMembersOfAdminGroups = async (req, res) => {
  */
 export const getAdminGroups = async (req, res) => {
   try {
-    const groups = await NjangiGroup.find({ adminId: req.user.id });
+    const groups = await NjangiGroup.find({ adminId: req.user.id }).populate(
+      "groupMembers"
+    );
     res.status(200).json(groups);
   } catch (error) {
     res.status(500).json({ message: "Error fetching admin's groups", error });
