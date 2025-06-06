@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 function NjangiForm() {
   const navigate = useNavigate();
+
   return (
     <div className="min-h-screen relative bg-gradient-to-br from-blue-50 to-teal-50 flex flex-col items-center justify-center p-6">
       <div

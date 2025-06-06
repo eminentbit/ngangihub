@@ -13,7 +13,8 @@ const paymentMethodSchema = new mongoose.Schema({
   },
   paymentMode: {
     type: String,
-    enum: ["basic", "starter", "enterprise"],
+    enum: ["free", "starter", "enterprise"],
+    default: "free",
   },
   // Card specific fields
   cardNumber: {

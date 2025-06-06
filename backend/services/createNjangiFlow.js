@@ -16,7 +16,7 @@ const viewURL = process.env.CREATED_NJANGI_STATE_URL;
  * @throws {Error} If an error occurs while creating the draft
  *
  */
-const createNjangiFlow = async (formData, njangiId) => {
+const createNjangiFlow = async (formData, njangiId, draftUserToken) => {
   try {
     const { accountSetup, groupDetails, inviteMembers } = formData;
 
@@ -72,6 +72,7 @@ const createNjangiFlow = async (formData, njangiId) => {
       groupDetails: { ...parsedGroupDetails },
       inviteMembers,
       njangiRouteId: njangiId,
+      draftUserToken, // Token to track user submissions
       status: "pending",
       createdAt: new Date(),
     });

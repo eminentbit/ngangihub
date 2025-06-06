@@ -25,6 +25,11 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    paymentMode: {
+      type: String,
+      enum: ["free", "starter", "enterprise"],
+      default: "free",
+    },
     groupsCreated: Number,
     groupsJoined: Number,
     resetPasswordToken: String,

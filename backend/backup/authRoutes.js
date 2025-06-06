@@ -1,6 +1,9 @@
 import express from "express";
 const router = express.Router();
 import { register, login, logout } from "./authController.js";
+import limiter from "../middleware/limiter.js";
+
+router.use("/", limiter);
 
 // @desc Register a new user
 // @route POST /api/auth/register

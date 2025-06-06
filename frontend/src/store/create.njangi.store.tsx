@@ -26,6 +26,7 @@ export const useCreateNjangiStore = create<CreateNjangiState>((set) => ({
   message: null,
   createNjangi: async (submissionData: NjangiSetup) => {
     set({ isLoading: true, errors: null, success: false });
+    localStorage.setItem("tempAdminEmail", submissionData.accountSetup.email);
     try {
       const response = await securePost(`${CREATE_NJANGI_API}`, submissionData);
       console.log(response.data);

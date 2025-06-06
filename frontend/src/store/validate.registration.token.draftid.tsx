@@ -17,6 +17,13 @@ type ValidateTokenResponse = {
   };
 };
 
+type ValidateAdminStateDashboardResponse = {
+  success: boolean;
+  valid: boolean;
+  message: string;
+  status: "valid" | "invalid" | "missing" | "redirect";
+};
+
 interface ValidateTokenState {
   isLoading: boolean;
   errors: string | null;
@@ -25,7 +32,7 @@ interface ValidateTokenState {
   validateInvitationToken: (token: string) => Promise<ValidateTokenResponse>;
   validateAdminStateDasboardId: (
     draftId: string
-  ) => Promise<ValidateTokenResponse>; // for admin special dashbooard
+  ) => Promise<ValidateAdminStateDashboardResponse>; // for admin special dashbooard
 }
 
 export const useValidateInvitationToken = create<ValidateTokenState>((set) => ({
@@ -73,6 +80,11 @@ export const useValidateInvitationToken = create<ValidateTokenState>((set) => ({
             ? errors.response.data.message
             : "An error occurred. Please try again.",
       });
+      // Return the error response data if available
+      if (axios.isAxiosError(errors) && errors.response?.data) {
+        return errors.response.data;
+      }
+      return { status: "invalid", valid: false, message: "An error occurred." };
     }
   },
 }));

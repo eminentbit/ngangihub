@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -36,16 +36,24 @@ export function EditNjangiModal({ njangi, onClose }: EditNjangiModalProps) {
   } = useForm<EditNjangiFormData>({
     resolver: zodResolver(editNjangiSchema),
     defaultValues: {
-      groupName: njangi.groupName,
-      contributionAmount: njangi.contributionAmount,
-      contributionFrequency: njangi.frequency,
-      numberOfMember: njangi.members,
-      startDate: njangi.startDate,
-      endDate: "2024-12-31", // Default end date
-      payoutMethod: "Bank Transfer",
-      rules: "All members must contribute by the 5th of each month.",
+      groupName: njangi.groupDetails.groupName,
+      contributionAmount: njangi.groupDetails.contributionAmount,
+      contributionFrequency: njangi.groupDetails.contributionFrequency,
+      numberOfMember: njangi.groupDetails.numberOfMember,
+      startDate: njangi.groupDetails.startDate,
+      endDate: njangi.groupDetails.endDate,
+      payoutMethod: njangi.groupDetails.payoutMethod,
+      rules: njangi.groupDetails.rules,
     },
   });
+
+  // Lock scroll
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
 
   const onSubmit = async (data: EditNjangiFormData) => {
     setIsSubmitting(true);
@@ -64,13 +72,12 @@ export function EditNjangiModal({ njangi, onClose }: EditNjangiModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div className="fixed top-0 inset-0 min-h-screen bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900">Edit Njangi</h2>
-            <p className="text-sm text-gray-600">ID: {njangi.id}</p>
+            <h2 className="md:text-xl text-lg font-semibold text-gray-900">Edit {njangi.groupDetails.groupName}</h2>
           </div>
           <button
             onClick={onClose}

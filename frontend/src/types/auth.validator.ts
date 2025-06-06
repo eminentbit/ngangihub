@@ -22,6 +22,7 @@ export interface User {
   location?: string;
   groupName?: string;
   monthlyContributions?: number;
+  paymentMode?: string;
   totalPayouts?: number;
   profilePicUrl?: string;
   createdAt?: string;
