@@ -20,7 +20,7 @@ import njangiRoutes from "./routes/user.njangi.routes.js";
 import Message from "./models/message.model.js";
 import pkg from "lusca";
 import session from "express-session";
-import { Server } from "socket.io";
+import getNjangiStateOverview from "./routes/get.njangi.overview.route.js";
 const { csrf } = pkg;
 
 dotenv.config();
@@ -76,6 +76,7 @@ app.use("/api/member", acceptInvite);
 app.use("/api/njangi", njangiRoutes);
 app.use("/api/invites", ValidateInviteToken);
 app.use("/api/admin", validateDraftId);
+app.use("/api/state-dashboard", getNjangiStateOverview);
 app.use("/api/admin", adminRoutes);
 
 // ─── CREATE HTTP + SOCKET.IO SERVER ────────────────────────────────────────────

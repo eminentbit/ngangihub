@@ -1,59 +1,71 @@
 import { CheckCircle, Clock, AlertCircle, FileText } from "lucide-react";
-import { useAdminState } from "../../store/create.admin.store";
-import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useNjangiStateStore } from "../../store/njangi.state.store";
 
-const StatusTracking = () => {
-  // const statusHistory = [
-  //   {
-  //     id: "NJ002",
-  //     groupName: "Monthly Contribution Circle",
-  //     currentStatus: "pending",
-  //     timeline: [
-  //       {
-  //         status: "submitted",
-  //         date: "2024-01-20",
-  //         time: "10:30 AM",
-  //         description: "Application submitted successfully",
-  //         completed: true,
-  //       },
-  //       {
-  //         status: "under_review",
-  //         date: "2024-01-21",
-  //         time: "2:15 PM",
-  //         description: "BOD started reviewing your application",
-  //         completed: true,
-  //       },
-  //       {
-  //         status: "pending_documents",
-  //         date: "2024-01-22",
-  //         time: "9:45 AM",
-  //         description: "Additional documents requested",
-  //         completed: true,
-  //       },
-  //       {
-  //         status: "final_review",
-  //         date: "2024-01-25",
-  //         time: "11:20 AM",
-  //         description: "Application in final review stage",
-  //         completed: false,
-  //         current: true,
-  //       },
-  //       {
-  //         status: "decision",
-  //         date: "Expected: 2024-01-27",
-  //         time: "",
-  //         description: "Final decision will be communicated",
-  //         completed: false,
-  //       },
-  //     ],
-  //   },
-  // ];
+const StatusTracking = ({ njangiId }: { njangiId: string | null }) => {
+  const statusHistory = [
+    {
+      id: "NJ002",
+      groupName: "Monthly Contribution Circle",
+      currentStatus: "pending",
+      timeline: [
+        {
+          status: "submitted",
+          date: "2024-01-20",
+          time: "10:30 AM",
+          description: "Application submitted successfully",
+          completed: true,
+        },
+        {
+          status: "under_review",
+          date: "2024-01-21",
+          time: "2:15 PM",
+          description: "BOD started reviewing your application",
+          completed: true,
+        },
+        {
+          status: "pending_documents",
+          date: "2024-01-22",
+          time: "9:45 AM",
+          description: "Additional documents requested",
+          completed: true,
+        },
+        {
+          status: "final_review",
+          date: "2024-01-25",
+          time: "11:20 AM",
+          description: "Application in final review stage",
+          completed: false,
+          current: true,
+        },
+        {
+          status: "decision",
+          date: "Expected: 2024-01-27",
+          time: "",
+          description: "Final decision will be communicated",
+          completed: false,
+        },
+      ],
+    },
+  ];
+  const { getMyNjangiStatus } = useNjangiStateStore();
 
-  const { statusHistory, fetchStatusHistory } = useAdminState();
+  const {
+    data: njangiStatus,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["njangiStatus", njangiId],
+    queryFn: () => getMyNjangiStatus(njangiId!),
+    enabled: !!njangiId,
+    staleTime: 5 * 60 * 1000, // 5 minutes cache
+    refetchInterval: 30 * 1000, // Refetch every 30 seconds in the background
+    refetchOnWindowFocus: true, // Refetch when window/tab regains focus
+  });
 
-  useEffect(() => {
-    fetchStatusHistory();
-  }, [fetchStatusHistory]);
+  if (error) {
+    console.log("Error fetching njangi status:", error);
+  }
 
   const getStatusIcon = (
     status: string,
@@ -98,7 +110,13 @@ const StatusTracking = () => {
             </h3>
             <FileText className="h-4 w-4 text-blue-500" />
           </div>
-          <div className="text-2xl font-bold text-gray-900">3</div>
+          <div className="text-2xl font-bold text-gray-900">
+            {isLoading ? (
+              <p className="text-xs text-blue-400 animate-pulse">fetching...</p>
+            ) : (
+              njangiStatus?.review || "0"
+            )}
+          </div>
           <p className="text-xs text-gray-600">Average review time: 5-7 days</p>
         </div>
 
@@ -109,7 +127,9 @@ const StatusTracking = () => {
             </h3>
             <CheckCircle className="h-4 w-4 text-green-500" />
           </div>
-          <div className="text-2xl font-bold text-gray-900">8</div>
+          <div className="text-2xl font-bold text-gray-900">
+            {njangiStatus?.approved || "0"}
+          </div>
           <p className="text-xs text-gray-600">+2 from last month</p>
         </div>
 
@@ -120,7 +140,9 @@ const StatusTracking = () => {
             </h3>
             <AlertCircle className="h-4 w-4 text-yellow-500" />
           </div>
-          <div className="text-2xl font-bold text-gray-900">1</div>
+          <div className="text-2xl font-bold text-gray-900">
+            {njangiStatus?.pending || "N/A"}
+          </div>
           <p className="text-xs text-gray-600">Requires your attention</p>
         </div>
       </div>

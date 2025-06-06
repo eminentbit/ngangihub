@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useValidateInvitationToken } from "../store/validate.registration.token.draftid";
 import UILoader from "../components/ui.messages/ui.loader";
 import InviteTokenStatusUi from "../components/ui.messages/invalid.token.ui.msg";
@@ -8,17 +8,19 @@ import { SubmittedNjangis } from "../components/admin-state-dashboard-components
 import { NjangiDetails } from "../components/admin-state-dashboard-components/njangi-details";
 import StatusTracking from "../components/admin-state-dashboard-components/status-tracking";
 import { DashboardInfoModal } from "../components/admin-state-dashboard-components/njangi-info-modal";
+import toast from "react-hot-toast";
 export default function NjangiStateDashBoard() {
   const [searchParams] = useSearchParams();
   const njangiId = searchParams.get("draftId");
   const [draftIdStatus, setDraftIdStatus] = useState<
-    "valid" | "invalid" | "missing"
+    "valid" | "invalid" | "missing" | "redirect"
   >("valid");
   const [loading, setLoading] = useState(true);
   const { validateAdminStateDasboardId } = useValidateInvitationToken();
 
   const [activeTab, setActiveTab] = useState("overview");
   const [showInfoModal, setShowInfoModal] = useState(false);
+  const navigate = useNavigate();
 
   const tabs = [
     { id: "overview", label: "Overview" },
@@ -40,11 +42,25 @@ export default function NjangiStateDashBoard() {
     (async () => {
       try {
         const result = await validateAdminStateDasboardId(njangiId);
+        console.log("Draft ID validation result:", result);
         if (!isMounted) return;
         if (!result) {
           setDraftIdStatus("invalid");
+        } else if (result.status === "redirect") {
+          setDraftIdStatus("redirect");
+          setLoading(false);
+          navigate("/login");
+          toast.success(
+            "Your Njangi has been approved. Please login to continue...",
+            {
+              position: "top-right",
+            }
+          );
+          return;
         } else if (result.status === "missing") {
           setDraftIdStatus("missing");
+        } else if (result.status === "invalid") {
+          setDraftIdStatus("invalid");
         } else {
           setDraftIdStatus("valid");
         }
@@ -59,7 +75,7 @@ export default function NjangiStateDashBoard() {
     return () => {
       isMounted = false;
     };
-  }, [njangiId, validateAdminStateDasboardId]);
+  }, [njangiId, validateAdminStateDasboardId, navigate]);
 
   // Show info modal after content loads and dashboard is valid
   useEffect(() => {
@@ -99,8 +115,8 @@ export default function NjangiStateDashBoard() {
   return (
     <>
       <div className="min-h-screen bg-gray-50">
-        <div className="container mx-auto p-3 sm:p-4 lg:p-6 max-w-7xl">
-          <div className="mb-4 sm:mb-6">
+        <div className="container mx-auto p-3 sm:p-4 lg:p-5 max-w-7xl">
+          <div className="">
             <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
               My Njangi State Dashboard
             </h1>
@@ -130,12 +146,16 @@ export default function NjangiStateDashBoard() {
             </div>
 
             <div className="mt-4 sm:mt-6">
-              {activeTab === "overview" && <NjangiOverview />}
-              {activeTab === "submitted" && (
-                <SubmittedNjangis setActiveTab={setActiveTab} />
+              {activeTab === "overview" && (
+                <NjangiOverview njangiId={njangiId} />
               )}
-              {activeTab === "details" && <NjangiDetails />}
-              {activeTab === "tracking" && <StatusTracking />}
+              {activeTab === "submitted" && (
+                <SubmittedNjangis njangiId={njangiId} />
+              )}
+              {activeTab === "details" && <NjangiDetails njangiId={njangiId} />}
+              {activeTab === "tracking" && (
+                <StatusTracking njangiId={njangiId} />
+              )}
             </div>
           </div>
         </div>
