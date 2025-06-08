@@ -24,13 +24,6 @@ const StatusTracking = ({ njangiId }: { njangiId: string | null }) => {
           completed: true,
         },
         {
-          status: "pending_documents",
-          date: "2024-01-22",
-          time: "9:45 AM",
-          description: "Additional documents requested",
-          completed: true,
-        },
-        {
           status: "final_review",
           date: "2024-01-25",
           time: "11:20 AM",

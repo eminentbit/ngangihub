@@ -18,6 +18,7 @@ import validateDraftId from "./routes/validate.draft.id.route.js";
 import adminRoutes from "./routes/admin.routes.js";
 import njangiRoutes from "./routes/user.njangi.routes.js";
 import Message from "./models/message.model.js";
+import updateNjangiDetails from "./routes/update.njangi.details.route.js";
 import pkg from "lusca";
 import { Server } from "socket.io";
 import session from "express-session";
@@ -78,6 +79,7 @@ app.use("/api/njangi", njangiRoutes);
 app.use("/api/invites", ValidateInviteToken);
 app.use("/api/admin", validateDraftId);
 app.use("/api/state-dashboard", getNjangiStateOverview);
+app.use("/api/state-dashboard/update", updateNjangiDetails)
 app.use("/api/admin", adminRoutes);
 
 // ─── CREATE HTTP + SOCKET.IO SERVER ────────────────────────────────────────────
