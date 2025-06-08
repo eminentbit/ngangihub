@@ -6,7 +6,7 @@ export const validateDraftId = async (req, res) => {
   const draftUserToken =
     req.cookies?.draftUserToken || req.headers["x-draft-user-token"];
 
-  console.log("Draft id form req query" + draftId);
+  console.log("Draft id form req query " + draftId);
   console.log("Draft user token from cookies or headers: " + draftUserToken);
 
   if (!draftId) {

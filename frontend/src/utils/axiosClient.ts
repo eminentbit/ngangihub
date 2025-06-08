@@ -77,18 +77,18 @@ export const securePost = async (
 
 export const secureGet = async (
   url: string,
-  config: {
+  config?: {
     headers?: Record<string, string>;
     params?: Record<string, unknown>;
     silent?: true;
-  } = {}
+  }
 ) => {
   const token = await ensureCsrfToken();
   return axiosClient.get(url, {
     ...config,
     withCredentials: true,
     headers: {
-      ...(config.headers || {}),
+      ...(config?.headers || {}),
       "X-CSRF-Token": token,
     },
   });
