@@ -51,8 +51,7 @@ const Header: React.FC = () => {
               window.scrollTo(0, 0);
             }}
           >
-            <img src="/logo3.png" alt="Logo" className="w-8" />
-            <span className="ml-2 text-xl font-bold text-blue-700">NAAS</span>
+            <img src="/logo5.png" alt="Logo" className="h-11" />
           </div>
 
           {/* Desktop Navigation */}

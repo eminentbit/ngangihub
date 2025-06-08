@@ -21,14 +21,14 @@ export const validateDraftId = async (req, res) => {
     const draft = await NjangiDraft.findById({ _id: draftId });
 
     // Fetch the NjangiGroup using the draftId
-    const group = await NjangiGroup.findOne({ draftId: String(draftId) });
-    if (!draft) {
-      return res.status(404).json({
-        valid: false,
-        status: "invalid",
-        message: "Invalid or non-existent draft ID.",
-      });
-    }
+    const group = await NjangiGroup.findOne({ draftId });
+    // if (!draft) {
+    //   return res.status(404).json({
+    //     valid: false,
+    //     status: "invalid",
+    //     message: "Invalid or non-existent draft ID.",
+    //   });
+    // }
     // Redirect if BOTH: user has no other drafts AND Njangi is approved
     if (draftUserToken) {
       const userDraftCount = await NjangiDraft.countDocuments({

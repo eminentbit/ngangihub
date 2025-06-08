@@ -14,7 +14,8 @@ const SOCKET_SERVER_URL =
   import.meta.env.VITE_SOCKET_SERVER_URL || "http://localhost:5000";
 
 export interface Message {
-  sender: string;
+  senderId: string;
+  senderName: string;
   content: string;
   timestamp: string; // we'll store ISO strings now
   isCurrentUser: boolean;
@@ -93,7 +94,8 @@ const ChatInterface = ({ groupId, groupName, onClose }: ChatInterfaceProps) => {
     if (!message.trim() || !socketRef.current || !groupId) return;
 
     const newMsg: Message = {
-      sender: user?.lastName || "",
+      senderId: user?.id || "",
+      senderName: user?.lastName || "",
       content: message,
       timestamp: new Date().toISOString(),
       isCurrentUser: true,
@@ -213,7 +215,7 @@ const ChatInterface = ({ groupId, groupName, onClose }: ChatInterfaceProps) => {
               >
                 {!msg.isCurrentUser && (
                   <p className="text-xs font-medium mb-1 text-gray-600 dark:text-gray-400">
-                    {msg.sender}
+                    {msg.senderName}
                   </p>
                 )}
                 <p>{msg.content}</p>

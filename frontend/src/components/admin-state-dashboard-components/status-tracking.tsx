@@ -3,51 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useNjangiStateStore } from "../../store/njangi.state.store";
 
 const StatusTracking = ({ njangiId }: { njangiId: string | null }) => {
-  const statusHistory = [
-    {
-      id: "NJ002",
-      groupName: "Monthly Contribution Circle",
-      currentStatus: "pending",
-      timeline: [
-        {
-          status: "submitted",
-          date: "2024-01-20",
-          time: "10:30 AM",
-          description: "Application submitted successfully",
-          completed: true,
-        },
-        {
-          status: "under_review",
-          date: "2024-01-21",
-          time: "2:15 PM",
-          description: "BOD started reviewing your application",
-          completed: true,
-        },
-        {
-          status: "pending_documents",
-          date: "2024-01-22",
-          time: "9:45 AM",
-          description: "Additional documents requested",
-          completed: true,
-        },
-        {
-          status: "final_review",
-          date: "2024-01-25",
-          time: "11:20 AM",
-          description: "Application in final review stage",
-          completed: false,
-          current: true,
-        },
-        {
-          status: "decision",
-          date: "Expected: 2024-01-27",
-          time: "",
-          description: "Final decision will be communicated",
-          completed: false,
-        },
-      ],
-    },
-  ];
   const { getMyNjangiStatus } = useNjangiStateStore();
 
   const {
@@ -66,6 +21,41 @@ const StatusTracking = ({ njangiId }: { njangiId: string | null }) => {
   if (error) {
     console.log("Error fetching njangi status:", error);
   }
+
+  const statusHistory = [
+    {
+      id: "NJ002",
+      groupName: "Monthly Contribution Circle",
+      currentStatus: njangiStatus?.status,
+      timeline: [
+        {
+          status: "submitted",
+          date: njangiStatus?.date,
+          description: "Application submitted successfully",
+          completed: true,
+        },
+        {
+          status: "under_review",
+          date: njangiStatus?.date,
+          description: "BOD started reviewing your application",
+          completed: true,
+        },
+        {
+          status: "final_review",
+          date: njangiStatus?.date,
+          description: "Application in final review stage",
+          completed: false,
+          current: true,
+        },
+        {
+          status: "decision",
+          date: njangiStatus?.date,
+          description: "Final decision will be communicated",
+          completed: false,
+        },
+      ],
+    },
+  ];
 
   const getStatusIcon = (
     status: string,
@@ -117,7 +107,9 @@ const StatusTracking = ({ njangiId }: { njangiId: string | null }) => {
               njangiStatus?.review || "0"
             )}
           </div>
-          <p className="text-xs text-gray-600">Average review time: 5-7 days</p>
+          <p className="text-xs text-gray-600">
+            {/* Empty for now */}
+          </p>
         </div>
 
         <div className="bg-white rounded-lg shadow border-l-4 border-l-green-500 p-4">
@@ -130,7 +122,7 @@ const StatusTracking = ({ njangiId }: { njangiId: string | null }) => {
           <div className="text-2xl font-bold text-gray-900">
             {njangiStatus?.approved || "0"}
           </div>
-          <p className="text-xs text-gray-600">+2 from last month</p>
+          <p className="text-xs text-gray-600">{/* Empty for now */}</p>
         </div>
 
         <div className="bg-white rounded-lg shadow border-l-4 border-l-yellow-500 p-4">
@@ -143,7 +135,18 @@ const StatusTracking = ({ njangiId }: { njangiId: string | null }) => {
           <div className="text-2xl font-bold text-gray-900">
             {njangiStatus?.pending || "N/A"}
           </div>
-          <p className="text-xs text-gray-600">Requires your attention</p>
+          <p className="text-xs text-gray-600">
+            {njangiStatus?.date
+              ? new Date(njangiStatus.date).toLocaleString("en-US", {
+                  month: "numeric",
+                  day: "numeric",
+                  year: "numeric",
+                  hour: "numeric",
+                  minute: "2-digit",
+                  hour12: true,
+                })
+              : ""}
+          </p>
         </div>
       </div>
 
@@ -154,16 +157,13 @@ const StatusTracking = ({ njangiId }: { njangiId: string | null }) => {
               <h3 className="text-lg font-semibold text-gray-900">
                 {njangi.groupName}
               </h3>
-              <p className="text-sm text-gray-600">
-                Application ID: {njangi.id}
-              </p>
             </div>
             <span
               className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                njangi.currentStatus
+                njangiStatus?.status ?? ""
               )}`}
             >
-              {njangi.currentStatus.replace("_", " ").toUpperCase()}
+              {(njangiStatus?.status ?? "").replace("_", " ").toUpperCase()}
             </span>
           </div>
 
@@ -203,7 +203,16 @@ const StatusTracking = ({ njangiId }: { njangiId: string | null }) => {
                           {step.description}
                         </p>
                         <p className="text-sm text-gray-500">
-                          {step.date} {step.time && `at ${step.time}`}
+                          {step.date
+                            ? new Date(step.date).toLocaleString("en-US", {
+                                month: "numeric",
+                                day: "numeric",
+                                year: "numeric",
+                                hour: "numeric",
+                                minute: "2-digit",
+                                hour12: true,
+                              })
+                            : ""}
                         </p>
                       </div>
                       {step.current && (

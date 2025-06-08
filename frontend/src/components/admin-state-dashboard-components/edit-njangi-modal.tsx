@@ -1,38 +1,31 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useEffect } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { X, Calendar, Users, DollarSign } from "lucide-react";
-
-const editNjangiSchema = z.object({
-  groupName: z.string().min(3, "Group name must be at least 3 characters"),
-  contributionAmount: z.number().min(1000, "Minimum contribution is ₦1,000"),
-  contributionFrequency: z.string().min(1, "Please select frequency"),
-  numberOfMember: z
-    .number()
-    .min(2, "Minimum 2 members required")
-    .max(50, "Maximum 50 members allowed"),
-  startDate: z.string().min(1, "Start date is required"),
-  endDate: z.string().min(1, "End date is required"),
-  payoutMethod: z.string().min(1, "Please select payout method"),
-  rules: z.string().min(10, "Rules must be at least 10 characters"),
-});
-
+import { X, Calendar, Users } from "lucide-react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { editNjangiSchema } from "../../types/edit.special.ui.njangi.schema";
+import { useUpdateNjangiStore } from "../../store/updateNjangiDetails.store";
+import { useSearchParams } from "react-router-dom";
+import toast from "react-hot-toast";
 type EditNjangiFormData = z.infer<typeof editNjangiSchema>;
 
 interface EditNjangiModalProps {
   njangi: any;
   onClose: () => void;
 }
-
 export function EditNjangiModal({ njangi, onClose }: EditNjangiModalProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [searchParams] = useSearchParams();
+  const draftId = searchParams.get("draftId");
+  const { updateNjangi } = useUpdateNjangiStore();
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    control,
+    formState: { errors, isSubmitting, isDirty },
   } = useForm<EditNjangiFormData>({
     resolver: zodResolver(editNjangiSchema),
     defaultValues: {
@@ -40,8 +33,12 @@ export function EditNjangiModal({ njangi, onClose }: EditNjangiModalProps) {
       contributionAmount: njangi.groupDetails.contributionAmount,
       contributionFrequency: njangi.groupDetails.contributionFrequency,
       numberOfMember: njangi.groupDetails.numberOfMember,
-      startDate: njangi.groupDetails.startDate,
-      endDate: njangi.groupDetails.endDate,
+      startDate: njangi.groupDetails.startDate
+        ? new Date(njangi.groupDetails.startDate)
+        : undefined,
+      endDate: njangi.groupDetails.endDate
+        ? new Date(njangi.groupDetails.endDate)
+        : undefined,
       payoutMethod: njangi.groupDetails.payoutMethod,
       rules: njangi.groupDetails.rules,
     },
@@ -49,35 +46,43 @@ export function EditNjangiModal({ njangi, onClose }: EditNjangiModalProps) {
 
   // Lock scroll
   useEffect(() => {
+    const originalStyle = window.getComputedStyle(document.body).overflow;
     document.body.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.overflow = originalStyle;
     };
   }, []);
 
   const onSubmit = async (data: EditNjangiFormData) => {
-    setIsSubmitting(true);
-    try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      console.log("Updated Njangi:", data);
-      alert("Njangi updated successfully!");
+    const payload = {
+      ...data,
+      startDate: data.startDate.toISOString(),
+      endDate: data.endDate.toISOString(),
+    };
+    const result = await updateNjangi(draftId, payload);
+    if (result?.sucess) {
       onClose();
-    } catch (error) {
-      console.error("Error updating njangi:", error);
-      alert("Error updating njangi. Please try again.");
-    } finally {
-      setIsSubmitting(false);
+      toast.success(result.message, {
+        position: "top-right",
+        duration: 5000,
+      });
+    } else {
+      toast.error(result?.message || "Update failed", {
+        position: "top-right",
+        duration: 5000,
+      });
     }
   };
 
   return (
-    <div className="fixed top-0 inset-0 min-h-screen bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-30 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl h-[90vh] overflow-y-auto relative z-50 max-md:w-[90%]">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div>
-            <h2 className="md:text-xl text-lg font-semibold text-gray-900">Edit {njangi.groupDetails.groupName}</h2>
+            <h2 className="md:text-xl text-lg font-semibold text-gray-900">
+              Edit {njangi.groupDetails.groupName}
+            </h2>
           </div>
           <button
             onClick={onClose}
@@ -118,8 +123,7 @@ export function EditNjangiModal({ njangi, onClose }: EditNjangiModalProps) {
                 htmlFor="contributionAmount"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                <DollarSign className="inline h-4 w-4 mr-1" />
-                Contribution Amount (₦)
+                Contribution Amount (FCFA)
               </label>
               <input
                 type="number"
@@ -151,7 +155,7 @@ export function EditNjangiModal({ njangi, onClose }: EditNjangiModalProps) {
                 <option value="">Select frequency</option>
                 <option value="Weekly">Weekly</option>
                 <option value="Monthly">Monthly</option>
-                <option value="Quarterly">Quarterly</option>
+                <option value="Bi-weekly">Bi-weekly</option>
               </select>
               {errors.contributionFrequency && (
                 <p className="text-red-600 text-sm mt-1">
@@ -187,7 +191,8 @@ export function EditNjangiModal({ njangi, onClose }: EditNjangiModalProps) {
           </div>
 
           {/* Start and End Dates */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="flex items-center gap-4 max-sm:flex justify-between w-full">
+            {/* Start Date */}
             <div>
               <label
                 htmlFor="startDate"
@@ -195,11 +200,19 @@ export function EditNjangiModal({ njangi, onClose }: EditNjangiModalProps) {
               >
                 Start Date
               </label>
-              <input
-                type="date"
-                id="startDate"
-                {...register("startDate")}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+              <Controller
+                control={control}
+                name="startDate"
+                render={({ field: { value, onChange, ...rest } }) => (
+                  <DatePicker
+                    {...rest}
+                    selected={value}
+                    onChange={(date) => onChange(date ?? undefined)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                    placeholderText="Select start date"
+                    dateFormat="yyyy-MM-dd"
+                  />
+                )}
               />
               {errors.startDate && (
                 <p className="text-red-600 text-sm mt-1">
@@ -208,6 +221,7 @@ export function EditNjangiModal({ njangi, onClose }: EditNjangiModalProps) {
               )}
             </div>
 
+            {/* End Date */}
             <div>
               <label
                 htmlFor="endDate"
@@ -215,11 +229,19 @@ export function EditNjangiModal({ njangi, onClose }: EditNjangiModalProps) {
               >
                 End Date
               </label>
-              <input
-                type="date"
-                id="endDate"
-                {...register("endDate")}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+              <Controller
+                control={control}
+                name="endDate"
+                render={({ field: { value, onChange, ...rest } }) => (
+                  <DatePicker
+                    {...rest}
+                    selected={value}
+                    onChange={(date) => onChange(date ?? undefined)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                    placeholderText="Select end date"
+                    dateFormat="yyyy-MM-dd"
+                  />
+                )}
               />
               {errors.endDate && (
                 <p className="text-red-600 text-sm mt-1">
@@ -243,9 +265,9 @@ export function EditNjangiModal({ njangi, onClose }: EditNjangiModalProps) {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
             >
               <option value="">Select payout method</option>
-              <option value="Bank Transfer">Bank Transfer</option>
-              <option value="Mobile Money">Mobile Money</option>
-              <option value="Cash">Cash</option>
+              <option value="Bidding">Bidding</option>
+              <option value="Lottery">Lottery</option>
+              <option value="Rotation">Rotation</option>
             </select>
             {errors.payoutMethod && (
               <p className="text-red-600 text-sm mt-1">
@@ -287,7 +309,7 @@ export function EditNjangiModal({ njangi, onClose }: EditNjangiModalProps) {
             </button>
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || !isDirty}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center justify-center"
             >
               {isSubmitting ? (
