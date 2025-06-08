@@ -240,7 +240,7 @@ const Step4Review: React.FC = () => {
                 </div>
 
                 {groupDetails.rules && (
-                  <div className="col-span-2">
+                  <div className="col-span-2 flex-wrap max-w-11 w-90%">
                     <dt className="text-sm font-medium text-gray-500">Rules</dt>
                     <dd className="mt-1 text-sm text-gray-900">
                       {groupDetails.rules}
