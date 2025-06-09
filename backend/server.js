@@ -80,7 +80,7 @@ app.use("/api/njangi", njangiRoutes);
 app.use("/api/invites", ValidateInviteToken);
 app.use("/api/admin", validateDraftId);
 app.use("/api/state-dashboard", getNjangiStateOverview);
-app.use("/api/state-dashboard/update", updateNjangiDetails);
+app.use("/api/state-dashboard", updateNjangiDetails);
 app.use("/api/admin", adminRoutes);
 app.use("/api/user", userRoutes);
 

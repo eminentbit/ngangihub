@@ -37,6 +37,7 @@ import InviteMemberRegistrationForm from "./pages/invites.member.register.form";
 import NjangiStateDashBoard from "./pages/admin-state-dashboard";
 import ProtectedRoute from "./components/protected.route";
 import GroupDetailPage from "./pages/dashboard.user.pages/DetialPage";
+import NoNjangiMessage from "./components/NoNjangiMessage";
 
 // eslint-disable-next-line react-refresh/only-export-components
 const LandingSections: React.FC = () => <App />;
@@ -116,6 +117,12 @@ const router = createBrowserRouter([
       { path: "profile", element: <ProfilePage /> },
       { path: "group-requests", element: <GroupReqest /> },
     ],
+  },
+
+  //No njangi message
+  {
+    path: "/no-njangi-message",
+    element: <NoNjangiMessage />,
   },
 
   //Registration route for invted memebers
