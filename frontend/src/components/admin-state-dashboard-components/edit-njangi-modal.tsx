@@ -10,6 +10,7 @@ import { editNjangiSchema } from "../../types/edit.special.ui.njangi.schema";
 import { useUpdateNjangiStore } from "../../store/updateNjangiDetails.store";
 import { useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
+import { useQueryClient } from "@tanstack/react-query";
 type EditNjangiFormData = z.infer<typeof editNjangiSchema>;
 
 interface EditNjangiModalProps {
@@ -19,7 +20,8 @@ interface EditNjangiModalProps {
 export function EditNjangiModal({ njangi, onClose }: EditNjangiModalProps) {
   const [searchParams] = useSearchParams();
   const draftId = searchParams.get("draftId");
-  const { updateNjangi } = useUpdateNjangiStore();
+  const { updateNjangi, njangis, setNjangis } = useUpdateNjangiStore();
+  const queryClient = useQueryClient();
 
   const {
     register,
@@ -66,8 +68,15 @@ export function EditNjangiModal({ njangi, onClose }: EditNjangiModalProps) {
         position: "top-right",
         duration: 5000,
       });
+      //Update the edited Njangi in the store
+      const updated = njangis.map((n) =>
+        n._id === draftId ? { ...n, ...payload } : n
+      );
+      setNjangis(updated);
+      queryClient.invalidateQueries({ queryKey: ["njangiDetails"] });
+
     } else {
-      toast.error(result?.message || "Update failed", {
+      toast.error(result?.message || "Update failed! Please try again later.", {
         position: "top-right",
         duration: 5000,
       });

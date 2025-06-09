@@ -6,9 +6,6 @@ export const validateDraftId = async (req, res) => {
   const draftUserToken =
     req.cookies?.draftUserToken || req.headers["x-draft-user-token"];
 
-  console.log("Draft id form req query" + draftId);
-  console.log("Draft user token from cookies or headers: " + draftUserToken);
-
   if (!draftId) {
     return res.status(400).json({
       valid: false,
@@ -18,42 +15,42 @@ export const validateDraftId = async (req, res) => {
   }
 
   try {
+    // Check if Njangi has been approved using the draftId
+    const group = await NjangiGroup.findOne({ draftId });
+
+    if (group && group.status === "approved") {
+      return res.status(200).json({
+        valid: false,
+        status: "redirect",
+        message: "Njangi already approved. Please login to continue.",
+      });
+    }
+
+    // Check for the draft
     const draft = await NjangiDraft.findById({ _id: draftId });
 
-    // Fetch the NjangiGroup using the draftId
-    const group = await NjangiGroup.findOne({ draftId });
-    // if (!draft) {
-    //   return res.status(404).json({
-    //     valid: false,
-    //     status: "invalid",
-    //     message: "Invalid or non-existent draft ID.",
-    //   });
-    // }
-    // Redirect if BOTH: user has no other drafts AND Njangi is approved
-    if (draftUserToken) {
-      const userDraftCount = await NjangiDraft.countDocuments({
-        draftUserToken,
+    if (!draft) {
+      return res.status(404).json({
+        valid: false,
+        status: "invalid",
+        message: "Invalid or non-existent draft ID.",
       });
+    }
+
+    // Check if user has no other drafts but Njangi was approved
+    if (draftUserToken) {
+      const userDraftCount = await NjangiDraft.countDocuments({ draftUserToken });
+
       if (userDraftCount === 0 && group && group.status === "approved") {
         return res.status(200).json({
           valid: false,
           status: "redirect",
-          message:
-            "Njangi approved and no drafts found. Please login to continue.",
+          message: "Njangi approved and no drafts found. Please login to continue.",
         });
       }
     }
 
-    // If no draft and Njangi is approved
-    if (!draft && group && group.status === "approved") {
-      return res.status(403).json({
-        valid: false,
-        status: "redirect",
-        message: "Njangi approved! Please login to continue...",
-      });
-    }
-
-    // Draft is valid
+    // Step 4: Valid draft
     return res.json({ valid: true, status: "valid", draft });
   } catch (error) {
     console.error("Error validating draft ID:", error);
@@ -64,3 +61,4 @@ export const validateDraftId = async (req, res) => {
     });
   }
 };
+

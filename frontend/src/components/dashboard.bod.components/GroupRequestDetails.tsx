@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { GroupRequest } from "../../types/group.request";
 import { useBodStore } from "../../store/create.bod.store";
+import { useCreateNjangiStore } from "../../store/create.njangi.store";
 
 interface GroupRequestDetailsProps {
   request: GroupRequest;
@@ -14,6 +15,8 @@ const GroupRequestDetails: React.FC<GroupRequestDetailsProps> = ({
   onBack,
 }) => {
   const { isLoading, error, acceptRequest, rejectRequest } = useBodStore();
+    const { clearDraftId } = useCreateNjangiStore();
+  
 
   const [actionLoading, setActionLoading] = useState<
     "accept" | "reject" | null
@@ -23,6 +26,7 @@ const GroupRequestDetails: React.FC<GroupRequestDetailsProps> = ({
     setActionLoading("accept");
     try {
       await acceptRequest(request._id, "Approved by board");
+      clearDraftId();
     } catch (e) {
       console.error("Failed to accept request", e);
     } finally {
@@ -34,6 +38,7 @@ const GroupRequestDetails: React.FC<GroupRequestDetailsProps> = ({
     setActionLoading("reject");
     try {
       await rejectRequest(request._id, "Not eligible");
+      clearDraftId();
     } catch (e) {
       console.error("Failed to reject request", e);
     } finally {

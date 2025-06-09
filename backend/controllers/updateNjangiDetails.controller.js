@@ -13,12 +13,10 @@ export const updateNjangiDetails = async (req, res) => {
     // Fetch the draft first
     const draft = await njangiDraftModel.findById({ _id: draftId });
     if (!draft) {
-      return res
-        .status(404)
-        .json({
-          sucess: false,
-          message: "Njangi not found for the given draftId!",
-        });
+      return res.status(404).json({
+        sucess: false,
+        message: "Njangi not found for the given draftId!",
+      });
     }
 
     // Check if within 24 hours of creation
@@ -27,12 +25,10 @@ export const updateNjangiDetails = async (req, res) => {
     const diffMs = now - createdAt;
     const hours24 = 24 * 60 * 60 * 1000;
     if (diffMs > hours24) {
-      return res
-        .status(403)
-        .json({
-          sucess: false,
-          message: "Editing is only allowed within 24 hours of creation.",
-        });
+      return res.status(403).json({
+        sucess: false,
+        message: "Editing is only allowed within 24 hours of creation.",
+      });
     }
 
     // Proceed with update
@@ -65,9 +61,45 @@ export const updateNjangiDetails = async (req, res) => {
       { new: true }
     );
 
-    res
+    return res
       .status(200)
-      .json({ sucess: true, message: "Njangi details updated successfully!" });
+      .json({ sucess: true, message: "Njangi details updated successfully! You will see changes within 15 minutes." });
+  } catch (error) {
+    res.status(500).json({ sucess: false, message: error.message });
+  }
+};
+
+export const cancelNjangi = async (req, res) => {
+  console.log("cancelNjangi from backend: ", req.query);
+  const { draftId } = req.query;
+
+
+  console.log("cancelNjangi from backend: ", draftId);
+
+
+  if (!draftId) {
+    return res
+      .status(400)
+      .json({ sucess: false, message: "draftId is required" });
+  }
+
+  try {
+    // Fetch the draft first
+    const draft = await njangiDraftModel.findById({ _id: draftId });
+    if (!draft) {
+      return res.status(404).json({
+        sucess: false,
+        message: "Njangi not found for the given draftId!",
+      });
+    }
+
+    const deletedNjangi = await njangiDraftModel.deleteOne({ _id: draftId });
+
+    console.log("Deleted Njangi left from the backend:", deletedNjangi)
+
+    return res
+      .status(200)
+      .json({ sucess: true, message: "Njangi cancelled successfully!", deletedNjangi });
   } catch (error) {
     res.status(500).json({ sucess: false, message: error.message });
   }

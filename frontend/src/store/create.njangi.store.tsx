@@ -13,8 +13,10 @@ interface CreateNjangiState {
   success: boolean;
   createdNjangiId: string | null; //Didnot really use it
   njangiStatusURL: string | null;
+  draftId: string | null;
   message: string | null;
   createNjangi: (submissionData: NjangiSetup) => Promise<void>;
+  clearDraftId: () => void;
 }
 
 export const useCreateNjangiStore = create<CreateNjangiState>((set) => ({
@@ -23,17 +25,24 @@ export const useCreateNjangiStore = create<CreateNjangiState>((set) => ({
   success: false,
   createdNjangiId: null,
   njangiStatusURL: null,
+  draftId: localStorage.getItem("draftId"),
   message: null,
   createNjangi: async (submissionData: NjangiSetup) => {
     set({ isLoading: true, errors: null, success: false });
     localStorage.setItem("tempAdminEmail", submissionData.accountSetup.email);
     try {
       const response = await securePost(`${CREATE_NJANGI_API}`, submissionData);
-      console.log(response.data);
+
+      // persist draftId to localStorage
+      const draftId = response.data.draftId;
+      if (draftId) {
+        localStorage.setItem("draftId", draftId);
+      }
       set({
         isLoading: false,
         success: true,
         createdNjangiId: response.data.njangiId,
+        draftId,
         njangiStatusURL: response.data.njangiURL,
         message: response.data.message,
       });
@@ -46,5 +55,9 @@ export const useCreateNjangiStore = create<CreateNjangiState>((set) => ({
             : "An errors occurred while creating your Njangi Please try again.",
       });
     }
+  },
+  clearDraftId: () => {
+    localStorage.removeItem("draftId");
+    set({ draftId: null });
   },
 }));
