@@ -11,7 +11,7 @@ export const updateNjangiDetails = async (req, res) => {
 
   try {
     // Fetch the draft first
-    const draft = await njangiDraftModel.findById({ _id: draftId });
+    const draft = await njangiDraftModel.findById(draftId);
     if (!draft) {
       return res.status(404).json({
         sucess: false,
@@ -55,15 +55,49 @@ export const updateNjangiDetails = async (req, res) => {
       updatedAt: new Date(),
     };
 
+    // Sanitize and validate the update object
+    const sanitizedUpdate = {};
+    for (const [key, value] of Object.entries(update)) {
+      // Only allow specific known fields
+      if (update.hasOwnProperty(key) && value !== undefined && value !== null) {
+        sanitizedUpdate[key] = value;
+      }
+    }
+
+    // Perform the update with sanitized data and input validation
     const njangi = await njangiDraftModel.findByIdAndUpdate(
       draftId,
-      { $set: update },
-      { new: true }
+      { $set: sanitizedUpdate },
+      {
+        new: true,
+        runValidators: true, // Ensures mongoose validation runs
+      }
     );
 
-    return res
-      .status(200)
-      .json({ sucess: true, message: "Njangi details updated successfully! You will see changes within 15 minutes." });
+    if (!njangi) {
+      return res.status(404).json({
+        success: false,
+        message: "Failed to update njangi details",
+      });
+    }
+
+    // Validate successful update
+    const updatedNjangi = await njangiDraftModel
+      .findById(draftId)
+      .select("-__v");
+    if (!updatedNjangi) {
+      return res.status(404).json({
+        success: false,
+        message: "Failed to verify njangi update",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message:
+        "Njangi details updated successfully! You will see changes within 15 minutes.",
+      data: updatedNjangi,
+    });
   } catch (error) {
     res.status(500).json({ sucess: false, message: error.message });
   }
@@ -73,9 +107,7 @@ export const cancelNjangi = async (req, res) => {
   console.log("cancelNjangi from backend: ", req.query);
   const { draftId } = req.query;
 
-
   console.log("cancelNjangi from backend: ", draftId);
-
 
   if (!draftId) {
     return res
@@ -95,11 +127,13 @@ export const cancelNjangi = async (req, res) => {
 
     const deletedNjangi = await njangiDraftModel.deleteOne({ _id: draftId });
 
-    console.log("Deleted Njangi left from the backend:", deletedNjangi)
+    console.log("Deleted Njangi left from the backend:", deletedNjangi);
 
-    return res
-      .status(200)
-      .json({ sucess: true, message: "Njangi cancelled successfully!", deletedNjangi });
+    return res.status(200).json({
+      sucess: true,
+      message: "Njangi cancelled successfully!",
+      deletedNjangi,
+    });
   } catch (error) {
     res.status(500).json({ sucess: false, message: error.message });
   }

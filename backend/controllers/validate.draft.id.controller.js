@@ -16,7 +16,9 @@ export const validateDraftId = async (req, res) => {
 
   try {
     // Check if Njangi has been approved using the draftId
-    const group = await NjangiGroup.findOne({ draftId });
+    const group = await NjangiGroup.findOne({
+      draftId: String(draftId).trim(),
+    });
 
     if (group && group.status === "approved") {
       return res.status(200).json({
@@ -39,13 +41,16 @@ export const validateDraftId = async (req, res) => {
 
     // Check if user has no other drafts but Njangi was approved
     if (draftUserToken) {
-      const userDraftCount = await NjangiDraft.countDocuments({ draftUserToken });
+      const userDraftCount = await NjangiDraft.countDocuments({
+        draftUserToken,
+      });
 
       if (userDraftCount === 0 && group && group.status === "approved") {
         return res.status(200).json({
           valid: false,
           status: "redirect",
-          message: "Njangi approved and no drafts found. Please login to continue.",
+          message:
+            "Njangi approved and no drafts found. Please login to continue.",
         });
       }
     }
@@ -61,4 +66,3 @@ export const validateDraftId = async (req, res) => {
     });
   }
 };
-
