@@ -3,6 +3,9 @@ import NjangiGroup from "../models/njangi.group.model.js";
 import User from "../models/user.model.js";
 import validator from "validator";
 import { config } from "dotenv";
+import NjangiActivityLog from "../models/njangi.activity.log.model.js";
+import Invite from "../models/invite.model.js";
+import { inviteMembersToGroup } from "../services/invite.service.js";
 
 config();
 
@@ -75,7 +78,13 @@ export const getAdminGroups = async (req, res) => {
     const groups = await NjangiGroup.find({ adminId: req.user.id }).populate(
       "groupMembers"
     );
-    res.status(200).json(groups);
+    console.log(groups);
+    const groupsWithIsAdmin = groups.map((group) => {
+      const groupObj = group.toObject();
+      groupObj.isAdmin = String(group.adminId) === String(req.user.id);
+      return groupObj;
+    });
+    res.status(200).json(groupsWithIsAdmin);
   } catch (error) {
     res.status(500).json({ message: "Error fetching admin's groups", error });
   }
@@ -122,7 +131,17 @@ export const fetchGroupById = async (req, res) => {
       });
     }
 
-    res.status(200).json(group);
+    const totalFunds = group.memberContributions.reduce(
+      (sum, mc) => sum + (mc.totalAmountPaid || 0),
+      0
+    );
+
+    const groupInfo = {
+      ...group.toObject(),
+      totalFunds,
+    };
+
+    res.status(200).json(groupInfo);
   } catch (error) {
     res.status(500).json({ message: "Error fetching group", error });
   }
@@ -296,5 +315,89 @@ export const getStatusHistory = async (req, res) => {
     res.status(200).json(combinedHistory);
   } catch (error) {
     res.status(500).json({ message: "Error fetching status history", error });
+  }
+};
+
+export const getGroupRecentActivities = async (req, res) => {
+  const { groupId } = req.params;
+  try {
+    const activities = await NjangiActivityLog.find({ groupId })
+      .sort({ createdAt: -1 })
+      .limit(20);
+
+    res.status(200).json(activities);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error fetching recent activities", error });
+  }
+};
+
+export const getInvitedMembersOfGroup = async (req, res) => {
+  const { groupId } = req.params;
+  try {
+    const invites = await Invite.find({ groupId }).select(
+      "email phone status invitedBy expiresAt createdAt updatedAt"
+    );
+    res.status(200).json(invites);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching invited members", error });
+  }
+};
+
+export const inviteMemberToGroup = async (req, res) => {
+  const { groupId } = req.params;
+  const adminId = req.user.id;
+  const {
+    groupName,
+    adminFirstName,
+    adminLastName,
+    contributionFrequency,
+    contributionAmount,
+  } = req.body;
+  // Accepts a single invite or an array of invites
+  const invites = Array.isArray(req.body.invites)
+    ? req.body.invites
+    : [req.body.invite || req.body];
+
+  try {
+    const result = await inviteMembersToGroup(
+      { invites },
+      groupId,
+      adminId,
+      groupName,
+      adminFirstName,
+      adminLastName,
+      contributionFrequency,
+      contributionAmount
+    );
+    res
+      .status(201)
+      .json({ message: "Invites sent successfully", invites: result });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: error.message || "Error inviting member(s)", error });
+  }
+};
+
+export const getActivityTimeline = async (req, res) => {
+  try {
+    const { groupId } = req.params;
+
+    // Fetch logs for the group, most recent first, and populate user info
+    const logs = await NjangiActivityLog.find({ groupId })
+      .sort({ createdAt: -1 })
+      .populate("performedBy", "firstName lastName email profilePicUrl")
+      .populate("affectedMember", "firstName lastName email profilePicUrl")
+      .lean();
+
+    res.status(200).json({ success: true, timeline: logs });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch activity timeline",
+      error: error.message,
+    });
   }
 };

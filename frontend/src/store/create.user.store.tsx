@@ -17,6 +17,8 @@ interface UserState {
   notifications: Notification[];
   isLoading: boolean;
   error: string | null;
+  hasPaidThisMonth: boolean;
+  setHasPaidThisMonth: (hasPaid: boolean) => void;
   setGroups: (groups: GroupDetails[]) => void;
   fetchNotifications: () => Promise<void>;
   fetchGroups: () => Promise<void>;
@@ -37,6 +39,9 @@ const useUserStore = create<UserState>((set) => ({
   notifications: [],
   isLoading: false,
   error: null,
+  hasPaidThisMonth: false,
+  setHasPaidThisMonth: (hasPaid: boolean) =>
+    set({ hasPaidThisMonth: hasPaid, isLoading: false }),
 
   fetchGroups: async () => {
     set({ isLoading: true, error: null });
@@ -145,8 +150,8 @@ export const useGroupsQuery = () => {
   return useQuery({
     queryKey: ["groups"],
     queryFn: async () => {
-      const res = await secureGet(`/groups`);
-      setGroups(res.data); // Sync Zustand store
+      const res = await secureGet(`/njangi/groups`);
+      setGroups(res.data);
       return res.data;
     },
   });

@@ -1,5 +1,6 @@
 import { finalizeNjangiFromDraft } from "../services/finalizeNjangiFromDraft.js";
 import NjangiDraft from "../models/njangi.draft.model.js";
+import NjangiActivityLog from "../models/njangi.activity.log.model.js";
 
 const actionNjangi = async (req, res) => {
   const { draftId, action, reason } = req.body;
@@ -24,10 +25,17 @@ const actionNjangi = async (req, res) => {
       .status(403)
       .json({ success: false, message: "Forbidden: BOD access required." });
   }
-  console.log(action);
   try {
     if (action == "approve") {
       const result = await finalizeNjangiFromDraft(draftId, res);
+
+      await NjangiActivityLog.create({
+        groupId: result.groupId,
+        activityType: "NJANGI_CREATION_SUCCESS",
+        performedBy: req.user.id,
+        affectedMember: result.adminUserId,
+        description: "Njangi group created by admin.",
+      });
 
       return res.status(200).json({
         success: true,
@@ -37,6 +45,15 @@ const actionNjangi = async (req, res) => {
       });
     } else if (action == "reject") {
       await NjangiDraft.findByIdAndDelete(draftId);
+
+      await NjangiActivityLog.create({
+        groupId: draftId,
+        activityType: "NJANGI_CREATION_FAILURE",
+        performedBy: req.user.id,
+        description: reason
+          ? `Njangi group submission rejected because ${reason}`
+          : "Njangi group creation failed",
+      });
       return res
         .status(200)
         .json({ success: true, message: "Njangi draft rejected and deleted." });

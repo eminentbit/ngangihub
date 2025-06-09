@@ -5,6 +5,7 @@ import NjangiGroup from "../models/njangi.group.model.js";
 import bcrypt from "bcryptjs";
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
 import { sendWelcomeEmail } from "../mail/emails.js";
+import NjangiActivityLog from "../models/njangi.activity.log.model.js";
 
 const acceptInvite = async (req, res) => {
   const { token } = req.query;
@@ -96,6 +97,13 @@ const acceptInvite = async (req, res) => {
       `${newUser.firstName} ${newUser.lastName}`,
       `${process.env.USER_DASHBOARD_URL}?groupId=${invite.groupId}`
     );
+
+    await NjangiActivityLog.create({
+      groupId: group._id,
+      activityType: "MEMBER_JOIN",
+      performedBy: group.adminId,
+      description: "Njangi group created by admin.",
+    });
 
     return res.status(201).json({
       success: true,

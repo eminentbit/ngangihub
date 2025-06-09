@@ -24,7 +24,9 @@ export function EditNjangiModal({ njangi, onClose }: EditNjangiModalProps) {
   const {
     register,
     handleSubmit,
+    watch,
     control,
+    getValues,
     formState: { errors, isSubmitting, isDirty },
   } = useForm<EditNjangiFormData>({
     resolver: zodResolver(editNjangiSchema),
@@ -73,6 +75,7 @@ export function EditNjangiModal({ njangi, onClose }: EditNjangiModalProps) {
       });
     }
   };
+  const startDate = watch("startDate");
 
   return (
     <div className="fixed inset-0 z-30 flex items-center justify-center bg-black bg-opacity-50">
@@ -203,6 +206,7 @@ export function EditNjangiModal({ njangi, onClose }: EditNjangiModalProps) {
               <Controller
                 control={control}
                 name="startDate"
+                rules={{ required: "Start date is required" }}
                 render={({ field: { value, onChange, ...rest } }) => (
                   <DatePicker
                     {...rest}
@@ -232,6 +236,16 @@ export function EditNjangiModal({ njangi, onClose }: EditNjangiModalProps) {
               <Controller
                 control={control}
                 name="endDate"
+                rules={{
+                  required: "End date is required",
+                  validate: (value) => {
+                    const start = getValues("startDate");
+                    if (start && value && value < start) {
+                      return "End date cannot be before start date";
+                    }
+                    return true;
+                  },
+                }}
                 render={({ field: { value, onChange, ...rest } }) => (
                   <DatePicker
                     {...rest}
@@ -240,6 +254,7 @@ export function EditNjangiModal({ njangi, onClose }: EditNjangiModalProps) {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                     placeholderText="Select end date"
                     dateFormat="yyyy-MM-dd"
+                    minDate={startDate}
                   />
                 )}
               />

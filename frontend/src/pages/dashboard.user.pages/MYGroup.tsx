@@ -1,31 +1,39 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { HiX } from "react-icons/hi";
+import { useFetchGroups } from "../../hooks/useAdmin";
 import Sidebar from "../../components/dashboard.admin.components/Sidebar";
 import Header from "../../components/dashboard.admin.components/Header";
-import ChatInterface from "../../components/dashboard.user.components/chat-interface";
-import { Plus } from "lucide-react";
-import useUserStore from "../../store/create.user.store";
+import CreateGroupButton from "../../components/dashboard.admin.components/ui/create.group.button";
 import GroupItem from "../../components/dashboard.user.components/GroupItem";
+import ChatInterface from "../../components/dashboard.user.components/chat-interface";
 
-// Dummy group data type
-// type Group = {
-//   id: string;
-//   name: string;
-//   members: number;
-//   paid: number;
-//   role: "Admin" | "Member" | string;
-// };
+// Loading Skeleton Component
+const GroupItemSkeleton = () => (
+  <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 animate-pulse">
+    <div className="flex justify-between items-start mb-4">
+      <div className="h-6 bg-gray-300 dark:bg-gray-600 rounded w-3/4"></div>
+      <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-16"></div>
+    </div>
 
-// const groups: Group[] = [
-//   { id: "1", name: "Team Alpha", members: 8, paid: 6, role: "Admin" },
-//   { id: "2", name: "Project Beta", members: 5, paid: 3, role: "Member" },
-//   { id: "3", name: "Marketing Team", members: 10, paid: 8, role: "Admin" },
-//   { id: "4", name: "Finance Group", members: 6, paid: 4, role: "Member" },
-//   { id: "5", name: "Design Team", members: 7, paid: 5, role: "Member" },
-//   { id: "6", name: "Sales Team", members: 9, paid: 7, role: "Admin" },
-// ];
+    <div className="space-y-3 mb-6">
+      <div className="flex items-center gap-2">
+        <div className="h-4 w-4 bg-gray-300 dark:bg-gray-600 rounded"></div>
+        <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-20"></div>
+      </div>
+      <div className="flex items-center gap-2">
+        <div className="h-4 w-4 bg-gray-300 dark:bg-gray-600 rounded"></div>
+        <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-16"></div>
+      </div>
+    </div>
 
-const MyGroups: React.FC = () => {
+    <div className="flex gap-2">
+      <div className="h-9 bg-gray-300 dark:bg-gray-600 rounded-lg flex-1"></div>
+      <div className="h-9 bg-gray-300 dark:bg-gray-600 rounded-lg flex-1"></div>
+    </div>
+  </div>
+);
+
+const MyGroups = () => {
   // Modal state
   const [chatModalGroupId, setChatModalGroupId] = useState<string | null>(null);
 
@@ -59,11 +67,9 @@ const MyGroups: React.FC = () => {
   // For shifting content with sidebar
   const offsetClass = sidebarOpen ? "lg:ml-64" : "lg:ml-16";
 
-  const { fetchGroups, groups } = useUserStore();
+  const { groups, isLoading, error } = useFetchGroups();
 
-  useEffect(() => {
-    fetchGroups();
-  }, [fetchGroups]);
+  const adminGroupsCount = groups.filter((group) => group.isAdmin).length;
 
   // Find the group being chatted
   const chatGroup = groups.find((g) => g._id === chatModalGroupId);
@@ -73,7 +79,6 @@ const MyGroups: React.FC = () => {
       {/* Sidebar */}
       <Sidebar
         isOpen={sidebarOpen}
-        //activeTab="my-groups"
         onToggle={toggleSidebar}
         onClose={closeSidebar}
       />
@@ -88,50 +93,94 @@ const MyGroups: React.FC = () => {
         {/* Page content */}
         <main
           className={`flex-1 transition-all duration-300 min-h-screen bg-gray-50 dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-800 overflow-auto 
-          ${sidebarOpen ? "lg:ml-4" : "lg:ml-6"}`}
+          ${sidebarOpen ? "lg:ml-4" : "lg:ml-6"} p-6`}
         >
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-10 gap-6">
             <h1 className="text-3xl md:text-4xl font-bold text-blue-700 dark:text-white">
               My Groups
             </h1>
-            <button
-              type="button"
-              className="bg-primary-600 hover:bg-primary-700 active:bg-primary-800 text-blue-400 font-semibold rounded-lg px-6 py-3 shadow-lg transition-all duration-150"
-              // onClick={createGroup}
-            >
-              <span className="flex">
-                <Plus />
-                Create New Group
-              </span>
-            </button>
+            <CreateGroupButton adminGroupsCount={adminGroupsCount} />
           </div>
 
-          <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {groups.map((group) => (
-              <GroupItem
-                key={group._id}
-                group={group}
-                setChatModalGroupId={setChatModalGroupId}
-              />
-            ))}
-          </section>
+          {/* Loading State */}
+          {isLoading && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <GroupItemSkeleton key={i} />
+              ))}
+            </div>
+          )}
+
+          {/* Error State */}
+          {error && (
+            <div className="text-center py-12">
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-6 max-w-md mx-auto">
+                <div className="text-red-600 dark:text-red-400 text-4xl mb-4">
+                  ⚠️
+                </div>
+                <h3 className="text-lg font-semibold text-red-800 dark:text-red-300 mb-2">
+                  Failed to load groups
+                </h3>
+                <p className="text-red-600 dark:text-red-400 mb-4">
+                  {error.message ||
+                    "Something went wrong while fetching your groups."}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => window.location.reload()}
+                  className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
+                >
+                  Try Again
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Groups Grid */}
+          {!isLoading && !error && (
+            <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {groups.map((group) => (
+                <GroupItem
+                  key={group._id}
+                  group={group}
+                  setChatModalGroupId={() => setChatModalGroupId(group?._id)}
+                />
+              ))}
+            </section>
+          )}
+
+          {/* Empty State */}
+          {!isLoading && !error && groups.length === 0 && (
+            <div className="text-center py-12">
+              <div className="text-gray-400 dark:text-gray-600 text-6xl mb-4">
+                👥
+              </div>
+              <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                No groups yet
+              </h3>
+              <p className="text-gray-500 dark:text-gray-400 mb-6">
+                Create your first group to get started with collaboration.
+              </p>
+              <CreateGroupButton adminGroupsCount={0} />
+            </div>
+          )}
         </main>
       </div>
 
       {/* Chat Modal */}
       {chatModalGroupId && chatGroup && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 dark:bg-black/60"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 dark:bg-black/60 backdrop-blur-sm"
           onClick={() => setChatModalGroupId(null)}
         >
           <div
-            className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg mx-4 p-6 relative"
+            className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg mx-4 p-6 relative transform transition-all duration-300 scale-100"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close button */}
             <button
               type="button"
-              className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+              className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               onClick={() => setChatModalGroupId(null)}
               aria-label="Close chat"
             >
@@ -139,7 +188,7 @@ const MyGroups: React.FC = () => {
             </button>
 
             {/* Modal header */}
-            <h2 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white">
+            <h2 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white pr-8">
               {chatGroup.name} Chat
             </h2>
 

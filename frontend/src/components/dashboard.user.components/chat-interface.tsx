@@ -68,20 +68,31 @@ const ChatInterface = ({ groupId, groupName, onClose }: ChatInterfaceProps) => {
 
     // Listen for incoming messages from the server
     socket.on("receiveMessage", (msg: Message) => {
-      setMessages((prev) => [...prev, msg]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          ...msg,
+          isCurrentUser: msg.senderId == user?._id,
+        },
+      ]);
     });
 
     // OPTIONAL: Fetch chat history via HTTP (or via socket) when first joining
     // If your backend emits a "chatHistory" event upon join, you can handle it:
     socket.on("chatHistory", (history: Message[]) => {
-      setMessages(history);
+      setMessages(
+        history.map((msg) => ({
+          ...msg,
+          isCurrentUser: msg.senderId == user?._id,
+        }))
+      );
     });
 
     return () => {
       socket.disconnect();
       socketRef.current = null;
     };
-  }, [groupId, user?.id]);
+  }, [groupId, user?._id, user?.id]);
 
   // 2️⃣ Scroll to bottom whenever messages change
   useEffect(() => {
@@ -92,10 +103,13 @@ const ChatInterface = ({ groupId, groupName, onClose }: ChatInterfaceProps) => {
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim() || !socketRef.current || !groupId) return;
+    const name = user?.email.split("@")[0];
+
+    console.log(name, user?.email);
 
     const newMsg: Message = {
       senderId: user?.id || "",
-      senderName: user?.lastName || "",
+      senderName: name!,
       content: message,
       timestamp: new Date().toISOString(),
       isCurrentUser: true,

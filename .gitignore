@@ -142,3 +142,5 @@ dist
 *.pem
 *.cert
 *.ssl
+
+.DS_Store

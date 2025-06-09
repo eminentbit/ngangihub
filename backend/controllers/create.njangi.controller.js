@@ -2,6 +2,7 @@
 import createNjangiFlow from "../services/createNjangiFlow.js";
 import { nanoid } from "nanoid";
 import { getOrSetDraftUserToken } from "../utils/getOrSetDraftUserToken.js";
+import NjangiActivityLog from "../models/njangi.activity.log.model.js";
 
 const createNjangi = async (req, res) => {
   try {
@@ -13,6 +14,7 @@ const createNjangi = async (req, res) => {
       draftUserToken,
       res
     );
+
     res.status(201).json({
       success: true,
       message: "Njangi created successfully and sent for approval.",

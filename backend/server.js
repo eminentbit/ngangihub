@@ -17,6 +17,7 @@ import ValidateInviteToken from "./routes/validate.invite.token.route.js";
 import validateDraftId from "./routes/validate.draft.id.route.js";
 import adminRoutes from "./routes/admin.routes.js";
 import njangiRoutes from "./routes/user.njangi.routes.js";
+import userRoutes from "./routes/user.routes.js";
 import Message from "./models/message.model.js";
 import updateNjangiDetails from "./routes/update.njangi.details.route.js";
 import pkg from "lusca";
@@ -79,8 +80,9 @@ app.use("/api/njangi", njangiRoutes);
 app.use("/api/invites", ValidateInviteToken);
 app.use("/api/admin", validateDraftId);
 app.use("/api/state-dashboard", getNjangiStateOverview);
-app.use("/api/state-dashboard/update", updateNjangiDetails)
+app.use("/api/state-dashboard/update", updateNjangiDetails);
 app.use("/api/admin", adminRoutes);
+app.use("/api/user", userRoutes);
 
 // ─── CREATE HTTP + SOCKET.IO SERVER ────────────────────────────────────────────
 const startServer = async () => {
@@ -117,6 +119,7 @@ const startServer = async () => {
       });
 
       socket.on("sendMessage", async (payload) => {
+        console.log(payload);
         const { groupId, message } = payload;
         if (!groupId || !message) return;
 

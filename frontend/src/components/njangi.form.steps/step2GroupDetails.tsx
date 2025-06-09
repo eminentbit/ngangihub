@@ -33,6 +33,7 @@ const Step2GroupDetails: React.FC = () => {
 
   const groupName = watch("groupName");
   const debouncedGroupName = useDebounce(groupName, 500);
+  const startDateString = watch("startDate");
 
   const { data: isValid, isFetching } =
     useValidateGroupName(debouncedGroupName);
@@ -241,11 +242,18 @@ const Step2GroupDetails: React.FC = () => {
 
                 <input
                   type="date"
-                  {...register("endDate")}
+                  {...register("endDate", {
+                    validate: (val) => {
+                      if (startDateString && val && val < startDateString) {
+                        return "End date cannot be before start date";
+                      }
+                      return true;
+                    },
+                  })}
                   className={`form-input ${
                     errors.endDate ? "form-input-error" : ""
                   }`}
-                  min={new Date().toISOString().split("T")[0]}
+                  min={startDateString}
                 />
                 {errors.endDate && (
                   <p className="form-error">{errors.endDate.message}</p>
