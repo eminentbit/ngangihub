@@ -22,14 +22,12 @@ const Footer: React.FC = () => {
                 window.scrollTo(0, 0);
               }}
             >
-              <img src="/logo2.png" alt="Logo" className="w-8" />
-              <span className="ml-2 text-xl font-bold text-blue-700">NAAS</span>
+              <img src="/logo5.png" alt="Logo" className="h-12" />
             </div>
             <p className="mb-4 text-gray-400">
               Modern Njangi SaaS platform for community savings and financial
               empowerment.
             </p>
-            
           </div>
 
           {/* Quick links */}
@@ -48,7 +46,6 @@ const Footer: React.FC = () => {
                         className="text-gray-400 hover:text-blue-500 transition-colors cursor-pointer"
                       >
                         {link.label}
-                        
                       </ScrollLink>
                     ) : (
                       <RouterLink
@@ -66,8 +63,8 @@ const Footer: React.FC = () => {
         </div>
 
         <div className="border-t border-gray-800 mt-12 pt-8 text-center mx-auto">
-  <p>© {currentYear} NAAS. All rights reserved.</p>
-</div>
+          <p>&copy; {currentYear} NjangiHub- NAAS. All rights reserved.</p>
+        </div>
       </Container>
     </footer>
   );

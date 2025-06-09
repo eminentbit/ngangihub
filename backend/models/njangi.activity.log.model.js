@@ -5,7 +5,7 @@ const njangiActivityLogSchema = new Schema(
     groupId: {
       type: Schema.Types.ObjectId,
       ref: "NjangiGroup",
-      required: true,
+      required: false,
     },
     activityType: {
       type: String,
@@ -14,6 +14,8 @@ const njangiActivityLogSchema = new Schema(
         "MEMBER_JOIN",
         "MEMBER_LEAVE",
         "CONTRIBUTION_MADE",
+        "NJANGI_CREATION_SUCCESS",
+        "NJANGI_CREATION_FAILURE",
         "LOAN_REQUEST",
         "LOAN_APPROVAL",
         "LOAN_REJECTION",
@@ -21,6 +23,7 @@ const njangiActivityLogSchema = new Schema(
         "MEETING_SCHEDULED",
         "FINE_ISSUED",
         "FINE_PAYMENT",
+        "NJANGI_CREATED",
         "BENEFICIARY_PAYOUT",
       ],
     },
@@ -51,6 +54,6 @@ const njangiActivityLogSchema = new Schema(
   }
 );
 
-const Log = model("NjangiActivityLog", njangiActivityLogSchema);
+const NjangiActivityLog = model("NjangiActivityLog", njangiActivityLogSchema);
 
-export default Log;
+export default NjangiActivityLog;

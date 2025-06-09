@@ -20,11 +20,7 @@ const AddMemberPage: React.FC = () => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [success, setSuccess] = useState<string | null>(null);
 
-  const { groupId, members, fetchMembers } = useAdminState();
-
-  useEffect(() => {
-    fetchMembers();
-  }, [fetchMembers]);
+  const { groupId, members } = useAdminState();
 
   console.log(members, groupId);
 

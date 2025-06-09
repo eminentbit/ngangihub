@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
-import { Eye, Edit, Calendar, Users } from "lucide-react";
+import { Calendar, Users } from "lucide-react";
 import { EditNjangiModal } from "./edit-njangi-modal";
 import { useQuery } from "@tanstack/react-query";
 import { useNjangiStateStore } from "../../store/njangi.state.store";
@@ -39,10 +39,10 @@ export function SubmittedNjangis({ njangiId }: { njangiId: string | null }) {
     refetchOnWindowFocus: true, // Refetch when window/tab regains focus
   });
 
-  const handleEdit = (njangi: any) => {
-    setSelectedNjangi(njangi);
-    setIsEditModalOpen(true);
-  };
+  // const handleEdit = (njangi: any) => {
+  //   setSelectedNjangi(njangi);
+  //   setIsEditModalOpen(true);
+  // };
 
   const handleCloseModal = () => {
     setIsEditModalOpen(false);
@@ -151,7 +151,9 @@ export function SubmittedNjangis({ njangiId }: { njangiId: string | null }) {
                         : "N/A"}
                     </p>
                   </div>
-                  <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                  {/* Edit can still be done in Njangi detail page, reason its commented */}
+
+                  {/* <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                     <button className="border border-blue-200 text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center">
                       <Eye className="h-4 w-4 mr-2" />
                       View Details
@@ -164,7 +166,7 @@ export function SubmittedNjangis({ njangiId }: { njangiId: string | null }) {
                       <Edit className="h-4 w-4 mr-2" />
                       Edit
                     </button>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>

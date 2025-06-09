@@ -14,38 +14,138 @@ import Sidebar from "../../components/dashboard.admin.components/Sidebar";
 import StatCard from "../../components/dashboard.admin.components/StatCard";
 import ContributionChart from "../../components/dashboard.admin.components/ContributionChart";
 import ActivityChart from "../../components/dashboard.admin.components/ActivityChart";
-import { quickActions, recentActivity } from "../../utils/data.admin.dashboard";
+import { quickActions } from "../../utils/data.admin.dashboard";
 
 // Import the new Header component
 import Header from "../../components/dashboard.admin.components/Header";
-import { useAdminState } from "../../store/create.admin.store";
+import { useFetchGroups, useGroupActivities } from "../../hooks/useAdmin";
+import { getNextPayout } from "../../utils/payout";
+
+// Skeleton Components
+const Skeleton: React.FC<{ className?: string; animate?: boolean }> = ({
+  className = "",
+  animate = true,
+}) => (
+  <div
+    className={`bg-gray-200 dark:bg-gray-700 rounded ${
+      animate ? "animate-pulse" : ""
+    } ${className}`}
+  />
+);
+
+// Loading Stat Card Component
+const LoadingStatCard: React.FC = () => (
+  <div className="bg-gradient-to-tr from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 rounded-xl shadow p-6 animate-pulse">
+    <div className="flex items-center justify-between mb-4">
+      <Skeleton className="w-8 h-8 rounded-full" />
+      <Skeleton className="w-12 h-6" />
+    </div>
+    <Skeleton className="h-8 w-20 mb-2" />
+    <Skeleton className="h-4 w-24" />
+  </div>
+);
+
+// Loading Chart Component
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const LoadingChart = ({ title }: { title: string }) => (
+  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 animate-pulse">
+    <Skeleton className="h-5 w-32 mb-4" />
+    <div className="space-y-3">
+      <Skeleton className="h-32 w-full" />
+      <div className="flex justify-between">
+        <Skeleton className="h-3 w-16" />
+        <Skeleton className="h-3 w-16" />
+        <Skeleton className="h-3 w-16" />
+      </div>
+    </div>
+  </div>
+);
+
+// Loading Activity Item
+const LoadingActivityItem: React.FC = () => (
+  <li className="flex items-start gap-3 animate-pulse">
+    <Skeleton className="w-6 h-6 rounded-full mt-1" />
+    <div className="flex-1">
+      <div className="flex gap-2 mb-1">
+        <Skeleton className="h-4 w-20" />
+        <Skeleton className="h-4 w-32" />
+      </div>
+      <Skeleton className="h-3 w-16" />
+    </div>
+  </li>
+);
+
+// Loading Member Item
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const LoadingMemberItem = ({ title }: { title: string }) => (
+  <li className="flex items-center py-2 border-b border-gray-100 dark:border-gray-700 animate-pulse">
+    <Skeleton className="w-8 h-8 rounded-full mr-3" />
+    <div className="flex-1">
+      <Skeleton className="h-4 w-24 mb-1" />
+      <Skeleton className="h-3 w-16" />
+    </div>
+  </li>
+);
+
+// Loading Info Card
+const LoadingInfoCard: React.FC<{ title: string; className?: string }> = ({
+  className = "",
+}) => (
+  <div
+    className={`bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 animate-pulse ${className}`}
+  >
+    <Skeleton className="h-5 w-32 mb-4" />
+    <div className="space-y-3">
+      <div className="space-y-2">
+        <Skeleton className="h-8 w-28" />
+        <Skeleton className="h-4 w-36" />
+        <Skeleton className="h-3 w-32" />
+      </div>
+    </div>
+  </div>
+);
+
+// Shimmer effect for content loading
+const ShimmerWrapper: React.FC<{
+  children: React.ReactNode;
+  loading: boolean;
+}> = ({ children, loading }) => (
+  <div className={`relative ${loading ? "overflow-hidden" : ""}`}>
+    {loading && (
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer z-10" />
+    )}
+    {children}
+  </div>
+);
 
 export const AdminDashboardPage: React.FC = () => {
   const [isOpen, setIsOpen] = useState(true);
   const [activeTab, setActiveTab] = useState("admin");
   const [darkMode, setDarkMode] = useState(false);
 
-  const { groups, fetchGroups } = useAdminState();
-
-  useEffect(() => {
-    fetchGroups();
-  }, [fetchGroups]);
+  // const { groups, isLoading } = useFetchGroups();
   const [totalMembers, setTotalMembers] = useState(0);
   const [totalContributions, setTotalContribution] = useState(0);
 
+  const { groups, isLoading } = useFetchGroups();
+
   useEffect(() => {
     const totalMembersCount = groups.reduce(
-      (total, group) => total + group.groupMembers.length,
+      (total, group) => total + group?.groupMembers!.length,
       0
     );
     setTotalMembers(totalMembersCount);
   }, [groups]);
 
+  // useEffect(() => {
+  //   fetchGroups();
+  // }, [fetchGroups]);
+
   useEffect(() => {
     const totalMembersContributions = groups.reduce(
       (sum, group) =>
         sum +
-        group.memberContributions.reduce(
+        group.memberContributions!.reduce(
           (groupSum, member) => groupSum + (member.totalAmountPaid || 0),
           0
         ),
@@ -54,12 +154,13 @@ export const AdminDashboardPage: React.FC = () => {
     setTotalContribution(totalMembersContributions);
   }, [groups]);
 
-  const allMembers = groups.flatMap((group) =>
-    group.groupMembers.map((member) => ({
+  const allMembers = groups?.flatMap((group) =>
+    group.groupMembers!.map((member) => ({
       ...member,
       joinedAt: member.createdAt,
     }))
   );
+  const { activities, loading } = useGroupActivities(groups?.[0]?._id ?? "");
 
   // Sort by join date (descending)
   const sortedMembers = allMembers
@@ -130,9 +231,9 @@ export const AdminDashboardPage: React.FC = () => {
                 </h1>
               </div>
               <div className="flex space-x-4">
-                {quickActions.map((action) => (
+                {quickActions.map((action, index) => (
                   <button
-                    key={action.id}
+                    key={index}
                     type="button"
                     onClick={() => {
                       if (action.label === "View Contributions") {
@@ -143,7 +244,8 @@ export const AdminDashboardPage: React.FC = () => {
                         action.onClick();
                       }
                     }}
-                    className={`${action.color} flex items-center px-4 py-2 text-white rounded-lg shadow hover:scale-105 hover:shadow-lg transition font-semibold`}
+                    disabled={isLoading}
+                    className={`${action.color} flex items-center px-4 py-2 text-white rounded-lg shadow hover:scale-105 hover:shadow-lg transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100`}
                   >
                     {action.icon}
                     <span className="ml-2">{action.label}</span>
@@ -154,68 +256,141 @@ export const AdminDashboardPage: React.FC = () => {
 
             {/* Stat Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <StatCard
-                label="Total Members"
-                value={totalMembers.toString()}
-                icon={<FaUsers className="text-blue-500" size={28} />}
-                className="bg-gradient-to-tr from-blue-100 to-blue-300 dark:from-blue-900 dark:to-blue-800 shadow"
-              />
-              <StatCard
-                label="Total Contributions"
-                value={totalContributions.toString()}
-                icon={<FaHandHoldingUsd className="text-blue-500" size={28} />}
-                className="bg-gradient-to-tr from-blue-100 to-blue-300 dark:from-blue-900 dark:to-blue-800 shadow"
-              />
-              <StatCard
-                label="Active Loans"
-                value="0"
-                icon={<FaMoneyBillWave className="text-yellow-500" size={28} />}
-                className="bg-gradient-to-tr from-yellow-100 to-yellow-300 dark:from-yellow-900 dark:to-yellow-800 shadow"
-              />
-              <StatCard
-                label="Pending Payouts"
-                value="0"
-                icon={<FaChartPie className="text-purple-500" size={28} />}
-                className="bg-gradient-to-tr from-purple-100 to-purple-300 dark:from-purple-900 dark:to-purple-800 shadow"
-              />
+              {isLoading ? (
+                // Loading stat cards
+                Array.from({ length: 4 }).map((_, index) => (
+                  <LoadingStatCard key={index} />
+                ))
+              ) : (
+                // Actual stat cards with subtle animations
+                <>
+                  <ShimmerWrapper loading={false}>
+                    <StatCard
+                      label="Total Members"
+                      value={totalMembers.toString()}
+                      icon={
+                        <FaUsers
+                          className="text-blue-500 animate-bounce"
+                          style={{ animationDuration: "2s" }}
+                          size={28}
+                        />
+                      }
+                      className="bg-gradient-to-tr from-blue-100 to-blue-300 dark:from-blue-900 dark:to-blue-800 shadow transform transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                    />
+                  </ShimmerWrapper>
+                  <ShimmerWrapper loading={false}>
+                    <StatCard
+                      label="Total Contributions"
+                      value={totalContributions.toString()}
+                      icon={
+                        <FaHandHoldingUsd
+                          className="text-blue-500 animate-pulse"
+                          size={28}
+                        />
+                      }
+                      className="bg-gradient-to-tr from-blue-100 to-blue-300 dark:from-blue-900 dark:to-blue-800 shadow transform transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                    />
+                  </ShimmerWrapper>
+                  <ShimmerWrapper loading={false}>
+                    <StatCard
+                      label="Active Loans"
+                      value="0"
+                      icon={
+                        <FaMoneyBillWave
+                          className="text-yellow-500 animate-bounce"
+                          style={{ animationDuration: "1.5s" }}
+                          size={28}
+                        />
+                      }
+                      className="bg-gradient-to-tr from-yellow-100 to-yellow-300 dark:from-yellow-900 dark:to-yellow-800 shadow transform transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                    />
+                  </ShimmerWrapper>
+                  <ShimmerWrapper loading={false}>
+                    <StatCard
+                      label="Pending Payouts"
+                      value="0"
+                      icon={
+                        <FaChartPie
+                          className="text-purple-500 animate-spin"
+                          style={{ animationDuration: "3s" }}
+                          size={28}
+                        />
+                      }
+                      className="bg-gradient-to-tr from-purple-100 to-purple-300 dark:from-purple-900 dark:to-purple-800 shadow transform transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                    />
+                  </ShimmerWrapper>
+                </>
+              )}
             </div>
 
             {/* Charts & Activity */}
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
               <div className="xl:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
-                  <h3 className="text-blue-700 dark:text-blue-300 font-semibold mb-2">
-                    Contribution Overview
-                  </h3>
-                  <ContributionChart />
-                </div>
-                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
-                  <h3 className="text-blue-700 dark:text-blue-300 font-semibold mb-2">
-                    Activity Timeline
-                  </h3>
-                  <ActivityChart />
-                </div>
+                {isLoading ? (
+                  // Loading charts
+                  <>
+                    <LoadingChart title="Contribution Overview" />
+                    <LoadingChart title="Activity Timeline" />
+                  </>
+                ) : (
+                  // Actual charts
+                  <>
+                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 transform transition-all duration-300 hover:shadow-lg">
+                      <h3 className="text-blue-700 dark:text-blue-300 font-semibold mb-2">
+                        Contribution Overview
+                      </h3>
+                      <ContributionChart />
+                    </div>
+                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 transform transition-all duration-300 hover:shadow-lg">
+                      <h3 className="text-blue-700 dark:text-blue-300 font-semibold mb-2">
+                        Activity Timeline
+                      </h3>
+                      <ActivityChart groupId={groups[0]._id} />
+                    </div>
+                  </>
+                )}
               </div>
+
               {/* Recent Activity */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 flex flex-col">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 flex flex-col transform transition-all duration-300 hover:shadow-lg">
                 <h3 className="text-blue-700 dark:text-blue-300 font-semibold mb-4">
                   Recent Activity
                 </h3>
                 <ul className="space-y-4">
-                  {recentActivity.map((item) => (
-                    <li key={item.id} className="flex items-start gap-3">
-                      <div className="mt-1">{item.icon}</div>
-                      <div>
-                        <span className="font-semibold text-gray-800 dark:text-gray-100">
-                          {item.user}{" "}
-                        </span>
-                        <span className="text-gray-700 dark:text-gray-300">
-                          {item.action}
-                        </span>
-                        <div className="text-xs text-gray-400">{item.time}</div>
+                  {loading ? (
+                    // Loading activity items
+                    Array.from({ length: 5 }).map((_, index) => (
+                      <LoadingActivityItem key={index} />
+                    ))
+                  ) : activities.length > 0 ? (
+                    // Actual activity items
+                    activities.map((item, index) => (
+                      <li
+                        key={index}
+                        className="flex items-start gap-3 transform transition-all duration-200 hover:scale-[1.02]"
+                      >
+                        <div className="mt-1">{item.icon}</div>
+                        <div>
+                          <span className="font-semibold text-gray-800 dark:text-gray-100">
+                            {item.user}{" "}
+                          </span>
+                          <span className="text-gray-700 dark:text-gray-300">
+                            {item.action}
+                          </span>
+                          <div className="text-xs text-gray-400">
+                            {item.time}
+                          </div>
+                        </div>
+                      </li>
+                    ))
+                  ) : (
+                    <li>
+                      <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                        <div className="text-3xl mb-2">📊</div>
+                        <p>No recent activities</p>
                       </div>
                     </li>
-                  ))}
+                  )}
                 </ul>
               </div>
             </div>
@@ -223,73 +398,119 @@ export const AdminDashboardPage: React.FC = () => {
             {/* Members List & Quick Overview */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
               {/* Latest Members */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 transform transition-all duration-300 hover:shadow-lg">
                 <h3 className="text-blue-700 dark:text-blue-300 font-semibold mb-4">
                   Latest Members
                 </h3>
                 <ul>
-                  {latestMembers.map((member) => (
-                    <li
-                      key={member.id}
-                      className="flex items-center py-2 border-b last:border-b-0 border-gray-100 dark:border-gray-700"
-                    >
-                      {member.profilePicUrl ? (
-                        <img
-                          src={member.profilePicUrl}
-                          alt={member.profilePicUrl}
-                          className="w-8 h-8 rounded-full mr-3"
-                        />
-                      ) : (
-                        <FaUserCircle className="text-gray-400 dark:text-gray-600 w-8 h-8 mr-3" />
-                      )}
-                      <div>
-                        <div className="text-gray-900 dark:text-gray-100 font-semibold">
-                          {member.lastName}
+                  {isLoading ? (
+                    Array.from({ length: 5 }).map((_, index) => (
+                      <LoadingMemberItem title="Latest Members" key={index} />
+                    ))
+                  ) : latestMembers.length > 0 ? (
+                    // Actual member items
+                    latestMembers.map((member, index) => (
+                      <li
+                        key={index}
+                        className="flex items-center py-2 border-b last:border-b-0 border-gray-100 dark:border-gray-700 transform transition-all duration-200 hover:scale-[1.02] hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded px-2"
+                      >
+                        {member.profilePicUrl ? (
+                          <img
+                            src={member.profilePicUrl}
+                            alt={member.profilePicUrl}
+                            className="w-8 h-8 rounded-full mr-3"
+                          />
+                        ) : (
+                          <FaUserCircle className="text-gray-400 dark:text-gray-600 w-8 h-8 mr-3" />
+                        )}
+                        <div>
+                          <div className="text-gray-900 dark:text-gray-100 font-semibold cursor-pointer">
+                            {member.lastName} {member.firstName} at{" "}
+                            <span
+                              className="cursor-pointer hover:text-blue-500"
+                              onClick={() => {
+                                window.location.href = `mailto:${member.email}`;
+                              }}
+                            >
+                              {member.email}
+                            </span>
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {new Date(member.createdAt!).toLocaleString()}
+                          </div>
                         </div>
-                        <div className="text-xs text-gray-500">
-                          {member.createdAt}
-                        </div>
+                      </li>
+                    ))
+                  ) : (
+                    // Empty state
+                    <li>
+                      <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                        <div className="text-3xl mb-2">👥</div>
+                        <p>No members yet</p>
                       </div>
                     </li>
-                  ))}
+                  )}
                 </ul>
               </div>
+
               {/* Next Payout */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 flex flex-col justify-between">
-                <div>
-                  <h3 className="text-blue-700 dark:text-blue-300 font-semibold mb-2">
-                    Next Njangi Payout
-                  </h3>
-                  <div className="text-4xl font-bold text-blue-600 dark:text-blue-300 mb-1">
-                    250,000 CFA
+              {isLoading ? (
+                <LoadingInfoCard
+                  title="Next Njangi Payout"
+                  className="flex flex-col justify-between"
+                />
+              ) : (
+                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 flex flex-col justify-between transform transition-all duration-300 hover:shadow-lg">
+                  <div>
+                    <h3 className="text-blue-700 dark:text-blue-300 font-semibold mb-2">
+                      Next Njangi Payout
+                    </h3>
+                    <div className="text-4xl font-bold text-blue-600 dark:text-blue-300 mb-1 animate-pulse">
+                      {getNextPayout(groups[0])?.amount}
+                    </div>
+                    <div className="text-gray-600 dark:text-gray-300 text-sm mb-4">
+                      To:{" "}
+                      <span className="font-semibold text-gray-800 dark:text-gray-100">
+                        {getNextPayout(groups[0])?.member.lastName}{" "}
+                        {getNextPayout(groups[0])?.member.firstName}
+                      </span>
+                    </div>
+                    <div className="flex items-center text-gray-500 dark:text-gray-400 text-xs">
+                      <FaArrowRight
+                        className="mr-2 animate-bounce"
+                        style={{
+                          animationDirection: "alternate",
+                          animationDuration: "1s",
+                        }}
+                      />
+                      Expected: 15th May, 2025
+                    </div>
                   </div>
-                  <div className="text-gray-600 dark:text-gray-300 text-sm mb-4">
-                    To:{" "}
-                    <span className="font-semibold text-gray-800 dark:text-gray-100">
-                      Ngoh Emmanuel
+                </div>
+              )}
+
+              {/* Group Health */}
+              {isLoading ? (
+                <LoadingInfoCard
+                  title="Group Health"
+                  className="flex flex-col justify-between"
+                />
+              ) : (
+                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 flex flex-col justify-between transform transition-all duration-300 hover:shadow-lg">
+                  <h3 className="text-blue-700 dark:text-blue-300 font-semibold mb-2">
+                    Group Health
+                  </h3>
+                  <div className="flex items-center gap-4 mb-2">
+                    <span className="w-3 h-3 rounded-full bg-blue-500 inline-block animate-pulse"></span>
+                    <span className="text-lg font-bold text-blue-700 dark:text-blue-300">
+                      Healthy
                     </span>
                   </div>
-                  <div className="flex items-center text-gray-500 dark:text-gray-400 text-xs">
-                    <FaArrowRight className="mr-2" />
-                    Expected: 15th May, 2025
+                  <div className="text-gray-600 dark:text-gray-300 text-sm">
+                    All contributions up-to-date. <br /> No overdue loans.
                   </div>
                 </div>
-              </div>
-              {/* Group Health */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 flex flex-col justify-between">
-                <h3 className="text-blue-700 dark:text-blue-300 font-semibold mb-2">
-                  Group Health
-                </h3>
-                <div className="flex items-center gap-4 mb-2">
-                  <span className="w-3 h-3 rounded-full bg-blue-500 inline-block"></span>
-                  <span className="text-lg font-bold text-blue-700 dark:text-blue-300">
-                    Healthy
-                  </span>
-                </div>
-                <div className="text-gray-600 dark:text-gray-300 text-sm">
-                  All contributions up-to-date. <br /> No overdue loans.
-                </div>
-              </div>
+              )}
             </div>
           </div>
         )}

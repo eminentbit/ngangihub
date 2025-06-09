@@ -10,6 +10,10 @@ import {
   fetchGroupByIdWithoutToken,
   getDraftInfo,
   getStatusHistory,
+  getGroupRecentActivities,
+  getInvitedMembersOfGroup,
+  inviteMemberToGroup,
+  getActivityTimeline,
 } from "../controllers/admin.controllers.js";
 import verifyToken from "../middleware/verify.token.js";
 import { verifyIfAdmin } from "../middleware/verify.role.js";
@@ -43,5 +47,32 @@ router.get("/submission-stats/", getSubmissionStats);
 router.get("/recent-activity", getRecentActivity);
 
 router.get("/status-history", getStatusHistory);
+
+router.get(
+  "/group/:groupId/recent-activities",
+  verifyToken,
+  verifyIfAdmin,
+  getGroupRecentActivities
+);
+
+router.get(
+  "/group/:groupId/invited-members",
+  verifyToken,
+  verifyIfAdmin,
+  getInvitedMembersOfGroup
+);
+router.post(
+  "/group/:groupId/add-member",
+  verifyToken,
+  verifyIfAdmin,
+  inviteMemberToGroup
+);
+
+router.post(
+  "/group/:groupId/activity-timeline",
+  verifyToken,
+  verifyIfAdmin,
+  getActivityTimeline
+);
 
 export default router;

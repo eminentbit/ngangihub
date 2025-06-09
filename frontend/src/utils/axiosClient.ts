@@ -1,6 +1,6 @@
 // axiosClient.js
 import axios, { AxiosRequestConfig } from "axios";
-import toast from "react-hot-toast";
+// import toast from "react-hot-toast";
 
 declare module "axios" {
   export interface InternalAxiosRequestConfig {
@@ -24,7 +24,7 @@ axiosClient.interceptors.response.use(
       | string
       | undefined;
     if (successMessage) {
-      toast.success(successMessage);
+      // toast.success(successMessage);
     }
     return response;
   },
@@ -39,7 +39,7 @@ axiosClient.interceptors.response.use(
 
     // 🔥 Show toast only if the request is not silent
     if (!error.config?.silent) {
-      toast.error(errorMessage);
+      // toast.error(errorMessage);
     }
 
     return Promise.reject(error);
@@ -77,18 +77,18 @@ export const securePost = async (
 
 export const secureGet = async (
   url: string,
-  config: {
+  config?: {
     headers?: Record<string, string>;
     params?: Record<string, unknown>;
     silent?: true;
-  } = {}
+  }
 ) => {
   const token = await ensureCsrfToken();
   return axiosClient.get(url, {
     ...config,
     withCredentials: true,
     headers: {
-      ...(config.headers || {}),
+      ...(config?.headers || {}),
       "X-CSRF-Token": token,
     },
   });

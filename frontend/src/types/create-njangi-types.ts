@@ -1,3 +1,5 @@
+import { User } from "./auth.validator";
+
 export interface AccountSetUp {
   firstName: string;
   lastName: string;
@@ -18,7 +20,7 @@ export interface GroupDetails {
   }[];
   _id?: string;
   name?: string;
-  groupMembers?: string[];
+  groupMembers?: User[];
   isAdmin?: boolean;
   groupName: string;
   contributionAmount: number;

@@ -8,7 +8,7 @@ import { sendNjangiAleadyAddMemberEmail } from "../mail/emails.js";
 import dotenv from "dotenv";
 dotenv.config();
 
-const generateToken = () => crypto.randomBytes(20).toString("hex");
+export const generateToken = () => crypto.randomBytes(20).toString("hex");
 
 // Utility functions
 const isEmail = (value) => /\S+@\S+\.\S+/.test(value);
@@ -50,7 +50,6 @@ export const inviteMembersToGroup = async (
         });
       }
       if (existingInvite) return existingInvite;
-
 
       // Only build $or array with non-null values
       const userOrConditions = [];

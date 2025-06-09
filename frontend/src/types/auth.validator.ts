@@ -12,6 +12,9 @@ export type ValidatedUser = {
 };
 
 export interface User {
+  isActive: boolean;
+  status: string;
+  _id?: string;
   id: string;
   email: string;
   firstName: string;
@@ -21,7 +24,6 @@ export interface User {
   role: "user" | "admin" | "bod" | "member";
   location?: string;
   groupName?: string;
-  monthlyContributions?: number;
   paymentMode?: string;
   totalPayouts?: number;
   profilePicUrl?: string;

@@ -5,6 +5,7 @@ import Container from "../components/Container";
 import Button from "../components/Button";
 import { Menu, X } from "lucide-react";
 import { useAuthStore } from "../store/create.auth.store";
+import { useCreateNjangiStore } from "../store/create.njangi.store";
 
 interface NavLinkItem {
   label: string;
@@ -25,6 +26,7 @@ const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { user } = useAuthStore();
+  const { draftId } = useCreateNjangiStore();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -51,8 +53,7 @@ const Header: React.FC = () => {
               window.scrollTo(0, 0);
             }}
           >
-            <img src="/logo3.png" alt="Logo" className="w-8" />
-            <span className="ml-2 text-xl font-bold text-blue-700">NAAS</span>
+            <img src="/logo5.png" alt="Logo" className="h-11" />
           </div>
 
           {/* Desktop Navigation */}
@@ -99,6 +100,17 @@ const Header: React.FC = () => {
             >
               {!user ? "Login" : "Dashboard"}
             </Button>
+            {draftId && (
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() =>
+                  navigate(`/njangi-state-dashboard?draftId=${draftId}`)
+                }
+              >
+                State Dashboard
+              </Button>
+            )}
           </div>
 
           {/* Mobile Menu Toggle */}
@@ -143,10 +155,31 @@ const Header: React.FC = () => {
               <Button
                 variant="outline"
                 fullWidth
-                onClick={() => navigate("/login")}
+                onClick={() => {
+                  if (!user) {
+                    navigate("/login");
+                    return;
+                  }
+                  if (user.role == "bod") {
+                    navigate("/board/dashboard");
+                    return;
+                  }
+                  navigate(`${user.role}/dashboard`);
+                }}
               >
-                Log in
+                {!user ? "Login" : "Dashboard"}
               </Button>
+              {draftId && (
+                <Button
+                  variant="primary"
+                  fullWidth
+                  onClick={() =>
+                    navigate(`/njangi-state-dashboard?draftId=${draftId}`)
+                  }
+                >
+                  State Dashboard
+                </Button>
+              )}
             </nav>
           </Container>
         </div>

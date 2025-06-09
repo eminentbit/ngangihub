@@ -1,301 +1,115 @@
 import { create } from "zustand";
-import { securePost, secureGet } from "../utils/axiosClient";
-import { AxiosError } from "axios";
-import { GroupRequest } from "../types/group.request";
 import { User } from "../types/auth.validator";
+import { GroupRequest } from "../types/group.request";
+import { Group } from "../hooks/useAdmin";
 
-export interface Group {
-  memberContributions: { totalAmountPaid: number; member: User }[];
-  _id: string;
-  name: string;
-  description: string;
-  groupMembers: User[];
-  nextMeeting: string;
-  rules: string;
-  status: string;
-  totalFunds: number;
-  createdAt: string;
+// Interface representing statistics related to submissions for a group
+interface SubmissionStats {
+  total: number;
+  pending: number;
+  approved: number;
+  rejected: number;
+}
+
+// Interface describing a history entry of a group's status updates
+interface StatusHistoryEntry {
+  id: string;
+  groupName: string;
+  currentStatus: string;
+  timeline: {
+    current: boolean;
+    status: string;
+    date: string;
+    time: string;
+    description: string;
+    completed: boolean;
+  }[];
 }
 
 interface AdminState {
   groupId: string | null;
-  members: User[];
-  groups: Group[];
   email: string;
   selectedMember: User | null;
   isEditingSettings: boolean;
+  groups: Group[];
+  members: User[];
+  invitedMembers: { email: string; status: string }[];
   groupInfo: Group | null;
   draftInfo: GroupRequest | null;
-  nextMeeting: string | null;
-  loading: boolean;
-  error: string | null;
-  // Submission stats
-  submissionStats: {
-    total: number;
-    pending: number;
-    approved: number;
-    rejected: number;
-  } | null;
-  statusHistory:
-    | null
-    | {
-        id: string;
-        groupName: string;
-        currentStatus: string;
-        timeline: {
-          current: boolean;
-          status: string;
-          date: string;
-          time: string;
-          description: string;
-          completed: boolean;
-        }[];
-      }[];
-
-  fetchSubmissionStats: () => Promise<void>;
-  fetchDraftInfo: () => Promise<void>;
-  fetchStatusHistory: () => Promise<void>;
-
-  // Setters
-  setGroupId: (id: string) => void;
-  setMembers: (members: User[]) => void;
-  selectMember: (member: User) => void;
-  toggleEditSettings: () => void;
-
-  // CRUD actions
-  fetchMembers: () => Promise<void>;
-  fetchGroups: () => Promise<void>;
-  fetchGroupInfo: (groupId: string, withToken: boolean) => Promise<void>;
-  createGroup: (group: { name: string; description: string }) => Promise<void>;
-  updateGroup: (group: {
-    id: string;
-    name: string;
-    description: string;
-    nextMeeting?: string;
-  }) => Promise<void>;
-  addMember: (member: User) => Promise<void>;
-  removeMember: (memberId: string) => void;
-  updateMember: (member: User) => void;
+  submissionStats: SubmissionStats | null;
+  statusHistory: StatusHistoryEntry[] | null;
+  activityTimeline: unknown;
   recentActivity: {
     createdGroups: Group[];
     pendingGroups: GroupRequest[];
   } | null;
-  fetchRecentActivity: () => Promise<void>;
+  groupRecentActivities: {
+    date: string;
+    type: string;
+    amount?: string;
+    user?: string;
+    note?: string;
+  }[];
+
+  // Setter functions to update the state
+  setGroupId: (id: string) => void;
+  setEmail: (email: string) => void;
+  setSelectedMember: (member: User) => void;
+  toggleEditSettings: () => void;
+
+  setGroups: (groups: Group[]) => void;
+  setMembers: (members: User[]) => void;
+  setInvitedMembers: (invited: { email: string; status: string }[]) => void;
+  setGroupInfo: (info: Group) => void;
+  setDraftInfo: (draft: GroupRequest) => void;
+  setSubmissionStats: (stats: SubmissionStats) => void;
+  setActivityTimeline: (timeline: unknown) => void;
+  setStatusHistory: (history: StatusHistoryEntry[]) => void;
+  setRecentActivity: (activity: {
+    createdGroups: Group[];
+    pendingGroups: GroupRequest[];
+  }) => void;
+  setGroupRecentActivities: (
+    activities: { date: string; type: string; amount?: string }[]
+  ) => void;
 }
 
-export const useAdminState = create<AdminState>((set, get) => ({
+// Zustand store implementation
+export const useAdminState = create<AdminState>((set) => ({
+  // Initial UI state
   groupId: null,
   email: "",
-  members: [],
-  groups: [],
   selectedMember: null,
   isEditingSettings: false,
+  activityTimeline: null,
+
+  // Initial cache data
+  groups: [],
+  members: [],
+  invitedMembers: [],
   groupInfo: null,
-  loading: false,
-  nextMeeting: null,
-  error: null,
-  submissionStats: null,
-  recentActivity: null,
   draftInfo: null,
+  submissionStats: null,
   statusHistory: null,
+  recentActivity: null,
+  groupRecentActivities: [],
 
-  setGroupId: (id: string) => set({ groupId: id }),
-  setMembers: (members: User[]) => set({ members }),
-  selectMember: (member: User) => set({ selectedMember: member }),
+  // UI setters
+  setGroupId: (id) => set({ groupId: id }),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  setActivityTimeline: (timeline: any) => set({ activityTimeline: timeline }),
+  setEmail: (email) => set({ email }),
+  setSelectedMember: (member) => set({ selectedMember: member }),
   toggleEditSettings: () =>
-    set((state) => ({ isEditingSettings: !state.isEditingSettings })),
-
-  fetchMembers: async () => {
-    const { groupId } = get();
-    if (!groupId) return;
-
-    set({ loading: true, error: null });
-    try {
-      const response = await secureGet(`/admin/group/${groupId}/members`, {
-        silent: true,
-      });
-      set({ members: response.data.members, loading: false });
-    } catch (err) {
-      if (err instanceof AxiosError) {
-        set({
-          error: err.message || "Failed to fetch members",
-          loading: false,
-        });
-      }
-    }
-  },
-
-  addMember: async (member: User) => {
-    set({ loading: true, error: null });
-    try {
-      await securePost(
-        "/admin/add-member",
-        {
-          ...member,
-          groupId: get().groupId,
-        }
-        // { silent: true }
-      );
-      set((state) => ({
-        members: [...state.members, member],
-        loading: false,
-      }));
-    } catch (err) {
-      if (err instanceof AxiosError) {
-        set({ error: err.message || "Failed to add member", loading: false });
-      }
-    }
-  },
-
-  removeMember: (memberId: string) => {
-    set((state) => ({
-      members: state.members.filter((m) => m.id !== memberId),
-    }));
-  },
-
-  updateMember: (updated: User) => {
-    set((state) => ({
-      members: state.members.map((m) => (m.id === updated.id ? updated : m)),
-    }));
-  },
-
-  fetchGroupInfo: async (groupId: string, withToken = true) => {
-    set({ loading: true, error: null });
-    try {
-      let url;
-      if (withToken) {
-        url = `/admin/group/${groupId}`;
-      } else {
-        url = "/admin/group/get-info";
-      }
-      const response = await secureGet(url, {
-        silent: true,
-        params: { groupId },
-      });
-      set({ loading: false, groupInfo: response.data });
-    } catch (err) {
-      if (err instanceof AxiosError) {
-        set({
-          error: err.message || "Failed to fetch group info",
-          loading: false,
-        });
-      }
-    }
-  },
-
-  fetchDraftInfo: async () => {
-    set({ loading: true, error: null });
-    try {
-      const response = await secureGet("/admin/drafts", {
-        silent: true,
-        params: { groupId: get().groupId },
-      });
-      set({ draftInfo: response.data, loading: false });
-    } catch (err) {
-      if (err instanceof AxiosError) {
-        set({
-          error: err.message || "Failed to fetch draft info",
-          loading: false,
-        });
-      }
-    }
-  },
-
-  fetchGroups: async () => {
-    set({ loading: true, error: null });
-    try {
-      const response = await secureGet("/admin/groups", {
-        silent: true,
-      });
-      console.log("Fetched groups:", response.data);
-      set({ loading: false, groups: response.data });
-      return response.data;
-    } catch (err) {
-      if (err instanceof AxiosError) {
-        set({ error: err.message || "Failed to fetch groups", loading: false });
-      }
-    }
-  },
-
-  createGroup: async (group: { name: string; description: string }) => {
-    set({ loading: true, error: null });
-    try {
-      await securePost("/admin/groups", group);
-      set({ loading: false });
-    } catch (err) {
-      if (err instanceof AxiosError) {
-        set({ error: err.message || "Failed to create group", loading: false });
-      }
-    }
-  },
-  updateGroup: async (group: {
-    id: string;
-    name: string;
-    description: string;
-  }) => {
-    set({ loading: true, error: null });
-    try {
-      await securePost(`/admin/groups/${group.id}`, group);
-      set({ loading: false });
-    } catch (err) {
-      if (err instanceof AxiosError) {
-        set({ error: err.message || "Failed to update group", loading: false });
-      }
-    }
-  },
-
-  fetchSubmissionStats: async () => {
-    set({ loading: true, error: null });
-    try {
-      set({ email: localStorage.getItem("tempAdminEmail") || "" });
-      const response = await secureGet("/admin/submission-stats", {
-        params: { groupId: get().groupId, email: get().email },
-      });
-      set({ submissionStats: response.data, loading: false });
-    } catch (err) {
-      if (err instanceof AxiosError) {
-        set({
-          error: err.message || "Failed to fetch submission stats",
-          loading: false,
-        });
-      }
-    }
-  },
-
-  fetchStatusHistory: async () => {
-    set({ loading: true, error: null });
-    try {
-      const response = await secureGet("/admin/status-history", {
-        params: { groupId: get().groupId, email: get().email },
-      });
-      console.log("Fetched status history:", response.data);
-      set({ statusHistory: response.data, loading: false });
-    } catch (err) {
-      if (err instanceof AxiosError) {
-        set({
-          error: err.message || "Failed to fetch status history",
-          loading: false,
-        });
-      }
-    }
-  },
-
-  fetchRecentActivity: async () => {
-    set({ loading: true, error: null });
-    try {
-      set({ email: localStorage.getItem("tempAdminEmail") || "" });
-      const res = await secureGet("/admin/recent-activity", {
-        params: { email: get().email, groupId: get().groupId },
-      });
-      console.log("Fetched submission stats:", res.data);
-      set({ recentActivity: res.data, loading: false });
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        set({
-          error: error.message || "Failed to fetch recent activity",
-          loading: false,
-        });
-      }
-    }
-  },
+    set((s) => ({ isEditingSettings: !s.isEditingSettings })),
+  setGroups: (groups) => set({ groups }),
+  setMembers: (members) => set({ members }),
+  setInvitedMembers: (invited) => set({ invitedMembers: invited }),
+  setGroupInfo: (info) => set({ groupInfo: info }),
+  setDraftInfo: (draft) => set({ draftInfo: draft }),
+  setSubmissionStats: (stats) => set({ submissionStats: stats }),
+  setStatusHistory: (history) => set({ statusHistory: history }),
+  setRecentActivity: (activity) => set({ recentActivity: activity }),
+  setGroupRecentActivities: (activities) =>
+    set({ groupRecentActivities: activities }),
 }));

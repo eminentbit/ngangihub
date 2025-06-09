@@ -14,7 +14,8 @@ const SOCKET_SERVER_URL =
   import.meta.env.VITE_SOCKET_SERVER_URL || "http://localhost:5000";
 
 export interface Message {
-  sender: string;
+  senderId: string;
+  senderName: string;
   content: string;
   timestamp: string; // we'll store ISO strings now
   isCurrentUser: boolean;
@@ -67,20 +68,31 @@ const ChatInterface = ({ groupId, groupName, onClose }: ChatInterfaceProps) => {
 
     // Listen for incoming messages from the server
     socket.on("receiveMessage", (msg: Message) => {
-      setMessages((prev) => [...prev, msg]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          ...msg,
+          isCurrentUser: msg.senderId == user?._id,
+        },
+      ]);
     });
 
     // OPTIONAL: Fetch chat history via HTTP (or via socket) when first joining
     // If your backend emits a "chatHistory" event upon join, you can handle it:
     socket.on("chatHistory", (history: Message[]) => {
-      setMessages(history);
+      setMessages(
+        history.map((msg) => ({
+          ...msg,
+          isCurrentUser: msg.senderId == user?._id,
+        }))
+      );
     });
 
     return () => {
       socket.disconnect();
       socketRef.current = null;
     };
-  }, [groupId, user?.id]);
+  }, [groupId, user?._id, user?.id]);
 
   // 2️⃣ Scroll to bottom whenever messages change
   useEffect(() => {
@@ -91,9 +103,13 @@ const ChatInterface = ({ groupId, groupName, onClose }: ChatInterfaceProps) => {
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim() || !socketRef.current || !groupId) return;
+    const name = user?.email.split("@")[0];
+
+    console.log(name, user?.email);
 
     const newMsg: Message = {
-      sender: user?.lastName || "",
+      senderId: user?.id || "",
+      senderName: name!,
       content: message,
       timestamp: new Date().toISOString(),
       isCurrentUser: true,
@@ -213,7 +229,7 @@ const ChatInterface = ({ groupId, groupName, onClose }: ChatInterfaceProps) => {
               >
                 {!msg.isCurrentUser && (
                   <p className="text-xs font-medium mb-1 text-gray-600 dark:text-gray-400">
-                    {msg.sender}
+                    {msg.senderName}
                   </p>
                 )}
                 <p>{msg.content}</p>

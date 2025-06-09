@@ -31,7 +31,7 @@ export const allMenu: MenuItem[] = [
   },
   {
     icon: <FaChartBar />,
-    label: "Payment",
+    label: "Payments",
     path: "payments",
     roles: ["member", "admin"],
   },

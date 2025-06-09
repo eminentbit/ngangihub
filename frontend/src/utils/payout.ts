@@ -1,6 +1,6 @@
-import { GroupDetails } from "../types/create-njangi-types";
+import { Group } from "../hooks/useAdmin";
 
-export function getNextPayout(group: GroupDetails) {
+export function getNextPayout(group: Group) {
   const payoutHistory = group.payoutHistory || [];
   const lastPaidMemberIds = payoutHistory.map((p) => p.member.toString());
 
@@ -14,7 +14,7 @@ export function getNextPayout(group: GroupDetails) {
 
   // Calculate next payout date
   const payoutsDone = payoutHistory.length;
-  const nextPayoutDate = new Date(group.startDate);
+  const nextPayoutDate = new Date(group.startDate!);
   const freq = group.contributionFrequency;
   if (freq === "Weekly")
     nextPayoutDate.setDate(nextPayoutDate.getDate() + 7 * payoutsDone);
@@ -25,7 +25,7 @@ export function getNextPayout(group: GroupDetails) {
 
   return {
     member: nextMemberId,
-    amount: group.contributionAmount * (group.groupMembers?.length || 0),
+    amount: group.contributionAmount! * (group.groupMembers?.length || 0),
     date: nextPayoutDate,
   };
 }

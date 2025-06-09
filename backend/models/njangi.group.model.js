@@ -38,6 +38,18 @@ const njangiGroupSchema = new mongoose.Schema(
     payoutHistory: [
       {
         member: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        amount: { type: Number },
+        status: { type: String, enum: ["failed", "completed", "pending"] },
+        method: {
+          type: String,
+          enum: [
+            "credit-card",
+            "momo",
+            "paypal",
+            "bank-transfer",
+            "debit-card",
+          ],
+        },
         date: { type: Date, required: true },
       },
     ],
