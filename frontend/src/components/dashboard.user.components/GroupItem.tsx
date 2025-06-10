@@ -4,6 +4,7 @@ import { Group } from "../../hooks/useAdmin";
 import getRoleName from "../../utils/roles";
 import MemberTooltip from "./member.tooltip";
 import { secureGet } from "../../utils/axiosClient";
+import { useNavigate } from "react-router-dom";
 
 const useAuthStore = () => ({ user: { role: "admin" } });
 
@@ -34,26 +35,27 @@ function GroupItem({ group, setChatModalGroupId }: GroupItemProps) {
   const handleMemberHover = (e: React.MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const viewportWidth = window.innerWidth;
-    const tooltipWidth = 320; // Approximate tooltip width
+    const tooltipWidth = 320;
 
-    // Position tooltip to the right, but check if it would go off-screen
     let x = rect.right + 12;
     if (x + tooltipWidth > viewportWidth) {
-      // If tooltip would go off-screen, position it to the left
       x = rect.left - tooltipWidth - 12;
     }
 
     setTooltipPosition({
-      x: Math.max(12, x), // Ensure tooltip doesn't go off left edge
+      x: Math.max(12, x),
       y: rect.top + rect.height / 2,
     });
     setShowMemberTooltip(true);
   };
 
   const handleMemberLeave = () => {
-    setShowMemberTooltip(false);
+    setTimeout(() => {
+      setShowMemberTooltip(false);
+    }, 500);
   };
 
+  const navigate = useNavigate();
   return (
     <>
       <div
@@ -72,6 +74,11 @@ function GroupItem({ group, setChatModalGroupId }: GroupItemProps) {
               className="text-sm text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer inline-flex items-center gap-1 p-1 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/20"
               onMouseEnter={handleMemberHover}
               onMouseLeave={handleMemberLeave}
+              onClick={() =>
+                navigate(
+                  `/${getRoleName(user.role)}/group/${group._id}/members`
+                )
+              }
             >
               <HiUsers className="w-4 h-4" />
               <span className="font-medium">

@@ -23,6 +23,7 @@ export default function ErrorPopup({ error, onClose }: ErrorPopupProps) {
           <div className="relative rounded-2xl bg-rose-500/90 backdrop-blur-xl border border-rose-300/40">
             {/* Close button */}
             <button
+              type="button"
               onClick={handleClose}
               className="absolute top-3 right-3 p-1 rounded-full hover:bg-rose-300/20 transition-colors duration-200 group"
               aria-label="Close error message"

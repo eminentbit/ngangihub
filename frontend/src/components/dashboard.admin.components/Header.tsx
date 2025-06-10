@@ -141,7 +141,7 @@ const Header: React.FC<HeaderProps> = ({ darkMode, setDarkMode }) => {
                             !n.isRead ? "bg-blue-500" : "bg-gray-400"
                           } mr-2`}
                         ></span>
-                        <span>{n.message}</span>
+                        <span>{n.content}</span>
                         <span className="ml-auto text-xs text-gray-400">
                           {n.createdAt}
                         </span>

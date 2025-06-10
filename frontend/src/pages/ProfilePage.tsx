@@ -18,7 +18,6 @@ const ProfilePage: React.FC = () => {
     location: "",
     groupName: "",
     role: "",
-    monthlyContribution: "",
     totalPayouts: "",
   });
   const [originalProfile, setOriginalProfile] = useState({ ...profile });
@@ -34,7 +33,6 @@ const ProfilePage: React.FC = () => {
         location: user.location || "N/A",
         groupName: user.groupName || "N/A",
         role: user.role || "N/A",
-        monthlyContribution: String(user.monthlyContributions || "0"),
         totalPayouts: String(user.totalPayouts || "0"),
       };
       setProfile(init);
@@ -68,14 +66,13 @@ const ProfilePage: React.FC = () => {
     []
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const toggleEditMode = useCallback(() => {
-    if (isEditing) {
-      // If switching off, revert changes
-      setProfile(originalProfile);
-    }
-    setIsEditing((prev) => !prev);
-  }, [isEditing, originalProfile]);
+  // const toggleEditMode = useCallback(() => {
+  //   if (isEditing) {
+  //     // If switching off, revert changes
+  //     setProfile(originalProfile);
+  //   }
+  //   setIsEditing((prev) => !prev);
+  // }, [isEditing, originalProfile]);
 
   const handleCancel = useCallback(() => {
     setProfile(originalProfile);
@@ -93,7 +90,6 @@ const ProfilePage: React.FC = () => {
         phone: profile.phone,
         location: profile.location,
         groupName: profile.groupName,
-        monthlyContributions: profile.monthlyContribution,
       };
       const res = await securePut("/user/profile", payload);
       setUser(res.data.user);
@@ -159,6 +155,7 @@ const ProfilePage: React.FC = () => {
                 {isEditing ? (
                   <>
                     <button
+                      type="button"
                       onClick={handleSave}
                       disabled={isSaving}
                       className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition duration-200 disabled:opacity-50"
@@ -166,6 +163,7 @@ const ProfilePage: React.FC = () => {
                       {isSaving ? "Saving..." : "Save Changes"}
                     </button>
                     <button
+                      type="button"
                       onClick={handleCancel}
                       className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-400 transition duration-200"
                     >
@@ -174,6 +172,7 @@ const ProfilePage: React.FC = () => {
                   </>
                 ) : (
                   <button
+                    type="button"
                     onClick={() => setIsEditing(true)}
                     className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition duration-200"
                   >
@@ -186,13 +185,7 @@ const ProfilePage: React.FC = () => {
             {/* Stats */}
             <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="flex flex-col items-center bg-gray-100 rounded-lg p-4 transition-shadow duration-200 hover:shadow">
-                <p className="text-sm text-gray-500">Contributions</p>
-                <p className="mt-2 text-xl font-semibold text-gray-900">
-                  {profile.monthlyContribution}
-                </p>
-              </div>
-              <div className="flex flex-col items-center bg-gray-100 rounded-lg p-4 transition-shadow duration-200 hover:shadow">
-                <p className="text-sm text-gray-500">Total Saved</p>
+                <p className="text-sm text-gray-500">Total Payouts</p>
                 <p className="mt-2 text-xl font-semibold text-gray-900">
                   {profile.totalPayouts}
                 </p>
@@ -283,8 +276,8 @@ const ProfilePage: React.FC = () => {
                   <dt className="font-semibold">Role</dt>
                   <dd>{profile.role}</dd>
 
-                  <dt className="font-semibold">Monthly Contribution</dt>
-                  {isEditing ? (
+                  {/* <dt className="font-semibold">Monthly Contribution</dt> */}
+                  {/* {isEditing ? (
                     <dd>
                       <input
                         type="text"
@@ -296,7 +289,7 @@ const ProfilePage: React.FC = () => {
                     </dd>
                   ) : (
                     <dd>{profile.monthlyContribution}</dd>
-                  )}
+                  )} */}
 
                   <dt className="font-semibold">Total Payouts</dt>
                   <dd>{profile.totalPayouts}</dd>

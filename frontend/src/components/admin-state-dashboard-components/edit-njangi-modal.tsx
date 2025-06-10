@@ -76,7 +76,6 @@ export function EditNjangiModal({ njangi, onClose }: EditNjangiModalProps) {
       );
       setNjangis(updated);
       queryClient.invalidateQueries({ queryKey: ["njangiDetails"] });
-
     } else {
       toast.error(result?.message || "Update failed! Please try again later.", {
         position: "top-right",
@@ -97,6 +96,7 @@ export function EditNjangiModal({ njangi, onClose }: EditNjangiModalProps) {
             </h2>
           </div>
           <button
+            type="button"
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 transition-colors"
           >

@@ -41,6 +41,7 @@ const Documents: React.FC = () => {
           <div className="flex items-center gap-4 mb-6">
             {!isSidebarOpen && (
               <button
+                type="button"
                 onClick={toggleSidebar}
                 className={`text-2xl focus:outline-none ${
                   isDarkMode ? "text-white" : "text-purple-800"

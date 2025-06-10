@@ -14,6 +14,8 @@ export type ValidatedUser = {
 export interface User {
   isActive: boolean;
   status: string;
+  name?: string;
+  initials?: string;
   _id?: string;
   id: string;
   email: string;

@@ -27,11 +27,12 @@ const Hero: React.FC = () => {
             together.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-            <Button size="lg" className="group">
+            <Button type="button" size="lg" className="group">
               Learn More
               <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
             </Button>
             <Button
+              type="button"
               size="lg"
               variant="outline"
               className="text-white border-white hover:bg-blue-800 group"

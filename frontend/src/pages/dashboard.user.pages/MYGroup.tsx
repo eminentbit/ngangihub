@@ -6,6 +6,7 @@ import Header from "../../components/dashboard.admin.components/Header";
 import CreateGroupButton from "../../components/dashboard.admin.components/ui/create.group.button";
 import GroupItem from "../../components/dashboard.user.components/GroupItem";
 import ChatInterface from "../../components/dashboard.user.components/chat-interface";
+import { useAuthStore } from "../../store/create.auth.store";
 
 // Loading Skeleton Component
 const GroupItemSkeleton = () => (
@@ -68,8 +69,11 @@ const MyGroups = () => {
   const offsetClass = sidebarOpen ? "lg:ml-64" : "lg:ml-16";
 
   const { groups, isLoading, error } = useFetchGroups();
+  const { user } = useAuthStore();
 
-  const adminGroupsCount = groups.filter((group) => group.isAdmin).length;
+  const adminGroupsCount = groups.filter(
+    (group) => group.adminId == user?._id
+  ).length;
 
   // Find the group being chatted
   const chatGroup = groups.find((g) => g._id === chatModalGroupId);

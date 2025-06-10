@@ -46,7 +46,6 @@ export function NjangiDetails({ njangiId }: { njangiId: string | null }) {
 
   useEffect(() => {
     if (!isLoading && njangiDetails.length === 0) {
-      
       clearDraftId(); // clear draft id so user donnnot access state dashboard in landing page
       navigate("/no-njangi-message");
     }
@@ -127,6 +126,7 @@ export function NjangiDetails({ njangiId }: { njangiId: string | null }) {
                 </h2>
                 <div className="flex flex-col md:flex-row items-center gap-3">
                   <button
+                    type="button"
                     onClick={() => handleEdit(njangiData)}
                     className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors w-full sm:w-auto flex items-center justify-center"
                   >
@@ -134,6 +134,7 @@ export function NjangiDetails({ njangiId }: { njangiId: string | null }) {
                     Edit Details
                   </button>
                   <button
+                    type="button"
                     className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors w-full sm:w-auto flex items-center justify-center"
                     onClick={() => setCancelNjangiId(njangiId)}
                   >

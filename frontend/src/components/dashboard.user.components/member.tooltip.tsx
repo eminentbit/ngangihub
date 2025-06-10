@@ -22,8 +22,8 @@ const MemberTooltip = ({
   const uniqueMemberIds = Array.from(new Set(memberIds.map(String)));
 
   const {
-    hasPaidThisMonth = [] as Array<{ userId: string; hasPaid: boolean }>,
-  } = useUserPaymentStatus(uniqueMemberIds, groupId);
+    hasPaidThisMonth = [],
+  } = useUserPaymentStatus(uniqueMemberIds, groupId) as unknown as { hasPaidThisMonth: Array<{ userId: string; hasPaid: boolean }> };
 
   if (!isVisible || !members?.length) return null;
 

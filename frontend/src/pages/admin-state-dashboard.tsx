@@ -131,6 +131,7 @@ export default function NjangiStateDashBoard() {
               <div className="inline-flex h-12 items-center justify-start rounded-lg bg-blue-50 p-1 text-gray-600 min-w-max sm:grid sm:w-full sm:grid-cols-4">
                 {tabs.map((tab) => (
                   <button
+                    type="button"
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
                     className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 min-w-[80px] sm:min-w-0 ${

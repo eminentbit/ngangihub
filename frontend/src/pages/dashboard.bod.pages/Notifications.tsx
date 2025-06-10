@@ -55,6 +55,7 @@ const Notifications: React.FC = () => {
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center space-x-4">
                 <button
+                  type="button"
                   onClick={toggleSidebar}
                   className="md:hidden p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   aria-label="Toggle sidebar"

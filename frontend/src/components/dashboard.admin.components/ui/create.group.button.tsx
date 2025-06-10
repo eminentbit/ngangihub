@@ -90,6 +90,7 @@ const CreateGroupButton = ({
                 You can only create one group on the free plan. To get more
                 groups,{" "}
                 <button
+                  type="button"
                   className="underline font-medium"
                   onClick={() => {
                     setOpenModal(true);

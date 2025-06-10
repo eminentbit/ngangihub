@@ -24,7 +24,7 @@ export interface Group {
   rules?: string;
   status?: string;
   startDate?: string;
-  isAdmin?: boolean;
+  adminId: string;
   contributionFrequency?: string;
   contributionAmount?: number;
   totalFunds?: number;
@@ -32,7 +32,11 @@ export interface Group {
   createdAt: string;
 }
 
-export type Member = User;
+export type Member = User & {
+  initials: string;
+  name: string;
+};
+
 export interface InvitedMember {
   email: string;
   status: string;
@@ -91,7 +95,7 @@ export function useActivityTimeLine(groupId: string) {
   };
 }
 
-export const useGroupInfo = (groupId?: string) => {
+export const useGroupInfo = (groupId: string) => {
   const query = useQuery<Group, AxiosError>({
     queryKey: ["group", groupId],
     queryFn: () => secureGet(`/admin/group/${groupId}`).then((res) => res.data),
@@ -126,11 +130,10 @@ export const useGroupActivities = (groupId: string) => {
 };
 
 // Hook: fetch members for current groupId in store
-export function useFetchMembers() {
-  const groupId = useAdminState((s) => s.groupId);
+export function useFetchMembers(groupId: string) {
   const setMembers = useAdminState((s) => s.setMembers);
 
-  const query = useQuery<Member[], AxiosError>({
+  const query = useQuery<User[], AxiosError>({
     queryKey: ["admin", "members", groupId],
     queryFn: () =>
       secureGet(`/admin/group/${groupId}/members`).then(
