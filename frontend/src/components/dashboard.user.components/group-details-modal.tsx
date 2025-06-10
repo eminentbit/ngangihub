@@ -189,6 +189,7 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
               Overview
             </button>
             <button
+              type="button"
               className={`px-4 py-2 text-sm font-medium ${
                 activeTab === "members"
                   ? "border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400"
@@ -199,6 +200,7 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
               Members
             </button>
             <button
+              type="button"
               className={`px-4 py-2 text-sm font-medium ${
                 activeTab === "payments"
                   ? "border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400"
@@ -447,10 +449,16 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
                         </td>
                         {group.isAdmin && (
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <button className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 mr-3">
+                            <button
+                              type="button"
+                              className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 mr-3"
+                            >
                               Edit
                             </button>
-                            <button className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300">
+                            <button
+                              type="button"
+                              className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
+                            >
                               Remove
                             </button>
                           </td>
@@ -468,7 +476,10 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold">Payment History</h3>
                 {group.isAdmin && (
-                  <button className="btn btn-primary text-sm py-1.5 px-3">
+                  <button
+                    type="button"
+                    className="btn btn-primary text-sm py-1.5 px-3"
+                  >
                     Record Payment
                   </button>
                 )}
@@ -541,7 +552,10 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
                         </td>
                         {group.isAdmin && (
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <button className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300">
+                            <button
+                              type="button"
+                              className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300"
+                            >
                               View Receipt
                             </button>
                           </td>

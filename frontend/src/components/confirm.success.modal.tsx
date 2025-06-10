@@ -24,12 +24,14 @@ export function SuccessModal({
         </div>
         <div className="flex justify-end gap-3">
           <button
+            type="button"
             onClick={onClose}
             className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium transition"
           >
             Close
           </button>
           <button
+            type="button"
             onClick={onCreateNjangi}
             className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition shadow"
           >

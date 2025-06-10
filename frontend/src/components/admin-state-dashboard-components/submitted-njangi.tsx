@@ -57,6 +57,7 @@ export function SubmittedNjangis({ njangiId }: { njangiId: string | null }) {
           My Submitted Njangis
         </h2>
         <button
+          type="button"
           className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors shrink-0"
           onClick={() => navigate("/njangi-form")}
         >

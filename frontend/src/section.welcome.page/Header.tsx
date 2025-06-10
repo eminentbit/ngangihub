@@ -84,6 +84,7 @@ const Header: React.FC = () => {
           {/* Desktop Buttons */}
           <div className="hidden md:flex items-center space-x-4">
             <Button
+              type="button"
               variant="outline"
               size="sm"
               onClick={() => {
@@ -105,6 +106,7 @@ const Header: React.FC = () => {
             </Button>
             {draftId && (
               <Button
+                type="button"
                 variant="primary"
                 size="sm"
                 onClick={() =>

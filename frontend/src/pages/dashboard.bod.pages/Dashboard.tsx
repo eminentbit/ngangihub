@@ -63,6 +63,7 @@ const Dashboard: React.FC = () => {
         <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 space-y-6">
           <div className="flex items-center justify-between">
             <button
+              type="button"
               onClick={toggleSidebar}
               className="md:hidden p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
               aria-label="Toggle sidebar"

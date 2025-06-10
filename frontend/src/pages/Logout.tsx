@@ -45,6 +45,7 @@ const LogoutPage: React.FC = () => {
                 Click the button below to sign out of your NJANGI account.
               </p>
               <button
+                type="button"
                 onClick={handleLogout}
                 className="inline-block px-4 sm:px-6 py-2 sm:py-3 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition w-full sm:w-auto"
               >

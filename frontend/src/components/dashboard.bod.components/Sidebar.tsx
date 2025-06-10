@@ -123,6 +123,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
           {isMobile && (
             <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
               <button
+                type="button"
                 onClick={toggleSidebar}
                 className="text-white opacity-70 hover:opacity-100 focus:outline-none"
                 aria-label="Close sidebar"
