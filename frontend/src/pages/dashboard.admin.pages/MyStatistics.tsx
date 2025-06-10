@@ -61,6 +61,7 @@ const StatisticsPage: React.FC = () => {
         <Header
           darkMode={isDarkMode}
           setDarkMode={setIsDarkMode}
+          someStyles={`${!isSidebarOpen ? "ml-10" : "ml-0"}`}
         />
 
         {/* Scrollable Main */}

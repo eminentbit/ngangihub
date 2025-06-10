@@ -10,6 +10,7 @@ export interface Notification {
   _id: string;
   content: string;
   createdAt: string;
+  message: string;
   user: User;
 }
 interface UserState {

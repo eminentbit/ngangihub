@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  FaBars,
   FaUsers,
   FaMoneyBillWave,
   FaChartPie,
@@ -174,7 +173,7 @@ export const AdminDashboardPage: React.FC = () => {
   // Get the latest N members (e.g., 5)
   const latestMembers = sortedMembers.slice(0, 5);
 
-  const toggleSidebar = () => setIsOpen((prev) => !prev);
+  // const toggleSidebar = () => setIsOpen((prev) => !prev);
 
   useEffect(() => {
     if (darkMode) {
@@ -196,20 +195,20 @@ export const AdminDashboardPage: React.FC = () => {
       className={`flex h-screen overflow-hidden bg-gray-50 dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-800 transition-colors`}
     >
       {/* Sidebar toggle button (only for mobile) */}
-      <button
+      {/* <button
         type="button"
         onClick={toggleSidebar}
         className="absolute top-4 left-4 text-gray-700 dark:text-gray-200 lg:hidden z-40"
         title="Toggle Sidebar"
       >
         <FaBars size={24} />
-      </button>
+      </button> */}
 
       <Sidebar
         isOpen={isOpen}
         onToggle={() => setSidebarOpen((o) => !o)}
         onTabChange={setActiveTab}
-        onClose={() => setIsOpen(true)}
+        onClose={() => setIsOpen(false)}
       />
 
       {/* Main Content */}
@@ -218,7 +217,7 @@ export const AdminDashboardPage: React.FC = () => {
           ${isOpen ? "lg:ml-64" : "lg:ml-0"}`}
       >
         {/* Header imported here */}
-        <Header darkMode={darkMode} setDarkMode={setDarkMode} />
+        <Header darkMode={darkMode} setDarkMode={setDarkMode} someStyles={`${!isOpen ? "ml-10" : "ml-0"}`} />
 
         {/* DASHBOARD BODY */}
         {activeTab === "admin" && (

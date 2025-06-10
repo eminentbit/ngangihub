@@ -1,3 +1,4 @@
+import { Wallet } from 'lucide-react';
 import {
   FaBell,
   FaChartBar,
@@ -30,7 +31,7 @@ export const allMenu: MenuItem[] = [
     roles: ["member", "admin"],
   },
   {
-    icon: <FaChartBar />,
+    icon: <Wallet/>,
     label: "Payments",
     path: "payments",
     roles: ["member", "admin"],
