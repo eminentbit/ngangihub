@@ -95,6 +95,9 @@ const Header: React.FC = () => {
                 if (user.role == "bod") {
                   navigate("/board/dashboard");
                   return;
+                } else if (user.role == "member") {
+                  navigate("/user/dashboard");
+                  return;
                 }
                 navigate(`${user.role}/dashboard`);
               }}
@@ -164,6 +167,9 @@ const Header: React.FC = () => {
                   }
                   if (user.role == "bod") {
                     navigate("/board/dashboard");
+                    return;
+                  } else if (user.role == "member") {
+                    navigate("/user/dashboard");
                     return;
                   }
                   navigate(`${user.role}/dashboard`);

@@ -96,12 +96,12 @@ const MyGroups = () => {
 
         {/* Page content */}
         <main
-          className={`flex-1 transition-all duration-300 min-h-screen bg-gray-50 dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-800 overflow-auto 
+          className={`flex-1 transition-all duration-300 min-h-screen dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-800 overflow-auto 
           ${sidebarOpen ? "lg:ml-4" : "lg:ml-6"} p-6`}
         >
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-10 gap-6">
             <h1 className="text-3xl md:text-4xl font-bold text-blue-700 dark:text-white">
-              My Groups
+              My Groups 
             </h1>
             <CreateGroupButton adminGroupsCount={adminGroupsCount} />
           </div>
