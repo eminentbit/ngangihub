@@ -64,7 +64,7 @@ const NotificationsPage: React.FC = () => {
         )}
 
         {/* Sticky Header */}
-        <Header darkMode={isDarkMode} setDarkMode={setIsDarkMode} someStyles={`${!isSidebarOpen ? "ml-10" : "ml-0"}`} />
+        <Header darkMode={isDarkMode} setDarkMode={setIsDarkMode} someStyles={`${!isSidebarOpen ? "md:ml-10" : "md:ml-0"}`} />
 
         {/* Scrollable Main */}
         <main className="flex-1 pt-20 pb-8 px-2 md:px-6 overflow-auto min-h-[80vh]">

@@ -19,6 +19,7 @@ import { quickActions } from "../../utils/data.admin.dashboard";
 import Header from "../../components/dashboard.admin.components/Header";
 import { useFetchGroups, useGroupActivities } from "../../hooks/useAdmin";
 import { getNextPayout } from "../../utils/payout";
+import LatestMembersModal from "../../components/dashboard.admin.components/LatestMembersModal";
 
 // Skeleton Components
 const Skeleton: React.FC<{ className?: string; animate?: boolean }> = ({
@@ -121,6 +122,7 @@ export const AdminDashboardPage: React.FC = () => {
   const [isOpen, setIsOpen] = useState(true);
   const [activeTab, setActiveTab] = useState("admin");
   const [darkMode, setDarkMode] = useState(false);
+  const [isModalOpen, setModalOpen] = useState(false); //latest member modal
 
   // const { groups, isLoading } = useFetchGroups();
   const [totalMembers, setTotalMembers] = useState(0);
@@ -217,7 +219,11 @@ export const AdminDashboardPage: React.FC = () => {
           ${isOpen ? "lg:ml-64" : "lg:ml-0"}`}
       >
         {/* Header imported here */}
-        <Header darkMode={darkMode} setDarkMode={setDarkMode} someStyles={`${!isOpen ? "ml-10" : "ml-0"}`} />
+        <Header
+          darkMode={darkMode}
+          setDarkMode={setDarkMode}
+          someStyles={`${!isOpen ? "md:ml-10" : "md:ml-0"}`}
+        />
 
         {/* DASHBOARD BODY */}
         {activeTab === "admin" && (
@@ -401,47 +407,64 @@ export const AdminDashboardPage: React.FC = () => {
                 <h3 className="text-blue-700 dark:text-blue-300 font-semibold mb-4">
                   Latest Members
                 </h3>
+
                 <ul>
                   {isLoading ? (
-                    Array.from({ length: 5 }).map((_, index) => (
+                    Array.from({ length: 2 }).map((_, index) => (
                       <LoadingMemberItem title="Latest Members" key={index} />
                     ))
                   ) : latestMembers.length > 0 ? (
-                    // Actual member items
-                    latestMembers.map((member, index) => (
-                      <li
-                        key={index}
-                        className="flex items-center py-2 border-b last:border-b-0 border-gray-100 dark:border-gray-700 transform transition-all duration-200 hover:scale-[1.02] hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded px-2"
-                      >
-                        {member.profilePicUrl ? (
-                          <img
-                            src={member.profilePicUrl}
-                            alt={member.profilePicUrl}
-                            className="w-8 h-8 rounded-full mr-3"
-                          />
-                        ) : (
-                          <FaUserCircle className="text-gray-400 dark:text-gray-600 w-8 h-8 mr-3" />
-                        )}
-                        <div>
-                          <div className="text-gray-900 dark:text-gray-100 font-semibold cursor-pointer">
-                            {member.lastName} {member.firstName} at{" "}
-                            <span
-                              className="cursor-pointer hover:text-blue-500"
-                              onClick={() => {
-                                window.location.href = `mailto:${member.email}`;
-                              }}
-                            >
-                              {member.email}
-                            </span>
+                    <>
+                      {latestMembers.slice(0, 2).map((member, index) => (
+                        <li
+                          key={index}
+                          className="flex items-center py-2 border-b last:border-b-0 border-gray-100 dark:border-gray-700 transform transition-all duration-200 hover:scale-[1.02] hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded px-2"
+                        >
+                          {member.profilePicUrl ? (
+                            <img
+                              src={member.profilePicUrl}
+                              alt="Profile"
+                              className="w-8 h-8 rounded-full mr-3"
+                            />
+                          ) : (
+                            <FaUserCircle className="text-gray-400 dark:text-gray-600 w-8 h-8 mr-3" />
+                          )}
+                          <div>
+                            <div className="text-gray-900 dark:text-gray-100 font-semibold cursor-pointer">
+                              {member.lastName} {member.firstName} at{" "}
+                              <span
+                                className="cursor-pointer hover:text-blue-500 max-w-[150px] inline-block truncate align-bottom"
+                                title={member.email}
+                                onClick={() => {
+                                  window.location.href = `mailto:${member.email}`;
+                                }}
+                              >
+                                {member.email}
+                              </span>
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              {new Date(member.createdAt!).toLocaleString()}
+                            </div>
                           </div>
-                          <div className="text-xs text-gray-500">
-                            {new Date(member.createdAt!).toLocaleString()}
-                          </div>
-                        </div>
-                      </li>
-                    ))
+                        </li>
+                      ))}
+
+                      {/* See More / See Less Button */}
+                      {latestMembers.length > 2 && (
+                        <button
+                          onClick={() => setModalOpen(true)}
+                          className="mt-3 text-sm text-blue-600 hover:underline font-medium"
+                        >
+                          See More
+                        </button>
+                      )}
+                      <LatestMembersModal
+                        isOpen={isModalOpen}
+                        onClose={() => setModalOpen(false)}
+                        members={latestMembers}
+                      />
+                    </>
                   ) : (
-                    // Empty state
                     <li>
                       <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                         <div className="text-3xl mb-2">👥</div>

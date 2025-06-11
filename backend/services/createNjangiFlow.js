@@ -21,9 +21,6 @@ const createNjangiFlow = async (formData, njangiId, draftUserToken) => {
   try {
     const { accountSetup, groupDetails, inviteMembers } = formData;
 
-    console.log("Creating Njangi draft with data:", formData);
-    console.log("Njangi ID:", njangiId);
-
     // Check for existing user
     const existingUser = await User.findOne({ email: accountSetup.email });
     if (existingUser) {
