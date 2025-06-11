@@ -79,7 +79,7 @@ export function useActivityTimeLine(groupId: string) {
     queryKey: ["group", groupId, "activityTimeline"],
     queryFn: () =>
       secureGet(`/admin/group/${groupId}/activity-timeline`).then(
-        (res) => res.data
+        (res) => res.data.timeline
       ),
     enabled: Boolean(groupId),
     select: (data) => {
@@ -155,8 +155,7 @@ export function useFetchMembers(groupId: string) {
 }
 
 // Hook: fetch invited members for current groupId
-export function useFetchInvitedMembers() {
-  const groupId = useAdminState((s) => s.groupId);
+export function useFetchInvitedMembers(groupId: string) {
   const setInvited = useAdminState((s) => s.setInvitedMembers);
 
   const query = useQuery<InvitedMember[], AxiosError>({
@@ -182,8 +181,7 @@ export function useFetchInvitedMembers() {
 }
 
 // Hook: invite a member by email
-export function useInviteMember() {
-  const groupId = useAdminState((s) => s.groupId)!;
+export function useInviteMember(groupId: string) {
   const queryClient = useQueryClient();
 
   return useMutation<InvitedMember, AxiosError, string>({
@@ -201,13 +199,14 @@ export function useInviteMember() {
 }
 
 // Hook: add a member
-export function useAddMember() {
-  const groupId = useAdminState((s) => s.groupId)!;
+export function useAddMember(groupId: string) {
   const queryClient = useQueryClient();
 
   return useMutation<void, AxiosError, string>({
-    mutationFn: (userId) =>
-      securePost(`/admin/group/${groupId}/members`, { userId }).then(() => {}),
+    mutationFn: (email) =>
+      securePost(`/admin/group/${groupId}/add-member`, { email }).then(
+        () => {}
+      ),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["admin", "members", groupId],

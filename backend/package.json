@@ -9,6 +9,7 @@
     "serve": "node --watch --env-file=.env server",
     "dev": "nodemon server.js",
     "backfillAll": "node scripts/backfillAll.js",
+    "worker": "node bullMQ/workers/emailworker.js",
     "insertBods": "node scripts/insertBods.js"
   },
   "keywords": [],

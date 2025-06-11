@@ -1,21 +1,26 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { FaSearch, FaEdit, FaTrash, FaTimes } from "react-icons/fa";
+import { FaSearch, FaEdit, FaTrash } from "react-icons/fa";
 import { Plus, User as UserIcon } from "lucide-react";
 import Sidebar from "../../components/dashboard.admin.components/Sidebar";
 import Header from "../../components/dashboard.admin.components/Header";
-import { useFetchMembers, useGroupInfo } from "../../hooks/useAdmin";
+import {
+  useAddMember,
+  useFetchMembers,
+  useGroupInfo,
+} from "../../hooks/useAdmin";
 import { useAuthStore } from "../../store/create.auth.store";
 import { User } from "../../types/auth.validator";
 import { useQueryClient } from "@tanstack/react-query";
 import Spinner from "../../components/dashboard.admin.components/ui/spinner";
 import ErrorMessage from "../../components/dashboard.admin.components/ui/error.message";
+import AddMemberModal from "../../components/dashboard.admin.components/add.member.modal";
 
 // Enhanced User interface with required fields
 interface EnhancedUser extends User {
   name: string;
   initials: string;
-  uniqueId: string; // Consistent ID field
+  uniqueId: string;
 }
 
 // Tooltip component
@@ -74,8 +79,8 @@ const getStatusBadgeColor = (status: string): string => {
   }
 };
 
-const ManageMembersPage: React.FC = () => {
-  const { groupId } = useParams<{ groupId: string }>();
+const ManageMembersPage = () => {
+  const { groupId } = useParams();
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
 
@@ -85,6 +90,8 @@ const ManageMembersPage: React.FC = () => {
     loading: isGroupLoading,
     error: groupError,
   } = useGroupInfo(groupId!);
+
+  const addMember = useAddMember(groupId!);
 
   const {
     members: fetchedMembers,
@@ -241,53 +248,14 @@ const ManageMembersPage: React.FC = () => {
 
     try {
       const formData = new FormData(e.currentTarget);
-      const firstName = (formData.get("firstName") as string)?.trim() || "";
-      const lastName = (formData.get("lastName") as string)?.trim() || "";
       const email = (formData.get("email") as string)?.trim() || "";
-      const role = (formData.get("role") as string) || "member";
-      const status = (formData.get("status") as string) || "active";
-
-      // Validation
-      if (!firstName || !lastName || !email) {
-        alert("Please fill in all required fields");
-        return;
-      }
 
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         alert("Please enter a valid email address");
         return;
       }
 
-      const name = `${firstName} ${lastName}`;
-      const memberData: EnhancedUser = {
-        ...editingMember,
-        id: editingMember?._id || editingMember?.id || "",
-        uniqueId: editingMember?.id || editingMember?._id || "",
-        firstName,
-        lastName,
-        email,
-        role: role as "admin" | "bod" | "member",
-        status,
-        name,
-        initials: getInitials(name),
-        isActive: status === "active",
-      };
-
-      // Update local state
-      setMembers((prev) =>
-        editingMember
-          ? prev.map((x) =>
-              x.uniqueId === memberData.uniqueId ? memberData : x
-            )
-          : [memberData, ...prev]
-      );
-
-      // Here you would typically make an API call
-      // if (editingMember) {
-      //   await updateMember(memberData);
-      // } else {
-      //   await createMember(memberData);
-      // }
+      addMember.mutate(email);
 
       closeModal();
     } catch (error) {
@@ -511,151 +479,12 @@ const ManageMembersPage: React.FC = () => {
 
           {/* Add/Edit Member Modal */}
           {isModalOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md">
-                <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                    {editingMember ? "Edit Member" : "Add New Member"}
-                  </h3>
-                  <button
-                    type="button"
-                    onClick={closeModal}
-                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-                  >
-                    <FaTimes size={20} />
-                  </button>
-                </div>
-
-                <form onSubmit={handleSave} className="p-6">
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                          First Name *
-                        </label>
-                        <input
-                          type="text"
-                          name="firstName"
-                          defaultValue={editingMember?.firstName || ""}
-                          required
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md 
-                                   focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500
-                                   dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100
-                                   dark:focus:ring-indigo-400 dark:focus:border-indigo-400
-                                   transition-colors"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                          Last Name *
-                        </label>
-                        <input
-                          type="text"
-                          name="lastName"
-                          defaultValue={editingMember?.lastName || ""}
-                          required
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md 
-                                   focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500
-                                   dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100
-                                   dark:focus:ring-indigo-400 dark:focus:border-indigo-400
-                                   transition-colors"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Email Address *
-                      </label>
-                      <input
-                        type="email"
-                        name="email"
-                        defaultValue={editingMember?.email || ""}
-                        required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md 
-                                 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500
-                                 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100
-                                 dark:focus:ring-indigo-400 dark:focus:border-indigo-400
-                                 transition-colors"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Role
-                      </label>
-                      <select
-                        name="role"
-                        title="Role"
-                        defaultValue={editingMember?.role || "member"}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md 
-                                 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500
-                                 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100
-                                 dark:focus:ring-indigo-400 dark:focus:border-indigo-400
-                                 transition-colors"
-                      >
-                        <option value="member">Member</option>
-                        <option value="bod">Board of Directors</option>
-                        <option value="admin">Admin</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Status
-                      </label>
-                      <select
-                        title="Status"
-                        name="status"
-                        defaultValue={editingMember?.status || "active"}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md 
-                                 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500
-                                 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100
-                                 dark:focus:ring-indigo-400 dark:focus:border-indigo-400
-                                 transition-colors"
-                      >
-                        <option value="active">Active</option>
-                        <option value="inactive">Inactive</option>
-                        <option value="pending">Pending</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-                    <button
-                      type="button"
-                      onClick={closeModal}
-                      disabled={isSubmitting}
-                      className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 
-                               hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 
-                               dark:hover:bg-gray-600 rounded-md transition-colors
-                               disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 
-                               hover:bg-indigo-700 rounded-md transition-colors
-                               disabled:opacity-50 disabled:cursor-not-allowed
-                               flex items-center"
-                    >
-                      {isSubmitting ? (
-                        <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                          Saving...
-                        </>
-                      ) : editingMember ? (
-                        "Update Member"
-                      ) : (
-                        "Add Member"
-                      )}
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
+            <AddMemberModal
+              closeModal={() => setModalOpen(false)}
+              editingMember={editingMember}
+              isSubmitting={isSubmitting}
+              handleSave={handleSave}
+            />
           )}
         </main>
       </div>

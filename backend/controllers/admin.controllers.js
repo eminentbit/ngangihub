@@ -5,7 +5,11 @@ import validator from "validator";
 import { config } from "dotenv";
 import NjangiActivityLog from "../models/njangi.activity.log.model.js";
 import Invite from "../models/invite.model.js";
-import { inviteMembersToGroup } from "../services/invite.service.js";
+import {
+  generateToken,
+  inviteMembersToGroup,
+} from "../services/invite.service.js";
+import { sendNjangiAleadyAddMemberEmail } from "../mail/emails.js";
 
 config();
 
@@ -400,4 +404,33 @@ export const getActivityTimeline = async (req, res) => {
       error: error.message,
     });
   }
+};
+
+export const addMemberToGroup = async (req, res) => {
+  const { groupId } = req.params;
+  const { email } = req.body;
+
+  const group = await NjangiGroup.findById(groupId);
+  const token = generateToken();
+
+  await Invite.create({
+    groupId,
+    inviteToken: token,
+    email,
+    invitedBy: req.user.id,
+    expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24), // 24 hours
+  });
+
+  const user = await User.findById(req.user.id);
+  const registrationUrl = `${process.env.REGISTER_URL}/members?inviteToken=${token}`;
+
+  await sendNjangiAleadyAddMemberEmail(
+    email,
+    "Hi there",
+    `${user.lastName} ${user.firstName}`,
+    group.contributionAmount,
+    group.contributionFrequency,
+    group.name,
+    registrationUrl
+  );
 };

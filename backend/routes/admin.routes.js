@@ -12,8 +12,8 @@ import {
   getStatusHistory,
   getGroupRecentActivities,
   getInvitedMembersOfGroup,
-  inviteMemberToGroup,
   getActivityTimeline,
+  addMemberToGroup,
 } from "../controllers/admin.controllers.js";
 import verifyToken from "../middleware/verify.token.js";
 import { verifyIfAdmin } from "../middleware/verify.role.js";
@@ -65,10 +65,10 @@ router.post(
   "/group/:groupId/add-member",
   verifyToken,
   verifyIfAdmin,
-  inviteMemberToGroup
+  addMemberToGroup
 );
 
-router.post(
+router.get(
   "/group/:groupId/activity-timeline",
   verifyToken,
   verifyIfAdmin,

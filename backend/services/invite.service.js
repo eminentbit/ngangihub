@@ -89,7 +89,7 @@ export const inviteMembersToGroup = async (
         inviteToken: Invitetoken,
         invitedBy: adminId,
         status: "pending",
-        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24), // 24h
+        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24), // 24 hours
       });
 
       // Send email invite if contact is email

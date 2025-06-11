@@ -24,6 +24,8 @@ services:
     environment:
       - NODE_ENV=production
       - REDIS_URL=redis://:mjlsbkCh2z8Ft63@redis:6379/0
+    depends_on:
+      - redis
     volumes:
       - ./backend:/app
       - backend_node_modules:/app/node_modules
@@ -43,14 +45,20 @@ services:
       - REDIS_PASSWORD=mjlsbkCh2z8Ft63
     command: ["redis-server", "--requirepass", "mjlsbkCh2z8Ft63"]
 
-  bullmq:
-    image: node:alpine
-    ports:
-      - "6380:6379"
+  worker:
+    build:
+      context: ./backend
+      dockerfile: worker.dockerfile
     volumes:
-      - bullmq_data:/data
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - redis
+    restart: always
     environment:
       - REDIS_PASSWORD=mjlsbkCh2z8Ft63
+      - REDIS_HOST: redis
+      - REDIS_PORT: 6379
     command: ["redis-server", "--requirepass", "mjlsbkCh2z8Ft63"]
 
   reverse-proxy:
