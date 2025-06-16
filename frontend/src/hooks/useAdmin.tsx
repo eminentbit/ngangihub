@@ -8,6 +8,7 @@ import {
 } from "../utils/axiosClient";
 import { AxiosError } from "axios";
 import { User } from "../types/auth.validator";
+import toast from "react-hot-toast";
 import { useAuthStore } from "../store/create.auth.store";
 
 // Exact Group shape as defined by backend
@@ -51,11 +52,18 @@ export type Member = User & {
 export interface InvitedMember {
   email: string;
   status: string;
+  groupId: string | undefined;
 }
 export interface GroupSettings {
   contributionAmount?: number;
   paymentType?: string;
   privacy?: string;
+}
+
+interface InviteIdentifier {
+  email?: string;
+  phone?: string;
+  groupId?: string;
 }
 
 // Hook: fetch all groups and sync to store
@@ -194,6 +202,39 @@ export function useFetchInvitedMembers(groupId: string) {
   };
 }
 
+//Hook: delete invited members
+export function useDeleteInvite(groupId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (identifier: InviteIdentifier) => {
+      return secureDelete(`/admin/group/${groupId}/cancel-invites`, {
+        data: identifier,
+      });
+    },
+    onSuccess: (_, deletedMember) => {
+      toast.success(
+        `Invite for ${deletedMember.email || deletedMember.phone} cancelled!`,
+        {
+          position: "top-right",
+          duration: 5000,
+        }
+      );
+
+      queryClient.invalidateQueries({
+        queryKey: ["admin", "invitedMembers", groupId],
+      });
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (err: any) => {
+      const message =
+        (err.response?.data as { message?: string })?.message ||
+        "Failed to cancel invite! Please try again.";
+      toast.error(message, { position: "top-right", duration: 5000 });
+    },
+  });
+}
+
 // Hook: invite a member by email
 export function useInviteMember(groupId: string) {
   const queryClient = useQueryClient();
@@ -216,31 +257,47 @@ export function useInviteMember(groupId: string) {
 export function useAddMember(groupId: string) {
   const queryClient = useQueryClient();
 
-  return useMutation<void, AxiosError, string>({
+  return useMutation<{ message: string }, AxiosError, string>({
     mutationFn: (email) =>
-      securePost(`/admin/group/${groupId}/add-member`, { email }).then(
-        () => {}
+      securePost<{ message: string }>(`/admin/group/${groupId}/add-member`, {
+        email,
+      }).then((res) => res.data),
+    onSuccess: (data) => {
+      toast.success(data.message, {
+        position: "top-right",
+        duration: 5000,
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["admin", "members", groupId],
+      });
+    },
+    onError: (err) => {
+      const message =
+        (err.response?.data as { message?: string })?.message ||
+        "Failed to add member! Please try again.";
+      toast.error(message, { position: "top-right", duration: 5000 });
+    },
+  });
+}
+
+// Hook: remove a member
+export function useRemoveMember(groupId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, AxiosError, string>({
+    mutationFn: (userId) =>
+      secureDelete(`/admin/group/${groupId}/remove-member/${userId}`).then(
+        () => {
+          console.log("User id: ", userId)
+        }
       ),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["admin", "members", groupId],
       });
-    },
-    onError: (err) => console.error("Add member failed:", err.message),
-  });
-}
-
-// Hook: remove a member
-export function useRemoveMember() {
-  const groupId = useAdminState((s) => s.groupId)!;
-  const queryClient = useQueryClient();
-
-  return useMutation<void, AxiosError, string>({
-    mutationFn: (userId) =>
-      secureDelete(`/admin/group/${groupId}/members/${userId}`).then(() => {}),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["admin", "members", groupId],
+      toast.success("Member removed successfully!", {
+        position: "top-right",
+        duration: 5000,
       });
     },
     onError: (err) => console.error("Remove member failed:", err.message),

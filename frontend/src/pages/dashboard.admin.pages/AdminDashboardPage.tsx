@@ -21,18 +21,9 @@ import { useFetchGroups, useGroupActivities } from "../../hooks/useAdmin";
 import { getNextPayout } from "../../utils/payout";
 import LatestMembersModal from "../../components/dashboard.admin.components/LatestMembersModal";
 import { useAuthStore } from "../../store/create.auth.store";
+import toast from "react-hot-toast";
+import { Skeleton } from "../../components/skeleton-loaders/skeleton-card-loader";
 
-// Skeleton Components
-const Skeleton: React.FC<{ className?: string; animate?: boolean }> = ({
-  className = "",
-  animate = true,
-}) => (
-  <div
-    className={`bg-gray-200 dark:bg-gray-700 rounded ${
-      animate ? "animate-pulse" : ""
-    } ${className}`}
-  />
-);
 
 // Loading Stat Card Component
 const LoadingStatCard: React.FC = () => (
@@ -130,6 +121,23 @@ export const AdminDashboardPage: React.FC = () => {
   const [totalContributions, setTotalContribution] = useState(0);
 
   const { groups, isLoading } = useFetchGroups();
+
+  useEffect(() => {
+    let timeout: ReturnType<typeof setTimeout>;
+
+    const hasSeenWelcome = sessionStorage.getItem("hasSeenWelcomeToast");
+
+    if (!hasSeenWelcome) {
+      timeout = setTimeout(() => {
+        toast.success("Glad to have you back! Here's your dashboard 💼", {
+          position: "top-right",
+          duration: 5000,
+        });
+        sessionStorage.setItem("hasSeenWelcomeToast", "true");
+      }, 1000);
+    }
+    return () => clearTimeout(timeout);
+  }, []);
 
   useEffect(() => {
     const totalMembersCount = groups.reduce(
@@ -239,7 +247,7 @@ export const AdminDashboardPage: React.FC = () => {
             <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div>
                 <h1 className="text-3xl font-bold text-blue-700 dark:text-blue-300 mb-1">
-                  Dashboard
+                  Welcome to your dashboard
                 </h1>
               </div>
               <div className="flex space-x-4">

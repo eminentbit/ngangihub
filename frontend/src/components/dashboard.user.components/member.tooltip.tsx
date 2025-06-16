@@ -59,7 +59,10 @@ const MemberTooltip = ({
       {/* Members List */}
       <div className="max-h-64 overflow-y-auto p-2">
         {members.map((member) => {
-          const status = hasPaidThisMonth.find((s) => s.userId === member._id);
+          const status = Array.isArray(hasPaidThisMonth)
+            ? hasPaidThisMonth.find((s) => s.userId === member._id)
+            : undefined;
+
           const hasPaid = status ? status.hasPaid : false;
 
           return (

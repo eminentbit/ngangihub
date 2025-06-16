@@ -77,7 +77,7 @@ export const inviteMembersToGroup = async (
       const Invitetoken = generateToken();
 
       // Build registration URL
-      let registrationUrl = `${process.env.REGISTER_URL}/members?inviteToken=${Invitetoken}`;
+      let registrationUrl = `${process.env.REGISTER_URL}/members?inviteToken=${Invitetoken}&email=${email}`;
       if (email) registrationUrl += `&email=${encodeURIComponent(email)}`;
       if (phone) registrationUrl += `&phone=${encodeURIComponent(phone)}`;
 

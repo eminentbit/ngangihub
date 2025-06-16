@@ -118,8 +118,8 @@ export function NjangiDetails({ njangiId }: { njangiId: string | null }) {
         ) : njangiDetails.length === 0 ? (
           <NoNjangiMessage />
         ) : (
-          njangiDetails.map((njangiData) => (
-            <div key={njangiData.id} className="space-y-6 mb-8">
+          njangiDetails.map((njangiData, index) => (
+            <div key={index} className="space-y-6 mb-8">
               <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
                 <h2 className="text-xl font-semibold text-gray-900">
                   Njangi Details
