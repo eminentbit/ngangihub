@@ -181,9 +181,7 @@ export const changePassword = async (req, res) => {
     );
 
     if (!user) return res.status(404).json({ message: "User not found" });
-    console.log(oldPassword, user.password);
     const valid = await bcrypt.compare(oldPassword, user.password);
-    console.log(valid);
     if (!valid)
       return res.status(401).json({ message: "Current password incorrect" });
     user.password = await bcrypt.hash(newPassword, 10);
@@ -212,7 +210,8 @@ export const sendPasswordResetLink = async (req, res) => {
       return res.status(400).json({ message: "Invalid email address" });
     }
 
-    const user = await User.findOne({ email: { $eq: email } }).select(
+    const sanitizedEmail = validator.normalizeEmail(email.toLowerCase().trim());
+    const user = await User.findOne({ email: sanitizedEmail }).select(
       "_id email"
     );
     if (!user) return res.status(404).json({ message: "User not found" });

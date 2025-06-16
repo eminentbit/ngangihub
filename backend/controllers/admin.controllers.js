@@ -516,7 +516,22 @@ export const cancelInvite = async (req, res) => {
         error: "Cannot delete invite: group must have at least one member",
       });
     }
+    // Validate and sanitize email/phone inputs
+    if (identifier.email) {
+      if (!validator.isEmail(identifier.email)) {
+        return res.status(400).json({ error: "Invalid email format" });
+      }
+      identifier.email = validator.normalizeEmail(identifier.email);
+    }
 
+    if (identifier.phone) {
+      // Remove any non-digit characters
+      const sanitizedPhone = identifier.phone.replace(/\D/g, "");
+      if (!validator.isMobilePhone(sanitizedPhone)) {
+        return res.status(400).json({ error: "Invalid phone format" });
+      }
+      identifier.phone = sanitizedPhone;
+    }
     // Build query to find the invite to delete
     const query = { groupId };
     if (identifier.email) {
