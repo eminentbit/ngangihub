@@ -19,6 +19,7 @@ export function ConfirmModal({
   loading,
 }: ConfirmModalProps) {
   if (!open) return null;
+  console.log("Current is Loading: ", loading)
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="bg-white rounded-xl shadow-2xl p-8 max-md:w-[90%] w-full max-w-sm animate-fade-in">

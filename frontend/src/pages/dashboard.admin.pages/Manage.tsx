@@ -1,20 +1,27 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { FaSearch, FaEdit, FaTrash } from "react-icons/fa";
+import { FaSearch, FaEdit } from "react-icons/fa";
 import { Plus, User as UserIcon } from "lucide-react";
 import Sidebar from "../../components/dashboard.admin.components/Sidebar";
 import Header from "../../components/dashboard.admin.components/Header";
 import {
   useAddMember,
+  useDeleteInvite,
+  useFetchInvitedMembers,
   useFetchMembers,
   useGroupInfo,
+  useRemoveMember,
 } from "../../hooks/useAdmin";
 import { useAuthStore } from "../../store/create.auth.store";
 import { User } from "../../types/auth.validator";
 import { useQueryClient } from "@tanstack/react-query";
-import Spinner from "../../components/dashboard.admin.components/ui/spinner";
 import ErrorMessage from "../../components/dashboard.admin.components/ui/error.message";
 import AddMemberModal from "../../components/dashboard.admin.components/add.member.modal";
+import UILoader from "../../components/ui.messages/ui.loader";
+import InvitedMembersModal from "../../components/dashboard.admin.components/InvitedMembersModal";
+import toast from "react-hot-toast";
+import { FiTrash2 } from "react-icons/fi";
+import { ConfirmModal } from "../../components/confirm.delete.modal";
 
 // Enhanced User interface with required fields
 interface EnhancedUser extends User {
@@ -22,7 +29,11 @@ interface EnhancedUser extends User {
   initials: string;
   uniqueId: string;
 }
-
+interface InviteIdentifier {
+  email?: string;
+  phone?: string;
+  groupId?: string;
+}
 // Tooltip component
 const Tooltip: React.FC<{ tip: string; children: React.ReactNode }> = ({
   tip,
@@ -83,8 +94,13 @@ const ManageMembersPage = () => {
   const { groupId } = useParams();
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
+  const { invitedMembers } = useFetchInvitedMembers(groupId!);
+  const [isInvitedModalOpen, setIsInvitedModalOpen] = useState(false);
 
   // Data hooks
+  const { mutateAsync: deleteInviteAsync } = useDeleteInvite(groupId!);
+  const { mutateAsync: removeMember } = useRemoveMember(groupId!);
+
   const {
     groupInfo,
     loading: isGroupLoading,
@@ -110,9 +126,12 @@ const ManageMembersPage = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setModalOpen] = useState(false);
+  const [isConfirmDeleteModalOpen, setisConfirmDeleteModalOpen] =
+    useState(false);
   const [editingMember, setEditingMember] = useState<EnhancedUser | null>(null);
   const [members, setMembers] = useState<EnhancedUser[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isReMembeLoading, setisReMembeLoading] = useState(false);
 
   // Dark mode effect
   useEffect(() => {
@@ -139,7 +158,17 @@ const ManageMembersPage = () => {
           isActive: m.isActive ?? true,
         };
       });
-      setMembers(enhancedMembers);
+
+      setMembers((prev) => {
+        const sameLength = prev.length === enhancedMembers.length;
+        const isEqual =
+          sameLength &&
+          prev.every(
+            (m, i) => JSON.stringify(m) === JSON.stringify(enhancedMembers[i])
+          );
+
+        return isEqual ? prev : enhancedMembers;
+      });
     }
   }, [fetchedMembers]);
 
@@ -162,11 +191,10 @@ const ManageMembersPage = () => {
   // Loading state
   if (isLoading) {
     return (
-      <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
-        <div className="flex items-center justify-center w-full">
-          <Spinner />
-        </div>
-      </div>
+      <UILoader
+        text="Loading latest members"
+        subtitle="Hey buddy, just a sec - let's get your members!"
+      />
     );
   }
 
@@ -194,6 +222,7 @@ const ManageMembersPage = () => {
   // Check if current user is group admin
   const isGroupAdmin = groupInfo?.adminId === user?._id;
 
+
   // Event handlers
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
 
@@ -213,50 +242,45 @@ const ManageMembersPage = () => {
     setModalOpen(true);
   };
 
+  // remove members
   const handleDelete = async (member: EnhancedUser) => {
     if (!isGroupAdmin || member.role === "admin") return;
+    try {
+      console.log("Deleting member form manage.tsx groupid: ", groupId);
+      console.log(
+        "Deleting member from manage.tsx id coder: ",
+        member.uniqueId
+      );
 
-    const confirmed = window.confirm(
-      `Are you sure you want to delete ${member.name}? This action cannot be undone.`
-    );
+      await removeMember(member.uniqueId);
 
-    if (confirmed) {
-      try {
-        // Remove from local state immediately for better UX
-        setMembers((prev) =>
-          prev.filter((x) => x.uniqueId !== member.uniqueId)
-        );
+      // Remove from local state immediately for better UX
+      setMembers((prev) => prev.filter((x) => x.uniqueId !== member.uniqueId));
 
-        // Here you would typically make an API call to delete the member
-        // await deleteMember(member.uniqueId);
-
-        // Optionally refresh the data
-        if (groupId) {
-          queryClient.invalidateQueries({ queryKey: ["members", groupId] });
-        }
-      } catch (error) {
-        // If API call fails, restore the member
-        console.error("Failed to delete member:", error);
-        // You might want to show a toast notification here
+      if (groupId) {
+        queryClient.invalidateQueries({ queryKey: ["members", groupId] });
       }
+    } catch (error) {
+      toast.error("Failed to delete member! Please try again.", {
+        position: "top-right",
+        duration: 5000,
+      });
+      console.error("Failed to delete member:", error);
     }
   };
 
+  // add member to group
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
-
     try {
       const formData = new FormData(e.currentTarget);
       const email = (formData.get("email") as string)?.trim() || "";
-
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         alert("Please enter a valid email address");
         return;
       }
-
-      addMember.mutate(email);
-
+      await addMember.mutateAsync(email);
       closeModal();
     } catch (error) {
       console.error("Failed to save member:", error);
@@ -264,6 +288,40 @@ const ManageMembersPage = () => {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  // handle delete invited members
+  const handleInviteDelete = async (member: InviteIdentifier) => {
+    // Prepare the identifier object expected by mutation
+    const identifier: InviteIdentifier = {
+      groupId: member.groupId,
+      ...(member.email ? { email: member.email } : {}),
+      ...(member.phone ? { phone: member.phone } : {}),
+    };
+
+    if (!identifier) {
+      toast.error("Cannot delete invite: missing email or phone");
+      return;
+    }
+
+    try {
+      await deleteInviteAsync(identifier);
+      setIsInvitedModalOpen(false);
+    } catch (error) {
+      console.error("Failed to delete invite:", error);
+    }
+
+    // deleteInvite(identifier, {
+    //   onSuccess: () => {
+    //     setIsInvitedModalOpen(false);
+    //   },
+    //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    //   onError: (error: any) => {
+    //     toast.error(
+    //       error.message || "Failed to cancel invite. Please try again."
+    //     );
+    //   },
+    // });
   };
 
   return (
@@ -289,9 +347,17 @@ const ManageMembersPage = () => {
           isSidebarOpen ? "lg:ml-64" : "ml-0"
         }`}
       >
-        <Header darkMode={isDarkMode} setDarkMode={setIsDarkMode} />
+        <Header
+          darkMode={isDarkMode}
+          setDarkMode={setIsDarkMode}
+          someStyles={`${!isSidebarOpen ? "md:ml-10" : "md:ml-0"}`}
+        />
 
-        <main className="flex-1 overflow-auto p-4 lg:p-6">
+        <main
+          className={`flex-1 overflow-auto p-4 lg:p-6 ${
+            !isSidebarOpen ? "md:ml-20" : "md:mr-0"
+          }`}
+        >
           {/* Page header */}
           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between mb-6 gap-4">
             <div>
@@ -348,11 +414,27 @@ const ManageMembersPage = () => {
           </div>
 
           {/* Members count */}
-          <div className="mb-4">
+          <div className="mb-4 flex items-center gap-4">
             <p className="text-sm text-gray-600 dark:text-gray-400">
               Showing {filteredMembers.length} of {members.length} members
             </p>
+            {invitedMembers.length > 0 && (
+              <button
+                onClick={() => setIsInvitedModalOpen(true)}
+                className="text-blue-600 hover:underline text-sm cursor-pointer"
+              >
+                View Your Invites ({invitedMembers.length})
+              </button>
+            )}
           </div>
+
+          <InvitedMembersModal
+            isOpen={isInvitedModalOpen}
+            onClose={() => setIsInvitedModalOpen(false)}
+            members={invitedMembers}
+            onDelete={handleInviteDelete}
+            isInviting={isLoading}
+          />
 
           {/* Members table */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
@@ -398,78 +480,99 @@ const ManageMembersPage = () => {
                       </td>
                     </tr>
                   ) : (
-                    filteredMembers.map((member) => (
-                      <tr
-                        key={member.uniqueId}
-                        className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                      >
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center">
-                            <div className="flex-shrink-0 h-10 w-10">
-                              <div className="h-10 w-10 rounded-full bg-indigo-500 flex items-center justify-center">
-                                <span className="text-sm font-medium text-white">
-                                  {member.initials}
-                                </span>
+                    filteredMembers.map((member, index) => (
+                      <>
+                        <tr
+                          key={index}
+                          className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                        >
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center">
+                              <div className="flex-shrink-0 h-10 w-10">
+                                <div className="h-10 w-10 rounded-full bg-indigo-500 flex items-center justify-center">
+                                  <span className="text-sm font-medium text-white">
+                                    {member.initials}
+                                  </span>
+                                </div>
                               </div>
-                            </div>
-                            <div className="ml-4">
-                              <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                {member.name}
+                              <div className="ml-4">
+                                <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                  {member.name}
+                                </div>
                               </div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900 dark:text-gray-100">
-                            {member.email}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span
-                            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getRoleBadgeColor(
-                              member.role as string
-                            )}`}
-                          >
-                            {(member.role as string)?.toUpperCase() || "MEMBER"}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span
-                            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusBadgeColor(
-                              member.status as string
-                            )}`}
-                          >
-                            {(member.status as string)?.toUpperCase() ||
-                              "ACTIVE"}
-                          </span>
-                        </td>
-                        {isGroupAdmin && (
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <div className="flex justify-end space-x-2">
-                              <button
-                                type="button"
-                                onClick={() => openEditModal(member)}
-                                className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 
-                                         dark:hover:text-indigo-300 transition-colors p-1"
-                                title="Edit member"
-                              >
-                                <FaEdit size={14} />
-                              </button>
-                              {member.role !== "admin" && (
-                                <button
-                                  type="button"
-                                  onClick={() => handleDelete(member)}
-                                  className="text-red-600 hover:text-red-900 dark:text-red-400 
-                                           dark:hover:text-red-300 transition-colors p-1"
-                                  title="Delete member"
-                                >
-                                  <FaTrash size={14} />
-                                </button>
-                              )}
                             </div>
                           </td>
-                        )}
-                      </tr>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-gray-900 dark:text-gray-100">
+                              {member.email}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span
+                              className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getRoleBadgeColor(
+                                member.role as string
+                              )}`}
+                            >
+                              {(member.role as string)?.toUpperCase() ||
+                                "MEMBER"}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span
+                              className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusBadgeColor(
+                                member.status as string
+                              )}`}
+                            >
+                              {(member.status as string)?.toUpperCase() ||
+                                "ACTIVE"}
+                            </span>
+                          </td>
+                          {isGroupAdmin && (
+                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                              <div className="flex justify-end space-x-2">
+                                <button
+                                  type="button"
+                                  onClick={() => openEditModal(member)}
+                                  className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 
+                                         dark:hover:text-indigo-300 transition-colors p-1"
+                                  title="Edit member"
+                                >
+                                  <FaEdit size={14} />
+                                </button>
+                                {member.role !== "admin" && (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+
+                                      setisConfirmDeleteModalOpen(true)
+                                    }
+                                    }
+                                    className={`text-red-600 hover:text-red-900 dark:text-red-400 
+                                           dark:hover:text-red-300 transition-colors p-1 ${
+                                             filteredMembers.length <= 2 &&
+                                             "hidden"
+                                           }`}
+                                    title="Delete member"
+                                  >
+                                    <FiTrash2 size={14} />
+                                  </button>
+                                )}
+                              </div>
+                            </td>
+                          )}
+                        </tr>
+                        <ConfirmModal
+                          open={isConfirmDeleteModalOpen}
+                          message={`Are you sure you want to remove ${member.firstName} from ${groupInfo?.name}? This action cannot be undone.`}
+                          onCancel={() => setisConfirmDeleteModalOpen(false)}
+                          onConfirm={async () => {
+                            setisReMembeLoading(true);
+                            await handleDelete(member);
+                            setisReMembeLoading(false);
+                          }}
+                          loading={isReMembeLoading}
+                        />
+                      </>
                     ))
                   )}
                 </tbody>

@@ -9,11 +9,11 @@ const buildUrl = (path: string) => {
   return `${VALIDATE_API_URL.replace(/\/+$/, "")}/${path.replace(/^\/+/, "")}`;
 };
 
-console.log(
-  "Calling validate email URL:",
-  `${VALIDATE_API_URL}/validate-email`
-);
-console.log("BuildUrl: " + buildUrl("validate-email"));
+// console.log(
+//   "Calling validate email URL:",
+//   `${VALIDATE_API_URL}/validate-email`
+// );
+// console.log("BuildUrl: " + buildUrl("validate-email"));
 
 /**
  *
