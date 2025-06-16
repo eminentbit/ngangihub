@@ -9,11 +9,17 @@ import {
   sendPasswordResetEmail,
   sendSigninAttemptEmail,
 } from "../mail/emails.js";
+import validator from "validator";
 import bcrypt from "bcryptjs";
 
 // Helper: find pending or suspended draft user
 async function checkDraftStatus(email) {
-  const draft = await NjangiDraft.findOne({ "accountSetup.email": email });
+  if (typeof email != "string" || !validator(email)) {
+    return res.status(400).json({ message: "Invalid email" });
+  }
+  const draft = await NjangiDraft.findOne({
+    "accountSetup.email": { $eq: email },
+  });
   return draft?.accountSetup;
 }
 
@@ -48,9 +54,14 @@ export const login = async (req, res) => {
   if (handleValidation(req, res)) return;
 
   const { email, password } = req.body;
+
+  if (!email || !validator.isEmail(email)) {
+    return res.status(400).json({ message: "Invalid email address" });
+  }
+
   try {
     // Try primary user
-    let user = await User.findOne({ email }).select(
+    let user = await User.findOne({ email: { $eq: email } }).select(
       `password ${LOGIN_QUERIES_PROJECTION}`
     );
 
@@ -144,8 +155,13 @@ export const logout = (req, res) => {
 export const resetPassword = async (req, res) => {
   if (handleValidation(req, res)) return;
   const { email, newPassword } = req.body;
+
+  if (!email || !validator.isEmail(email)) {
+    return res.status(400).json({ message: "Invalid email address" });
+  }
+
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: { $eq: email } });
     if (!user) return res.status(404).json({ message: "User not found" });
     user.password = await bcrypt.hash(newPassword, 10);
     await user.save();
@@ -191,7 +207,14 @@ export const sendPasswordResetLink = async (req, res) => {
   if (handleValidation(req, res)) return;
   try {
     const { email } = req.body;
-    const user = await User.findOne({ email }).select("_id email");
+
+    if (!email || !validator.isEmail(email)) {
+      return res.status(400).json({ message: "Invalid email address" });
+    }
+
+    const user = await User.findOne({ email: { $eq: email } }).select(
+      "_id email"
+    );
     if (!user) return res.status(404).json({ message: "User not found" });
     const token = generateTokenAndSetCookie(res, user._id);
     sendPasswordResetEmail(user.email, token);

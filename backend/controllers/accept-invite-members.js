@@ -6,11 +6,15 @@ import bcrypt from "bcryptjs";
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
 import { sendWelcomeEmail } from "../mail/emails.js";
 import NjangiActivityLog from "../models/njangi.activity.log.model.js";
+import validator from "validator";
 
 const acceptInvite = async (req, res) => {
   const { token } = req.query;
   const { firstName, lastName, email, phoneNumber, password } = req.body;
 
+  if (typeof email != "string" || !validator.isEmail(email)) {
+    return res.status(400).json({ message: "Invalid email", status: "failed" });
+  }
   try {
     const invite = await Invite.findOne({ inviteToken: token });
 
@@ -22,7 +26,7 @@ const acceptInvite = async (req, res) => {
 
     // Check if user already exists by email or phone number
     let existingUser = await User.findOne({
-      $or: [{ email }, { phoneNumber }],
+      $or: [{ email: { $eq: email } }, { phoneNumber }],
     });
     if (existingUser) {
       let duplicateField =

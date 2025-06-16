@@ -192,7 +192,6 @@ export const getSubmissionStats = async (req, res) => {
 
   try {
     const user = await User.findOne({ email: { $eq: email } });
-    
 
     let createdGroups = [];
     if (user) {
@@ -370,10 +369,8 @@ export const inviteMemberToGroup = async (req, res) => {
   const invites = Array.isArray(req.body.invites)
     ? req.body.invites
     : [req.body.invite || req.body];
-    
-    console.log("Invites form frontend: ", invites)
 
-
+  console.log("Invites form frontend: ", invites);
 
   try {
     const result = await inviteMembersToGroup(
@@ -390,7 +387,7 @@ export const inviteMemberToGroup = async (req, res) => {
       .status(201)
       .json({ message: "Invites sent successfully", invites: result });
 
-      console.log("Invite sent in backend, from admin: ", invites)
+    console.log("Invite sent in backend, from admin: ", invites);
   } catch (error) {
     res
       .status(500)
@@ -422,6 +419,10 @@ export const getActivityTimeline = async (req, res) => {
 export const addMemberToGroup = async (req, res) => {
   const { groupId } = req.params;
   const { email } = req.body;
+
+  if (!email || !validator.isEmail(email)) {
+    return res.status(400).json({ message: "Invalid email address" });
+  }
 
   const normalizedEmail = email.toLowerCase().trim();
 
@@ -499,7 +500,7 @@ export const addMemberToGroup = async (req, res) => {
 export const cancelInvite = async (req, res) => {
   const { groupId } = req.params;
   const identifier = req.body;
-  
+
   if (!identifier.email && !identifier.phone) {
     return res
       .status(400)
@@ -553,7 +554,6 @@ export const removeMember = async (req, res) => {
   console.log("GroupId in backend: ", groupId);
   console.log("User in backend: ", userId);
 
-
   if (!groupId || !userId) {
     return res.status(400).json({ error: "Missing groupId or userId" });
   }
@@ -563,7 +563,9 @@ export const removeMember = async (req, res) => {
     const groupMemberCount = await GroupMember.countDocuments({ groupId });
 
     // Fetch NjangiGroup to access groupMembers array
-    const njangiGroup = await NjangiGroup.findById(groupId).select("groupMembers");
+    const njangiGroup = await NjangiGroup.findById(groupId).select(
+      "groupMembers"
+    );
 
     if (!njangiGroup) {
       return res.status(404).json({ error: "Njangi group not found" });

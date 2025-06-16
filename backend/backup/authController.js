@@ -7,8 +7,14 @@ export const register = async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
+    if (typeof email != "string" || !validator.isEmail(email)) {
+      return res
+        .status(400)
+        .json({ message: "Invalid email", status: "failed" });
+    }
+
     // Check if user already exists
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email: { $eq: email } });
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
     }
