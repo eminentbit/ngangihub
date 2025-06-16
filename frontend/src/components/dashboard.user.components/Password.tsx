@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Lock, Save, Check } from "lucide-react";
+import { useChangePassword } from "../../hooks/useUser";
 
 export default function SettingsPasswordForm() {
   const [passwordSuccess, setPasswordSuccess] = useState(false);
+
+  const { changePassword } = useChangePassword();
 
   const {
     register,
@@ -17,15 +20,21 @@ export default function SettingsPasswordForm() {
     confirmPassword: string;
   }>();
 
-  const onSubmit = async () => {
+  const onSubmit = async (values: {
+    currentPassword: string;
+    newPassword: string;
+    confirmPassword: string;
+  }) => {
     try {
-      // Simulate password update
-      await new Promise((res) => setTimeout(res, 1000));
+      await changePassword({
+        oldPassword: values.currentPassword,
+        newPassword: values.newPassword,
+      });
       setPasswordSuccess(true);
       reset();
       setTimeout(() => setPasswordSuccess(false), 3000);
     } catch (e) {
-      console.error(e);
+      console.error("Password update failed:", e);
     }
   };
 

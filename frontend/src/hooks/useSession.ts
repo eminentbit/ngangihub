@@ -10,7 +10,7 @@ const fetchSession = async (
   logout: () => void
 ): Promise<User | null> => {
   try {
-    const res = await secureGet("/api/session");
+    const res = await secureGet("/auth/session");
     const user = res.data.user;
     setUser(user);
     return user;

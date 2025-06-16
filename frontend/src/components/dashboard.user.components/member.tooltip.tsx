@@ -1,7 +1,7 @@
 import { HiCheckCircle, HiMail, HiUsers } from "react-icons/hi";
 import { User } from "../../types/auth.validator";
 import { User2Icon } from "lucide-react";
-import useUserPaymentStatus from "../../hooks/useUser";
+import { useUserPaymentStatus } from "../../hooks/useUser";
 
 // Member Tooltip Component
 const MemberTooltip = ({
@@ -21,9 +21,12 @@ const MemberTooltip = ({
 
   const uniqueMemberIds = Array.from(new Set(memberIds.map(String)));
 
-  const {
-    hasPaidThisMonth = [],
-  } = useUserPaymentStatus(uniqueMemberIds, groupId) as unknown as { hasPaidThisMonth: Array<{ userId: string; hasPaid: boolean }> };
+  const { hasPaidThisMonth = [] } = useUserPaymentStatus(
+    uniqueMemberIds,
+    groupId
+  ) as unknown as {
+    hasPaidThisMonth: Array<{ userId: string; hasPaid: boolean }>;
+  };
 
   if (!isVisible || !members?.length) return null;
 

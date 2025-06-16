@@ -3,10 +3,13 @@ import { useForm } from "react-hook-form";
 import { User, Mail, Phone, Save, Check } from "lucide-react";
 import InputField, { ProfileFormData } from "../InputField";
 import { useAuthStore } from "../../store/create.auth.store";
+import { useSession } from "../../hooks/useSession";
 
 const Profile = () => {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const { user } = useAuthStore();
+
+  useSession();
   const {
     register,
     handleSubmit,
@@ -16,7 +19,7 @@ const Profile = () => {
       firstName: user?.firstName || "N/A",
       lastName: user?.lastName || "N/A",
       email: user?.email || "N/A",
-      phone: user?.phone || "N/A",
+      phone: user?.phoneNumber || "N/A",
     },
   });
 
@@ -38,7 +41,7 @@ const Profile = () => {
         Profile Information
       </h2>
       <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-        Update your account’s profile details below.
+        Update your account's profile details below.
       </p>
 
       {saveSuccess && (
@@ -72,6 +75,7 @@ const Profile = () => {
             type="email"
             register={register}
             name="email"
+            disabled
             error={errors.email}
           />
           <InputField
@@ -79,6 +83,7 @@ const Profile = () => {
             icon={Phone}
             type="tel"
             register={register}
+            disabled
             name="phone"
             error={errors.phone}
           />

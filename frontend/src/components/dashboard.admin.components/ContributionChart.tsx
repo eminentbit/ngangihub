@@ -1,49 +1,84 @@
+import { useEffect } from "react";
+import * as echarts from "echarts";
+import { useGetContributionOverview } from "../../hooks/useAdmin";
 
-import { FC, useEffect } from 'react';
-import * as echarts from 'echarts';
+const ContributionChart = () => {
+  const { data, loading, error } = useGetContributionOverview();
 
-const ContributionChart: FC = () => {
   useEffect(() => {
-    const container = document.getElementById('contribution-chart');
+    if (!data || loading || error) return;
+
+    const container = document.getElementById("contribution-chart");
     if (!container) return;
 
-    // Type the chart variable for clarity
     const chart: echarts.ECharts = echarts.init(container);
 
     chart.setOption({
-      animation: false,
-      tooltip: { trigger: 'item' },
-      legend: { top: '5%', left: 'center' },
+      animation: true,
+      tooltip: { trigger: "item" },
+      legend: { top: "5%", left: "center", textStyle: { color: "#6B7280" } },
       series: [
         {
-          name: 'Contributions',
-          type: 'pie',
-          radius: ['40%', '70%'],
+          name: "Contributions",
+          type: "pie",
+          radius: ["40%", "70%"],
           avoidLabelOverlap: false,
-          itemStyle: { borderRadius: 10, borderColor: '#fff', borderWidth: 2 },
-          label: { show: false, position: 'center' },
-          emphasis: { label: { show: true, fontSize: 18, fontWeight: 'bold' } },
+          itemStyle: {
+            borderRadius: 10,
+            borderColor: "#fff",
+            borderWidth: 2,
+          },
+          label: { show: false, position: "center" },
+          emphasis: {
+            label: {
+              show: true,
+              fontSize: 18,
+              fontWeight: "bold",
+            },
+          },
           labelLine: { show: false },
-          data: [
-            { value: 1200, name: 'Team Alpha' },
-            { value: 800, name: 'Project Beta' },
-            { value: 600, name: 'Finance Club' },
-          ],
+          data,
         },
       ],
     });
 
-    // Resize handler
     const handleResize = () => chart.resize();
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
       chart.dispose();
     };
-  }, []);
+  }, [data, loading, error]);
 
-  return <div id="contribution-chart" className="h-64 w-full" />;
+  if (loading) {
+    return (
+      <div className="h-64 w-full flex items-center justify-center">
+        <div className="flex items-center space-x-2 text-gray-500 dark:text-gray-300">
+          <div className="w-5 h-5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+          <span className="text-sm">Loading contribution data...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="h-64 w-full flex items-center justify-center bg-red-50 dark:bg-red-950 rounded-md border border-red-200 dark:border-red-700">
+        <div className="text-center text-red-600 dark:text-red-400">
+          <p className="font-semibold">Failed to load contributions.</p>
+          <p className="text-sm opacity-70">Please try again later.</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      id="contribution-chart"
+      className="h-64 w-full transition-opacity duration-500 ease-in-out"
+    />
+  );
 };
 
 export default ContributionChart;

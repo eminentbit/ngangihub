@@ -87,3 +87,48 @@ export const getGroupPayments = async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
+
+/**
+ * Fetch all groups created by an admin
+ */
+export const getGroups = async (req, res) => {
+  try {
+    const groups = await NjangiGroup.find({
+      groupMembers: req.user.id,
+    }).populate("groupMembers", "_id lastName firstName email createdAt");
+
+    res.status(200).json(groups);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching groups", error });
+  }
+};
+
+export const getUserContributionOverview = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    if (!userId) {
+      return res.status(400).json({ error: "userId is required" });
+    }
+
+    // Find all groups where the user is a member
+    const groups = await NjangiGroup.find({ groupMembers: userId }).lean();
+
+    // For each group, find the user's totalAmountPaid
+    const overview = groups.map((group) => {
+      const member = group.memberContributions.find(
+        (m) => m.member.toString() === userId
+      );
+      return {
+        value: member?.totalAmountPaid || 0,
+        name: group.name,
+      };
+    });
+
+    res.json(overview);
+  } catch (err) {
+    console.error("Error fetching user contribution overview:", err);
+    res
+      .status(500)
+      .json({ error: "Failed to fetch user contribution overview" });
+  }
+};

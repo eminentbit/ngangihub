@@ -14,6 +14,7 @@ interface InputFieldProps {
   register: ReturnType<typeof useForm<ProfileFormData>>["register"];
   name: keyof ProfileFormData;
   error?: { message?: string };
+  disabled?: boolean;
 }
 
 const InputField: React.FC<InputFieldProps> = ({
@@ -23,6 +24,7 @@ const InputField: React.FC<InputFieldProps> = ({
   register,
   name,
   error,
+  disabled = false,
 }) => (
   <div>
     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
@@ -34,6 +36,7 @@ const InputField: React.FC<InputFieldProps> = ({
       </div>
       <input
         type={type}
+        disabled={disabled}
         {...register(name, { required: `${label} is required` })}
         className={`block w-full pl-10 pr-3 py-2 border ${
           error ? "border-red-500" : "border-gray-300 dark:border-gray-600"

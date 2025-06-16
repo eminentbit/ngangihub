@@ -46,6 +46,7 @@ export const quickActions = [
     label: "View Contributions",
     icon: <FaChartPie size={18} />,
     color: "bg-gradient-to-tr from-blue-400 to-blue-600",
+    showOnlyAdmin: true,
     onClick: () => alert("View contributions"),
   },
   {
@@ -53,6 +54,7 @@ export const quickActions = [
     label: "Request Loan",
     icon: <FaMoneyBillWave size={18} />,
     color: "bg-gradient-to-tr from-yellow-400 to-yellow-600",
+    showOnlyAdmin: false,
     onClick: () => alert("Request loan"),
   },
 ];
@@ -65,11 +67,25 @@ export const latestMembers = [
   { id: 4, name: "Elias B.", joined: "2 days ago", avatar: null },
 ];
 
-
-  // Sample notifications
+// Sample notifications
 export const notifications = [
-    { id: 1, message: 'Alice contributed 20,000 FCFA', time: '2h ago', isRead: false },
-    { id: 2, message: "New member: Samuel joined Njangi", time: "5h ago", isRead: false },
-    { id: 3, message: 'Monthly cycle payout completed', time: "1d ago", isRead: true },
-    { id: 4, message: 'Loan request: Linda N.', time: "2d ago", isRead: false }
-  ];
+  {
+    id: 1,
+    message: "Alice contributed 20,000 FCFA",
+    time: "2h ago",
+    isRead: false,
+  },
+  {
+    id: 2,
+    message: "New member: Samuel joined Njangi",
+    time: "5h ago",
+    isRead: false,
+  },
+  {
+    id: 3,
+    message: "Monthly cycle payout completed",
+    time: "1d ago",
+    isRead: true,
+  },
+  { id: 4, message: "Loan request: Linda N.", time: "2d ago", isRead: false },
+];

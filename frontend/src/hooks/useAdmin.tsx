@@ -8,6 +8,7 @@ import {
 } from "../utils/axiosClient";
 import { AxiosError } from "axios";
 import { User } from "../types/auth.validator";
+import { useAuthStore } from "../store/create.auth.store";
 
 // Exact Group shape as defined by backend
 export interface Group {
@@ -49,18 +50,22 @@ export interface GroupSettings {
 
 // Hook: fetch all groups and sync to store
 export function useFetchGroups() {
+  const role = useAuthStore((s) => s.user?.role);
   const setGroups = useAdminState((s) => s.setGroups);
 
   const query = useQuery<Group[], AxiosError>({
-    queryKey: ["groups"],
+    queryKey: ["groups", role],
     queryFn: () =>
-      secureGet("/admin/groups").then((res) => {
-        return res.data;
-      }),
+      secureGet(role === "admin" ? "/admin/groups" : "/user/groups").then(
+        (res) => {
+          return res.data;
+        }
+      ),
     select: (data) => {
       setGroups(data);
       return data;
     },
+    enabled: Boolean(role), // Only run query when role is available
     // onError: (err) => console.error("Failed to fetch groups:", err.message),
   });
 
@@ -119,8 +124,6 @@ export const useGroupActivities = (groupId: string) => {
       ),
     enabled: Boolean(groupId),
   });
-
-  console.log(`/admin/group/${groupId}/recent-activities`);
 
   return {
     activities: query.data ?? [],
@@ -248,4 +251,24 @@ export function useEditGroupSettings() {
     },
     onError: (err) => console.error("Update settings failed:", err.message),
   });
+}
+
+export function useGetContributionOverview(userId?: string) {
+  const authUserId = useAuthStore((s) => s.user?._id);
+  const id = userId || authUserId;
+
+  const query = useQuery<{ value: number; name: string }[], AxiosError>({
+    queryKey: ["contributionOverview", id],
+    queryFn: () =>
+      secureGet(`/admin/contributions/overview/user?userId=${id}`).then(
+        (res) => res.data
+      ),
+    enabled: Boolean(id),
+  });
+
+  return {
+    data: query.data ?? [],
+    loading: query.isLoading,
+    error: query.error,
+  };
 }

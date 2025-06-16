@@ -15,6 +15,7 @@ const notificationSettings = [
   {
     key: "reminders",
     label: "Payment Reminders",
+    disabled: true,
     desc: "Be reminded of upcoming payments",
   },
   {
@@ -56,7 +57,7 @@ export default function SettingsNotifications() {
       </p>
 
       <div className="space-y-4">
-        {notificationSettings.map(({ key, label, desc }) => (
+        {notificationSettings.map(({ key, label, disabled, desc }) => (
           <div
             key={key}
             className="flex items-center justify-between p-4 border dark:border-gray-700 rounded-lg"
@@ -81,6 +82,7 @@ export default function SettingsNotifications() {
               }`}
               aria-pressed={prefs[key as keyof SettingsNotificationsProps]}
               aria-label={`Toggle ${label}`}
+              disabled={disabled}
             >
               <span
                 className={`inline-block w-5 h-5 transform bg-white rounded-full shadow-md transition-transform ${

@@ -20,6 +20,7 @@ import Header from "../../components/dashboard.admin.components/Header";
 import { useFetchGroups, useGroupActivities } from "../../hooks/useAdmin";
 import { getNextPayout } from "../../utils/payout";
 import LatestMembersModal from "../../components/dashboard.admin.components/LatestMembersModal";
+import { useAuthStore } from "../../store/create.auth.store";
 
 // Skeleton Components
 const Skeleton: React.FC<{ className?: string; animate?: boolean }> = ({
@@ -177,6 +178,8 @@ export const AdminDashboardPage: React.FC = () => {
 
   // const toggleSidebar = () => setIsOpen((prev) => !prev);
 
+  const { user } = useAuthStore();
+
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add("dark");
@@ -191,6 +194,10 @@ export const AdminDashboardPage: React.FC = () => {
     setIsOpen((prevState) => updateFn(prevState));
   };
   const navigate = useNavigate();
+
+  const actions = quickActions.filter((action) => {
+    return user?.role === "admin" || !action.showOnlyAdmin;
+  });
 
   return (
     <div
@@ -236,7 +243,7 @@ export const AdminDashboardPage: React.FC = () => {
                 </h1>
               </div>
               <div className="flex space-x-4">
-                {quickActions.map((action, index) => (
+                {actions.map((action, index) => (
                   <button
                     key={index}
                     type="button"

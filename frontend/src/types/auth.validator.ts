@@ -22,7 +22,7 @@ export interface User {
   firstName: string;
   lastName: string;
   image?: string;
-  phone?: string;
+  phoneNumber?: string;
   role: "user" | "admin" | "bod" | "member";
   location?: string;
   groupName?: string;

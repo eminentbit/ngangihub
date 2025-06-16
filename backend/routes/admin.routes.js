@@ -51,14 +51,12 @@ router.get("/status-history", getStatusHistory);
 router.get(
   "/group/:groupId/recent-activities",
   verifyToken,
-  verifyIfAdmin,
   getGroupRecentActivities
 );
 
 router.get(
   "/group/:groupId/invited-members",
   verifyToken,
-  verifyIfAdmin,
   getInvitedMembersOfGroup
 );
 router.post(
@@ -71,7 +69,6 @@ router.post(
 router.get(
   "/group/:groupId/activity-timeline",
   verifyToken,
-  verifyIfAdmin,
   getActivityTimeline
 );
 

@@ -10,7 +10,10 @@ import {
   INVITE_TEMPLATE,
   NJANGI_REJECTION_TEMPLATE,
   GROUP_MEMBER_ADDITION_TEMPLATE,
+  PASSWORD_CHANGED_TEMPLATE,
+  SIGNIN_ATTEMPT_TEMPLATE,
 } from "./emailTemplates.js";
+import { getInfo } from "../utils/getInfo.js";
 
 const replacePlaceholders = (template, data) => {
   return Object.entries(data).reduce((html, [key, value]) => {
@@ -280,5 +283,60 @@ export const sendNjangiRejectionEmail = async (
   } catch (error) {
     console.error(`Error sending email: ${error}`);
     throw new Error("Error sending email");
+  }
+};
+
+export const sendPasswordChangedEmail = async (email, lastName, firstName, link) => {
+  const recipient = [email];
+
+  try {
+    const response = transporter.sendMail({
+      from: sender,
+      to: recipient,
+      subject: "Password Changed Successfully",
+      html: replacePlaceholders(PASSWORD_CHANGED_TEMPLATE, {
+        lastName,
+        firstName,
+        resetPasswordLink: link,
+      }),
+      category: "Password Change Notification",
+    });
+    console.log("Password change notification sent successfully", response);
+  } catch (error) {
+    console.error(`Error sending password change notification: ${error}`);
+    throw new Error("Error sending password change notification");
+  }
+};
+
+export const sendSigninAttemptEmail = async (
+  email,
+  device,
+  browser,
+  lastName,
+  firstName
+) => {
+  const recipient = [email];
+
+  const { ip, city, region, country } = await getInfo();
+
+  try {
+    const response = transporter.sendMail({
+      from: sender,
+      to: recipient,
+      subject: "New Sign-in Detected",
+      html: replacePlaceholders(SIGNIN_ATTEMPT_TEMPLATE, {
+        userName: `${lastName} ${firstName}`,
+        location: `City: ${city} Region: ${region} Country: ${country}`,
+        dateTime: Date.now(),
+        device,
+        browser,
+        ipAddress: ip,
+      }),
+      category: "Security Alert",
+    });
+    console.log("Sign-in attempt notification sent successfully", response);
+  } catch (error) {
+    console.error(`Error sending signin attempt notification: ${error}`);
+    throw new Error("Error sending signin attempt notification");
   }
 };
