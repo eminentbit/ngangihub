@@ -97,7 +97,21 @@ export const getGroups = async (req, res) => {
       groupMembers: req.user.id,
     }).populate("groupMembers", "_id lastName firstName email createdAt");
 
-    res.status(200).json(groups);
+    const groupsWithDate = groups.map((group) => {
+      const nextDue = group.getNextPaymentDate(req.user.id);
+      const groupObj = group.toObject();
+      const { position, totalRounds } = group.getPositionAndRounds();
+      const { totalContributed, totalReceived } = group.getUserFinancialSummary(
+        req.user.id
+      );
+      groupObj.totalContributed = totalContributed;
+      groupObj.totalReceived = totalReceived;
+      groupObj.position = position;
+      groupObj.totalRounds = totalRounds;
+      groupObj.nextDue = nextDue;
+    });
+
+    res.status(200).json(groupsWithDate);
   } catch (error) {
     res.status(500).json({ message: "Error fetching groups", error });
   }

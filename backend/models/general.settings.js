@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import MODEL_NAMES from "../utils/model.names.js";
 
 const generalSettingsSchema = new mongoose.Schema(
   {
@@ -10,14 +11,14 @@ const generalSettingsSchema = new mongoose.Schema(
     },
     updatedBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: MODEL_NAMES.GENERALSETTINGS,
     },
   },
   { timestamps: true }
 );
 
 const GeneralSettings = mongoose.model(
-  "GeneralSettings",
+  MODEL_NAMES.GENERALSETTINGS,
   generalSettingsSchema
 );
 

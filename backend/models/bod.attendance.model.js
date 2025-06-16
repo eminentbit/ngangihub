@@ -1,15 +1,16 @@
 import mongoose from "mongoose";
+import MODEL_NAMES from "../utils/model.names.js";
 
 const bodAttendanceSchema = new mongoose.Schema(
   {
     bodMember: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "BODMember",
+      ref: MODEL_NAMES.USER,
       required: true,
     },
     meetingId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Meeting",
+      ref: MODEL_NAMES.BODMEETING,
       required: true,
     },
     status: {
@@ -26,6 +27,9 @@ const bodAttendanceSchema = new mongoose.Schema(
   }
 );
 
-const Attendance = mongoose.model("BODAttendance", bodAttendanceSchema);
+const BODAttendance = mongoose.model(
+  MODEL_NAMES.BODATTENDANCE,
+  bodAttendanceSchema
+);
 
-export default Attendance;
+export default BODAttendance;

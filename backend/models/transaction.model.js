@@ -1,6 +1,7 @@
-const mongoose = require("mongoose");
+import { model, Schema } from "mongoose";
+import MODEL_NAMES from "../utils/model.names";
 
-const transactionSchema = new mongoose.Schema({
+const transactionSchema = new Schema({
   date: {
     type: Date,
     required: true,
@@ -12,12 +13,17 @@ const transactionSchema = new mongoose.Schema({
     enum: ["income", "expense"],
   },
   memberId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    type: Schema.Types.ObjectId,
+    ref: MODEL_NAMES.USER,
     required: true,
   },
   amount: {
     type: Number,
+    required: true,
+  },
+  groupId: {
+    type: Schema.Types.ObjectId,
+    ref: MODEL_NAMES.GROUP,
     required: true,
   },
   note: {
@@ -30,6 +36,6 @@ const transactionSchema = new mongoose.Schema({
   },
 });
 
-const Transaction = mongoose.model("Transaction", transactionSchema);
+const Transaction = model(MODEL_NAMES.TRANSACTION, transactionSchema);
 
-module.exports = Transaction;
+export default Transaction;

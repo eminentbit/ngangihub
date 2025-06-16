@@ -12,9 +12,14 @@ import { useAuthStore } from "../store/create.auth.store";
 
 // Exact Group shape as defined by backend
 export interface Group {
+  totalReceived?: number;
+  totalContributed?: number;
+  nextDue: Date;
   _id: string;
   name: string;
   description?: string;
+  position?: number;
+  totalRounds?: number;
   groupMembers: User[];
   memberContributions: Array<{
     totalAmountPaid: number;
@@ -31,6 +36,11 @@ export interface Group {
   totalFunds?: number;
   invitedMembers?: Array<{ email: string; status: string }>;
   createdAt: string;
+}
+
+export interface PaymentGroup {
+  contributionAmount: number;
+  name: string;
 }
 
 export type Member = User & {
@@ -58,6 +68,7 @@ export function useFetchGroups() {
     queryFn: () =>
       secureGet(role === "admin" ? "/admin/groups" : "/user/groups").then(
         (res) => {
+          console.log(res.data);
           return res.data;
         }
       ),

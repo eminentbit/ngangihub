@@ -1,4 +1,4 @@
-import njangiDraftModel from "../models/njangi.draft.model.js";
+import NjangiDraft from "../models/njangi.draft.model.js";
 
 export const updateNjangiDetails = async (req, res) => {
   const { draftId } = req.query;
@@ -11,7 +11,7 @@ export const updateNjangiDetails = async (req, res) => {
 
   try {
     // Fetch the draft first
-    const draft = await njangiDraftModel.findById(draftId);
+    const draft = await NjangiDraft.findById(draftId);
     if (!draft) {
       return res.status(404).json({
         sucess: false,
@@ -65,7 +65,7 @@ export const updateNjangiDetails = async (req, res) => {
     }
 
     // Perform the update with sanitized data and input validation
-    const njangi = await njangiDraftModel.findByIdAndUpdate(
+    const njangi = await NjangiDraft.findByIdAndUpdate(
       draftId,
       { $set: sanitizedUpdate },
       {
@@ -82,9 +82,7 @@ export const updateNjangiDetails = async (req, res) => {
     }
 
     // Validate successful update
-    const updatedNjangi = await njangiDraftModel
-      .findById(draftId)
-      .select("-__v");
+    const updatedNjangi = await NjangiDraft.findById(draftId).select("-__v");
     if (!updatedNjangi) {
       return res.status(404).json({
         success: false,
@@ -117,7 +115,7 @@ export const cancelNjangi = async (req, res) => {
 
   try {
     // Fetch the draft first
-    const draft = await njangiDraftModel.findById({ _id: draftId });
+    const draft = await NjangiDraft.findById({ _id: draftId });
     if (!draft) {
       return res.status(404).json({
         sucess: false,
@@ -125,7 +123,7 @@ export const cancelNjangi = async (req, res) => {
       });
     }
 
-    const deletedNjangi = await njangiDraftModel.deleteOne({ _id: draftId });
+    const deletedNjangi = await NjangiDraft.deleteOne({ _id: draftId });
 
     console.log("Deleted Njangi left from the backend:", deletedNjangi);
 

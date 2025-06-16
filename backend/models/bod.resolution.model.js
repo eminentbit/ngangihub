@@ -1,7 +1,7 @@
-import mongoose from "mongoose";
-import User from "./user.model.js";
+import { Schema, model } from "mongoose";
+import MODEL_NAMES from "../utils/model.names.js";
 
-const resolutionSchema = new mongoose.Schema(
+const resolutionSchema = new Schema(
   {
     title: {
       type: String,
@@ -17,11 +17,11 @@ const resolutionSchema = new mongoose.Schema(
       enum: ["pending", "approved", "rejected"],
       default: "pending",
     },
-    submittedBy: { type: mongoose.Schema.Types.ObjectId, ref: User },
+    submittedBy: { type: Schema.Types.ObjectId, ref: MODEL_NAMES.USER },
   },
   { timestamps: true }
 );
 
-const BodResolution = mongoose.model("Resolution", resolutionSchema);
+const BodResolution = model(MODEL_NAMES.BODRESOLUTION, resolutionSchema);
 
 export default BodResolution;

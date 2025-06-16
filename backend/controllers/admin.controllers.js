@@ -1,4 +1,4 @@
-import njangiDraftModel from "../models/njangi.draft.model.js";
+import NjangiDraft from "../models/njangi.draft.model.js";
 import NjangiGroup from "../models/njangi.group.model.js";
 import User from "../models/user.model.js";
 import validator from "validator";
@@ -82,10 +82,19 @@ export const getAdminGroups = async (req, res) => {
     const groups = await NjangiGroup.find({ adminId: req.user.id }).populate(
       "groupMembers"
     );
-    console.log(groups);
     const groupsWithIsAdmin = groups.map((group) => {
+      const nextDue = group.getNextPaymentDate(req.user.id);
       const groupObj = group.toObject();
+      const { position, totalRounds } = group.getPositionAndRounds();
+      const { totalContributed, totalReceived } = group.getUserFinancialSummary(
+        req.user.id
+      );
       groupObj.isAdmin = String(group.adminId) === String(req.user.id);
+      groupObj.position = position;
+      groupObj.totalRounds = totalRounds;
+      groupObj.totalContributed = totalContributed;
+      groupObj.totalReceived = totalReceived;
+      groupObj.nextDue = nextDue;
       return groupObj;
     });
     res.status(200).json(groupsWithIsAdmin);
@@ -192,7 +201,7 @@ export const getSubmissionStats = async (req, res) => {
       });
     }
 
-    const drafts = await njangiDraftModel.find({
+    const drafts = await NjangiDraft.find({
       "accountSetup.email": { $eq: email },
     });
 
@@ -228,7 +237,7 @@ export const getRecentActivity = async (req, res) => {
         })
       : [];
 
-    const pendingGroups = await njangiDraftModel.find({
+    const pendingGroups = await NjangiDraft.find({
       "accountSetup.email": { $eq: email },
     });
 
@@ -241,7 +250,7 @@ export const getRecentActivity = async (req, res) => {
 export const getDraftInfo = async (req, res) => {
   const { groupId } = req.query;
   try {
-    const draft = await njangiDraftModel.findOne({
+    const draft = await NjangiDraft.findOne({
       _id: { $eq: groupId },
     });
 
@@ -273,11 +282,9 @@ export const getStatusHistory = async (req, res) => {
           .sort({ createdAt: -1 })
       : [];
 
-    const drafts = await njangiDraftModel
-      .find({
-        "accountSetup.email": { $eq: email },
-      })
-      .sort({ createdAt: -1 });
+    const drafts = await NjangiDraft.find({
+      "accountSetup.email": { $eq: email },
+    }).sort({ createdAt: -1 });
 
     const formatGroup = (group, isDraft = false) => {
       const timeline = [

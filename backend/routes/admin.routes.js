@@ -34,7 +34,7 @@ router.get(
   getMembersOfGroup
 );
 
-router.get("/groups", verifyToken, verifyIfAdmin, fetchAllAdminGroups);
+router.get("/groups", verifyToken, fetchAllAdminGroups);
 
 router.get("/group/:groupId", verifyToken, verifyIfAdmin, fetchGroupById);
 
