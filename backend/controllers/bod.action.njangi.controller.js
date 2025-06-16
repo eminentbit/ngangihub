@@ -44,7 +44,7 @@ const actionNjangi = async (req, res) => {
         ...result,
       });
     } else if (action == "reject") {
-      await NjangiDraft.findByIdAndDelete(draftId);
+      await NjangiDraft.findOneAndDelete({ _id: { $eq: draftId } });
 
       await NjangiActivityLog.create({
         groupId: draftId,

@@ -19,16 +19,16 @@ export const validateEmail = async (req, res) => {
     return res.status(400).json({ message: "Invalid email address" });
   }
 
-  if (!email) {
-    return res.status(400).json({ valid: false, message: "Email is required" });
-  }
+  // if (!email) {
+  //   return res.status(400).json({ valid: false, message: "Email is required" });
+  // }
 
   try {
     console.log(`Validating email: ${email}`);
 
     const [inDraft, inInviteMembers, inUsers] = await Promise.all([
-      NjangiDrafts.exists({ "accountSetup.email": email }),
-      NjangiDrafts.exists({ "inviteMembers.value": email }),
+      NjangiDrafts.exists({ "accountSetup.email": { $eq: email } }),
+      NjangiDrafts.exists({ "inviteMembers.value": { $eq: email } }),
       User.exists({ email: { $eq: email } }),
     ]);
 

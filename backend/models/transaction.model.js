@@ -1,5 +1,5 @@
 import { model, Schema } from "mongoose";
-import MODEL_NAMES from "../utils/model.names";
+import MODEL_NAMES from "../utils/model.names.js";
 
 const transactionSchema = new Schema({
   date: {
@@ -25,6 +25,11 @@ const transactionSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: MODEL_NAMES.GROUP,
     required: true,
+  },
+  status: {
+    type: String,
+    enum: ["pending", "completed", "failed"],
+    default: "completed",
   },
   note: {
     type: String,

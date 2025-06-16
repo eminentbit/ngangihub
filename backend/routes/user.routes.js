@@ -4,6 +4,7 @@ import {
   getGroupPayments,
   getGroups,
   getUserContributionOverview,
+  getUserPaymentHistory,
 } from "../controllers/user.controller.js";
 import limiter from "../middleware/limiter.js";
 import verifyToken from "../middleware/verify.token.js";
@@ -19,6 +20,8 @@ router.get(
 );
 
 router.get("/group/:groupId/payments", verifyToken, getGroupPayments);
+
+router.get("/payment-history", verifyToken, getUserPaymentHistory);
 
 router.get("/groups", verifyToken, getGroups);
 

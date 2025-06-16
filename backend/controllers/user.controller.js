@@ -1,4 +1,5 @@
 import NjangiGroup from "../models/njangi.group.model.js";
+import Transaction from "../models/transaction.model.js";
 
 export const checkMonthlyPaymentStatus = async (req, res) => {
   try {
@@ -144,5 +145,20 @@ export const getUserContributionOverview = async (req, res) => {
     res
       .status(500)
       .json({ error: "Failed to fetch user contribution overview" });
+  }
+};
+
+export const getUserPaymentHistory = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const transactions = await Transaction.find({ memberId: userId })
+      .populate("groupId", "name")
+      .sort({ date: -1 });
+
+    res.json(transactions);
+  } catch (err) {
+    console.error("Error fetching payment history:", err);
+    res.status(500).json({ error: "Server error" });
   }
 };

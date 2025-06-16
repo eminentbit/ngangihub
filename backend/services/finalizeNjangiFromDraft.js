@@ -86,7 +86,7 @@ export const finalizeNjangiFromDraft = async (draftId, res) => {
   );
 
   // delete the draft after finalizing
-  await NjangiDraft.deleteOne({ _id: draftId });
+  await NjangiDraft.deleteOne({ _id: { $eq: draftId } });
 
   res.clearCookie("draftUserToken"); // This will clear the cookie on the client
 

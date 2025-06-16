@@ -56,3 +56,22 @@ export const useChangePassword = () => {
     error: mutation.error,
   };
 };
+
+export const usePaymentHistory = () => {
+  const setPH = useUserStore((s) => s.setPaymentHistory);
+  const query = useQuery({
+    queryKey: ["paymentHistory"],
+    queryFn: async () => {
+      const response = await secureGet("/user/payment-history");
+      return response.data;
+    },
+  });
+
+  setPH(query.data);
+
+  return {
+    paymentHistory: query.data ?? [],
+    paymentisLoading: query.isLoading,
+    error: query.error,
+  };
+};
