@@ -15,6 +15,7 @@ import { useAuthStore } from "../store/create.auth.store";
 export interface Group {
   totalReceived?: number;
   totalContributed?: number;
+  payoutMethod?: string;
   nextDue: Date;
   _id: string;
   name: string;
@@ -30,7 +31,7 @@ export interface Group {
   nextMeeting?: string;
   rules?: string;
   status?: string;
-  startDate?: string;
+  startDate?: Date;
   adminId: string;
   contributionFrequency?: string;
   contributionAmount?: number;
@@ -71,26 +72,25 @@ export function useFetchGroups() {
   const role = useAuthStore((s) => s.user?.role);
   const setGroups = useAdminState((s) => s.setGroups);
 
+  const isReady = Boolean(role);
+
   const query = useQuery<Group[], AxiosError>({
     queryKey: ["groups", role],
     queryFn: () =>
       secureGet(role === "admin" ? "/admin/groups" : "/user/groups").then(
-        (res) => {
-          console.log(res.data);
-          return res.data;
-        }
+        (res) => res.data
       ),
+    enabled: isReady,
     select: (data) => {
       setGroups(data);
       return data;
     },
-    enabled: Boolean(role), // Only run query when role is available
-    // onError: (err) => console.error("Failed to fetch groups:", err.message),
+    staleTime: 5 * 60 * 1000,
   });
 
   return {
     groups: query.data ?? [],
-    isLoading: query.isLoading,
+    isLoading: query.isLoading || !isReady,
     error: query.error,
   };
 }
@@ -288,7 +288,7 @@ export function useRemoveMember(groupId: string) {
     mutationFn: (userId) =>
       secureDelete(`/admin/group/${groupId}/remove-member/${userId}`).then(
         () => {
-          console.log("User id: ", userId)
+          console.log("User id: ", userId);
         }
       ),
     onSuccess: () => {
@@ -321,17 +321,13 @@ export function useEditGroupSettings() {
   });
 }
 
-export function useGetContributionOverview(userId?: string) {
-  const authUserId = useAuthStore((s) => s.user?._id);
-  const id = userId || authUserId;
-
+export function useGetContributionOverview() {
   const query = useQuery<{ value: number; name: string }[], AxiosError>({
-    queryKey: ["contributionOverview", id],
+    queryKey: ["contributionOverview"],
     queryFn: () =>
-      secureGet(`/admin/contributions/overview/user?userId=${id}`).then(
-        (res) => res.data
+      secureGet(`/user/contributions/overview`).then(
+        (res) => res.data.overview
       ),
-    enabled: Boolean(id),
   });
 
   return {

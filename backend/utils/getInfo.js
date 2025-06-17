@@ -1,5 +1,5 @@
 import axios from "axios";
-import  userAgentParser from 'user-agent-parser';
+import userAgentParser from "user-agent-parser";
 
 export const getInfo = async () => {
   const res = await axios.get("https://ipinfo.io");
@@ -14,5 +14,5 @@ export function getBrowserType(userAgent) {
 
 export function getDeviceName(userAgent) {
   const result = userAgentParser(userAgent);
-  return result.device ? result.device.name : "Unknown Device"; // Returns the device name or 'Unknown Device'
+  return result.os ? result.os.name : "Unknown Device";
 }

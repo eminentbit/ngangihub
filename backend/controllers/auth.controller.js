@@ -26,7 +26,7 @@ async function checkDraftStatus(email) {
 // Shared options
 const LOGIN_QUERIES_PROJECTION = "email status lastName firstName role";
 const USER_PROJECTION = "-password";
-const SIGNIN_THRESHOLD_MS = 7 * 24 * 60 * 60 * 1000; // 1 week
+const SIGNIN_THRESHOLD_MS = 3 * 24 * 60 * 60 * 1000;
 
 // Validate request results
 function handleValidation(req, res) {
@@ -125,7 +125,7 @@ export const login = async (req, res) => {
     });
 
     if (shouldAlert) {
-      sendSigninAttemptEmail(
+      await sendSigninAttemptEmail(
         user.email,
         device,
         browser,

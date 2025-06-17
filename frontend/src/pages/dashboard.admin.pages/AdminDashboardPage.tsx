@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   FaUsers,
@@ -23,7 +23,6 @@ import LatestMembersModal from "../../components/dashboard.admin.components/Late
 import { useAuthStore } from "../../store/create.auth.store";
 import toast from "react-hot-toast";
 import { Skeleton } from "../../components/skeleton-loaders/skeleton-card-loader";
-
 
 // Loading Stat Card Component
 const LoadingStatCard: React.FC = () => (
@@ -187,6 +186,10 @@ export const AdminDashboardPage: React.FC = () => {
   // const toggleSidebar = () => setIsOpen((prev) => !prev);
 
   const { user } = useAuthStore();
+
+  const firstGroupId = useMemo(() => groups[0]?._id, [groups]);
+  // const firstGroupMember = useMemo(() => groups[0]?.groupMembers[0], [groups]);
+  const firstGroup = useMemo(() => groups[0], [groups]);
 
   useEffect(() => {
     if (darkMode) {
@@ -365,7 +368,7 @@ export const AdminDashboardPage: React.FC = () => {
                       <h3 className="text-blue-700 dark:text-blue-300 font-semibold mb-2">
                         Activity Timeline
                       </h3>
-                      <ActivityChart groupId={groups[0]._id} />
+                      <ActivityChart groupId={firstGroupId} />
                     </div>
                   </>
                 )}
@@ -503,13 +506,13 @@ export const AdminDashboardPage: React.FC = () => {
                       Next Njangi Payout
                     </h3>
                     <div className="text-4xl font-bold text-blue-600 dark:text-blue-300 mb-1 animate-pulse">
-                      {getNextPayout(groups[0])?.amount}
+                      {getNextPayout(firstGroup)?.amount}
                     </div>
                     <div className="text-gray-600 dark:text-gray-300 text-sm mb-4">
                       To:{" "}
                       <span className="font-semibold text-gray-800 dark:text-gray-100">
-                        {getNextPayout(groups[0])?.member.lastName}{" "}
-                        {getNextPayout(groups[0])?.member.firstName}
+                        {getNextPayout(firstGroup)?.member.lastName}{" "}
+                        {getNextPayout(firstGroup)?.member.firstName}
                       </span>
                     </div>
                     <div className="flex items-center text-gray-500 dark:text-gray-400 text-xs">
@@ -520,7 +523,7 @@ export const AdminDashboardPage: React.FC = () => {
                           animationDuration: "1s",
                         }}
                       />
-                      Expected: 15th May, 2025
+                      Expected: {getNextPayout(firstGroup)?.date.toDateString()}
                     </div>
                   </div>
                 </div>

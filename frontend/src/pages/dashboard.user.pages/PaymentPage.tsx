@@ -60,7 +60,7 @@ export default function PaymentsPage() {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [paymentMethod, setPaymentMethod] =
     useState<PaymentMethod>("mobile_money");
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
   const { user } = useAuthStore();
@@ -240,7 +240,7 @@ export default function PaymentsPage() {
                   </p>
                   <p className="text-lg font-semibold text-red-600 dark:text-red-400">
                     {isLoading ? (
-                      <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-24 animate-pulse"></div>
+                      <span className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-24 animate-pulse"></span>
                     ) : (
                       stats.nextDueDate.toLocaleDateString()
                     )}
@@ -252,7 +252,7 @@ export default function PaymentsPage() {
                   </p>
                   <p className="text-lg font-semibold text-orange-600 dark:text-orange-400">
                     {isLoading ? (
-                      <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-8 animate-pulse"></div>
+                      <span className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-8 animate-pulse"></span>
                     ) : (
                       sortedGroups.filter((g) =>
                         ["overdue", "due", "due_soon"].includes(

@@ -25,11 +25,13 @@ export const useSession = () => {
   const setUser = useAuthStore((s) => s.setUser);
   const logout = useAuthStore((s) => s.logout);
 
-  return useQuery({
+  const query = useQuery({
     queryKey: ["session"],
     queryFn: () => fetchSession(setUser, logout),
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 10,
     retry: false,
   });
+
+  return query;
 };

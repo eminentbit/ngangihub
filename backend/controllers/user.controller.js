@@ -110,7 +110,10 @@ export const getGroups = async (req, res) => {
       groupObj.position = position;
       groupObj.totalRounds = totalRounds;
       groupObj.nextDue = nextDue;
+      return groupObj;
     });
+
+    console.log(groupsWithDate);
 
     res.status(200).json(groupsWithDate);
   } catch (error) {
@@ -125,26 +128,43 @@ export const getUserContributionOverview = async (req, res) => {
       return res.status(400).json({ error: "userId is required" });
     }
 
-    // Find all groups where the user is a member
-    const groups = await NjangiGroup.find({ groupMembers: userId }).lean();
+    // Find all groups where the user is a member and populate member contributions
+    const groups = await NjangiGroup.find({
+      groupMembers: userId,
+      "memberContributions.member": userId,
+    }).lean();
 
-    // For each group, find the user's totalAmountPaid
+    // For each group, find the user's contribution details
     const overview = groups.map((group) => {
-      const member = group.memberContributions.find(
-        (m) => m.member.toString() === userId
+      const memberContribution = group.memberContributions?.find(
+        (m) => m.member.toString() === userId.toString()
       );
+
       return {
-        value: member?.totalAmountPaid || 0,
-        name: group.name,
+        groupId: group._id,
+        groupName: group.name,
+        totalContributed: memberContribution?.totalAmountPaid || 0,
+        lastPaymentDate: memberContribution?.lastPaymentDate || null,
+        contributionAmount: group.contributionAmount || 0,
+        frequency: group.paymentFrequency || "monthly",
       };
     });
 
-    res.json(overview);
+    return res.status(200).json({
+      success: true,
+      overview: overview,
+      totalGroups: overview.length,
+      totalContributed: overview.reduce(
+        (sum, group) => sum + group.totalContributed,
+        0
+      ),
+    });
   } catch (err) {
     console.error("Error fetching user contribution overview:", err);
-    res
-      .status(500)
-      .json({ error: "Failed to fetch user contribution overview" });
+    res.status(500).json({
+      success: false,
+      error: "Failed to fetch user contribution overview",
+    });
   }
 };
 

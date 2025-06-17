@@ -587,3 +587,54 @@ export const SIGNIN_ATTEMPT_TEMPLATE = `
 </body>
 </html>
 `;
+
+export const NJANGI_PAYMENT_REMINDER_TEMPLATE = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Njangi Payment Reminder</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body style="font-family: 'Inter', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 0;">
+  <div style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin: 20px auto;">
+    
+    <!-- Header -->
+    <div style="background: linear-gradient(to right, #047857, #10b981); padding: 30px; text-align: center;">
+      <h1 style="color: white; margin: 0; font-weight: 700; font-size: 24px;">Njangi Payment Due</h1>
+    </div>
+
+    <!-- Content -->
+    <div style="padding: 30px; background-color: #ffffff;">
+      <p style="margin-top: 0; font-size: 16px;">Hi {userName},</p>
+      <p style="font-size: 16px;">This is a friendly reminder that your Njangi contribution is due.</p>
+
+      <div style="background-color: #f9fafb; border: 1px solid #e5e7eb; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <p style="margin: 0; font-size: 16px;"><strong>Payment Details:</strong></p>
+        <ul style="list-style: none; padding-left: 0; font-size: 16px; margin-top: 10px;">
+          <li><strong>Amount Due:</strong> {amountDue}</li>
+          <li><strong>Due Date:</strong> {dueDate}</li>
+          <li><strong>Group Name:</strong> {groupName}</li>
+        </ul>
+      </div>
+
+      <p style="font-size: 16px;">Please make your payment by the due date to keep your membership in good standing.</p>
+
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="{paymentLink}" style="background-color: #047857; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block; font-size: 16px;">Make Payment</a>
+      </div>
+
+      <p style="font-size: 16px;">Thank you for your prompt attention.</p>
+      <p style="font-size: 16px;">Warm regards,<br/><strong>{groupName} Njangi Admin</strong></p>
+    </div>
+
+    <!-- Footer -->
+    <div style="background-color: #f3f4f6; padding: 20px; text-align: center; font-size: 14px; color: #6b7280;">
+      <p style="margin: 0;">© 2025 {groupName}. All rights reserved.</p>
+      <p style="margin: 10px 0 0;">This is an automated reminder — please do not reply directly to this email.</p>
+    </div>
+  </div>
+</body>
+</html>
+`;

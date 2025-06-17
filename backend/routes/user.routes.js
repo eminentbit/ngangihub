@@ -25,10 +25,6 @@ router.get("/payment-history", verifyToken, getUserPaymentHistory);
 
 router.get("/groups", verifyToken, getGroups);
 
-router.get(
-  "/group/:groupId/contributions/overview",
-  verifyToken,
-  getUserContributionOverview
-);
+router.get("/contributions/overview", verifyToken, getUserContributionOverview);
 
 export default router;

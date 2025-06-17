@@ -41,6 +41,12 @@ const transactionSchema = new Schema({
   },
 });
 
+transactionSchema.post("save", function (doc, next) {
+  // Notify admin that a payment was made
+  notifyAdminOfPayment(doc.memberId, doc.amount);
+  next();
+});
+
 const Transaction = model(MODEL_NAMES.TRANSACTION, transactionSchema);
 
 export default Transaction;

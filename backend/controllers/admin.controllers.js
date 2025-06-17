@@ -98,6 +98,8 @@ export const getAdminGroups = async (req, res) => {
       groupObj.nextDue = nextDue;
       return groupObj;
     });
+
+    console.log(groupsWithIsAdmin);
     res.status(200).json(groupsWithIsAdmin);
   } catch (error) {
     res.status(500).json({ message: "Error fetching admin's groups", error });

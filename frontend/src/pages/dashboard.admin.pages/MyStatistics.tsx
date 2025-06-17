@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   FaChartLine,
   FaUsers,
@@ -11,7 +11,7 @@ import ContributionChart from "../../components/dashboard.admin.components/Contr
 import Header from "../../components/dashboard.admin.components/Header";
 import { useFetchGroups } from "../../hooks/useAdmin";
 import { Skeleton } from "../../components/skeleton-loaders/skeleton-card-loader";
-import { parseISO, format } from "date-fns";
+import { format } from "date-fns";
 
 // Shimmer effect for content loading
 const ShimmerWrapper: React.FC<{
@@ -40,13 +40,14 @@ const LoadingStatCard: React.FC = () => (
 
 const StatisticsPage: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [, setActiveTab] = useState<string>("/statistics");
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
   const [totalMembers, setTotalMembers] = useState(0);
   const [totalContributions, setTotalContribution] = useState(0);
   const [monthlyGrowth, setMonthlyGrowth] = useState("0.0");
 
   const { groups, isLoading } = useFetchGroups();
+
+  console.log(groups);
 
   // fetch the totalNumber of memebers
   useEffect(() => {
@@ -76,6 +77,7 @@ const StatisticsPage: React.FC = () => {
     setTotalContribution(totalMembersContributions);
   }, [groups]);
 
+  const firstGroupId = useMemo(() => groups[0]?._id, [groups]);
   // calculate monthlygrowth
   useEffect(() => {
     const monthlyTotals = new Map<string, number>();
@@ -83,7 +85,7 @@ const StatisticsPage: React.FC = () => {
     groups.forEach((group) => {
       const startNjangiDate = group.startDate;
       group.memberContributions?.forEach((contribution) => {
-        const date = parseISO(startNjangiDate!);
+        const date = startNjangiDate!;
         const monthKey = format(date, "yyyy-MM");
 
         const prev = monthlyTotals.get(monthKey) || 0;
@@ -146,7 +148,6 @@ const StatisticsPage: React.FC = () => {
       {/* Sidebar */}
       <Sidebar
         isOpen={isSidebarOpen}
-        onTabChange={setActiveTab}
         onToggle={toggleSidebar}
         notifications={[]}
         onClose={toggleSidebar}
@@ -228,7 +229,9 @@ const StatisticsPage: React.FC = () => {
                 <h2 className="text-lg font-semibold dark:text-gray-100 mb-4">
                   Activity Over Time
                 </h2>
-                <ActivityChart groupId={groups[0]._id} />
+                {!isLoading && groups.length > 0 && (
+                  <ActivityChart groupId={firstGroupId} />
+                )}
               </div>
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
                 <h2 className="text-lg font-semibold dark:text-gray-100 mb-4">

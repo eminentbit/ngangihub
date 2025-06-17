@@ -286,7 +286,12 @@ export const sendNjangiRejectionEmail = async (
   }
 };
 
-export const sendPasswordChangedEmail = async (email, lastName, firstName, link) => {
+export const sendPasswordChangedEmail = async (
+  email,
+  lastName,
+  firstName,
+  link
+) => {
   const recipient = [email];
 
   try {
@@ -327,7 +332,7 @@ export const sendSigninAttemptEmail = async (
       html: replacePlaceholders(SIGNIN_ATTEMPT_TEMPLATE, {
         userName: `${lastName} ${firstName}`,
         location: `City: ${city} Region: ${region} Country: ${country}`,
-        dateTime: Date.now(),
+        dateTime: new Date().toLocaleDateString(),
         device,
         browser,
         ipAddress: ip,
@@ -338,5 +343,38 @@ export const sendSigninAttemptEmail = async (
   } catch (error) {
     console.error(`Error sending signin attempt notification: ${error}`);
     throw new Error("Error sending signin attempt notification");
+  }
+};
+
+export const sendDueReminder = async (
+  email,
+  amountDue,
+  dueDate,
+  groupName,
+  lastName,
+  firstName,
+  paymentLink
+) => {
+  const recipient = [email];
+
+  try {
+    const response = await transporter.sendMail({
+      from: sender,
+      to: recipient,
+      subject: "Njangi Payment Reminder",
+      html: replacePlaceholders(NJANGI_PAYMENT_REMINDER_TEMPLATE, {
+        userName: `${lastName} ${firstName}`,
+        amountDue,
+        dueDate,
+        groupName,
+        paymentLink,
+      }),
+      category: "Njangi Reminder",
+    });
+
+    console.log("Njangi due reminder sent successfully", response);
+  } catch (error) {
+    console.error(`Error sending Njangi due reminder: ${error}`);
+    throw new Error("Error sending Njangi due reminder");
   }
 };
