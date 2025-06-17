@@ -638,3 +638,59 @@ export const NJANGI_PAYMENT_REMINDER_TEMPLATE = `
 </body>
 </html>
 `;
+
+export const ADMIN_PAYMENT_NOTIFICATION_TEMPLATE = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Payment Notification</title>
+  <style>
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      background-color: #f9fafb;
+      padding: 20px;
+      color: #333;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    h2 {
+      color: #047857;
+    }
+    .info {
+      margin: 20px 0;
+    }
+    .info p {
+      font-size: 16px;
+    }
+    .footer {
+      font-size: 14px;
+      color: #6b7280;
+      text-align: center;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Payment Notification</h2>
+    <p>Hello Admin,</p>
+    <p class="info">
+      Member <strong>{memberName}</strong> has just made a payment of <strong>{amountPaid}</strong> 
+      to the <strong>{groupName}</strong> Njangi group.
+    </p>
+    <p>You can log into the admin dashboard to verify the transaction details.</p>
+    <p>Best regards,<br/>Njangi App</p>
+  </div>
+  <div class="footer">
+    © 2025 {groupName}. This is an automated message — please do not reply.
+  </div>
+</body>
+</html>
+`;

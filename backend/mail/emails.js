@@ -12,8 +12,11 @@ import {
   GROUP_MEMBER_ADDITION_TEMPLATE,
   PASSWORD_CHANGED_TEMPLATE,
   SIGNIN_ATTEMPT_TEMPLATE,
+  ADMIN_PAYMENT_NOTIFICATION_TEMPLATE,
 } from "./emailTemplates.js";
+import NjangiGroup from "../models/njangi.group.model.js";
 import { getInfo } from "../utils/getInfo.js";
+import User from "../models/user.model.js";
 
 const replacePlaceholders = (template, data) => {
   return Object.entries(data).reduce((html, [key, value]) => {
@@ -346,6 +349,17 @@ export const sendSigninAttemptEmail = async (
   }
 };
 
+/**
+ *
+ * @param {string} email - The email of the recipient to receive the reminder
+ * @param {number} amountDue - The amount of money the recipient is owing
+ * @param {Date} dueDate - The due date for the payment
+ * @param {string} groupName - The name of the group
+ * @param {string} lastName - The last name of the recipient
+ * @param {string} firstName - The first name of the recipient
+ * @param {string} paymentLink - The link to facilitate the payment
+ */
+
 export const sendDueReminder = async (
   email,
   amountDue,
@@ -376,5 +390,54 @@ export const sendDueReminder = async (
   } catch (error) {
     console.error(`Error sending Njangi due reminder: ${error}`);
     throw new Error("Error sending Njangi due reminder");
+  }
+};
+
+/**
+ *
+ * @param {string} memberId - Represents the ID of the member who made the payment
+ * @param {number} amount - The amount the member made
+ * @param {string} groupId - The group in which this payment was made
+ */
+
+export const notifyAdminOfPayment = async (memberId, amount, groupId) => {
+  try {
+    const member = await User.findById(memberId).select(
+      "firstName lastName email"
+    );
+    const group = await NjangiGroup.findById(groupId);
+
+    if (!member || !group) {
+      throw new Error("Member or group not found");
+    }
+
+    const fullName = `${member.firstName} ${member.lastName}`;
+    const amountPaid = `${amount} FCFA`;
+    const groupName = group.name;
+
+    const admin = await User.findById(group.adminId);
+    const recipients = [admin.email];
+
+    const emailContent = replacePlaceholders(
+      ADMIN_PAYMENT_NOTIFICATION_TEMPLATE,
+      {
+        memberName: fullName,
+        amountPaid,
+        groupName,
+      }
+    );
+
+    console.log(emailContent);
+
+    const response = await transporter.sendMail({
+      from: sender,
+      to: recipients,
+      subject: `Payment Received - ${groupName}`,
+      html: emailContent,
+      category: "Njangi Admin Notification",
+    });
+  } catch (error) {
+    console.error("Failed to notify admin of payment:", error);
+    throw new Error("Admin notification failed");
   }
 };

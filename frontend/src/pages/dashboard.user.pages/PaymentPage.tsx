@@ -16,6 +16,7 @@ import { useAuthStore } from "../../store/create.auth.store";
 import Sidebar from "../../components/dashboard.admin.components/Sidebar";
 import PaymentModal from "../../components/dashboard.user.components/PaymentModal";
 import PaymentHistoryTable from "../../components/dashboard.user.components/PaymentHistory";
+import { useFetchCampayToken, usePayWithMobile } from "../../hooks/usePayment";
 
 // Skeleton Components
 const StatCardSkeleton = () => (
@@ -64,6 +65,9 @@ export default function PaymentsPage() {
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
   const { user } = useAuthStore();
+
+  const { getToken } = useFetchCampayToken();
+  const { initatePayment } = usePayWithMobile();
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("fr-FR", {
@@ -137,12 +141,12 @@ export default function PaymentsPage() {
     }
   };
 
-  const handleInitiatePayment = (group: Group) => {
+  const handleInitiatePayment = async (group: Group) => {
     setSelectedGroup(group);
     setShowPaymentModal(true);
   };
 
-  const handlePaymentSubmit = async () => {
+  const handlePaymentSubmit = async (group: Group) => {
     if (!user?.phoneNumber && paymentMethod === "mobile_money") {
       alert("Please enter your phone number");
       return;
@@ -150,14 +154,16 @@ export default function PaymentsPage() {
 
     setIsProcessingPayment(true);
     try {
-      // Simulate payment processing
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await getToken();
 
-      alert(
-        `Payment of ${formatCurrency(
-          selectedGroup?.contributionAmount || 0
-        )} initiated for ${selectedGroup?.name}`
-      );
+      const data = await initatePayment({
+        amount: 10,
+        description: "Test",
+        from: user?.phoneNumber || "",
+        groupId: group?._id,
+      });
+
+      console.log(data);
 
       setShowPaymentModal(false);
       setSelectedGroup(null);

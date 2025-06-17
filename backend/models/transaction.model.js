@@ -1,5 +1,6 @@
 import { model, Schema } from "mongoose";
 import MODEL_NAMES from "../utils/model.names.js";
+import { notifyAdminOfPayment } from "../mail/emails.js";
 
 const transactionSchema = new Schema({
   date: {
@@ -29,7 +30,10 @@ const transactionSchema = new Schema({
   status: {
     type: String,
     enum: ["pending", "completed", "failed"],
-    default: "completed",
+    default: "pending",
+  },
+  reference: {
+    type: String,
   },
   note: {
     type: String,
@@ -41,12 +45,17 @@ const transactionSchema = new Schema({
   },
 });
 
-transactionSchema.post("save", function (doc, next) {
-  // Notify admin that a payment was made
-  notifyAdminOfPayment(doc.memberId, doc.amount);
+// Async post hook
+transactionSchema.post("save", async function (doc, next) {
+  if (doc.status === "completed") {
+    try {
+      await notifyAdminOfPayment(doc.memberId, doc.amount, doc.groupId);
+    } catch (error) {
+      console.error("Error notifying admin of payment:", error);
+    }
+  }
   next();
 });
 
 const Transaction = model(MODEL_NAMES.TRANSACTION, transactionSchema);
-
 export default Transaction;

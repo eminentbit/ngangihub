@@ -41,9 +41,9 @@ const notificationSchema = new mongoose.Schema(
   }
 );
 
-const Notification = mongoose.model(
+const NjangiNotification = mongoose.model(
   MODEL_NAMES.NOTIFICATION,
   notificationSchema
 );
 
-export default Notification;
+export default NjangiNotification;

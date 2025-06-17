@@ -9,7 +9,7 @@ interface PaymentModalProps {
   paymentMethod: PaymentMethod;
   setPaymentMethod: (method: PaymentMethod) => void;
   setShowPaymentModal: (show: boolean) => void;
-  handlePaymentSubmit: () => Promise<void> | void;
+  handlePaymentSubmit: (group: Group) => Promise<void> | void;
   isProcessingPayment: boolean;
   setIsProcessingPayment: (processing: boolean) => void;
 }
@@ -51,7 +51,7 @@ const PaymentModal = ({
 
     try {
       setIsProcessingPayment(true);
-      await handlePaymentSubmit();
+      await handlePaymentSubmit(selectedGroup);
     } catch (error) {
       console.error("Payment failed:", error);
     } finally {

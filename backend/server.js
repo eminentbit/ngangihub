@@ -18,6 +18,7 @@ import validateDraftId from "./routes/validate.draft.id.route.js";
 import adminRoutes from "./routes/admin.routes.js";
 import njangiRoutes from "./routes/user.njangi.routes.js";
 import userRoutes from "./routes/user.routes.js";
+import paymentRoutes from "./routes/payment.routes.js";
 import Message from "./models/message.model.js";
 import updateNjangiDetails from "./routes/update.njangi.details.route.js";
 import pkg from "lusca";
@@ -86,6 +87,7 @@ app.use("/api/state-dashboard", getNjangiStateOverview);
 app.use("/api/state-dashboard", updateNjangiDetails);
 app.use("/api/admin", adminRoutes);
 app.use("/api/njangi-ndraft", getNjangiDraftId);
+app.use("/api/payment", paymentRoutes);
 app.use("/api/user", userRoutes);
 
 // ─── CREATE HTTP + SOCKET.IO SERVER ────────────────────────────────────────────

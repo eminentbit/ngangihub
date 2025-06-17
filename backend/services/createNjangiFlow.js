@@ -5,6 +5,7 @@ import NjangiGroup from "../models/njangi.group.model.js";
 import User from "../models/user.model.js";
 import { config } from "dotenv";
 import emailQueue from "../bullMQ/queues/emailQueue.js";
+import CACHE_NAMES from "../utils/cache.names.js";
 config();
 
 const viewURL = process.env.CREATED_NJANGI_STATE_URL;
@@ -78,7 +79,7 @@ const createNjangiFlow = async (formData, njangiId, draftUserToken) => {
     // Add email job to Redis
     console.time("📬 Add email job to Redis");
     await emailQueue.add(
-      "send-njangi-pending-email",
+      CACHE_NAMES.SENDPENDINGEMAIL,
       {
         dest: "admin",
         email: accountSetup.email,
