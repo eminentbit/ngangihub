@@ -61,6 +61,15 @@ services:
       - REDIS_PORT: 6379
     command: ["redis-server", "--requirepass", "mjlsbkCh2z8Ft63"]
 
+  cronjob:
+    build:
+      context: ./backend
+      dockerfile: cronjob.dockerfile
+    volumes:
+      - .:/app
+      - /app/node_modules
+    restart: always
+
   reverse-proxy:
     image: nginx:latest
     ports:

@@ -1,8 +1,9 @@
 import cron from "node-cron";
 import NjangiGroup from "../models/njangi.group.model.js";
 import { sendDueReminder } from "../mail/emails.js";
+import User from "../models/user.model.js";
 
-function getNextDueDate(lastDate, frequency) {
+export function getNextDueDate(lastDate, frequency) {
   const date = new Date(lastDate || new Date());
   switch (frequency) {
     case "Weekly":
@@ -55,7 +56,7 @@ cron.schedule("0 8 * * *", async () => {
 
           const dueDateFormatted = nextDueDate.toDateString();
 
-          const paymentLink = `${process.env.FRONTEND_URL}`;
+          const paymentLink = `${process.env.FRONTEND_URL}/${user.role}/payments`;
 
           await sendDueReminder(
             user.email,
@@ -64,7 +65,7 @@ cron.schedule("0 8 * * *", async () => {
             group.name,
             user.lastName,
             user.firstName,
-            "https://your-app.com/pay"
+            paymentLink
           );
 
           console.log(`📧 Reminder sent to ${user.email}`);
