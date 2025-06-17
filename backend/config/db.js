@@ -1,12 +1,13 @@
-import mongoose from "mongoose";
+import { connect } from "mongoose";
+import { config } from "dotenv";
+config();
 
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URL);
+    const conn = await connect(process.env.MONGODB_URL);
     console.log(`MongoDB Connected Successfully: ${conn.connection.host}`);
   } catch (error) {
     console.log("MongoDB Connecttion error", error);
-    // console.error(`Error: ${error.message}`.red.underline.bold);
     process.exit(1);
   }
 };

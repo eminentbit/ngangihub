@@ -2,6 +2,8 @@ import cron from "node-cron";
 import NjangiGroup from "../models/njangi.group.model.js";
 import { sendDueReminder } from "../mail/emails.js";
 import User from "../models/user.model.js";
+import { config } from "dotenv";
+config();
 
 export function getNextDueDate(lastDate, frequency) {
   const date = new Date(lastDate || new Date());

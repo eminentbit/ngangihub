@@ -3,10 +3,9 @@ import bcrypt from "bcryptjs";
 import NjangiDraft from "../models/njangi.draft.model.js";
 import NjangiGroup from "../models/njangi.group.model.js";
 import User from "../models/user.model.js";
-import dotenv from "dotenv";
+import { config } from "dotenv";
 import emailQueue from "../bullMQ/queues/emailQueue.js";
-import NjangiActivityLog from "../models/njangi.activity.log.model.js";
-dotenv.config();
+config();
 
 const viewURL = process.env.CREATED_NJANGI_STATE_URL;
 

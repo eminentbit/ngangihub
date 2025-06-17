@@ -5,8 +5,8 @@ import Invite from "../models/invite.model.js";
 import NjangiGroup from "../models/njangi.group.model.js";
 import User from "../models/user.model.js";
 import { sendNjangiAleadyAddMemberEmail } from "../mail/emails.js";
-import dotenv from "dotenv";
-dotenv.config();
+import { config } from "dotenv";
+config();
 
 export const generateToken = () => crypto.randomBytes(20).toString("hex");
 

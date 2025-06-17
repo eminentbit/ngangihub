@@ -7,6 +7,8 @@ import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js
 import { sendWelcomeEmail } from "../mail/emails.js";
 import NjangiActivityLog from "../models/njangi.activity.log.model.js";
 import validator from "validator";
+import { config } from "dotenv";
+config();
 
 const acceptInvite = async (req, res) => {
   const { token } = req.query;

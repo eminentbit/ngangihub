@@ -11,6 +11,8 @@ import {
 } from "../mail/emails.js";
 import validator from "validator";
 import bcrypt from "bcryptjs";
+import { config } from "dotenv";
+config();
 
 // Helper: find pending or suspended draft user
 async function checkDraftStatus(email) {

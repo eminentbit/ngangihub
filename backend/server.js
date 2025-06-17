@@ -24,7 +24,9 @@ import pkg from "lusca";
 import { Server } from "socket.io";
 import session from "express-session";
 import getNjangiStateOverview from "./routes/get.njangi.overview.route.js";
-import getNjangiDraftId from "./routes/getNdraftId.route.js"
+import getNjangiDraftId from "./routes/getNdraftId.route.js";
+import { config } from "dotenv";
+config();
 const { csrf } = pkg;
 
 dotenv.config();
@@ -83,7 +85,7 @@ app.use("/api/admin", validateDraftId);
 app.use("/api/state-dashboard", getNjangiStateOverview);
 app.use("/api/state-dashboard", updateNjangiDetails);
 app.use("/api/admin", adminRoutes);
-app.use("/api/njangi-ndraft", getNjangiDraftId)
+app.use("/api/njangi-ndraft", getNjangiDraftId);
 app.use("/api/user", userRoutes);
 
 // ─── CREATE HTTP + SOCKET.IO SERVER ────────────────────────────────────────────

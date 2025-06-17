@@ -9,9 +9,8 @@ import {
   sendNjangiCreatedApprovalEmail,
   sendWelcomeEmail,
 } from "../mail/emails.js";
-import dotenv from "dotenv";
-import NjangiActivityLog from "../models/njangi.activity.log.model.js";
-dotenv.config();
+import { config } from "dotenv";
+config();
 
 export const finalizeNjangiFromDraft = async (draftId, res) => {
   const draft = await NjangiDraft.findById(draftId);

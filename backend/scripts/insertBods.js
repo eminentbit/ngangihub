@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
-import dotenv from "dotenv";
+import { config } from "dotenv";
 import bcrypt from "bcrypt";
 import User from "../models/user.model.js";
-dotenv.config();
+config();
 
 // Sample BOD user data
 const bodUsers = [

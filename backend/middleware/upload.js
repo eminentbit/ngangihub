@@ -1,9 +1,9 @@
 import multer from "multer";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { s3Client } from "../utils/s3Config.js";
-import dotenv from "dotenv";
+import { config } from "dotenv";
 
-dotenv.config();
+config();
 
 // === 1. Upload to S3 or DO Spaces ===
 
