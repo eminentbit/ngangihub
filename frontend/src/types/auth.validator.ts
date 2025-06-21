@@ -14,13 +14,15 @@ export type ValidatedUser = {
 export interface User {
   isActive: boolean;
   status: string;
+  name?: string;
+  initials?: string;
   _id?: string;
   id: string;
   email: string;
   firstName: string;
   lastName: string;
   image?: string;
-  phone?: string;
+  phoneNumber?: string;
   role: "user" | "admin" | "bod" | "member";
   location?: string;
   groupName?: string;

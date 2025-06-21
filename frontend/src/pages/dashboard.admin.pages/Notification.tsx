@@ -64,7 +64,7 @@ const NotificationsPage: React.FC = () => {
         )}
 
         {/* Sticky Header */}
-        <Header darkMode={isDarkMode} setDarkMode={setIsDarkMode} />
+        <Header darkMode={isDarkMode} setDarkMode={setIsDarkMode} someStyles={`${!isSidebarOpen ? "md:ml-10" : "md:ml-0"}`} />
 
         {/* Scrollable Main */}
         <main className="flex-1 pt-20 pb-8 px-2 md:px-6 overflow-auto min-h-[80vh]">
@@ -76,6 +76,7 @@ const NotificationsPage: React.FC = () => {
               <div className="flex items-center mt-4 sm:mt-0 gap-2">
                 {FILTERS.map((f) => (
                   <button
+                    type="button"
                     key={f.value}
                     onClick={() => setFilter(f.value)}
                     className={`px-3 py-1 rounded-full text-sm font-semibold border transition 
@@ -151,6 +152,7 @@ const NotificationsPage: React.FC = () => {
                           </button>
                         ) : (
                           <button
+                            type="button"
                             onClick={() => markNotificationAsRead(n._id)}
                             className="text-blue-600 hover:text-blue-800 transition"
                             title="Mark as read"

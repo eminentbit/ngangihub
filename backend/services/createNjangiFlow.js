@@ -3,10 +3,10 @@ import bcrypt from "bcryptjs";
 import NjangiDraft from "../models/njangi.draft.model.js";
 import NjangiGroup from "../models/njangi.group.model.js";
 import User from "../models/user.model.js";
-import dotenv from "dotenv";
+import { config } from "dotenv";
 import emailQueue from "../bullMQ/queues/emailQueue.js";
-import NjangiActivityLog from "../models/njangi.activity.log.model.js";
-dotenv.config();
+import CACHE_NAMES from "../utils/cache.names.js";
+config();
 
 const viewURL = process.env.CREATED_NJANGI_STATE_URL;
 
@@ -20,9 +20,6 @@ const viewURL = process.env.CREATED_NJANGI_STATE_URL;
 const createNjangiFlow = async (formData, njangiId, draftUserToken) => {
   try {
     const { accountSetup, groupDetails, inviteMembers } = formData;
-
-    console.log("Creating Njangi draft with data:", formData);
-    console.log("Njangi ID:", njangiId);
 
     // Check for existing user
     const existingUser = await User.findOne({ email: accountSetup.email });
@@ -82,7 +79,7 @@ const createNjangiFlow = async (formData, njangiId, draftUserToken) => {
     // Add email job to Redis
     console.time("📬 Add email job to Redis");
     await emailQueue.add(
-      "send-njangi-pending-email",
+      CACHE_NAMES.SENDPENDINGEMAIL,
       {
         dest: "admin",
         email: accountSetup.email,

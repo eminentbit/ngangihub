@@ -1,4 +1,4 @@
-import Attendance from "../models/bod.attendance.model.js";
+import BODAttendance from "../models/bod.attendance.model.js";
 import Meeting from "../models/bod.meeting.model.js";
 import BodResolution from "../models/bod.resolution.model.js";
 import User from "../models/user.model.js";
@@ -26,7 +26,7 @@ export const fetchResolutions = async (req, res) => {
 export const fetchAttendance = async (req, res) => {
   try {
     const { meetingId } = req.params;
-    const attendance = await Attendance.find({ meetingId }).sort({
+    const attendance = await BODAttendance.find({ meetingId }).sort({
       createdAt: -1,
     });
     res.status(200).json(attendance);

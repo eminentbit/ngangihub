@@ -8,9 +8,10 @@ import useUserStore from "../../store/create.user.store";
 interface HeaderProps {
   darkMode: boolean;
   setDarkMode: React.Dispatch<React.SetStateAction<boolean>>;
+  someStyles?: string
 }
 
-const Header: React.FC<HeaderProps> = ({ darkMode, setDarkMode }) => {
+const Header: React.FC<HeaderProps> = ({ darkMode, setDarkMode, someStyles }) => {
   // Notification popover
   const [showNotifications, setShowNotifications] = useState(false);
   const { notifications } = useUserStore();
@@ -47,7 +48,7 @@ const Header: React.FC<HeaderProps> = ({ darkMode, setDarkMode }) => {
 
   const getUserRole = (role: string | null | undefined) => {
     if (role == "member") {
-      return "user";
+      return "user"; 
     } else if (role == "bod") {
       return "board";
     } else return role ?? "user";
@@ -64,15 +65,14 @@ const Header: React.FC<HeaderProps> = ({ darkMode, setDarkMode }) => {
 
   return (
     <header className="sticky top-0 z-20 w-full bg-white dark:bg-gray-900 border-b shadow-sm">
-      <div className="max-w-full flex items-center justify-between px-4 md:px-16 py-4">
+      <div className="w-full flex items-center justify-between px-4 md:px-12 py-4">
         {/* Left: Logo + Search */}
         <div className="flex items-center w-full max-w-2xl">
           {/* Logo */}
           <img
-            src="/logo2.png"
+            src="/logo5.png"
             alt="Logo"
-            className="h-10 w-auto mr-4"
-            style={{ minWidth: 40 }}
+            className={`h-10 mr-6 ${someStyles}`}  
           />
 
           {/* Search Bar */}
@@ -102,6 +102,9 @@ const Header: React.FC<HeaderProps> = ({ darkMode, setDarkMode }) => {
             </button>
           </form>
         </div>
+
+
+
 
         {/* Right: Actions */}
         <div className="flex items-center ml-6">
@@ -141,7 +144,7 @@ const Header: React.FC<HeaderProps> = ({ darkMode, setDarkMode }) => {
                             !n.isRead ? "bg-blue-500" : "bg-gray-400"
                           } mr-2`}
                         ></span>
-                        <span>{n.message}</span>
+                        <span>{n.content}</span>
                         <span className="ml-auto text-xs text-gray-400">
                           {n.createdAt}
                         </span>

@@ -90,6 +90,7 @@ const Header: React.FC<HeaderProps> = ({ toggleTheme, isDarkMode }) => {
             {/* Notifications */}
             <div className="relative" ref={notifRef}>
               <button
+                type="button"
                 onClick={() => setShowNotifications((prev) => !prev)}
                 className="relative focus:outline-none"
               >
@@ -148,6 +149,7 @@ const Header: React.FC<HeaderProps> = ({ toggleTheme, isDarkMode }) => {
 
             {/* Theme Toggle */}
             <button
+              type="button"
               onClick={toggleTheme}
               className="p-2 rounded-full bg-gray-200 dark:bg-gray-700 focus:outline-none"
               aria-label="Toggle theme"
@@ -162,6 +164,7 @@ const Header: React.FC<HeaderProps> = ({ toggleTheme, isDarkMode }) => {
             {/* User Menu */}
             <div className="relative" ref={userMenuRef}>
               <button
+                type="button"
                 onClick={() => setShowUserMenu((prev) => !prev)}
                 className="flex items-center space-x-2 focus:outline-none"
               >
@@ -199,6 +202,7 @@ const Header: React.FC<HeaderProps> = ({ toggleTheme, isDarkMode }) => {
                         Settings
                       </Link>
                       <button
+                        type="button"
                         onClick={() => navigate("/logout")}
                         className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100 dark:hover:bg-red-700"
                       >

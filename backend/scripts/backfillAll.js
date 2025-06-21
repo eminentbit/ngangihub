@@ -8,12 +8,12 @@
  */
 
 import mongoose from "mongoose";
-import dotenv from "dotenv";
+import { config } from "dotenv";
 import User from "../models/user.model.js";
 import Invite from "../models/invite.model.js";
 import NjangiGroup from "../models/njangigroup.model.js";
 
-dotenv.config();
+config();
 
 const backfillAll = async () => {
   try {

@@ -1,11 +1,16 @@
-import njangiDraftModel from "../models/njangi.draft.model.js";
+import NjangiDraft from "../models/njangi.draft.model.js";
 import NjangiGroup from "../models/njangi.group.model.js";
 import User from "../models/user.model.js";
 import validator from "validator";
 import { config } from "dotenv";
 import NjangiActivityLog from "../models/njangi.activity.log.model.js";
 import Invite from "../models/invite.model.js";
-import { inviteMembersToGroup } from "../services/invite.service.js";
+import GroupMember from "../models/group.member.model.js";
+import {
+  generateToken,
+  inviteMembersToGroup,
+} from "../services/invite.service.js";
+import { sendNjangiAleadyAddMemberEmail } from "../mail/emails.js";
 
 config();
 
@@ -78,12 +83,23 @@ export const getAdminGroups = async (req, res) => {
     const groups = await NjangiGroup.find({ adminId: req.user.id }).populate(
       "groupMembers"
     );
-    console.log(groups);
     const groupsWithIsAdmin = groups.map((group) => {
+      const nextDue = group.getNextPaymentDate(req.user.id);
       const groupObj = group.toObject();
+      const { position, totalRounds } = group.getPositionAndRounds();
+      const { totalContributed, totalReceived } = group.getUserFinancialSummary(
+        req.user.id
+      );
       groupObj.isAdmin = String(group.adminId) === String(req.user.id);
+      groupObj.position = position;
+      groupObj.totalRounds = totalRounds;
+      groupObj.totalContributed = totalContributed;
+      groupObj.totalReceived = totalReceived;
+      groupObj.nextDue = nextDue;
       return groupObj;
     });
+
+    console.log(groupsWithIsAdmin);
     res.status(200).json(groupsWithIsAdmin);
   } catch (error) {
     res.status(500).json({ message: "Error fetching admin's groups", error });
@@ -148,7 +164,6 @@ export const fetchGroupById = async (req, res) => {
 };
 
 export const fetchGroupByIdWithoutToken = async (req, res) => {
-  console.log(req.query);
   const { groupId } = req.query;
 
   try {
@@ -179,7 +194,6 @@ export const getSubmissionStats = async (req, res) => {
 
   try {
     const user = await User.findOne({ email: { $eq: email } });
-    console.log("User:", user);
 
     let createdGroups = [];
     if (user) {
@@ -188,7 +202,7 @@ export const getSubmissionStats = async (req, res) => {
       });
     }
 
-    const drafts = await njangiDraftModel.find({
+    const drafts = await NjangiDraft.find({
       "accountSetup.email": { $eq: email },
     });
 
@@ -224,7 +238,7 @@ export const getRecentActivity = async (req, res) => {
         })
       : [];
 
-    const pendingGroups = await njangiDraftModel.find({
+    const pendingGroups = await NjangiDraft.find({
       "accountSetup.email": { $eq: email },
     });
 
@@ -237,7 +251,7 @@ export const getRecentActivity = async (req, res) => {
 export const getDraftInfo = async (req, res) => {
   const { groupId } = req.query;
   try {
-    const draft = await njangiDraftModel.findOne({
+    const draft = await NjangiDraft.findOne({
       _id: { $eq: groupId },
     });
 
@@ -269,11 +283,9 @@ export const getStatusHistory = async (req, res) => {
           .sort({ createdAt: -1 })
       : [];
 
-    const drafts = await njangiDraftModel
-      .find({
-        "accountSetup.email": { $eq: email },
-      })
-      .sort({ createdAt: -1 });
+    const drafts = await NjangiDraft.find({
+      "accountSetup.email": { $eq: email },
+    }).sort({ createdAt: -1 });
 
     const formatGroup = (group, isDraft = false) => {
       const timeline = [
@@ -360,6 +372,8 @@ export const inviteMemberToGroup = async (req, res) => {
     ? req.body.invites
     : [req.body.invite || req.body];
 
+  console.log("Invites form frontend: ", invites);
+
   try {
     const result = await inviteMembersToGroup(
       { invites },
@@ -374,6 +388,8 @@ export const inviteMemberToGroup = async (req, res) => {
     res
       .status(201)
       .json({ message: "Invites sent successfully", invites: result });
+
+    console.log("Invite sent in backend, from admin: ", invites);
   } catch (error) {
     res
       .status(500)
@@ -398,6 +414,213 @@ export const getActivityTimeline = async (req, res) => {
       success: false,
       message: "Failed to fetch activity timeline",
       error: error.message,
+    });
+  }
+};
+
+export const addMemberToGroup = async (req, res) => {
+  const { groupId } = req.params;
+  const { email } = req.body;
+
+  if (!email || !validator.isEmail(email)) {
+    return res.status(400).json({ message: "Invalid email address" });
+  }
+
+  const normalizedEmail = email.toLowerCase().trim();
+
+  // Prevent admin from inviting themselves
+  const admin = await User.findById(req.user.id);
+  if (admin.email.toLowerCase().trim() === normalizedEmail) {
+    return res.status(400).json({
+      message: "You cannot invite yourself.",
+    });
+  }
+
+  // Prevent inviting users that already exist in the system
+  const existingUser = await User.findOne({ email: normalizedEmail });
+  if (existingUser) {
+    return res.status(400).json({
+      message: "This user is already registered in the system.",
+    });
+  }
+
+  // Check if the user is already invited to this group
+  const existingInvite = await Invite.findOne({
+    groupId,
+    email: normalizedEmail,
+  });
+
+  if (existingInvite) {
+    return res.status(400).json({
+      message: "Invitation has already been sent to this user.",
+    });
+  }
+
+  // Prevent inviting a user who is in a NjangiDraft's pending invite list
+  const draftHasInvite = await njangiDraftModel.findOne({
+    "inviteMembers.contact": normalizedEmail,
+    "accountSetup.email": normalizedEmail,
+    "groupDetails.status": "pending",
+  });
+
+  if (draftHasInvite) {
+    return res.status(400).json({
+      message: "This user is already listed as a pending invite.",
+    });
+  }
+
+  // proceed with invitation
+  const group = await NjangiGroup.findById(groupId);
+  const token = generateToken();
+
+  await Invite.create({
+    groupId,
+    inviteToken: token,
+    email: normalizedEmail,
+    invitedBy: req.user.id,
+    expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24), // 24 hours
+  });
+
+  const user = await User.findById(req.user.id);
+  const registrationUrl = `${process.env.REGISTER_URL}/members?inviteToken=${token}&email=${normalizedEmail}`;
+
+  await sendNjangiAleadyAddMemberEmail(
+    normalizedEmail,
+    "Hi there",
+    `${user.lastName} ${user.firstName}`,
+    group.contributionAmount,
+    group.contributionFrequency,
+    group.name,
+    registrationUrl
+  );
+
+  return res
+    .status(200)
+    .json({ message: "Invitation sent to user successfully!" });
+};
+
+export const cancelInvite = async (req, res) => {
+  const { groupId } = req.params;
+  const identifier = req.body;
+
+  if (!identifier.email && !identifier.phone) {
+    return res
+      .status(400)
+      .json({ error: "Missing invite identifier (email or phone)" });
+  }
+
+  try {
+    // Count how many invites exist for this group
+    const count = await Invite.countDocuments({ groupId });
+
+    if (count <= 1) {
+      return res.status(400).json({
+        error: "Cannot delete invite: group must have at least one member",
+      });
+    }
+    // Validate and sanitize email/phone inputs
+    if (identifier.email) {
+      if (!validator.isEmail(identifier.email)) {
+        return res.status(400).json({ error: "Invalid email format" });
+      }
+      identifier.email = validator.normalizeEmail(identifier.email);
+    }
+
+    if (identifier.phone) {
+      // Remove any non-digit characters
+      const sanitizedPhone = identifier.phone.replace(/\D/g, "");
+      if (!validator.isMobilePhone(sanitizedPhone)) {
+        return res.status(400).json({ error: "Invalid phone format" });
+      }
+      identifier.phone = sanitizedPhone;
+    }
+    // Build query to find the invite to delete
+    const query = { groupId };
+    if (identifier.email) {
+      query.email = identifier.email;
+    } else if (identifier.phone) {
+      query.phone = identifier.phone;
+    }
+
+    const deletedInvite = await Invite.findOneAndDelete(query);
+
+    if (!deletedInvite) {
+      return res.status(404).json({ error: "Invite not found" });
+    }
+
+    return res.status(200).json({
+      message: "Invite cancelled!",
+      cancelledInvite: {
+        email: deletedInvite.email,
+        phone: deletedInvite.phone,
+      },
+    });
+  } catch (error) {
+    console.error("Error canceling invite:", error);
+    return res.status(500).json({
+      message: "Failed to cancel invite!",
+      error: error.message,
+    });
+  }
+};
+
+// remove member
+export const removeMember = async (req, res) => {
+  const { groupId, userId } = req.params;
+
+  console.log("GroupId in backend: ", groupId);
+  console.log("User in backend: ", userId);
+
+  if (!groupId || !userId) {
+    return res.status(400).json({ error: "Missing groupId or userId" });
+  }
+
+  try {
+    // Count how many members exist in GroupMember for this group
+    const groupMemberCount = await GroupMember.countDocuments({ groupId });
+
+    // Fetch NjangiGroup to access groupMembers array
+    const njangiGroup = await NjangiGroup.findById(groupId).select(
+      "groupMembers"
+    );
+
+    if (!njangiGroup) {
+      return res.status(404).json({ error: "Njangi group not found" });
+    }
+
+    // Ensure both counts are greater than 1 before deletion
+    if (groupMemberCount <= 1 || njangiGroup.groupMembers.length <= 1) {
+      return res.status(400).json({
+        error: "Cannot remove member: group must have more than one member.",
+      });
+    }
+
+    //Remove from GroupMember
+    await GroupMember.findOneAndDelete({ groupId, userId });
+
+    //Remove from NjangiGroup.groupMembers
+    await NjangiGroup.findByIdAndUpdate(groupId, {
+      $pull: { groupMembers: userId },
+    });
+
+    //Remove related Invite (if you store groupId/userId in Invite)
+    await Invite.findOneAndDelete({ groupId, userId });
+
+    //If user.status === 'member', delete the user
+    const user = await User.findById(userId);
+    if (user?.status === "member") {
+      await User.findByIdAndDelete(userId);
+    }
+
+    return res.status(200).json({
+      message: "Member removed successfully.",
+      removedUserId: userId,
+    });
+  } catch (error) {
+    console.error("Error removing member:", error);
+    return res.status(500).json({
+      error: "Failed to remove member.",
+      details: error.message,
     });
   }
 };

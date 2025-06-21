@@ -1,7 +1,7 @@
 // bullMQ/redisClient.js
 import Redis from "ioredis";
-import dotenv from "dotenv";
-dotenv.config();
+import { config } from "dotenv";
+config();
 
 export const createRedisClient = () =>
   new Redis({

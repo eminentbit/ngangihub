@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  FaBars,
   FaUsers,
   FaMoneyBillWave,
   FaChartPie,
@@ -20,18 +19,10 @@ import { quickActions } from "../../utils/data.admin.dashboard";
 import Header from "../../components/dashboard.admin.components/Header";
 import { useFetchGroups, useGroupActivities } from "../../hooks/useAdmin";
 import { getNextPayout } from "../../utils/payout";
-
-// Skeleton Components
-const Skeleton: React.FC<{ className?: string; animate?: boolean }> = ({
-  className = "",
-  animate = true,
-}) => (
-  <div
-    className={`bg-gray-200 dark:bg-gray-700 rounded ${
-      animate ? "animate-pulse" : ""
-    } ${className}`}
-  />
-);
+import LatestMembersModal from "../../components/dashboard.admin.components/LatestMembersModal";
+import { useAuthStore } from "../../store/create.auth.store";
+import toast from "react-hot-toast";
+import { Skeleton } from "../../components/skeleton-loaders/skeleton-card-loader";
 
 // Loading Stat Card Component
 const LoadingStatCard: React.FC = () => (
@@ -122,12 +113,30 @@ export const AdminDashboardPage: React.FC = () => {
   const [isOpen, setIsOpen] = useState(true);
   const [activeTab, setActiveTab] = useState("admin");
   const [darkMode, setDarkMode] = useState(false);
+  const [isModalOpen, setModalOpen] = useState(false); //latest member modal
 
   // const { groups, isLoading } = useFetchGroups();
   const [totalMembers, setTotalMembers] = useState(0);
   const [totalContributions, setTotalContribution] = useState(0);
 
   const { groups, isLoading } = useFetchGroups();
+
+  useEffect(() => {
+    let timeout: ReturnType<typeof setTimeout>;
+
+    const hasSeenWelcome = sessionStorage.getItem("hasSeenWelcomeToast");
+
+    if (!hasSeenWelcome) {
+      timeout = setTimeout(() => {
+        toast.success("Glad to have you back! Here's your dashboard 💼", {
+          position: "top-right",
+          duration: 5000,
+        });
+        sessionStorage.setItem("hasSeenWelcomeToast", "true");
+      }, 1000);
+    }
+    return () => clearTimeout(timeout);
+  }, []);
 
   useEffect(() => {
     const totalMembersCount = groups.reduce(
@@ -174,7 +183,13 @@ export const AdminDashboardPage: React.FC = () => {
   // Get the latest N members (e.g., 5)
   const latestMembers = sortedMembers.slice(0, 5);
 
-  const toggleSidebar = () => setIsOpen((prev) => !prev);
+  // const toggleSidebar = () => setIsOpen((prev) => !prev);
+
+  const { user } = useAuthStore();
+
+  const firstGroupId = useMemo(() => groups[0]?._id, [groups]);
+  // const firstGroupMember = useMemo(() => groups[0]?.groupMembers[0], [groups]);
+  const firstGroup = useMemo(() => groups[0], [groups]);
 
   useEffect(() => {
     if (darkMode) {
@@ -191,25 +206,29 @@ export const AdminDashboardPage: React.FC = () => {
   };
   const navigate = useNavigate();
 
+  const actions = quickActions.filter((action) => {
+    return user?.role === "admin" || !action.showOnlyAdmin;
+  });
+
   return (
     <div
       className={`flex h-screen overflow-hidden bg-gray-50 dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-800 transition-colors`}
     >
       {/* Sidebar toggle button (only for mobile) */}
-      <button
+      {/* <button
         type="button"
         onClick={toggleSidebar}
         className="absolute top-4 left-4 text-gray-700 dark:text-gray-200 lg:hidden z-40"
         title="Toggle Sidebar"
       >
         <FaBars size={24} />
-      </button>
+      </button> */}
 
       <Sidebar
         isOpen={isOpen}
         onToggle={() => setSidebarOpen((o) => !o)}
         onTabChange={setActiveTab}
-        onClose={() => setIsOpen(true)}
+        onClose={() => setIsOpen(false)}
       />
 
       {/* Main Content */}
@@ -218,7 +237,11 @@ export const AdminDashboardPage: React.FC = () => {
           ${isOpen ? "lg:ml-64" : "lg:ml-0"}`}
       >
         {/* Header imported here */}
-        <Header darkMode={darkMode} setDarkMode={setDarkMode} />
+        <Header
+          darkMode={darkMode}
+          setDarkMode={setDarkMode}
+          someStyles={`${!isOpen ? "md:ml-10" : "md:ml-0"}`}
+        />
 
         {/* DASHBOARD BODY */}
         {activeTab === "admin" && (
@@ -227,11 +250,11 @@ export const AdminDashboardPage: React.FC = () => {
             <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div>
                 <h1 className="text-3xl font-bold text-blue-700 dark:text-blue-300 mb-1">
-                  Dashboard
+                  Welcome to your dashboard
                 </h1>
               </div>
               <div className="flex space-x-4">
-                {quickActions.map((action, index) => (
+                {actions.map((action, index) => (
                   <button
                     key={index}
                     type="button"
@@ -345,7 +368,7 @@ export const AdminDashboardPage: React.FC = () => {
                       <h3 className="text-blue-700 dark:text-blue-300 font-semibold mb-2">
                         Activity Timeline
                       </h3>
-                      <ActivityChart groupId={groups[0]._id} />
+                      <ActivityChart groupId={firstGroupId} />
                     </div>
                   </>
                 )}
@@ -402,47 +425,64 @@ export const AdminDashboardPage: React.FC = () => {
                 <h3 className="text-blue-700 dark:text-blue-300 font-semibold mb-4">
                   Latest Members
                 </h3>
+
                 <ul>
                   {isLoading ? (
-                    Array.from({ length: 5 }).map((_, index) => (
+                    Array.from({ length: 2 }).map((_, index) => (
                       <LoadingMemberItem title="Latest Members" key={index} />
                     ))
                   ) : latestMembers.length > 0 ? (
-                    // Actual member items
-                    latestMembers.map((member, index) => (
-                      <li
-                        key={index}
-                        className="flex items-center py-2 border-b last:border-b-0 border-gray-100 dark:border-gray-700 transform transition-all duration-200 hover:scale-[1.02] hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded px-2"
-                      >
-                        {member.profilePicUrl ? (
-                          <img
-                            src={member.profilePicUrl}
-                            alt={member.profilePicUrl}
-                            className="w-8 h-8 rounded-full mr-3"
-                          />
-                        ) : (
-                          <FaUserCircle className="text-gray-400 dark:text-gray-600 w-8 h-8 mr-3" />
-                        )}
-                        <div>
-                          <div className="text-gray-900 dark:text-gray-100 font-semibold cursor-pointer">
-                            {member.lastName} {member.firstName} at{" "}
-                            <span
-                              className="cursor-pointer hover:text-blue-500"
-                              onClick={() => {
-                                window.location.href = `mailto:${member.email}`;
-                              }}
-                            >
-                              {member.email}
-                            </span>
+                    <>
+                      {latestMembers.slice(0, 2).map((member, index) => (
+                        <li
+                          key={index}
+                          className="flex items-center py-2 border-b last:border-b-0 border-gray-100 dark:border-gray-700 transform transition-all duration-200 hover:scale-[1.02] hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded px-2"
+                        >
+                          {member.profilePicUrl ? (
+                            <img
+                              src={member.profilePicUrl}
+                              alt="Profile"
+                              className="w-8 h-8 rounded-full mr-3"
+                            />
+                          ) : (
+                            <FaUserCircle className="text-gray-400 dark:text-gray-600 w-8 h-8 mr-3" />
+                          )}
+                          <div>
+                            <div className="text-gray-900 dark:text-gray-100 font-semibold cursor-pointer">
+                              {member.lastName} {member.firstName} at{" "}
+                              <span
+                                className="cursor-pointer hover:text-blue-500 max-w-[150px] inline-block truncate align-bottom"
+                                title={member.email}
+                                onClick={() => {
+                                  window.location.href = `mailto:${member.email}`;
+                                }}
+                              >
+                                {member.email}
+                              </span>
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              {new Date(member.createdAt!).toLocaleString()}
+                            </div>
                           </div>
-                          <div className="text-xs text-gray-500">
-                            {new Date(member.createdAt!).toLocaleString()}
-                          </div>
-                        </div>
-                      </li>
-                    ))
+                        </li>
+                      ))}
+
+                      {/* See More / See Less Button */}
+                      {latestMembers.length > 2 && (
+                        <button
+                          onClick={() => setModalOpen(true)}
+                          className="mt-3 text-sm text-blue-600 hover:underline font-medium"
+                        >
+                          See More
+                        </button>
+                      )}
+                      <LatestMembersModal
+                        isOpen={isModalOpen}
+                        onClose={() => setModalOpen(false)}
+                        members={latestMembers}
+                      />
+                    </>
                   ) : (
-                    // Empty state
                     <li>
                       <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                         <div className="text-3xl mb-2">👥</div>
@@ -466,13 +506,13 @@ export const AdminDashboardPage: React.FC = () => {
                       Next Njangi Payout
                     </h3>
                     <div className="text-4xl font-bold text-blue-600 dark:text-blue-300 mb-1 animate-pulse">
-                      {getNextPayout(groups[0])?.amount}
+                      {getNextPayout(firstGroup)?.amount}
                     </div>
                     <div className="text-gray-600 dark:text-gray-300 text-sm mb-4">
                       To:{" "}
                       <span className="font-semibold text-gray-800 dark:text-gray-100">
-                        {getNextPayout(groups[0])?.member.lastName}{" "}
-                        {getNextPayout(groups[0])?.member.firstName}
+                        {getNextPayout(firstGroup)?.member.lastName}{" "}
+                        {getNextPayout(firstGroup)?.member.firstName}
                       </span>
                     </div>
                     <div className="flex items-center text-gray-500 dark:text-gray-400 text-xs">
@@ -483,7 +523,7 @@ export const AdminDashboardPage: React.FC = () => {
                           animationDuration: "1s",
                         }}
                       />
-                      Expected: 15th May, 2025
+                      Expected: {getNextPayout(firstGroup)?.date.toDateString()}
                     </div>
                   </div>
                 </div>

@@ -1,29 +1,60 @@
 import User from "../models/user.model.js";
-import validator from "validator";
+import { validationResult } from "express-validator";
 import NjangiDraft from "../models/njangi.draft.model.js";
-import bcryptjs from "bcryptjs";
-import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
 import LastLogin from "../models/login.attempt.js";
-import { getIPAddress } from "../utils/getIPAddress.js";
-import { sendPasswordResetEmail } from "../mail/emails.js";
+import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
+import { getBrowserType, getDeviceName, getInfo } from "../utils/getInfo.js";
+import {
+  sendPasswordChangedEmail,
+  sendPasswordResetEmail,
+  sendSigninAttemptEmail,
+} from "../mail/emails.js";
+import validator from "validator";
+import bcrypt from "bcryptjs";
+import { config } from "dotenv";
+config();
+
+// Helper: find pending or suspended draft user
+async function checkDraftStatus(email) {
+  if (typeof email != "string" || !validator(email)) {
+    return res.status(400).json({ message: "Invalid email" });
+  }
+  const draft = await NjangiDraft.findOne({
+    "accountSetup.email": { $eq: email },
+  });
+  return draft?.accountSetup;
+}
+
+// Shared options
+const LOGIN_QUERIES_PROJECTION = "email status lastName firstName role";
+const USER_PROJECTION = "-password";
+const SIGNIN_THRESHOLD_MS = 3 * 24 * 60 * 60 * 1000;
+
+// Validate request results
+function handleValidation(req, res) {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+}
 
 export const checkSession = async (req, res) => {
-  if (!req.user || !req.user.id) {
+  if (!req.user?.id) {
     return res.status(401).json({ message: "Unauthorized: No session found" });
   }
-
   try {
-    const user = await User.findById(req.user.id).select("-password");
-    if (!user) {
-      return res.status(401).json({ message: "Unauthorized: User not found" });
-    }
+    const user = await User.findById(req.user.id).select(USER_PROJECTION);
+    if (!user) throw new Error("User not found");
     return res.status(200).json({ user });
-  } catch (error) {
-    return res.status(500).json({ message: "Internal server error" });
+  } catch (err) {
+    res.status(401).json({ message: err.message });
   }
 };
 
 export const login = async (req, res) => {
+  // request validation via express-validator middleware
+  if (handleValidation(req, res)) return;
+
   const { email, password } = req.body;
 
   if (!email || !validator.isEmail(email)) {
@@ -31,95 +62,100 @@ export const login = async (req, res) => {
   }
 
   try {
-    const user = await User.findOne({ email: { $eq: email } });
+    // Try primary user
+    let user = await User.findOne({ email: { $eq: email } }).select(
+      `password ${LOGIN_QUERIES_PROJECTION}`
+    );
 
-    // If not found in User, check NjangiDraft.accountSetup
+    // If not in User, check draft
     if (!user) {
-      const ndraftUser = await NjangiDraft.findOne({
-        "accountSetup.email": email,
-      });
-      if (ndraftUser) {
-        // You can also check status or other fields here
-        if (ndraftUser.accountSetup.status === "pending") {
-          return res.status(403).json({
-            success: false,
-            message:
-              "Your account is still pending BOD approval. Please wait for confirmation.",
-          });
-        }
-        if (ndraftUser.accountSetup.status === "suspended") {
-          return res
-            .status(403)
-            .json({ message: "Account suspended. Contact support." });
-        }
+      const accountSetup = await checkDraftStatus(email);
+      if (accountSetup) {
+        const msgMap = {
+          pending: "Your account is still pending BOD approval.",
+          suspended: "Account suspended. Contact support.",
+        };
+        const message = msgMap[accountSetup.status] || "Unauthorized.";
+        return res.status(403).json({ success: false, message });
       }
       return res
         .status(401)
-        .json({ success: false, message: "Invalid email or password!" });
-    }
-    // console.log(user);
-    const isPasswordValid = await bcryptjs.compare(password, user.password);
-    if (!isPasswordValid) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid Credentials!",
-      });
+        .json({ success: false, message: "Invalid credentials" });
     }
 
-    // Check if user is pending approval (adjust field name as needed)
-    if (user.status === "pending" && user.role != "bod") {
-      return res.status(403).json({
-        success: false,
-        message:
-          "Your account is pending approval by the BOD. Please wait for confirmation.",
-      });
+    // Compare password
+    const valid = await bcrypt.compare(password, user.password);
+    if (!valid) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Invalid credentials" });
+    }
+
+    // Check status
+    if (user.status === "pending" && user.role !== "bod") {
+      return res
+        .status(403)
+        .json({ success: false, message: "Account pending approval." });
     }
     if (user.status === "suspended") {
-      return res.status(403).json({
-        success: false,
-        message: "Account suspended. Contact support.",
-      });
+      return res
+        .status(403)
+        .json({ success: false, message: "Account suspended." });
     }
 
-    // generate token and set cookie for the user
     generateTokenAndSetCookie(res, user.id);
 
-    LastLogin.create({
+    const { ip } = await getInfo();
+    const userAgent = req.headers["user-agent"];
+    const browser = getBrowserType(userAgent);
+    const device = getDeviceName(userAgent);
+
+    // Record login and send alerts
+    const lastRecord = await LastLogin.findOne({ userId: user.id })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    const now = Date.now();
+    const threshold = now - SIGNIN_THRESHOLD_MS;
+    const shouldAlert = !lastRecord || lastRecord.createdAt < threshold;
+
+    await LastLogin.create({
+      userId: user.id,
       email: user.email,
-      ipAddress: getIPAddress(req),
+      ipAddress: ip,
       status: user.status,
     });
 
-    req.user = { id: user.id, role: user.role };
-    // console.log(req.user);
+    if (shouldAlert) {
+      await sendSigninAttemptEmail(
+        user.email,
+        device,
+        browser,
+        user.lastName,
+        user.firstName
+      );
+    }
 
-    // Send role in response so frontend can redirect
+    // Response user data
+    req.user = { id: user.id, role: user.role };
     return res.status(200).json({
       success: true,
-      message: "Login successfully!",
-      user: {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-      },
+      message: "Login successful",
+      user: { id: user.id, email: user.email, role: user.role },
     });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ success: false, message: "Internal server error" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
-export const logout = async (req, res) => {
-  try {
-    res.cookie("token", "", { maxAge: 0 });
-    return res.status(200).json({ message: "Logged out successfully" });
-  } catch (error) {
-    return res.status(500).json({ message: "Internal server error" });
-  }
+export const logout = (req, res) => {
+  res.clearCookie("token");
+  return res.status(200).json({ message: "Logged out successfully" });
 };
 
 export const resetPassword = async (req, res) => {
+  if (handleValidation(req, res)) return;
   const { email, newPassword } = req.body;
 
   if (!email || !validator.isEmail(email)) {
@@ -128,37 +164,63 @@ export const resetPassword = async (req, res) => {
 
   try {
     const user = await User.findOne({ email: { $eq: email } });
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    // Update the user's password
-    user.password = await bcryptjs.hash(newPassword, 10);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    user.password = await bcrypt.hash(newPassword, 10);
     await user.save();
+    return res.json({ message: "Password reset successfully" });
+  } catch (err) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 
-    return res.status(200).json({ message: "Password reset successfully" });
-  } catch (error) {
-    return res.status(500).json({ message: "Internal server error" });
+export const changePassword = async (req, res) => {
+  if (handleValidation(req, res)) return;
+  try {
+    const { oldPassword, newPassword } = req.body;
+    console.log(req.body);
+    const user = await User.findById(req.user.id).select(
+      "password email lastName firstName"
+    );
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+    const valid = await bcrypt.compare(oldPassword, user.password);
+    if (!valid)
+      return res.status(401).json({ message: "Current password incorrect" });
+    user.password = await bcrypt.hash(newPassword, 10);
+    await user.save();
+    await sendPasswordChangedEmail(
+      user.email,
+      user.lastName,
+      user.firstName,
+      `${process.env.FRONTEND_URL}/${user.role}/settings`
+    );
+    return res.json({
+      message: "Password changed successfully",
+      success: true,
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
 export const sendPasswordResetLink = async (req, res) => {
-  const { email } = req.body;
-
-  if (typeof email !== "string" || !validator.isEmail(email)) {
-    return res.status(400).json({ message: "Invalid email format" });
-  }
-
+  if (handleValidation(req, res)) return;
   try {
-    const user = await User.findOne({ email: { $eq: email } });
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    const { email } = req.body;
+
+    if (!email || !validator.isEmail(email)) {
+      return res.status(400).json({ message: "Invalid email address" });
     }
 
-    sendPasswordResetEmail(email, generateTokenAndSetCookie(res, user._id));
-
-    return res.status(200).json({ message: "Password reset link sent" });
-  } catch (error) {
-    return res.status(500).json({ message: "Internal server error" });
+    const sanitizedEmail = validator.normalizeEmail(email.toLowerCase().trim());
+    const user = await User.findOne({ email: sanitizedEmail }).select(
+      "_id email"
+    );
+    if (!user) return res.status(404).json({ message: "User not found" });
+    const token = generateTokenAndSetCookie(res, user._id);
+    sendPasswordResetEmail(user.email, token);
+    return res.json({ message: "Password reset link sent" });
+  } catch (err) {
+    res.status(500).json({ message: "Internal server error" });
   }
 };

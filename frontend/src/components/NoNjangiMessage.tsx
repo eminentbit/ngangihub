@@ -15,12 +15,14 @@ const NoNjangiMessage = () => {
 
         <div className="flex gap-4 mt-2 max-md:flex-col">
           <button
+            type="button"
             onClick={() => navigate("/njangi-form")}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition duration-200"
           >
             Create Another Njangi
           </button>
           <button
+            type="button"
             onClick={() => navigate("/")}
             className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition duration-200"
           >

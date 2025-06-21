@@ -1,4 +1,5 @@
 import NjangiGroup from "../models/njangi.group.model.js";
+import Transaction from "../models/transaction.model.js";
 
 export const checkMonthlyPaymentStatus = async (req, res) => {
   try {
@@ -85,5 +86,99 @@ export const getGroupPayments = async (req, res) => {
   } catch (error) {
     console.error("Error fetching payments:", error);
     return res.status(500).json({ message: "Server error" });
+  }
+};
+
+/**
+ * Fetch all groups created by an admin
+ */
+export const getGroups = async (req, res) => {
+  try {
+    const groups = await NjangiGroup.find({
+      groupMembers: req.user.id,
+    }).populate("groupMembers", "_id lastName firstName email createdAt");
+
+    const groupsWithDate = groups.map((group) => {
+      const nextDue = group.getNextPaymentDate(req.user.id);
+      const groupObj = group.toObject();
+      const { position, totalRounds } = group.getPositionAndRounds();
+      const { totalContributed, totalReceived } = group.getUserFinancialSummary(
+        req.user.id
+      );
+      groupObj.totalContributed = totalContributed;
+      groupObj.totalReceived = totalReceived;
+      groupObj.position = position;
+      groupObj.totalRounds = totalRounds;
+      groupObj.nextDue = nextDue;
+      return groupObj;
+    });
+
+    console.log(groupsWithDate);
+
+    res.status(200).json(groupsWithDate);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching groups", error });
+  }
+};
+
+export const getUserContributionOverview = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    if (!userId) {
+      return res.status(400).json({ error: "userId is required" });
+    }
+
+    // Find all groups where the user is a member and populate member contributions
+    const groups = await NjangiGroup.find({
+      groupMembers: userId,
+      "memberContributions.member": userId,
+    }).lean();
+
+    // For each group, find the user's contribution details
+    const overview = groups.map((group) => {
+      const memberContribution = group.memberContributions?.find(
+        (m) => m.member.toString() === userId.toString()
+      );
+
+      return {
+        groupId: group._id,
+        groupName: group.name,
+        totalContributed: memberContribution?.totalAmountPaid || 0,
+        lastPaymentDate: memberContribution?.lastPaymentDate || null,
+        contributionAmount: group.contributionAmount || 0,
+        frequency: group.paymentFrequency || "monthly",
+      };
+    });
+
+    return res.status(200).json({
+      success: true,
+      overview: overview,
+      totalGroups: overview.length,
+      totalContributed: overview.reduce(
+        (sum, group) => sum + group.totalContributed,
+        0
+      ),
+    });
+  } catch (err) {
+    console.error("Error fetching user contribution overview:", err);
+    res.status(500).json({
+      success: false,
+      error: "Failed to fetch user contribution overview",
+    });
+  }
+};
+
+export const getUserPaymentHistory = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const transactions = await Transaction.find({ memberId: userId })
+      .populate("groupId", "name")
+      .sort({ date: -1 });
+
+    res.json(transactions);
+  } catch (err) {
+    console.error("Error fetching payment history:", err);
+    res.status(500).json({ error: "Server error" });
   }
 };

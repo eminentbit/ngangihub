@@ -9,9 +9,8 @@ import {
   sendNjangiCreatedApprovalEmail,
   sendWelcomeEmail,
 } from "../mail/emails.js";
-import dotenv from "dotenv";
-import NjangiActivityLog from "../models/njangi.activity.log.model.js";
-dotenv.config();
+import { config } from "dotenv";
+config();
 
 export const finalizeNjangiFromDraft = async (draftId, res) => {
   const draft = await NjangiDraft.findById(draftId);
@@ -86,7 +85,7 @@ export const finalizeNjangiFromDraft = async (draftId, res) => {
   );
 
   // delete the draft after finalizing
-  await NjangiDraft.deleteOne({ _id: draftId });
+  await NjangiDraft.deleteOne({ _id: { $eq: draftId } });
 
   res.clearCookie("draftUserToken"); // This will clear the cookie on the client
 

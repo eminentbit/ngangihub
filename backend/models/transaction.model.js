@@ -1,6 +1,8 @@
-const mongoose = require("mongoose");
+import { model, Schema } from "mongoose";
+import MODEL_NAMES from "../utils/model.names.js";
+import { notifyAdminOfPayment } from "../mail/emails.js";
 
-const transactionSchema = new mongoose.Schema({
+const transactionSchema = new Schema({
   date: {
     type: Date,
     required: true,
@@ -12,13 +14,26 @@ const transactionSchema = new mongoose.Schema({
     enum: ["income", "expense"],
   },
   memberId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    type: Schema.Types.ObjectId,
+    ref: MODEL_NAMES.USER,
     required: true,
   },
   amount: {
     type: Number,
     required: true,
+  },
+  groupId: {
+    type: Schema.Types.ObjectId,
+    ref: MODEL_NAMES.GROUP,
+    required: true,
+  },
+  status: {
+    type: String,
+    enum: ["pending", "completed", "failed"],
+    default: "pending",
+  },
+  reference: {
+    type: String,
   },
   note: {
     type: String,
@@ -30,6 +45,17 @@ const transactionSchema = new mongoose.Schema({
   },
 });
 
-const Transaction = mongoose.model("Transaction", transactionSchema);
+// Async post hook
+transactionSchema.post("save", async function (doc, next) {
+  if (doc.status === "completed") {
+    try {
+      await notifyAdminOfPayment(doc.memberId, doc.amount, doc.groupId);
+    } catch (error) {
+      console.error("Error notifying admin of payment:", error);
+    }
+  }
+  next();
+});
 
-module.exports = Transaction;
+const Transaction = model(MODEL_NAMES.TRANSACTION, transactionSchema);
+export default Transaction;

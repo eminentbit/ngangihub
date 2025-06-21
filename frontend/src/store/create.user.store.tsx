@@ -10,7 +10,16 @@ export interface Notification {
   _id: string;
   content: string;
   createdAt: string;
+  message: string;
   user: User;
+}
+
+export interface PaymentHistory {
+  groupName: string;
+  type: string;
+  amount: number;
+  date: Date;
+  status: string;
 }
 interface UserState {
   groups: GroupDetails[];
@@ -20,6 +29,8 @@ interface UserState {
   hasPaidThisMonth: boolean;
   setHasPaidThisMonth: (hasPaid: boolean) => void;
   setGroups: (groups: GroupDetails[]) => void;
+  paymentHistory: PaymentHistory | null;
+  setPaymentHistory: (ph: PaymentHistory) => void;
   fetchNotifications: () => Promise<void>;
   fetchGroups: () => Promise<void>;
   setNotifications: (notifications: Notification[]) => void;
@@ -40,8 +51,12 @@ const useUserStore = create<UserState>((set) => ({
   isLoading: false,
   error: null,
   hasPaidThisMonth: false,
+  paymentHistory: null,
   setHasPaidThisMonth: (hasPaid: boolean) =>
     set({ hasPaidThisMonth: hasPaid, isLoading: false }),
+
+  setPaymentHistory: (ph: PaymentHistory) =>
+    set({ paymentHistory: ph, isLoading: false }),
 
   fetchGroups: async () => {
     set({ isLoading: true, error: null });

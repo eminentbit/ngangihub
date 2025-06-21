@@ -5,8 +5,8 @@ import Invite from "../models/invite.model.js";
 import NjangiGroup from "../models/njangi.group.model.js";
 import User from "../models/user.model.js";
 import { sendNjangiAleadyAddMemberEmail } from "../mail/emails.js";
-import dotenv from "dotenv";
-dotenv.config();
+import { config } from "dotenv";
+config();
 
 export const generateToken = () => crypto.randomBytes(20).toString("hex");
 
@@ -77,7 +77,7 @@ export const inviteMembersToGroup = async (
       const Invitetoken = generateToken();
 
       // Build registration URL
-      let registrationUrl = `${process.env.REGISTER_URL}/members?inviteToken=${Invitetoken}`;
+      let registrationUrl = `${process.env.REGISTER_URL}/members?inviteToken=${Invitetoken}&email=${email}`;
       if (email) registrationUrl += `&email=${encodeURIComponent(email)}`;
       if (phone) registrationUrl += `&phone=${encodeURIComponent(phone)}`;
 
@@ -89,7 +89,7 @@ export const inviteMembersToGroup = async (
         inviteToken: Invitetoken,
         invitedBy: adminId,
         status: "pending",
-        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24), // 24h
+        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24), // 24 hours
       });
 
       // Send email invite if contact is email

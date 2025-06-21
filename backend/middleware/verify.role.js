@@ -34,7 +34,7 @@ export const verifyIfMember = async (req, res, next) => {
     const user = await User.findById(req.user.id);
     console.log(user);
 
-    if (user.role !== "member") {
+    if (user.role !== "member" || user.role != "admin") {
       return res
         .status(403)
         .json({ message: "Forbidden - Member access required" });

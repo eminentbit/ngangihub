@@ -492,3 +492,205 @@ export const GROUP_MEMBER_ADDITION_TEMPLATE = `
 </body>
 </html>
 `;
+
+export const PASSWORD_CHANGED_TEMPLATE = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Password Changed Successfully</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body style="font-family: 'Inter', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 0;">
+  <div style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin: 20px auto;">
+    <!-- Header -->
+    <div style="background: linear-gradient(to right, #1a56db, #3b82f6); padding: 30px; text-align: center;">
+      <h1 style="color: white; margin: 0; font-weight: 700; font-size: 24px;">Password Changed</h1>
+    </div>
+    
+    <!-- Content -->
+    <div style="background-color: #ffffff; padding: 30px;">
+      <p style="margin-top: 0; font-size: 16px;">Hello {lastName} {firstName},</p>
+      <p style="font-size: 16px;">W're confirming that your account password was changed successfully.</p>
+
+      <div style="background-color: #fef3c7; padding: 16px 20px; border-radius: 6px; margin: 20px 0; border-left: 4px solid #facc15;">
+        <p style="margin: 0; font-size: 16px;"><strong>Didn't request this change?</strong> If this wasn't you, please reset your password immediately and contact support.</p>
+      </div>
+
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="{resetPasswordLink}" style="background-color: #1a56db; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block; font-size: 16px;">Reset Password</a>
+      </div>
+
+      <p style="font-size: 16px;">If you made this change, you can ignore this message.</p>
+      <p style="margin-top: 30px; font-size: 16px;">Best regards,<br><strong>NAAS Team</strong></p>
+    </div>
+
+    <!-- Footer -->
+    <div style="background-color: #f3f4f6; padding: 20px; text-align: center; font-size: 14px; color: #6b7280;">
+      <p style="margin: 0;">© 2025 NganjiHub. All rights reserved.</p>
+      <p style="margin: 10px 0 0;">This is an automated message, please do not reply to this email.</p>
+    </div>
+  </div>
+</body>
+</html>
+`;
+
+export const SIGNIN_ATTEMPT_TEMPLATE = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>New Sign-In Attempt</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body style="font-family: 'Inter', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 0;">
+  <div style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin: 20px auto;">
+    <!-- Header -->
+    <div style="background: linear-gradient(to right, #1a56db, #3b82f6); padding: 30px; text-align: center;">
+      <h1 style="color: white; margin: 0; font-weight: 700; font-size: 24px;">New Sign-In Attempt</h1>
+    </div>
+
+    <!-- Content -->
+    <div style="padding: 30px; background-color: #ffffff;">
+      <p style="margin-top: 0; font-size: 16px;">Hi {userName},</p>
+      <p style="font-size: 16px;">We noticed a recent sign-in attempt to your <strong>NganjiHub</strong> account:</p>
+
+      <div style="background-color: #f9fafb; border: 1px solid #e5e7eb; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <p style="margin: 0; font-size: 16px;"><strong>Details:</strong></p>
+        <ul style="list-style: none; padding-left: 0; font-size: 16px; margin-top: 10px;">
+          <li><strong>Date & Time:</strong> {dateTime}</li>
+          <li><strong>IP Address:</strong> {browser}</li>
+          <li><strong>Location:</strong> {location}</li>
+          <li><strong>Device:</strong> {device}</li>
+          <li><strong>Browser:</strong> {browser}</li>
+        </ul>
+      </div>
+
+      <p style="font-size: 16px;">If this was you, no further action is needed.</p>
+      <p style="font-size: 16px;">If you don't recognize this activity, we strongly recommend changing your password immediately and reviewing your account security.</p>
+
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="{securitySettingsURL}" style="background-color: #1a56db; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block; font-size: 16px;">Secure My Account</a>
+      </div>
+
+      <p style="font-size: 16px;">Stay safe,<br/><strong>NAAS Security Team</strong></p>
+    </div>
+
+    <!-- Footer -->
+    <div style="background-color: #f3f4f6; padding: 20px; text-align: center; font-size: 14px; color: #6b7280;">
+      <p style="margin: 0;">© 2025 NganjiHub. All rights reserved.</p>
+      <p style="margin: 10px 0 0;">This is an automated message — please do not reply directly to this email.</p>
+    </div>
+  </div>
+</body>
+</html>
+`;
+
+export const NJANGI_PAYMENT_REMINDER_TEMPLATE = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Njangi Payment Reminder</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body style="font-family: 'Inter', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 0;">
+  <div style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin: 20px auto;">
+    
+    <!-- Header -->
+    <div style="background: linear-gradient(to right, #047857, #10b981); padding: 30px; text-align: center;">
+      <h1 style="color: white; margin: 0; font-weight: 700; font-size: 24px;">Njangi Payment Due</h1>
+    </div>
+
+    <!-- Content -->
+    <div style="padding: 30px; background-color: #ffffff;">
+      <p style="margin-top: 0; font-size: 16px;">Hi {userName},</p>
+      <p style="font-size: 16px;">This is a friendly reminder that your Njangi contribution is due.</p>
+
+      <div style="background-color: #f9fafb; border: 1px solid #e5e7eb; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <p style="margin: 0; font-size: 16px;"><strong>Payment Details:</strong></p>
+        <ul style="list-style: none; padding-left: 0; font-size: 16px; margin-top: 10px;">
+          <li><strong>Amount Due:</strong> {amountDue}</li>
+          <li><strong>Due Date:</strong> {dueDate}</li>
+          <li><strong>Group Name:</strong> {groupName}</li>
+        </ul>
+      </div>
+
+      <p style="font-size: 16px;">Please make your payment by the due date to keep your membership in good standing.</p>
+
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="{paymentLink}" style="background-color: #047857; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block; font-size: 16px;">Make Payment</a>
+      </div>
+
+      <p style="font-size: 16px;">Thank you for your prompt attention.</p>
+      <p style="font-size: 16px;">Warm regards,<br/><strong>{groupName} Njangi Admin</strong></p>
+    </div>
+
+    <!-- Footer -->
+    <div style="background-color: #f3f4f6; padding: 20px; text-align: center; font-size: 14px; color: #6b7280;">
+      <p style="margin: 0;">© 2025 {groupName}. All rights reserved.</p>
+      <p style="margin: 10px 0 0;">This is an automated reminder — please do not reply directly to this email.</p>
+    </div>
+  </div>
+</body>
+</html>
+`;
+
+export const ADMIN_PAYMENT_NOTIFICATION_TEMPLATE = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Payment Notification</title>
+  <style>
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      background-color: #f9fafb;
+      padding: 20px;
+      color: #333;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    h2 {
+      color: #047857;
+    }
+    .info {
+      margin: 20px 0;
+    }
+    .info p {
+      font-size: 16px;
+    }
+    .footer {
+      font-size: 14px;
+      color: #6b7280;
+      text-align: center;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Payment Notification</h2>
+    <p>Hello Admin,</p>
+    <p class="info">
+      Member <strong>{memberName}</strong> has just made a payment of <strong>{amountPaid}</strong> 
+      to the <strong>{groupName}</strong> Njangi group.
+    </p>
+    <p>You can log into the admin dashboard to verify the transaction details.</p>
+    <p>Best regards,<br/>Njangi App</p>
+  </div>
+  <div class="footer">
+    © 2025 {groupName}. This is an automated message — please do not reply.
+  </div>
+</body>
+</html>
+`;

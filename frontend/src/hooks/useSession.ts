@@ -10,7 +10,7 @@ const fetchSession = async (
   logout: () => void
 ): Promise<User | null> => {
   try {
-    const res = await secureGet("/api/session");
+    const res = await secureGet("/auth/session");
     const user = res.data.user;
     setUser(user);
     return user;
@@ -25,11 +25,13 @@ export const useSession = () => {
   const setUser = useAuthStore((s) => s.setUser);
   const logout = useAuthStore((s) => s.logout);
 
-  return useQuery({
+  const query = useQuery({
     queryKey: ["session"],
     queryFn: () => fetchSession(setUser, logout),
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 10,
     retry: false,
   });
+
+  return query;
 };

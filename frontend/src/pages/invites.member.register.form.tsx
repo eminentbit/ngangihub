@@ -34,6 +34,8 @@ export default function InviteMemberRegistrationForm() {
     "valid" | "invalid" | "expired" | "missing"
   >("valid");
 
+
+
   const {
     register,
     handleSubmit,

@@ -1,7 +1,7 @@
 import { HiCheckCircle, HiMail, HiUsers } from "react-icons/hi";
 import { User } from "../../types/auth.validator";
 import { User2Icon } from "lucide-react";
-import useUserPaymentStatus from "../../hooks/useUser";
+import { useUserPaymentStatus } from "../../hooks/useUser";
 
 // Member Tooltip Component
 const MemberTooltip = ({
@@ -21,9 +21,12 @@ const MemberTooltip = ({
 
   const uniqueMemberIds = Array.from(new Set(memberIds.map(String)));
 
-  const {
-    hasPaidThisMonth = [] as Array<{ userId: string; hasPaid: boolean }>,
-  } = useUserPaymentStatus(uniqueMemberIds, groupId);
+  const { hasPaidThisMonth = [] } = useUserPaymentStatus(
+    uniqueMemberIds,
+    groupId
+  ) as unknown as {
+    hasPaidThisMonth: Array<{ userId: string; hasPaid: boolean }>;
+  };
 
   if (!isVisible || !members?.length) return null;
 
@@ -56,7 +59,10 @@ const MemberTooltip = ({
       {/* Members List */}
       <div className="max-h-64 overflow-y-auto p-2">
         {members.map((member) => {
-          const status = hasPaidThisMonth.find((s) => s.userId === member._id);
+          const status = Array.isArray(hasPaidThisMonth)
+            ? hasPaidThisMonth.find((s) => s.userId === member._id)
+            : undefined;
+
           const hasPaid = status ? status.hasPaid : false;
 
           return (

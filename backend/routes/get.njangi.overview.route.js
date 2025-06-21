@@ -5,8 +5,11 @@ import {
   getMyNjangiDetails,
   getMyNjangiStatus,
 } from "../controllers/get.njangi.states.controller.js";
+import limiter from "../middleware/limiter.js";
 
 const router = express.Router();
+
+router.use("/", limiter);
 
 router.get("/admin/my-njangi-overview", getNjangiOverview);
 router.get("/admin/my-njangis", getMyNjangis);

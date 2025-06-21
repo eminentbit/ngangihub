@@ -5,7 +5,6 @@ import Header from "../../components/dashboard.admin.components/Header";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { FaUserPlus } from "react-icons/fa";
-import { useAdminState } from "../../store/create.admin.store";
 
 const AddMemberPage: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -19,10 +18,6 @@ const AddMemberPage: React.FC = () => {
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [success, setSuccess] = useState<string | null>(null);
-
-  const { groupId, members } = useAdminState();
-
-  console.log(members, groupId);
 
   // Toggle Tailwind dark class on <html>
   useEffect(() => {

@@ -1,5 +1,6 @@
 // models/NjangiDraft.js
 import mongoose from "mongoose";
+import MODEL_NAMES from "../utils/model.names.js";
 
 const njangiDraftSchema = new mongoose.Schema(
   {
@@ -19,10 +20,10 @@ const njangiDraftSchema = new mongoose.Schema(
         default: "member",
       },
       status: {
-      type: String,
-      enum: ["active", "pending", "invited", "suspended"],
-      default: "pending",
-    },
+        type: String,
+        enum: ["active", "pending", "invited", "suspended"],
+        default: "pending",
+      },
     },
     groupDetails: {
       groupName: String,
@@ -54,15 +55,21 @@ const njangiDraftSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-     draftUserToken: { type: String, required: true }, //token to count user number of submmision
+    draftUserToken: { type: String, required: true }, //token to count user number of submmision
     createdAt: {
       type: Date,
       default: Date.now,
     },
-    submittedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: false },
+    submittedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: MODEL_NAMES.USER,
+      required: false,
+    },
     submittedAt: { type: Date, default: Date.now },
   },
   { timestamps: true }
 );
 
-export default mongoose.model("NjangiDraft", njangiDraftSchema);
+const NjangiDraft = mongoose.model(MODEL_NAMES.NJANGIDRAFT, njangiDraftSchema);
+
+export default NjangiDraft;

@@ -1,10 +1,11 @@
 import { model, Schema } from "mongoose";
+import MODEL_NAMES from "../utils/model.names.js";
 
 const njangiActivityLogSchema = new Schema(
   {
     groupId: {
       type: Schema.Types.ObjectId,
-      ref: "NjangiGroup",
+      ref: MODEL_NAMES.GROUP,
       required: false,
     },
     activityType: {
@@ -29,12 +30,12 @@ const njangiActivityLogSchema = new Schema(
     },
     performedBy: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: MODEL_NAMES.USER,
       required: true,
     },
     affectedMember: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: MODEL_NAMES.USER,
     },
     amount: {
       type: Number,
@@ -54,6 +55,9 @@ const njangiActivityLogSchema = new Schema(
   }
 );
 
-const NjangiActivityLog = model("NjangiActivityLog", njangiActivityLogSchema);
+const NjangiActivityLog = model(
+  MODEL_NAMES.ACTIVITYLOG,
+  njangiActivityLogSchema
+);
 
 export default NjangiActivityLog;

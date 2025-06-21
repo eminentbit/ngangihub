@@ -7,14 +7,13 @@
  */
 import { Worker } from "bullmq";
 import { createRedisClient } from "../../redisClient.js";
-import {
-  sendNjangiCreatedPendingEmail,
-} from "../../mail/emails.js";
+import { sendNjangiCreatedPendingEmail } from "../../mail/emails.js";
+import CACHE_NAMES from "../../utils/cache.names.js";
 
 const redis = createRedisClient();
 
 const worker = new Worker(
-  "emailQueue",
+  CACHE_NAMES.EMAILQUEUE,
   async (job) => {
     const {
       dest,

@@ -1,10 +1,11 @@
-import mongoose from "mongoose";
+import { Schema, model } from "mongoose";
+import MODEL_NAMES from "../utils/model.names.js";
 
-const inviteSchema = new mongoose.Schema(
+const inviteSchema = new Schema(
   {
     groupId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "NjangiGroup",
+      type: Schema.Types.ObjectId,
+      ref: MODEL_NAMES.GROUP,
       required: true,
     },
     email: { type: String, sparse: true },
@@ -41,6 +42,6 @@ inviteSchema.index(
 // inviteSchema.index({ groupId: 1, email: 1 }, { unique: true, sparse: true });
 // inviteSchema.index({ groupId: 1, phone: 1 }, { unique: true, sparse: true });
 
-const Invite = mongoose.model("Invite", inviteSchema);
+const Invite = model(MODEL_NAMES.INVITE, inviteSchema);
 
 export default Invite;

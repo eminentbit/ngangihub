@@ -29,3 +29,34 @@ export function getNextPayout(group: Group) {
     date: nextPayoutDate,
   };
 }
+
+export function getNextPayoutDate(
+  group: Group,
+  userId: string,
+  rotationOrder: string[]
+) {
+  const { startDate, contributionFrequency, payoutMethod } = group;
+
+  const order = rotationOrder || group.groupMembers;
+  const index = order.findIndex((id) => id === userId);
+
+  if (index === -1) return null;
+
+  const baseDate = new Date(startDate!);
+  const nextDate = new Date(baseDate);
+
+  let intervalDays = 0;
+  if (contributionFrequency === "Weekly") intervalDays = 7;
+  else if (contributionFrequency === "Bi-weekly") intervalDays = 14;
+  else if (contributionFrequency === "Monthly") intervalDays = 30; // Approximate
+
+  // For "Rotation" payout method
+  if (payoutMethod === "Rotation") {
+    const daysToAdd = intervalDays * index;
+    nextDate.setDate(baseDate.getDate() + daysToAdd);
+    return nextDate.toDateString();
+  }
+
+  // For Lottery or Bidding – can't predict without backend logic
+  return "TBD by admin";
+}

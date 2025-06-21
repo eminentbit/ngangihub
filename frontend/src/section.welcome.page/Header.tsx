@@ -84,6 +84,7 @@ const Header: React.FC = () => {
           {/* Desktop Buttons */}
           <div className="hidden md:flex items-center space-x-4">
             <Button
+              type="button"
               variant="outline"
               size="sm"
               onClick={() => {
@@ -94,6 +95,9 @@ const Header: React.FC = () => {
                 if (user.role == "bod") {
                   navigate("/board/dashboard");
                   return;
+                } else if (user.role == "member") {
+                  navigate("/user/dashboard");
+                  return;
                 }
                 navigate(`${user.role}/dashboard`);
               }}
@@ -102,6 +106,7 @@ const Header: React.FC = () => {
             </Button>
             {draftId && (
               <Button
+                type="button"
                 variant="primary"
                 size="sm"
                 onClick={() =>
@@ -162,6 +167,9 @@ const Header: React.FC = () => {
                   }
                   if (user.role == "bod") {
                     navigate("/board/dashboard");
+                    return;
+                  } else if (user.role == "member") {
+                    navigate("/user/dashboard");
                     return;
                   }
                   navigate(`${user.role}/dashboard`);

@@ -92,6 +92,7 @@ const router = createBrowserRouter([
       { path: "add-member", element: <AddMemberPage /> },
       { path: "payments", element: <PaymentsPage /> },
       { path: "group/:groupId/settings", element: <GroupSettingsPage /> },
+      { path: "settings", element: <SettingsPage /> },
       { path: "notifications", element: <NotificationsPage /> },
       { path: "contributions", element: <ContributionPage /> },
       { path: "profile", element: <ProfilePage /> },

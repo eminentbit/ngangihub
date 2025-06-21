@@ -1,5 +1,5 @@
-import mongoose from "mongoose";
-const { Schema, model } = mongoose;
+import { Schema, model } from "mongoose";
+import MODEL_NAMES from "../utils/model.names.js";
 
 const attachmentSchema = new Schema(
   {
@@ -24,12 +24,12 @@ const messageSchema = new Schema(
   {
     groupId: {
       type: Schema.Types.ObjectId,
-      ref: "Njangi", // or whatever your Njangi model is called
+      ref: MODEL_NAMES.GROUP,
       required: true,
     },
     senderId: {
       type: Schema.Types.ObjectId,
-      ref: "User", // or whatever your User model is called
+      ref: MODEL_NAMES.USER,
       required: true,
     },
     senderName: {
@@ -55,4 +55,4 @@ const messageSchema = new Schema(
   }
 );
 
-export default model("Message", messageSchema);
+export default model(MODEL_NAMES.MESSAGE, messageSchema);

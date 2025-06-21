@@ -1,16 +1,16 @@
-// models/BODApproval.js
-import mongoose from "mongoose";
+import { Schema, model } from "mongoose";
+import MODEL_NAMES from "../utils/model.names.js";
 
-const bodApprovalSchema = new mongoose.Schema(
+const bodApprovalSchema = new Schema(
   {
     draftId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "NjangiDraft", 
+      type: Schema.Types.ObjectId,
+      ref: MODEL_NAMES.NJANGIDRAFT,
       required: true,
     },
     bodId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      type: Schema.Types.ObjectId,
+      ref: MODEL_NAMES.USER,
       required: true,
     },
     status: {
@@ -24,4 +24,6 @@ const bodApprovalSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export const BODApproval = mongoose.model("BODApproval", bodApprovalSchema);
+export const BODApproval = model(MODEL_NAMES.BODAPPROVAL, bodApprovalSchema);
+
+export default BODApproval;

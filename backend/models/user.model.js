@@ -1,6 +1,7 @@
 // Account set up
 
 import mongoose from "mongoose";
+import MODEL_NAMES from "../utils/model.names.js";
 
 const userSchema = new mongoose.Schema(
   {
@@ -44,6 +45,6 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model(MODEL_NAMES.USER, userSchema);
 
 export default User;

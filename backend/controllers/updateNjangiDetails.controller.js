@@ -1,4 +1,4 @@
-import njangiDraftModel from "../models/njangi.draft.model.js";
+import NjangiDraft from "../models/njangi.draft.model.js";
 
 export const updateNjangiDetails = async (req, res) => {
   const { draftId } = req.query;
@@ -11,7 +11,7 @@ export const updateNjangiDetails = async (req, res) => {
 
   try {
     // Fetch the draft first
-    const draft = await njangiDraftModel.findById(draftId);
+    const draft = await NjangiDraft.findById(draftId);
     if (!draft) {
       return res.status(404).json({
         sucess: false,
@@ -65,7 +65,7 @@ export const updateNjangiDetails = async (req, res) => {
     }
 
     // Perform the update with sanitized data and input validation
-    const njangi = await njangiDraftModel.findByIdAndUpdate(
+    const njangi = await NjangiDraft.findByIdAndUpdate(
       draftId,
       { $set: sanitizedUpdate },
       {
@@ -82,9 +82,13 @@ export const updateNjangiDetails = async (req, res) => {
     }
 
     // Validate successful update
-    const updatedNjangi = await njangiDraftModel
-      .findById(draftId)
-      .select("-__v");
+    // Validate draftId format (assuming MongoDB ObjectId)
+    if (!draftId.match(/^[0-9a-fA-F]{24}$/)) {
+      throw new Error("Invalid draftId format");
+    }
+    const updatedNjangi = await NjangiDraft.findById(draftId)
+      .select("-__v")
+      .lean();
     if (!updatedNjangi) {
       return res.status(404).json({
         success: false,
@@ -117,7 +121,7 @@ export const cancelNjangi = async (req, res) => {
 
   try {
     // Fetch the draft first
-    const draft = await njangiDraftModel.findById({ _id: draftId });
+    const draft = await NjangiDraft.findById(draftId);
     if (!draft) {
       return res.status(404).json({
         sucess: false,
@@ -125,7 +129,25 @@ export const cancelNjangi = async (req, res) => {
       });
     }
 
-    const deletedNjangi = await njangiDraftModel.deleteOne({ _id: draftId });
+    // Validate draftId format (assuming MongoDB ObjectId)
+    if (!draftId.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid draftId format",
+      });
+    }
+
+    // Use findOneAndDelete to ensure atomic operation and get deleted document
+    const deletedNjangi = await NjangiDraft.findOneAndDelete({
+      _id: draftId,
+    }).select("-__v");
+
+    if (!deletedNjangi) {
+      return res.status(404).json({
+        success: false,
+        message: "Njangi not found or already deleted",
+      });
+    }
 
     console.log("Deleted Njangi left from the backend:", deletedNjangi);
 

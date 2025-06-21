@@ -113,7 +113,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           ${isOpen ? "w-64" : "w-16"} hidden md:flex`}
       >
         <div className="flex items-center justify-between h-16 px-4 border-b border-blue-800">
-          {isOpen && <img src="/logo2.png" alt="Logo" className="h-8 w-auto" />}
+          {isOpen && <div className="text-lg font-bold">NjangiHub</div>}
           <button
             onClick={onToggle}
             className="p-2 focus:outline-none"
@@ -146,7 +146,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               ${isOpen ? "translate-x-0" : "-translate-x-full"}`}
           >
             <div className="flex items-center justify-between h-16 px-4 border-b border-blue-800">
-              <img src="/logo2.png" alt="Logo" className="h-10 w-auto" />
+             <div className="text-lg font-bold">NjangiHub</div>
               <button
                 onClick={onClose}
                 aria-label="Close sidebar"

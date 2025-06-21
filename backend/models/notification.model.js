@@ -1,10 +1,11 @@
 import mongoose from "mongoose";
+import MODEL_NAMES from "../utils/model.names.js";
 
 const notificationSchema = new mongoose.Schema(
   {
     recipient: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: MODEL_NAMES.USER,
       required: true,
     },
     type: {
@@ -32,7 +33,7 @@ const notificationSchema = new mongoose.Schema(
     // },
     sender: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: MODEL_NAMES.USER,
     },
   },
   {
@@ -40,6 +41,9 @@ const notificationSchema = new mongoose.Schema(
   }
 );
 
-const Notification = mongoose.model("Notification", notificationSchema);
+const NjangiNotification = mongoose.model(
+  MODEL_NAMES.NOTIFICATION,
+  notificationSchema
+);
 
-export default Notification;
+export default NjangiNotification;

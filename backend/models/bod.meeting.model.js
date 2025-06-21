@@ -1,6 +1,7 @@
-import mongoose from "mongoose";
+import { Schema, model } from "mongoose";
+import MODEL_NAMES from "../utils/model.names.js";
 
-const meetingSchema = new mongoose.Schema(
+const meetingSchema = new Schema(
   {
     title: {
       type: String,
@@ -25,8 +26,8 @@ const meetingSchema = new mongoose.Schema(
     },
     attendees: [
       {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        type: Schema.Types.ObjectId,
+        ref: MODEL_NAMES.USER,
       },
     ],
     agenda: [
@@ -47,8 +48,8 @@ const meetingSchema = new mongoose.Schema(
             default: "pending",
           },
           assignedTo: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
+            type: Schema.Types.ObjectId,
+            ref: MODEL_NAMES.USER,
           },
           dueDate: Date,
         },
@@ -65,6 +66,6 @@ const meetingSchema = new mongoose.Schema(
   }
 );
 
-const Meeting = mongoose.model("Meeting", meetingSchema);
+const Meeting = model(MODEL_NAMES.BODMEETING, meetingSchema);
 
 export default Meeting;

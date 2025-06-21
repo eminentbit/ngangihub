@@ -10,8 +10,6 @@ const ActivityChart = ({ groupId }: { groupId: string }) => {
     if (!chartRef.current) return;
     const chart = echarts.init(chartRef.current);
 
-    console.log(activityTimeline);
-
     // Aggregate activities per month for the last 6 months
     const now = new Date();
     const months = Array.from({ length: 6 }).map((_, i) => {

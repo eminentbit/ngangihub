@@ -137,6 +137,7 @@ const MembersPreview = ({
 
       <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
         <button
+          type="button"
           onClick={() => onNavigate(`/admin/group/${groupId}/members`)}
           className="w-full text-sm bg-blue-500 hover:bg-blue-600 text-white py-2 px-3 rounded-lg transition-colors duration-200"
         >
@@ -199,6 +200,7 @@ const GroupInfoPage = () => {
                   "Something went wrong while fetching your groups."}
               </p>
               <button
+                type="button"
                 onClick={() => window.location.reload()}
                 className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition-colors"
               >

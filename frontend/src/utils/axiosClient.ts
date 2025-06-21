@@ -1,5 +1,5 @@
 // axiosClient.js
-import axios, { AxiosRequestConfig } from "axios";
+import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 // import toast from "react-hot-toast";
 
 declare module "axios" {
@@ -59,13 +59,14 @@ async function ensureCsrfToken() {
   return csrfToken;
 }
 
-export const securePost = async (
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const securePost = async <T = any>(
   url: string,
   payload: unknown,
   config?: { headers?: Record<string, string>; silent?: boolean }
-) => {
+): Promise<AxiosResponse<T>> => {
   const token = await ensureCsrfToken();
-  return axiosClient.post(url, payload, {
+  return axiosClient.post<T>(url, payload, {
     ...config,
     withCredentials: true,
     headers: {
@@ -74,7 +75,6 @@ export const securePost = async (
     },
   });
 };
-
 export const secureGet = async (
   url: string,
   config?: {
@@ -94,12 +94,13 @@ export const secureGet = async (
   });
 };
 
-export const secureDelete = async (
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const secureDelete = async <T = any>(
   url: string,
-  config?: { headers?: Record<string, string>; silent: true }
+  config?: AxiosRequestConfig
 ) => {
   const token = await ensureCsrfToken();
-  return axiosClient.delete(url, {
+  return axiosClient.delete<T>(url, {
     ...config,
     withCredentials: true,
     headers: {

@@ -3,7 +3,12 @@ import { FaLock, FaGlobe, FaSave, FaUserPlus } from "react-icons/fa";
 import Sidebar from "../../components/dashboard.admin.components/Sidebar";
 import Header from "../../components/dashboard.admin.components/Header";
 import { capitalizeFirstLetter } from "../../utils/capitalize";
-import { useFetchInvitedMembers, useInviteMember } from "../../hooks/useAdmin";
+import {
+  useAddMember,
+  useFetchInvitedMembers,
+  useInviteMember,
+} from "../../hooks/useAdmin";
+import { useParams } from "react-router-dom";
 
 const GroupSettingsPage: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -14,6 +19,11 @@ const GroupSettingsPage: React.FC = () => {
   const [newMemberEmail, setNewMemberEmail] = useState<string>("");
   const [success, setSuccess] = useState<boolean>(false);
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
+  const { groupId } = useParams();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const addMember = useAddMember(groupId!);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [isSubmitiing, setIsSubmitting] = useState(false);
 
   // Dark mode toggle
   useEffect(() => {
@@ -21,18 +31,19 @@ const GroupSettingsPage: React.FC = () => {
   }, [isDarkMode]);
 
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
-  const inviteMember = useInviteMember();
-  const { invitedMembers, isLoading, error } = useFetchInvitedMembers();
+  const inviteMember = useInviteMember(groupId!);
+  const { invitedMembers, isLoading, error } = useFetchInvitedMembers(groupId!);
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: persist contribution, paymentType, privacy, new member logic
+    setIsSubmitting(true);
+
+    // API Call here
+
     setSuccess(true);
-    setTimeout(() => setSuccess(false), 3000);
   };
 
   const handleAddMember = () => {
-    console.log(newMemberEmail);
     inviteMember.mutate(newMemberEmail);
   };
 

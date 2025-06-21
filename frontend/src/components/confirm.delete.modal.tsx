@@ -19,6 +19,7 @@ export function ConfirmModal({
   loading,
 }: ConfirmModalProps) {
   if (!open) return null;
+  console.log("Current is Loading: ", loading)
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="bg-white rounded-xl shadow-2xl p-8 max-md:w-[90%] w-full max-w-sm animate-fade-in">
@@ -31,6 +32,7 @@ export function ConfirmModal({
         </div>
         <div className="flex justify-end gap-3">
           <button
+            type="button"
             onClick={onCancel}
             className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium transition"
             disabled={loading}
@@ -38,6 +40,7 @@ export function ConfirmModal({
             Go Back
           </button>
           <button
+            type="button"
             onClick={onConfirm}
             className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-medium transition shadow disabled:cursor-not-allowed disabled:opacity-50"
             disabled={loading}

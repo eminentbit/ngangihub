@@ -64,7 +64,7 @@ const GroupOverviewPage: React.FC = () => {
   const { user } = useAuthStore();
   const navigate = useNavigate();
 
-  const { groupInfo, loading: groupInfoLoading } = useGroupInfo(groupId);
+  const { groupInfo, loading: groupInfoLoading } = useGroupInfo(groupId!);
   const { activities: groupRecentActivities, loading: activitiesLoading } =
     useGroupActivities(groupId!);
 

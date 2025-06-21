@@ -2,6 +2,8 @@ import request from "supertest";
 import express from "express";
 import jwt from "jsonwebtoken";
 import { verifyToken } from "../middleware/verify.token";
+import { config } from "dotenv";
+config();
 
 // Mock jwt.verify and process.env for isolated tests
 jest.mock("jsonwebtoken");

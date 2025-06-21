@@ -1,9 +1,10 @@
-import mongoose from "mongoose";
+import { Schema, model } from "mongoose";
+import MODEL_NAMES from "../utils/model.names.js";
 
-const paymentMethodSchema = new mongoose.Schema({
+const paymentMethodSchema = new Schema({
   userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    type: Schema.Types.ObjectId,
+    ref: MODEL_NAMES.USER,
     required: true,
   },
   type: {
@@ -59,6 +60,6 @@ const paymentMethodSchema = new mongoose.Schema({
   },
 });
 
-const PaymentMethod = mongoose.model("PaymentMethod", paymentMethodSchema);
+const PaymentMethod = model(MODEL_NAMES.PAYMENTMETHOD, paymentMethodSchema);
 
 module.exports = PaymentMethod;

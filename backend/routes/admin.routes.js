@@ -12,8 +12,10 @@ import {
   getStatusHistory,
   getGroupRecentActivities,
   getInvitedMembersOfGroup,
-  inviteMemberToGroup,
   getActivityTimeline,
+  addMemberToGroup,
+  cancelInvite,
+  removeMember,
 } from "../controllers/admin.controllers.js";
 import verifyToken from "../middleware/verify.token.js";
 import { verifyIfAdmin } from "../middleware/verify.role.js";
@@ -34,7 +36,7 @@ router.get(
   getMembersOfGroup
 );
 
-router.get("/groups", verifyToken, verifyIfAdmin, fetchAllAdminGroups);
+router.get("/groups", verifyToken, fetchAllAdminGroups);
 
 router.get("/group/:groupId", verifyToken, verifyIfAdmin, fetchGroupById);
 
@@ -51,28 +53,41 @@ router.get("/status-history", getStatusHistory);
 router.get(
   "/group/:groupId/recent-activities",
   verifyToken,
-  verifyIfAdmin,
   getGroupRecentActivities
 );
 
 router.get(
   "/group/:groupId/invited-members",
   verifyToken,
-  verifyIfAdmin,
   getInvitedMembersOfGroup
 );
 router.post(
   "/group/:groupId/add-member",
   verifyToken,
   verifyIfAdmin,
-  inviteMemberToGroup
+  addMemberToGroup
 );
 
-router.post(
+router.get(
   "/group/:groupId/activity-timeline",
   verifyToken,
-  verifyIfAdmin,
   getActivityTimeline
 );
+
+// cancel invites for a group
+router.delete(
+  "/group/:groupId/cancel-invites",
+  verifyToken,
+  verifyIfAdmin,
+  cancelInvite
+);
+
+// remove member
+router.delete(
+  "/group/:groupId/remove-member/:userId",
+  verifyToken,
+  verifyIfAdmin,
+  removeMember
+)
 
 export default router;
