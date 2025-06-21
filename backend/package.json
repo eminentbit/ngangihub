@@ -9,7 +9,8 @@
     "serve": "node --watch --env-file=.env server",
     "dev": "nodemon server.js",
     "backfillAll": "node scripts/backfillAll.js",
-    "worker": "node bullMQ/workers/emailworker.js",
+    "emailWorker": "node bullMQ/workers/emailWorker.js",
+    "dbWorker": "node bullMQ/workers/databaseWorker.js",
     "insertBods": "node scripts/insertBods.js",
     "cronJob": "node utils/cron.job.js"
   },

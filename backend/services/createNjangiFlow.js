@@ -81,7 +81,6 @@ const createNjangiFlow = async (formData, njangiId, draftUserToken) => {
     await emailQueue.add(
       CACHE_NAMES.SENDPENDINGEMAIL,
       {
-        dest: "admin",
         email: accountSetup.email,
         userName: `${accountSetup.firstName} ${accountSetup.lastName}`,
         groupName: groupDetails.groupName,

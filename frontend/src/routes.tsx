@@ -73,6 +73,8 @@ const router = createBrowserRouter([
       { path: "settings", element: <SettingsPage /> },
       { path: "profile", element: <ProfilePage /> },
       { path: "notifications", element: <NotificationsPage /> },
+      { path: "contributions", element: <ContributionPage /> },
+      { path: "loans-request", element: <LoanRequestPage /> },
     ],
   },
 

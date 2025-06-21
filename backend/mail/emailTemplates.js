@@ -561,7 +561,7 @@ export const SIGNIN_ATTEMPT_TEMPLATE = `
         <p style="margin: 0; font-size: 16px;"><strong>Details:</strong></p>
         <ul style="list-style: none; padding-left: 0; font-size: 16px; margin-top: 10px;">
           <li><strong>Date & Time:</strong> {dateTime}</li>
-          <li><strong>IP Address:</strong> {browser}</li>
+          <li><strong>IP Address:</strong> {ipAddress}</li>
           <li><strong>Location:</strong> {location}</li>
           <li><strong>Device:</strong> {device}</li>
           <li><strong>Browser:</strong> {browser}</li>

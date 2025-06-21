@@ -326,6 +326,7 @@ export const sendSigninAttemptEmail = async (
   const recipient = [email];
 
   const { ip, city, region, country } = await getInfo();
+  console.log(ip);
 
   try {
     const response = transporter.sendMail({

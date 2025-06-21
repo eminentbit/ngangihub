@@ -10,7 +10,7 @@ import Footer from "./section.welcome.page/Footer";
 import { useEffect } from "react";
 // import axios from "axios";
 import { useAuthStore } from "./store/create.auth.store";
-import { secureGet } from "./utils/axiosClient";
+import axiosClient, { secureGet } from "./utils/axiosClient";
 
 function App() {
   const { setUser, setIsAuthenticated } = useAuthStore();
@@ -32,6 +32,20 @@ function App() {
 
     checkSession();
   }, [setIsAuthenticated, setUser]);
+
+  useEffect(() => {
+    const preloadCsrfToken = async (): Promise<void> => {
+      try {
+        await axiosClient.get("/csrf-token", {
+          withCredentials: true,
+        });
+      } catch (error) {
+        console.error("Failed to preload CSRF token", error);
+      }
+    };
+
+    preloadCsrfToken();
+  }, []);
 
   return (
     <div className="font-sans antialiased">

@@ -1,4 +1,3 @@
-// axiosClient.js
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 // import toast from "react-hot-toast";
 
@@ -36,11 +35,6 @@ axiosClient.interceptors.response.use(
       "Something went wrong";
 
     console.error("API Error:", error.response?.data || errorMessage);
-
-    // 🔥 Show toast only if the request is not silent
-    if (!error.config?.silent) {
-      // toast.error(errorMessage);
-    }
 
     return Promise.reject(error);
   }
