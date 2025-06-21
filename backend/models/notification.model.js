@@ -3,15 +3,26 @@ import MODEL_NAMES from "../utils/model.names.js";
 
 const notificationSchema = new mongoose.Schema(
   {
-    recipient: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: MODEL_NAMES.USER,
-      required: true,
-    },
+    recipients: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: MODEL_NAMES.USER,
+        required: true,
+      },
+    ],
     type: {
       type: String,
       required: true,
-      enum: ["message", "follow", "like", "comment", "mention", "system"],
+      enum: [
+        "message",
+        "follow",
+        "like",
+        "comment",
+        "mention",
+        "system",
+        "payment",
+        "loan",
+      ],
     },
     content: {
       type: String,

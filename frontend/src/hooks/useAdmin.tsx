@@ -330,6 +330,8 @@ export function useGetContributionOverview() {
       ),
   });
 
+  console.log(query.data);
+
   return {
     data: query.data ?? [],
     loading: query.isLoading,

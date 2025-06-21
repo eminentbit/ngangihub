@@ -86,49 +86,52 @@ njangiGroupSchema.methods.getPositionAndRounds = function () {
 };
 
 njangiGroupSchema.methods.getNextPaymentDate = function (memberId = null) {
-  // Helper: Add days to a date
+  const now = new Date();
+
+  // Helper: Add days safely to a date
   const addDays = (date, days) => {
     const result = new Date(date);
-    result.setDate(result.getDate() + days);
+    result.setUTCDate(result.getUTCDate() + days);
     return result;
   };
 
-  let lastDate = this.startDate;
-
-  // If specific member provided, try to find their last payment date
-  if (memberId) {
-    const member = this.memberContributions.find((m) =>
-      m.member.equals(memberId)
-    );
-    if (member?.lastPaymentDate) {
-      lastDate = new Date(member.lastPaymentDate);
-    }
-  } else {
-    // Get the latest lastPaymentDate among all members (fallback to startDate)
-    const allDates = this.memberContributions
-      .map((m) => m.lastPaymentDate)
-      .filter((d) => d instanceof Date);
-    if (allDates.length > 0) {
-      lastDate = new Date(Math.max(...allDates.map((d) => d.getTime())));
-    }
-  }
-
-  // Determine how many days to add based on frequency
+  // Determine interval in days
   const frequencyToDays = {
     Weekly: 7,
-    "Bi-weekly": 14, // Half a month
+    "Bi-weekly": 14,
     Monthly: 30,
   };
 
   const intervalDays = frequencyToDays[this.contributionFrequency];
   if (!intervalDays) {
-    throw new Error("Invalid contribution frequency");
+    throw new Error(
+      `Unknown contribution frequency: ${this.contributionFrequency}`
+    );
   }
 
-  let nextDate = addDays(lastDate, intervalDays);
-  const now = new Date();
+  let baseDate;
 
-  // Keep adding intervals until the next date is in the future
+  if (memberId) {
+    // Get the specific member's last payment date
+    const member = this.memberContributions.find((m) =>
+      m.member.equals(memberId)
+    );
+    baseDate = member?.lastPaymentDate || this.startDate;
+  } else {
+    // Use latest date from all members
+    const allDates = this.memberContributions
+      .map((m) => m.lastPaymentDate)
+      .filter(Boolean);
+    baseDate =
+      allDates.length > 0
+        ? new Date(Math.max(...allDates.map((d) => new Date(d).getTime())))
+        : this.startDate;
+  }
+
+  // Calculate next date after baseDate
+  let nextDate = addDays(new Date(baseDate), intervalDays);
+
+  // If the baseDate is in the future, we don’t need to push it forward
   while (nextDate <= now) {
     nextDate = addDays(nextDate, intervalDays);
   }

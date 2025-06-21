@@ -17,6 +17,7 @@ import {
 import NjangiGroup from "../models/njangi.group.model.js";
 import { getInfo } from "../utils/getInfo.js";
 import User from "../models/user.model.js";
+import NjangiNotification from "../models/notification.model.js";
 
 const replacePlaceholders = (template, data) => {
   return Object.entries(data).reduce((html, [key, value]) => {
@@ -419,6 +420,13 @@ export const notifyAdminOfPayment = async (memberId, amount, groupId) => {
     const admin = await User.findById(group.adminId);
     const recipients = [admin.email];
 
+    await NjangiNotification.create({
+      sender: admin.id,
+      content: `${member.lastName} ${member.firstName} made a payment of ${amount} FCFA`,
+      type: "payment",
+      recipients: group.groupMembers,
+    });
+
     const emailContent = replacePlaceholders(
       ADMIN_PAYMENT_NOTIFICATION_TEMPLATE,
       {
@@ -428,9 +436,7 @@ export const notifyAdminOfPayment = async (memberId, amount, groupId) => {
       }
     );
 
-    console.log(emailContent);
-
-    const response = await transporter.sendMail({
+    transporter.sendMail({
       from: sender,
       to: recipients,
       subject: `Payment Received - ${groupName}`,
