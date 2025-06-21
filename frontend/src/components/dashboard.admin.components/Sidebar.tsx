@@ -97,6 +97,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <>
+      {/* DESKTOP HAMBURGER */}
       {!isOpen && !isMobile && (
         <button
           onClick={onToggle}
@@ -108,6 +109,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         </button>
       )}
 
+      {/* DESKTOP SIDEBAR */}
       <div
         className={`fixed left-0 top-0 bottom-0 z-30 flex flex-col bg-blue-700 text-white border-r transition-width duration-300 ease-in-out
           ${isOpen ? "w-64" : "w-16"} hidden md:flex`}
@@ -135,23 +137,27 @@ const Sidebar: React.FC<SidebarProps> = ({
         )}
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 z-40 flex h-16 md:hidden bg-blue-700 text-white">
-        {renderCollapsed()}
-      </div>
+      {/* MOBILE BOTTOM BAR (ONLY WHEN CLOSED) */}
+      {!isMobile && null}
+      {isMobile && !isOpen && (
+        <div className="fixed bottom-0 left-0 right-0 z-40 flex h-16 md:hidden bg-blue-700 text-white">
+          {renderCollapsed()}
+        </div>
+      )}
 
-      {isMobile && (
-        <div className={`fixed inset-0 z-50 flex`}>
+      {/* MOBILE SLIDE-IN MENU (ONLY WHEN OPEN) */}
+      {isMobile && isOpen && (
+        <div className="fixed inset-0 z-50 flex">
+          {/* backdrop */}
           <div
-            className={`flex flex-col bg-blue-700 text-white w-64 transform transition-transform duration-300 ease-in-out
-              ${isOpen ? "translate-x-0" : "-translate-x-full"}`}
-          >
+            className="absolute inset-0 bg-black bg-opacity-40"
+            onClick={onClose}
+          />
+          {/* panel */}
+          <div className="relative flex flex-col bg-blue-700 text-white w-64">
             <div className="flex items-center justify-between h-16 px-4 border-b border-blue-800">
-             <div className="text-lg font-bold">NjangiHub</div>
-              <button
-                onClick={onClose}
-                aria-label="Close sidebar"
-                type="button"
-              >
+              <div className="text-lg font-bold">NjangiHub</div>
+              <button onClick={onClose} aria-label="Close sidebar" type="button">
                 <FaTimes size={24} />
               </button>
             </div>
@@ -159,9 +165,6 @@ const Sidebar: React.FC<SidebarProps> = ({
               {renderItems(true)}
             </nav>
           </div>
-          {isOpen && (
-            <div className="flex-1 bg-black bg-opacity-40" onClick={onClose} />
-          )}
         </div>
       )}
     </>

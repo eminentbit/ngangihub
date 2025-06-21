@@ -457,7 +457,7 @@ export const addMemberToGroup = async (req, res) => {
   }
 
   // Prevent inviting a user who is in a NjangiDraft's pending invite list
-  const draftHasInvite = await njangiDraftModel.findOne({
+  const draftHasInvite = await NjangiDraft.findOne({
     "inviteMembers.contact": normalizedEmail,
     "accountSetup.email": normalizedEmail,
     "groupDetails.status": "pending",
