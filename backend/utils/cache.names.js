@@ -6,6 +6,7 @@ const CACHE_NAMES = {
   LOGINALERT: "login-alert",
   PASSWORDCHANGE: "password-change",
   PASSWORDRESET: "password-reset",
+  NOTIFYCOUNT: "notify-count",
 };
 
 export default CACHE_NAMES;

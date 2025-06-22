@@ -22,6 +22,7 @@ const notificationSchema = new mongoose.Schema(
         "system",
         "payment",
         "loan",
+        "reminder",
       ],
     },
     content: {

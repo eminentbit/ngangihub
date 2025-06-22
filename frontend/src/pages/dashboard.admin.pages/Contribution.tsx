@@ -1,64 +1,32 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
+import {
+  useAdminGroupPaymentStatus,
+  useNotifyDefaulters,
+} from "../../hooks/useAdmin";
 
 const ContributionPage: React.FC = () => {
-  const [amount, setAmount] = useState("");
-  const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [groups, setGroups] = useState<string[]>([]);
-  const [selectedGroup, setSelectedGroup] = useState<string>("");
-  const [stats, setStats] = useState({
-    totalRaised: 0,
-    goal: 1000000,
-    contributionsCount: 0,
-    deadline: "December 31, 2025",
-  });
   const navigate = useNavigate();
+  const { data: groupStatus, loading, error } = useAdminGroupPaymentStatus();
+  const {
+    notify,
+    isLoading: notifying,
+    isSuccess,
+    error: notifyError,
+  } = useNotifyDefaulters();
 
-  useEffect(() => {
-    // TODO: Fetch real groups and stats from API
-    setGroups(["Group Alpha", "Group Beta", "Group Gamma"]);
-    setStats({
-      totalRaised: 450000,
-      goal: 1000000,
-      contributionsCount: 120,
-      deadline: "December 31, 2025",
-    });
-  }, []);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedGroup) {
-      setMessage("Please select a group to contribute to.");
-      return;
+  const handleNotify = async () => {
+    try {
+      await notify();
+    } catch {
+      // handled by notifyError
     }
-    setLoading(true);
-    setMessage("");
-
-    // Simulate API call
-    setTimeout(() => {
-      setLoading(false);
-      setMessage(`Thank you for your contribution to ${selectedGroup}!`);
-      setAmount("");
-      setSelectedGroup("");
-      // Update stats
-      setStats((prev) => ({
-        ...prev,
-        totalRaised: prev.totalRaised + Number(amount),
-        contributionsCount: prev.contributionsCount + 1,
-      }));
-    }, 1500);
   };
-
-  const progressPercent = Math.min(
-    100,
-    Math.round((stats.totalRaised / stats.goal) * 100)
-  );
 
   return (
     <div className="flex flex-col h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Back button at top-left */}
+      {/* Back button */}
       <button
         type="button"
         onClick={() => navigate("/admin/dashboard")}
@@ -68,95 +36,106 @@ const ContributionPage: React.FC = () => {
         Back to Dashboard
       </button>
 
-      {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto p-8">
-        <div className="mx-auto mt-16 w-full max-w-2xl p-10 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
-          {/* Campaign Details */}
-          <div className="grid grid-cols-2 gap-6 mb-8">
-            {[
-              { label: "Total Raised", value: `CFA ${stats.totalRaised.toLocaleString()}` },
-              { label: "Goal", value: `CFA ${stats.goal.toLocaleString()}` },
-              { label: "Contributions", value: stats.contributionsCount },
-              { label: "Deadline", value: stats.deadline },
-            ].map(({ label, value }) => (
-              <div key={label} className="p-4 bg-gray-100 dark:bg-gray-700 rounded-md">
-                <p className="text-sm text-gray-500 dark:text-gray-300">{label}</p>
-                <p className="text-xl font-semibold text-gray-800 dark:text-white">
-                  {value}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          {/* Progress Bar */}
-          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 mb-8">
-            <div
-              className="h-4 rounded-full bg-blue-600"
-              style={{ width: `${progressPercent}%` }}
-            />
-          </div>
-
-          <h1 className="text-3xl font-bold mb-4 text-blue-700 dark:text-blue-400">
-            Make a Contribution
+        <div className="mx-auto mt-16 w-full max-w-4xl p-10 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+          <h1 className="text-3xl font-bold mb-6 text-blue-700 dark:text-blue-400">
+            Contribution Status (Current Turn)
           </h1>
-          <p className="mb-8 text-gray-600 dark:text-gray-300">
-            Support your group by contributing funds. Every contribution makes a difference.
-          </p>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Group Selection */}
-            <div>
-              <label htmlFor="group" className="block text-gray-700 dark:text-gray-200 font-medium mb-2">
-                Select Group
-              </label>
-              <select
-                id="group"
-                value={selectedGroup}
-                onChange={(e) => setSelectedGroup(e.target.value)}
-                required
-                className="w-full px-5 py-3 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="" disabled>-- Choose a group --</option>
-                {groups.map((grp) => (
-                  <option key={grp} value={grp}>{grp}</option>
-                ))}
-              </select>
+          {error && (
+            <div className="p-4 mb-6 bg-red-100 text-red-700 rounded">
+              Error loading data. Please try again.
             </div>
+          )}
 
+          {loading ? (
             <div>
-              <label htmlFor="amount" className="block text-gray-700 dark:text-gray-200 font-medium mb-2">
-                Amount (CFA)
-              </label>
-              <input
-                id="amount"
-                type="number"
-                min={500}
-                step={500}
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                placeholder="Enter amount (minimum CFA500)"
-                required
-                className="w-full px-5 py-3 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              {/* Skeleton for group sections */}
+              {[1, 2].map((i) => (
+                <div key={i} className="mb-10 animate-pulse">
+                  <div className="h-6 bg-gray-300 dark:bg-gray-700 rounded w-1/3 mb-4"></div>
+                  <div className="space-y-2">
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
+                  </div>
+                  <div className="mt-6 space-y-2">
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
+                  </div>
+                </div>
+              ))}
             </div>
+          ) : (
+            groupStatus.map((group) => (
+              <div key={group.groupId} className="mb-10">
+                <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">
+                  Group: {group.groupName}
+                </h2>
 
+                {/* Paid Members */}
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold text-green-600">
+                    ✅ Paid Members
+                  </h3>
+                  <ul className="list-disc pl-6 mt-2">
+                    {group.paidMembers.length > 0 ? (
+                      group.paidMembers.map((member) => (
+                        <li key={member._id} className="text-green-700">
+                          {member.name} ({member.email})
+                        </li>
+                      ))
+                    ) : (
+                      <li className="text-gray-500">No one has paid yet.</li>
+                    )}
+                  </ul>
+                </div>
+
+                {/* Unpaid Members */}
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold text-red-600">
+                    ❌ Unpaid Members
+                  </h3>
+                  <ul className="list-disc pl-6 mt-2">
+                    {group.unpaidMembers.length > 0 ? (
+                      group.unpaidMembers.map((member) => (
+                        <li key={member._id} className="text-red-600">
+                          {member.name} ({member.email})
+                        </li>
+                      ))
+                    ) : (
+                      <li className="text-gray-500">Everyone has paid.</li>
+                    )}
+                  </ul>
+                </div>
+              </div>
+            ))
+          )}
+
+          {/* Notify Button & Feedback */}
+          <div className="mt-8 text-center">
             <button
-              type="submit"
-              disabled={loading || !amount || !selectedGroup}
-              className="w-full py-3 px-6 rounded-md bg-blue-700 hover:bg-blue-800 text-white font-semibold text-lg transition disabled:opacity-50"
+              onClick={handleNotify}
+              disabled={loading || notifying || !!error}
+              className="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-md transition disabled:opacity-50"
             >
-              {loading ? "Processing..." : "Contribute"}
+              {notifying ? "Notifying..." : "Notify Defaulters"}
             </button>
 
-            {message && (
-              <div className="text-green-600 dark:text-green-400 font-medium pt-2 text-center">
-                {message}
-              </div>
+            {isSuccess && (
+              <p className="mt-4 text-sm text-green-700">
+                Defaulters notified successfully.
+              </p>
             )}
-          </form>
+            {notifyError && (
+              <p className="mt-4 text-sm text-red-700">
+                Failed to notify defaulters.
+              </p>
+            )}
+          </div>
 
           <p className="mt-8 text-sm text-gray-500 dark:text-gray-400 text-center">
-            Your contribution is secure and will reflect in your group account.
+            Use this page to track and remind members who haven't yet
+            contributed during this turn.
           </p>
         </div>
       </div>

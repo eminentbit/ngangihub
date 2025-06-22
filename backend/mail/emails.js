@@ -13,6 +13,7 @@ import {
   PASSWORD_CHANGED_TEMPLATE,
   SIGNIN_ATTEMPT_TEMPLATE,
   ADMIN_PAYMENT_NOTIFICATION_TEMPLATE,
+  NJANGI_PAYMENT_REMINDER_TEMPLATE,
 } from "./emailTemplates.js";
 import NjangiGroup from "../models/njangi.group.model.js";
 import { getInfo } from "../utils/getInfo.js";

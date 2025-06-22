@@ -321,6 +321,13 @@ export function useEditGroupSettings() {
   });
 }
 
+interface GroupStatus {
+  groupId: string;
+  groupName: string;
+  paidMembers: Member[];
+  unpaidMembers: Member[];
+}
+
 export function useGetContributionOverview() {
   const query = useQuery<{ value: number; name: string }[], AxiosError>({
     queryKey: ["contributionOverview"],
@@ -336,5 +343,35 @@ export function useGetContributionOverview() {
     data: query.data ?? [],
     loading: query.isLoading,
     error: query.error,
+  };
+}
+
+export function useAdminGroupPaymentStatus() {
+  const query = useQuery<GroupStatus[], AxiosError>({
+    queryKey: ["adminGroupPaymentStatus"],
+    queryFn: () =>
+      secureGet("/admin/group-payment-status").then((res) => res.data),
+  });
+
+  return {
+    data: query.data ?? [],
+    loading: query.isLoading,
+    error: query.error,
+  };
+}
+
+export function useNotifyDefaulters() {
+  const mutation = useMutation<string, AxiosError>({
+    mutationFn: async () => {
+      const response = await securePost("/admin/notify-defaulters", {});
+      return response.data.message;
+    },
+  });
+
+  return {
+    notify: mutation.mutateAsync,
+    isLoading: mutation.isPending,
+    error: mutation.error,
+    isSuccess: mutation.isSuccess,
   };
 }

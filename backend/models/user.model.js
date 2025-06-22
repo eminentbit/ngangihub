@@ -13,6 +13,7 @@ const userSchema = new mongoose.Schema(
     profilePicUrl: { type: String },
     groups: [{ type: mongoose.Schema.Types.ObjectId, ref: "Group" }],
     role: { type: String, enum: ["admin", "member", "bod"], default: "member" },
+    creditScore: { type: Number, default: 0 },
     status: {
       type: String,
       enum: ["active", "pending", "invited", "suspended"],

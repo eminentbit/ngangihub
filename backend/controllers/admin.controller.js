@@ -10,7 +10,14 @@ import {
   generateToken,
   inviteMembersToGroup,
 } from "../services/invite.service.js";
-import { sendNjangiAleadyAddMemberEmail } from "../mail/emails.js";
+import {
+  sendDueReminder,
+  sendNjangiAleadyAddMemberEmail,
+} from "../mail/emails.js";
+import { Types } from "mongoose";
+import NjangiNotification from "../models/notification.model.js";
+import { createRedisClient } from "../redisClient.js";
+import CACHE_NAMES from "../utils/cache.names.js";
 
 config();
 
@@ -622,5 +629,109 @@ export const removeMember = async (req, res) => {
       error: "Failed to remove member.",
       details: error.message,
     });
+  }
+};
+
+export const getAdminGroupPaymentStatus = async (req, res) => {
+  try {
+    const adminId = req.user.id;
+
+    if (!Types.ObjectId.isValid(adminId)) {
+      return res.status(400).json({ error: "Invalid admin ID" });
+    }
+
+    const groups = await NjangiGroup.find({ adminId })
+      .populate("groupMembers", "name email")
+      .populate("memberContributions.member", "name email");
+
+    const result = groups.map((group) => {
+      const paidMembers = group.memberContributions
+        .filter((mc) => mc.totalAmountPaid > 0)
+        .map((mc) => mc.member);
+
+      const paidMemberIds = new Set(paidMembers.map((m) => m._id.toString()));
+
+      const unpaidMembers = group.groupMembers.filter(
+        (member) => !paidMemberIds.has(member._id.toString())
+      );
+
+      return {
+        groupId: group._id,
+        groupName: group.name,
+        paidMembers,
+        unpaidMembers,
+      };
+    });
+
+    return res.json(result);
+  } catch (err) {
+    console.error("Error in getAdminGroupPaymentStatus:", err);
+    return res.status(500).json({ error: "Server error" });
+  }
+};
+
+const redis = createRedisClient();
+
+export const notifyDefaulters = async (req, res) => {
+  try {
+    const adminId = req.user.id;
+
+    if (!Types.ObjectId.isValid(adminId)) {
+      return res.status(400).json({ error: "Invalid admin ID" });
+    }
+
+    const groups = await NjangiGroup.find({ adminId })
+      .populate("groupMembers", "name email firstName lastName role")
+      .populate("memberContributions.member", "name email");
+
+    let notificationsSent =
+      parseInt(await redis.get(CACHE_NAMES.NOTIFYCOUNT)) || 0;
+
+    for (const group of groups) {
+      const paidMemberIds = new Set(
+        group.memberContributions
+          .filter((mc) => mc.totalAmountPaid > 0)
+          .map((mc) => mc.member._id.toString())
+      );
+
+      const defaulters = group.groupMembers.filter(
+        (member) => !paidMemberIds.has(member._id.toString())
+      );
+
+      const nextDue = group.getNextPaymentDate();
+
+      for (const member of defaulters) {
+        await sendDueReminder(
+          member.email,
+          group.contributionAmount,
+          nextDue,
+          group.name,
+          group.startDate,
+          member.lastName || "",
+          member.firstName || "",
+          `${process.env.FRONTEND_URL}/${member.role}/payments`
+        );
+
+        notificationsSent++;
+      }
+
+      if (defaulters.length > 0) {
+        await NjangiNotification.create({
+          recipients: defaulters.map((m) => m._id),
+          type: "reminder",
+          content: `Don't forget to pay ${group.contributionAmount} to ${group.name}`,
+          sender: adminId,
+        });
+      }
+    }
+
+    await redis.set(CACHE_NAMES.NOTIFYCOUNT, notificationsSent.toString());
+
+    return res.status(200).json({
+      message: `${notificationsSent} defaulter(s) notified successfully.`,
+    });
+  } catch (err) {
+    console.error("Error notifying defaulters:", err);
+    return res.status(500).json({ error: "Server error" });
   }
 };
