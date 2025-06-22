@@ -18,6 +18,7 @@ const MODEL_NAMES = {
   PAYMENTMETHOD: "PaymentMethod",
   GROUPMEMBER: "GroupMember",
   BODMEETING: "Meeting",
+  CREDIT_SCORE_HISTORY: "CreditScoreHistory",
 };
 
 export default MODEL_NAMES;

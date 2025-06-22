@@ -1,7 +1,7 @@
-import mongoose from "mongoose";
+import  { model, Schema } from "mongoose";
 import MODEL_NAMES from "../utils/model.names.js";
 
-const generalSettingsSchema = new mongoose.Schema(
+const generalSettingsSchema = new Schema(
   {
     interestRate: { type: Number, default: 5 },
     penaltyRate: { type: Number, default: 2 },
@@ -10,14 +10,14 @@ const generalSettingsSchema = new mongoose.Schema(
       default: "Standard Njangi group rules apply.",
     },
     updatedBy: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: MODEL_NAMES.GENERALSETTINGS,
     },
   },
   { timestamps: true }
 );
 
-const GeneralSettings = mongoose.model(
+const GeneralSettings = model(
   MODEL_NAMES.GENERALSETTINGS,
   generalSettingsSchema
 );

@@ -1,11 +1,11 @@
-import mongoose from "mongoose";
+import { Schema, model } from "mongoose";
 import MODEL_NAMES from "../utils/model.names.js";
 
-const notificationSchema = new mongoose.Schema(
+const notificationSchema = new Schema(
   {
     recipients: [
       {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: MODEL_NAMES.USER,
         required: true,
       },
@@ -35,7 +35,7 @@ const notificationSchema = new mongoose.Schema(
     },
     // relatedItem: {
     //   itemId: {
-    //     type: mongoose.Schema.Types.ObjectId,
+    //     type: Schema.Types.ObjectId,
     //     refPath: "relatedItem.itemType",
     //   },
     //   itemType: {
@@ -44,7 +44,7 @@ const notificationSchema = new mongoose.Schema(
     //   },
     // },
     sender: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: MODEL_NAMES.USER,
     },
   },
@@ -53,7 +53,7 @@ const notificationSchema = new mongoose.Schema(
   }
 );
 
-const NjangiNotification = mongoose.model(
+const NjangiNotification = model(
   MODEL_NAMES.NOTIFICATION,
   notificationSchema
 );

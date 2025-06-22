@@ -1,16 +1,16 @@
 // models/GroupMember.js
-import mongoose from "mongoose";
+import { model, Schema } from "mongoose";
 import MODEL_NAMES from "../utils/model.names.js";
 
-const groupMemberSchema = new mongoose.Schema(
+const groupMemberSchema = new Schema(
   {
     groupId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: MODEL_NAMES.GROUP,
       required: true,
     },
     userId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: MODEL_NAMES.USER,
       required: true,
     },
@@ -28,6 +28,6 @@ const groupMemberSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const GroupMember = mongoose.model(MODEL_NAMES.GROUPMEMBER, groupMemberSchema);
+const GroupMember = model(MODEL_NAMES.GROUPMEMBER, groupMemberSchema);
 
 export default GroupMember;
