@@ -1,26 +1,28 @@
 import React from 'react';
 import Container from '../components/Container';
 import Testimonial from '../components/Testimonial';
-
+import ateh from "../assets/ateh.jpg"; // Adjust the path as necessary
+import ateh1 from "../assets/ateh1.jpg"; // Adjust the path as necessary
+import ceo from "../assets/ceo.jpg"; // Adjust the path as necessary
 const Testimonials: React.FC = () => {
   const testimonials = [
     {
       content: "NAAS has completely transformed how our community manages savings. What used to take hours of manual tracking now happens automatically, and everyone has full transparency.",
-      author: "Sarah Johnson",
+      author: "Ateh Damaris",
       role: "Group Administrator",
-      image: "https://images.pexels.com/photos/762020/pexels-photo-762020.jpeg?auto=compress&cs=tinysrgb&w=150"
+      image: ateh
     },
     {
       content: "The automated reminders and secure payment system have increased our collection rate by 95%. Our members love the transparency and ease of use.",
-      author: "Michael Okafor",
+      author: "Nicky Precious",
       role: "Community Leader",
-      image: "https://images.pexels.com/photos/2379005/pexels-photo-2379005.jpeg?auto=compress&cs=tinysrgb&w=150"
+      image: ateh1
     },
     {
       content: "As someone who manages three different savings groups, NAAS has been a game-changer. The ability to customize each group's rules while maintaining consistent reporting is invaluable.",
-      author: "Priya Sharma",
+      author: "Frank Michel",
       role: "Financial Coordinator",
-      image: "https://images.pexels.com/photos/3608039/pexels-photo-3608039.jpeg?auto=compress&cs=tinysrgb&w=150"
+      image: ceo
     },
   ];
 
