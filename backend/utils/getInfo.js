@@ -2,7 +2,7 @@ import axios from "axios";
 import userAgentParser from "user-agent-parser";
 
 export const getInfo = async () => {
-  const res = await axios.get("http://ipinfo.io/json");
+  const res = await axios.get("https://ipapi.co/json");
 
   return res.data;
 };
