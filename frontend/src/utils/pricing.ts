@@ -29,23 +29,4 @@ const pricingTiers = [
     recommended: true,
     ctaText: "Get Started",
   },
-  {
-    title: "Enterprise",
-    price: "Custom",
-    description: "For large organizations and institutions",
-    features: [
-      "Unlimited members",
-      "Unlimited Njangi groups",
-      "Custom reporting",
-      "Priority support",
-      "Advanced security",
-      "API access",
-      "Custom integration",
-      "Dedicated account manager",
-    ],
-    recommended: false,
-    ctaText: "Contact Sales",
-  },
-];
-
-export default pricingTiers;
+  
