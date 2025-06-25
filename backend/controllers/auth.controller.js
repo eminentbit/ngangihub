@@ -69,7 +69,7 @@ export const login = async (req, res) => {
   }
 
   try {
-    let user = await User.findOne({ email }).select(
+    let user = await User.findOne({ email: { $eq: email } }).select(
       `password ${LOGIN_QUERIES_PROJECTION}`
     );
 
@@ -150,7 +150,7 @@ export const login = async (req, res) => {
       },
     });
   } catch (err) {
-    console.error(`[LOGIN_ERROR] ${email}:`, err);
+    console.error(`[LOGIN_ERROR] ${validator.escape(email)}:`, err);
     return res.status(500).json({ message: "Internal server error" });
   }
 };

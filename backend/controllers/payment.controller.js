@@ -8,6 +8,7 @@ import axios from "axios";
 import NjangiGroup from "../models/njangi.group.model.js";
 import NjangiActivityLog from "../models/njangi.activity.log.model.js";
 import NjangiNotification from "../models/notification.model.js";
+import { isValidObjectId } from "mongoose";
 config();
 
 const redis = createRedisClient();
@@ -115,7 +116,9 @@ export const initiatePayment = async (req, res) => {
 
   const { amount, from, description, groupId } = req.body;
 
-  console.log(from);
+  if (!isValidObjectId(groupId)) {
+    return res.status(400).json({ error: "Invalid Group ID format." });
+  }
 
   if (!amount || isNaN(parseFloat(amount))) {
     return res.status(400).json({ error: "Invalid amount." });
@@ -213,10 +216,14 @@ export const checkPaymentStatus = async (req, res) => {
     return res.status(401).json({ error: "Unauthorized" });
   }
 
+  if (transactionId && typeof transactionId !== "string") {
+    return res.status(400).json({ error: "Invalid transaction ID format." });
+  }
+
   try {
     const transaction =
       (await Transaction.findOne({ reference })) ||
-      (await Transaction.findById(transactionId));
+      (transactionId && (await Transaction.findById(transactionId)));
 
     if (!transaction) {
       return res.status(404).json({ error: "Transaction not found" });
