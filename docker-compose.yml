@@ -1,6 +1,8 @@
 services:
   redis:
     image: redis:alpine
+    ports:
+      - "6379:6379"
     volumes:
       - redis_data:/data
     environment:
@@ -10,34 +12,38 @@ services:
   email-worker:
     build:
       context: ./backend
-      dockerfile: emailWorker.dockerfile
+      dockerfile: email.worker.dockerfile
     volumes:
       - ./backend:/app
       - backend_node_modules:/app/node_modules
     depends_on:
       - redis
     restart: always
+    env_file:
+      - .env
     environment:
       - REDIS_PASSWORD=mjlsbkCh2z8Ft63
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-    command: ["node", "emailWorker.js"] # change if your entry point differs
+    command: ["npm", "run", "emailWorker"]
 
   db-worker:
     build:
       context: ./backend
-      dockerfile: dbWorker.dockerfile
+      dockerfile: db.worker.dockerfile
     volumes:
       - ./backend:/app
       - backend_node_modules:/app/node_modules
     depends_on:
       - redis
+    env_file:
+      - .env
     restart: always
     environment:
       - REDIS_PASSWORD=mjlsbkCh2z8Ft63
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-    command: ["node", "dbWorker.js"] # change as needed
+    command: ["npm", "run", "dbWorker"]
 
   cronjob:
     build:
@@ -46,17 +52,14 @@ services:
     volumes:
       - ./backend:/app
       - backend_node_modules:/app/node_modules
+    depends_on:
+      - redis
     restart: always
-    command: ["node", "cronjob.js"] # adjust as needed
-
-  reverse-proxy:
-    image: nginx:latest
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./deployment/nginx.conf:/etc/nginx/nginx.conf:ro
-    # Removed depends_on since frontend/backend are external
+    environment:
+      - REDIS_PASSWORD=mjlsbkCh2z8Ft63
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    command: ["npm", "run", "cronJob"]
 
 volumes:
   backend_node_modules:
