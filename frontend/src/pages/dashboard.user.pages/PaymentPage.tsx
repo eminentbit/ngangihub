@@ -17,6 +17,9 @@ import Sidebar from "../../components/dashboard.admin.components/Sidebar";
 import PaymentModal from "../../components/dashboard.user.components/PaymentModal";
 import PaymentHistoryTable from "../../components/dashboard.user.components/PaymentHistory";
 import { useFetchCampayToken, usePayWithMobile } from "../../hooks/usePayment";
+import { useNavigate } from "react-router-dom";
+import getRoleName from "../../utils/roles";
+import { useSession } from "../../hooks/useSession";
 
 // Skeleton Components
 const StatCardSkeleton = () => (
@@ -62,6 +65,8 @@ export default function PaymentsPage() {
   const [paymentMethod, setPaymentMethod] =
     useState<PaymentMethod>("mobile_money");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const navigate = useNavigate();
+  const { fetchUser } = useSession();
 
   function handleResize() {
     if (window.innerWidth < 768) {
@@ -70,6 +75,10 @@ export default function PaymentsPage() {
       setIsSidebarOpen(true);
     }
   }
+
+  useEffect(() => {
+    fetchUser();
+  }, [fetchUser]);
 
   useEffect(() => {
     if (window.innerWidth < 768) {
@@ -82,13 +91,12 @@ export default function PaymentsPage() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
   const { user } = useAuthStore();
 
   const { getToken } = useFetchCampayToken();
-  const { initatePayment } = usePayWithMobile();
+  const { initiatePayment } = usePayWithMobile();
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("fr-FR", {
@@ -177,14 +185,20 @@ export default function PaymentsPage() {
     try {
       await getToken();
 
-      const data = await initatePayment({
+      const data = await initiatePayment({
         amount: 10,
         description: "Test",
         from: user?.phoneNumber || "",
         groupId: group?._id,
       });
 
-      console.log(data);
+      if (import.meta.env.DEV) {
+        console.log("Payment processing: ", data);
+      }
+
+      setTimeout(() => {
+        navigate(`/${getRoleName(user?.role)}/payment-processing`);
+      }, 3000);
 
       setShowPaymentModal(false);
       setSelectedGroup(null);

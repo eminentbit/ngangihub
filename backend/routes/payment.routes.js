@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  checkPaymentStatus,
   getCampayToken,
   getPaymentLink,
   initiatePayment,
@@ -12,5 +13,7 @@ router.post("/token", verifyToken, getCampayToken);
 router.get("/payment-link", verifyToken, getPaymentLink);
 
 router.post("/pay", verifyToken, initiatePayment);
+
+router.get("/status/:reference", verifyToken, checkPaymentStatus);
 
 export default router;

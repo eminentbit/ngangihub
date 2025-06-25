@@ -38,6 +38,7 @@ import NjangiStateDashBoard from "./pages/admin-state-dashboard";
 import ProtectedRoute from "./components/protected.route";
 import GroupDetailPage from "./pages/dashboard.user.pages/DetialPage";
 import NoNjangiMessage from "./components/NoNjangiMessage";
+import PaymentProcessing from "./pages/dashboard.user.pages/PaymentProcessing";
 
 // eslint-disable-next-line react-refresh/only-export-components
 const LandingSections: React.FC = () => <App />;
@@ -74,6 +75,7 @@ const router = createBrowserRouter([
       { path: "profile", element: <ProfilePage /> },
       { path: "notifications", element: <NotificationsPage /> },
       { path: "contributions", element: <ContributionPage /> },
+      { path: "payment-processing", element: <PaymentProcessing /> },
       { path: "loans-request", element: <LoanRequestPage /> },
     ],
   },
@@ -97,6 +99,7 @@ const router = createBrowserRouter([
       { path: "settings", element: <SettingsPage /> },
       { path: "notifications", element: <NotificationsPage /> },
       { path: "contributions", element: <ContributionPage /> },
+      { path: "payment-processing", element: <PaymentProcessing /> },
       { path: "profile", element: <ProfilePage /> },
       { path: "loans-request", element: <LoanRequestPage /> },
     ],

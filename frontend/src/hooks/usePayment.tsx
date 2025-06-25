@@ -1,5 +1,7 @@
-import { useMutation } from "@tanstack/react-query";
-import { securePost } from "../utils/axiosClient";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { secureGet, securePost } from "../utils/axiosClient";
+import { decryptData, isEncryptedResponse } from "../utils/crypto.service";
+import { useTransactionStore } from "../store/payment.store";
 
 export const tokenUrl = "/payment/token";
 export const paymentUrl = "/payment/pay";
@@ -20,6 +22,8 @@ export const useFetchCampayToken = () => {
 };
 
 export const usePayWithMobile = () => {
+  const { setTransaction } = useTransactionStore();
+
   const mutation = useMutation({
     mutationFn: async (variables: {
       amount: number;
@@ -28,13 +32,44 @@ export const usePayWithMobile = () => {
       groupId: string;
     }) => {
       const response = await securePost(paymentUrl, variables);
-      return response.data;
+      const data = response.data;
+
+      // Update Zustand store + sessionStorage
+      if (data.transactionId && data.reference) {
+        setTransaction(data.transactionId, data.reference);
+      }
+
+      return data;
     },
   });
 
   return {
-    initatePayment: mutation.mutateAsync,
+    initiatePayment: mutation.mutateAsync,
     paymentLoading: mutation.isPending,
     paymentError: mutation.error,
   };
+};
+
+export const usePaymentStatus = (
+  reference: string | null,
+  transactionId: string | null,
+  enabled: boolean
+) => {
+  return useQuery({
+    queryKey: ["payment-status", reference, transactionId],
+    queryFn: async () => {
+      const { data } = await secureGet(`/payment/status/${reference}`, {
+        params: { transactionId },
+      });
+
+      const payload = isEncryptedResponse(data)
+        ? await decryptData(data)
+        : data;
+
+      return payload;
+    },
+    enabled: !!reference && !!transactionId && enabled,
+    refetchInterval: 5000, 
+    refetchOnWindowFocus: true,
+  });
 };

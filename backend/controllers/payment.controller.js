@@ -115,6 +115,8 @@ export const initiatePayment = async (req, res) => {
 
   const { amount, from, description, groupId } = req.body;
 
+  console.log(from);
+
   if (!amount || isNaN(parseFloat(amount))) {
     return res.status(400).json({ error: "Invalid amount." });
   }
@@ -138,12 +140,14 @@ export const initiatePayment = async (req, res) => {
     }
 
     // Optional: check if user is a member
-    const isMember = group.members.includes(req.user.id);
+    const isMember = group.groupMembers.includes(req.user.id);
     if (!isMember) {
       return res
         .status(403)
         .json({ error: "You are not a member of this group." });
     }
+
+    const user = await User.findById(req.user.id);
 
     const token = await redis.get(CACHE_NAMES.CAMPAYTOKEN);
     if (!token) {
@@ -159,7 +163,10 @@ export const initiatePayment = async (req, res) => {
       description,
       currency: "XAF",
       external_reference: reference,
+      external_user: `${user.lastName} ${user.firstName}`,
     };
+
+    console.log("Payment Request Data", paymentData);
 
     const response = await axios.post(paymentAPIUrl, paymentData, {
       headers: {
@@ -168,17 +175,11 @@ export const initiatePayment = async (req, res) => {
       },
     });
 
-    // Check for success in Campay's response
-    if (!response.data || response.data.status !== "PENDING") {
-      return res
-        .status(400)
-        .json({ error: "Payment initiation failed.", details: response.data });
-    }
-
     const transaction = await Transaction.create({
       type: "expense",
       amount: paymentData.amount,
-      reference: paymentData.external_reference,
+      campay_reference: paymentData.external_reference,
+      reference: response.data.reference,
       groupId,
       status: "pending",
       note: response.data.description || "Payment initiated",
@@ -206,13 +207,16 @@ export const initiatePayment = async (req, res) => {
 
 export const checkPaymentStatus = async (req, res) => {
   const { reference } = req.params;
+  const { transactionId } = req.query;
 
   if (!req.user?.id) {
     return res.status(401).json({ error: "Unauthorized" });
   }
 
   try {
-    const transaction = await Transaction.findOne({ reference });
+    const transaction =
+      (await Transaction.findOne({ reference })) ||
+      (await Transaction.findById(transactionId));
 
     if (!transaction) {
       return res.status(404).json({ error: "Transaction not found" });
