@@ -1,7 +1,7 @@
 const pricingTiers = [
   {
     title: "Starter",
-    price: "$19",
+  
     description: "Perfect for small community groups",
     features: [
       "Up to 15 members per group",
