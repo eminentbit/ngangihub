@@ -1,44 +1,6 @@
 services:
-  # frontend:
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile
-  #   # ports:
-  #   #   - "80:80" # Expose port 80
-  #   env_file:
-  #     - ./frontend/.env
-  #   # Remove the volume mount for the source code
-  #   # volumes:
-  #   #   - ./frontend:/app
-  #   volumes:
-  #     - frontend_node_modules:/app/node_modules
-
-  # backend:
-  #   build:
-  #     context: ./backend
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "5000:5000"
-  #   env_file:
-  #     - ./backend/.env
-  #   environment:
-  #     - NODE_ENV=production
-  #     - REDIS_URL=redis://:mjlsbkCh2z8Ft63@redis:6379/0
-  #   depends_on:
-  #     - redis
-  #   volumes:
-  #     - ./backend:/app
-  #     - backend_node_modules:/app/node_modules
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
-  #     interval: 30s
-  #     timeout: 10s
-  #     retries: 3
-
   redis:
     image: redis:alpine
-    ports:
-      - "6379:6379"
     volumes:
       - redis_data:/data
     environment:
@@ -50,41 +12,42 @@ services:
       context: ./backend
       dockerfile: emailWorker.dockerfile
     volumes:
-      - .:/app
-      - /app/node_modules
+      - ./backend:/app
+      - backend_node_modules:/app/node_modules
     depends_on:
       - redis
     restart: always
     environment:
       - REDIS_PASSWORD=mjlsbkCh2z8Ft63
-      - REDIS_HOST: redis
-      - REDIS_PORT: 6379
-    command: ["redis-server", "--requirepass", "mjlsbkCh2z8Ft63"]
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    command: ["node", "emailWorker.js"] # change if your entry point differs
 
   dbWorker:
     build:
       context: ./backend
       dockerfile: dbWorker.dockerfile
     volumes:
-      - .:/app
-      - /app/node_modules
+      - ./backend:/app
+      - backend_node_modules:/app/node_modules
     depends_on:
       - redis
     restart: always
     environment:
       - REDIS_PASSWORD=mjlsbkCh2z8Ft63
-      - REDIS_HOST: redis
-      - REDIS_PORT: 6379
-    command: ["redis-server", "--requirepass", "mjlsbkCh2z8Ft63"]
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    command: ["node", "dbWorker.js"] # change as needed
 
   cronjob:
     build:
       context: ./backend
       dockerfile: cronjob.dockerfile
     volumes:
-      - .:/app
-      - /app/node_modules
+      - ./backend:/app
+      - backend_node_modules:/app/node_modules
     restart: always
+    command: ["node", "cronjob.js"] # adjust as needed
 
   reverse-proxy:
     image: nginx:latest
@@ -92,13 +55,9 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./deployment/nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - ./deployment/nginx.conf:/etc/nginx/nginx.conf:ro
-    depends_on:
-      - frontend
-      - backend
+    # Removed depends_on since frontend/backend are external
 
 volumes:
-  frontend_node_modules:
   backend_node_modules:
   redis_data:
