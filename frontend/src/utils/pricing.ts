@@ -13,22 +13,7 @@ const pricingTiers = [
     recommended: false,
     ctaText: "Get Started",
   },
-  {
-    title: "Pro",
-    price: "$49",
-    description: "For growing communities with multiple groups",
-    features: [
-      "Up to 50 members per group",
-      "15 active Njangi groups",
-      "Advanced reporting & analytics",
-      "Email & SMS notifications",
-      "Enhanced security",
-      "Payment reminders",
-      "Group chat",
-    ],
-    recommended: true,
-    ctaText: "Get Started",
-  },
+  
   {
     title: "Enterprise",
     price: "Custom",
