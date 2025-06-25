@@ -28,7 +28,7 @@ const ContributionChart = () => {
   // Memoized transformation of data into ECharts format
   const formattedData: PieChartData[] = useMemo(() => {
     if (!data) return [];
-    return data.map((item: ContributionItem) => ({
+    return data?.map((item: ContributionItem) => ({
       name: item.label ?? item.groupName ?? "Unknown",
       value: item.totalContributed ?? 0,
     }));
@@ -36,32 +36,78 @@ const ContributionChart = () => {
 
   // Initialize chart once
   useEffect(() => {
-    if (!chartRef.current) return;
+    if (!chartRef.current || !formattedData.length || loading || error) return;
 
-    chartInstanceRef.current = echarts.init(chartRef.current);
+    // Only initialize once
+    if (!chartInstanceRef.current) {
+      chartInstanceRef.current = echarts.init(chartRef.current);
 
-    const handleResize = () => {
-      chartInstanceRef.current?.resize();
-    };
-    window.addEventListener("resize", handleResize);
+      const handleResize = () => chartInstanceRef.current?.resize();
+      window.addEventListener("resize", handleResize);
 
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      chartInstanceRef.current?.dispose();
-      chartInstanceRef.current = null;
-    };
-  }, []);
+      // Cleanup
+      return () => {
+        window.removeEventListener("resize", handleResize);
+        chartInstanceRef.current?.dispose();
+        chartInstanceRef.current = null;
+      };
+    }
 
-  // Update chart when data changes
+    chartInstanceRef.current.setOption({
+      animation: true,
+      tooltip: { trigger: "item" },
+      legend: {
+        top: "5%",
+        left: "center",
+        textStyle: { color: "#6B7280" },
+      },
+      series: [
+        {
+          name: "Contributions",
+          type: "pie",
+          radius: ["40%", "70%"],
+          avoidLabelOverlap: false,
+          itemStyle: {
+            borderRadius: 10,
+            borderColor: "#fff",
+            borderWidth: 2,
+          },
+          label: { show: false, position: "center" },
+          emphasis: {
+            label: {
+              show: true,
+              fontSize: 18,
+              fontWeight: "bold",
+            },
+          },
+          labelLine: { show: false },
+          data: formattedData,
+        },
+      ],
+    });
+  }, [formattedData, loading, error]);
+
   useEffect(() => {
-    if (
-      !chartInstanceRef.current ||
-      loading ||
-      error ||
-      formattedData.length === 0
-    )
+    if (!chartRef.current || loading || error || formattedData.length === 0)
       return;
 
+    // Initialize if not already
+    if (!chartInstanceRef.current) {
+      chartInstanceRef.current = echarts.init(chartRef.current);
+
+      // Handle responsive resize
+      const handleResize = () => chartInstanceRef.current?.resize();
+      window.addEventListener("resize", handleResize);
+
+      // Cleanup
+      return () => {
+        window.removeEventListener("resize", handleResize);
+        chartInstanceRef.current?.dispose();
+        chartInstanceRef.current = null;
+      };
+    }
+
+    // Set chart options
     chartInstanceRef.current.setOption({
       animation: true,
       tooltip: { trigger: "item" },
@@ -120,11 +166,12 @@ const ContributionChart = () => {
     );
   }
 
-  // Chart container (always mounted so chart can init on useEffect)
   return (
     <div
       ref={chartRef}
-      className="h-64 w-full transition-opacity duration-500 ease-in-out"
+      className={`h-64 w-full transition-opacity duration-500 ease-in-out ${
+        formattedData.length ? "opacity-100" : "opacity-0"
+      }`}
     />
   );
 };

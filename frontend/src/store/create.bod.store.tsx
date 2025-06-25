@@ -2,7 +2,7 @@
 import { create } from "zustand";
 import { AxiosError } from "axios";
 import { GroupRequest } from "../types/group.request.ts";
-import { post, secureGet, securePost } from "../utils/axiosClient.ts";
+import { secureGet, securePost } from "../utils/axiosClient.ts";
 import { User } from "../types/auth.validator.ts";
 
 export interface Report {
@@ -121,7 +121,6 @@ export const useBodStore = create<BodStoreState>((set) => ({
   createResolution: async (title: string, description: string) => {
     try {
       const res = await securePost("/bod/resolutions", { title, description });
-      console.log(res.data);
       set((state) => ({
         resolutions: [...state.resolutions, res.data],
       }));
@@ -139,7 +138,7 @@ export const useBodStore = create<BodStoreState>((set) => ({
       if (error instanceof AxiosError) {
         set({ error: error.response?.data });
       }
-      console.log(error);
+      if (import.meta.env.DEV) console.log(error);
     }
   },
 
@@ -147,7 +146,7 @@ export const useBodStore = create<BodStoreState>((set) => ({
     set({ isLoading: true, error: null });
     try {
       const res = await secureGet(`/bod/meetings`);
-      console.log(res.data);
+      if (import.meta.env.DEV) console.log(res.data);
       set({
         meetings: res.data,
         isLoading: false,
@@ -162,7 +161,7 @@ export const useBodStore = create<BodStoreState>((set) => ({
     set({ isLoading: true, error: null });
     try {
       const res = await secureGet(`/bod/members`);
-      console.log(res.data);
+      if (import.meta.env.DEV) console.log(res.data);
       set({
         members: res.data,
         isLoading: false,
@@ -178,7 +177,7 @@ export const useBodStore = create<BodStoreState>((set) => ({
     try {
       const res = await secureGet(`/bod/drafts`);
 
-      console.log(res.data);
+      if (import.meta.env.DEV) console.log(res.data);
 
       set({
         requests: res.data.data,
@@ -210,7 +209,8 @@ export const useBodStore = create<BodStoreState>((set) => ({
 
     try {
       const res = await secureGet(`/bod/reports`);
-      console.log(res.data);
+      if (import.meta.env.DEV) console.log(res.data);
+
       set({ reports: res.data.reports, isLoading: false });
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -229,7 +229,7 @@ export const useBodStore = create<BodStoreState>((set) => ({
     summary?: string
   ) => {
     try {
-      const res = await post("/bod/reports", {
+      const res = await securePost("/bod/reports", {
         title,
         type,
         content,
@@ -238,7 +238,7 @@ export const useBodStore = create<BodStoreState>((set) => ({
         metrics,
         uploaded,
       });
-      console.log(res.data);
+      if (import.meta.env.DEV) console.log(res.data);
     } catch (err) {
       console.error("Failed to accept request:", err);
     }

@@ -12,7 +12,7 @@
     "emailWorker": "node bullMQ/workers/emailWorker.js",
     "dbWorker": "node bullMQ/workers/databaseWorker.js",
     "insertBods": "node scripts/insertBods.js",
-    "cronJob": "node utils/cron.job.js"
+    "cronJob": "node jobs/njangi-jobs.js"
   },
   "keywords": [],
   "author": "",

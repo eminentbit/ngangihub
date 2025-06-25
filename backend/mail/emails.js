@@ -14,6 +14,7 @@ import {
   SIGNIN_ATTEMPT_TEMPLATE,
   ADMIN_PAYMENT_NOTIFICATION_TEMPLATE,
   NJANGI_PAYMENT_REMINDER_TEMPLATE,
+  CONTACT_CONFIRMATION_EMAIL_TEMPLATE,
 } from "./emailTemplates.js";
 import NjangiGroup from "../models/njangi.group.model.js";
 import { getInfo } from "../utils/getInfo.js";
@@ -448,4 +449,18 @@ export const notifyAdminOfPayment = async (memberId, amount, groupId) => {
     console.error("Failed to notify admin of payment:", error);
     throw new Error("Admin notification failed");
   }
+};
+
+export const sendContact = async (fullName, message, email) => {
+  const recipients = [email];
+
+  const mailOptions = {
+    from: sender,
+    to: recipients,
+    subject: "NAAS Contact Confirmation",
+    html: CONTACT_CONFIRMATION_EMAIL_TEMPLATE({ fullName, message }),
+  };
+
+  // Send the email
+  await transporter.sendMail(mailOptions);
 };

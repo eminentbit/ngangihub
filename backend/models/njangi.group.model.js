@@ -55,6 +55,8 @@ const njangiGroupSchema = new Schema(
     endDate: { type: Date },
     expectedMembers: { type: Number },
     rules: { type: String },
+    currency: { type: String, default: "FCFA" },
+    penaltyPercentage: { type: String, default: 20 },
     status: {
       type: String,
       enum: ["pending", "approved", "rejected"],

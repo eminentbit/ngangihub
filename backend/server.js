@@ -53,7 +53,6 @@ app.use(
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 
-
 app.use(
   session({
     name: "njangi_session",
@@ -93,7 +92,6 @@ app.use("/api/njangi-ndraft", getNjangiDraftId);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/contact", contactRouter);
 app.use("/api/user", userRoutes);
-
 
 // ─── CREATE HTTP + SOCKET.IO SERVER ────────────────────────────────────────────
 const startServer = async () => {

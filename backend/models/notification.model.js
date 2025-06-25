@@ -43,6 +43,7 @@ const notificationSchema = new Schema(
     //     enum: ["Post", "Comment", "User"],
     //   },
     // },
+    isDeleted: { type: Boolean },
     sender: {
       type: Schema.Types.ObjectId,
       ref: MODEL_NAMES.USER,
@@ -53,9 +54,6 @@ const notificationSchema = new Schema(
   }
 );
 
-const NjangiNotification = model(
-  MODEL_NAMES.NOTIFICATION,
-  notificationSchema
-);
+const NjangiNotification = model(MODEL_NAMES.NOTIFICATION, notificationSchema);
 
 export default NjangiNotification;

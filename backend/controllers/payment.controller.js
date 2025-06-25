@@ -7,6 +7,7 @@ import Transaction from "../models/transaction.model.js";
 import axios from "axios";
 import NjangiGroup from "../models/njangi.group.model.js";
 import NjangiActivityLog from "../models/njangi.activity.log.model.js";
+import NjangiNotification from "../models/notification.model.js";
 config();
 
 const redis = createRedisClient();
@@ -126,7 +127,24 @@ export const initiatePayment = async (req, res) => {
     return res.status(400).json({ error: "Description is required." });
   }
 
+  if (!groupId) {
+    return res.status(400).json({ error: "Group ID is required." });
+  }
+
   try {
+    const group = await NjangiGroup.findById(groupId);
+    if (!group) {
+      return res.status(404).json({ error: "Group not found." });
+    }
+
+    // Optional: check if user is a member
+    const isMember = group.members.includes(req.user.id);
+    if (!isMember) {
+      return res
+        .status(403)
+        .json({ error: "You are not a member of this group." });
+    }
+
     const token = await redis.get(CACHE_NAMES.CAMPAYTOKEN);
     if (!token) {
       return res.status(401).json({ error: "Missing Campay token" });
@@ -143,8 +161,6 @@ export const initiatePayment = async (req, res) => {
       external_reference: reference,
     };
 
-    console.log(paymentData);
-
     const response = await axios.post(paymentAPIUrl, paymentData, {
       headers: {
         Authorization: `Token ${token}`,
@@ -152,59 +168,28 @@ export const initiatePayment = async (req, res) => {
       },
     });
 
-    console.log(response.data);
+    // Check for success in Campay's response
+    if (!response.data || response.data.status !== "PENDING") {
+      return res
+        .status(400)
+        .json({ error: "Payment initiation failed.", details: response.data });
+    }
 
     const transaction = await Transaction.create({
       type: "expense",
       amount: paymentData.amount,
       reference: paymentData.external_reference,
       groupId,
-      status: "completed",
-      note: response.data.description,
+      status: "pending",
+      note: response.data.description || "Payment initiated",
       memberId: req.user.id,
-    });
-
-    await NjangiGroup.findOneAndUpdate(
-      { _id: groupId, "memberContributions.member": req.user.id },
-      {
-        $inc: {
-          "memberContributions.$.paymentsCount": 1,
-          "memberContributions.$.totalAmountPaid": amount,
-        },
-        $set: { "memberContributions.$.lastPaymentDate": new Date() },
-      },
-      { new: true }
-    ).then(async (updatedGroup) => {
-      // If member not already in memberContributions, add them
-      if (!updatedGroup) {
-        await NjangiGroup.findByIdAndUpdate(groupId, {
-          $push: {
-            memberContributions: {
-              member: req.user.id,
-              paymentsCount: 1,
-              lastPaymentDate: new Date(),
-              totalAmountPaid: amount,
-            },
-          },
-        });
-      }
-    });
-
-    const group = await NjangiGroup.findById(groupId);
-    const user = await User.findById(req.user.id);
-
-    await NjangiActivityLog.create({
-      activityType: "CONTRIBUTION_MADE",
-      performedBy: req.user.id,
-      amount,
-      groupId,
-      description: `${user.lastName} ${user.firstName} payed ${amount} in ${group.name}`,
     });
 
     return res.status(200).json({
       success: true,
-      message: "Payment processed successfully",
-      id: transaction.id,
+      message: "Payment initiated successfully",
+      transactionId: transaction.id,
+      paymentReference: reference,
       ...response.data,
     });
   } catch (error) {
@@ -215,6 +200,117 @@ export const initiatePayment = async (req, res) => {
     return res.status(error.response?.status || 500).json({
       success: false,
       message: error.response?.data?.message || "Payment failed",
+    });
+  }
+};
+
+export const checkPaymentStatus = async (req, res) => {
+  const { reference } = req.params;
+
+  if (!req.user?.id) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+
+  try {
+    const transaction = await Transaction.findOne({ reference });
+
+    if (!transaction) {
+      return res.status(404).json({ error: "Transaction not found" });
+    }
+
+    // Skip if already processed
+    if (transaction.status === "completed") {
+      return res
+        .status(200)
+        .json({ message: "Transaction already completed." });
+    }
+
+    const token = await redis.get(CACHE_NAMES.CAMPAYTOKEN);
+    if (!token) {
+      return res.status(401).json({ error: "Missing Campay token." });
+    }
+
+    // Query Campay for status update
+    const url = `${process.env.CAMPAY_BASE_URL}/api/transaction/${reference}`;
+    const response = await axios.get(url, {
+      headers: {
+        Authorization: `Token ${token}`,
+      },
+    });
+
+    const status = response.data.status.toUpperCase();
+
+    if (status !== "SUCCESSFUL") {
+      return res
+        .status(200)
+        .json({ status, message: "Payment not successful yet." });
+    }
+
+    // Mark transaction as completed
+    transaction.status = "completed";
+    await transaction.save();
+
+    const { groupId, amount } = transaction;
+
+    // Update NjangiGroup contribution
+    const updatedGroup = await NjangiGroup.findOneAndUpdate(
+      { _id: groupId, "memberContributions.member": req.user.id },
+      {
+        $inc: {
+          "memberContributions.$.paymentsCount": 1,
+          "memberContributions.$.totalAmountPaid": amount,
+        },
+        $set: {
+          "memberContributions.$.lastPaymentDate": new Date(),
+        },
+      },
+      { new: true }
+    );
+
+    // If the member doesn’t have a contribution record yet
+    if (!updatedGroup) {
+      await NjangiGroup.findByIdAndUpdate(groupId, {
+        $push: {
+          memberContributions: {
+            member: req.user.id,
+            paymentsCount: 1,
+            totalAmountPaid: amount,
+            lastPaymentDate: new Date(),
+          },
+        },
+      });
+    }
+
+    const group = await NjangiGroup.findById(groupId);
+    const user = await User.findById(req.user.id);
+
+    // Log the contribution
+    await NjangiActivityLog.create({
+      activityType: "CONTRIBUTION_MADE",
+      performedBy: req.user.id,
+      amount,
+      groupId,
+      description: `${user.lastName} ${user.firstName} paid ${amount} FCFA in ${group.name}`,
+    });
+
+    // Notify admin
+    await NjangiNotification.create({
+      content: `${user.lastName} ${user.firstName} made a payment of ${amount} FCFA`,
+      type: "payment",
+      recipients: [group.adminId],
+      sender: user._id,
+    });
+
+    return res
+      .status(200)
+      .json({ success: true, message: "Payment verified and recorded." });
+  } catch (error) {
+    console.error(
+      "checkPaymentStatus error:",
+      error?.response?.data || error.message
+    );
+    return res.status(error.response?.status || 500).json({
+      error: error.response?.data?.message || "Error verifying payment",
     });
   }
 };

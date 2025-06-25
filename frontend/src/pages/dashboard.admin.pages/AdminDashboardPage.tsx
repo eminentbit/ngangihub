@@ -23,6 +23,7 @@ import LatestMembersModal from "../../components/dashboard.admin.components/Late
 import { useAuthStore } from "../../store/create.auth.store";
 import toast from "react-hot-toast";
 import { Skeleton } from "../../components/skeleton-loaders/skeleton-card-loader";
+import getActivityIcon from "../../utils/activityIcon";
 
 // Loading Stat Card Component
 const LoadingStatCard: React.FC = () => (
@@ -170,6 +171,8 @@ export const AdminDashboardPage: React.FC = () => {
     }))
   );
   const { activities, loading } = useGroupActivities(groups?.[0]?._id ?? "");
+
+  console.log("Activities", activities);
 
   // Sort by join date (descending)
   const sortedMembers = allMembers
@@ -392,16 +395,16 @@ export const AdminDashboardPage: React.FC = () => {
                         key={index}
                         className="flex items-start gap-3 transform transition-all duration-200 hover:scale-[1.02]"
                       >
-                        <div className="mt-1">{item.icon}</div>
+                        <div className="mt-1">{getActivityIcon(item.type)}</div>
                         <div>
                           <span className="font-semibold text-gray-800 dark:text-gray-100">
-                            {item.user}{" "}
+                            {item.description} {}{" "}
                           </span>
                           <span className="text-gray-700 dark:text-gray-300">
                             {item.action}
                           </span>
                           <div className="text-xs text-gray-400">
-                            {item.time}
+                            {new Date(item.createdAt).toDateString()}
                           </div>
                         </div>
                       </li>

@@ -752,3 +752,54 @@ export const CONTRIBUTION_DEFAULT_NOTICE_TEMPLATE = `
 </body>
 </html>
 `;
+
+export const CONTACT_CONFIRMATION_EMAIL_TEMPLATE = ({ fullName, message }) => `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact Confirmation - NAAS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body style="font-family: 'Inter', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 0;">
+  <div style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin: 20px auto;">
+
+    <!-- Header -->
+    <div style="background: linear-gradient(to right, #1a56db, #3b82f6); padding: 30px; text-align: center;">
+      <h1 style="color: white; margin: 0; font-weight: 700; font-size: 24px;">Thank You for Contacting Us</h1>
+    </div>
+
+    <!-- Content -->
+    <div style="background-color: #ffffff; padding: 30px;">
+      <p style="margin-top: 0; font-size: 16px;">Hi ${fullName},</p>
+      <p style="font-size: 16px;">
+        Thank you for reaching out to NAAS. We've received your message and our team will get back to you as soon as possible.
+      </p>
+
+      <div style="margin: 20px 0; padding: 20px; background-color: #f9fafb; border-left: 4px solid #3b82f6;">
+        <p style="margin: 0; font-style: italic; font-size: 15px;">"${message}"</p>
+      </div>
+
+      <p style="font-size: 16px;">
+        We appreciate your interest and will do our best to respond promptly. In the meantime, feel free to browse our website for more information about our services.
+      </p>
+
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${process.env.FRONTEND_URL}" style="background-color: #1a56db; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block; font-size: 16px;">
+          Visit Our Website
+        </a>
+      </div>
+
+      <p style="margin-top: 30px; font-size: 16px;">Best regards,<br><strong>NAAS Team</strong></p>
+    </div>
+
+    <!-- Footer -->
+    <div style="background-color: #f3f4f6; padding: 20px; text-align: center; font-size: 14px; color: #6b7280;">
+      <p style="margin: 0;">© 2025 NAAS. All rights reserved.</p>
+      <p style="margin: 10px 0 0;">This is an automated message, please do not reply to this email.</p>
+    </div>
+  </div>
+</body>
+</html>
+`;

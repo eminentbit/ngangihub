@@ -1,10 +1,11 @@
+import NjangiNotification from "../models/notification.model.js";
 import Notification from "../models/notification.model.js";
 
 export const getAllNotifications = async (req, res) => {
   try {
-    const notifications = await Notification.find()
+    const notifications = await NjangiNotification.find({ isDeleted: false })
       .sort({ createdAt: -1 })
-      .populate("sender", "username");
+      .populate("sender", "lastName", "firstName");
     res.status(200).json(notifications);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -14,7 +15,7 @@ export const getAllNotifications = async (req, res) => {
 // Create a new notification
 export const createNotification = async (req, res) => {
   try {
-    const notification = new Notification({
+    const notification = new NjangiNotification.create({
       recipient: req.body.recipient,
       sender: req.body.sender,
       type: req.body.type,
@@ -32,11 +33,13 @@ export const createNotification = async (req, res) => {
 // Get all notifications for a specific user
 export const getUserNotifications = async (req, res) => {
   try {
-    const notifications = await Notification.find({
-      recipient: req.params.userId,
+    const notifications = await NjangiNotification.find({
+      recipients: { $in: [req.params.userId] },
+      isDeleted: false,
     })
       .sort({ createdAt: -1 })
-      .populate("sender", "username");
+      .populate("sender", "lastName", "firstName");
+
     res.status(200).json(notifications);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -46,7 +49,7 @@ export const getUserNotifications = async (req, res) => {
 // Mark a notification as read
 export const markAsRead = async (req, res) => {
   try {
-    const notification = await Notification.findByIdAndUpdate(
+    const notification = await NjangiNotification.findByIdAndUpdate(
       req.params.notificationId,
       { isRead: true },
       { new: true }
@@ -60,7 +63,7 @@ export const markAsRead = async (req, res) => {
 // Mark all notifications as read for a user
 export const markAllAsRead = async (req, res) => {
   try {
-    await Notification.updateMany(
+    await NjangiNotification.updateMany(
       { recipient: req.params.userId, isRead: false },
       { isRead: true }
     );
@@ -72,8 +75,13 @@ export const markAllAsRead = async (req, res) => {
 
 // Delete a notification
 export const deleteNotification = async (req, res) => {
+  const { notificationId } = req.params;
   try {
-    await Notification.findByIdAndDelete(req.params.notificationId);
+    const notification = await NjangiNotification.findByIdAndUpdate(
+      notificationId,
+      { isDeleted: true }
+    );
+
     res.status(200).json({ message: "Notification deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -83,7 +91,7 @@ export const deleteNotification = async (req, res) => {
 // Get unread notifications count
 export const getUnreadCount = async (req, res) => {
   try {
-    const count = await Notification.countDocuments({
+    const count = await NjangiNotification.countDocuments({
       recipient: req.params.userId,
       isRead: false,
     });
@@ -92,5 +100,3 @@ export const getUnreadCount = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
-

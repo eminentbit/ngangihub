@@ -336,11 +336,11 @@ export const getStatusHistory = async (req, res) => {
     res.status(500).json({ message: "Error fetching status history", error });
   }
 };
-
 export const getGroupRecentActivities = async (req, res) => {
   const { groupId } = req.params;
   try {
     const activities = await NjangiActivityLog.find({ groupId })
+      .populate("performedBy")
       .sort({ createdAt: -1 })
       .limit(20);
 

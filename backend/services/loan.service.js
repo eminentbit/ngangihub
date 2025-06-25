@@ -1,7 +1,7 @@
-import NjangiLoan from "../models/njangiLoan.model.js";
-import NjangiGroup from "../models/njangiGroup.model.js";
-import User from "../models/user.model.js";
-import CreditScoreHistory from "../models/creditScoreHistory.model.js";
+import NjangiGroup from "../models/njangi.group.model.js";
+import NjangiLoan from "../models/njangi.loan.model.js";
+import CreditScoreHistory from "../models/credit.score.history.js";
+import NjangiActivityLog from "../models/njangi.activity.log.model.js";
 
 export const updateCreditScores = async () => {
   const today = new Date();
@@ -68,12 +68,17 @@ export const updateCreditScores = async () => {
     user.creditScore = newScore;
     await user.save();
 
-    // Record score change in history
     await CreditScoreHistory.create({
       userId: user._id,
       reason,
       change: adjustment,
       newScore,
+    });
+
+    await NjangiActivityLog.create({
+      activityType: "LOAN_REQUEST",
+      affectedMember: user._id,
+      description: `${user.lastName} ${user.firstName} request to loan ${loan.amount} FCFA`,
     });
   }
 
