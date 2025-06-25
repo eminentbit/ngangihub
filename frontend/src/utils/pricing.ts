@@ -1,18 +1,4 @@
-const pricingTiers = [
-  {
-    title: "Starter",
-    price: "$19",
-    description: "Perfect for small community groups",
-    features: [
-      "Up to 15 members per group",
-      "5 active Njangi groups",
-      "Basic reporting",
-      "Email notifications",
-      "Standard security",
-    ],
-    recommended: false,
-    ctaText: "Get Started",
-  },
+
   {
     title: "Pro",
     price: "$49",
