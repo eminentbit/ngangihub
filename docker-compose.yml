@@ -7,7 +7,7 @@ services:
       - REDIS_PASSWORD=mjlsbkCh2z8Ft63
     command: ["redis-server", "--requirepass", "mjlsbkCh2z8Ft63"]
 
-  emailWorker:
+  email-worker:
     build:
       context: ./backend
       dockerfile: emailWorker.dockerfile
@@ -23,7 +23,7 @@ services:
       - REDIS_PORT=6379
     command: ["node", "emailWorker.js"] # change if your entry point differs
 
-  dbWorker:
+  db-worker:
     build:
       context: ./backend
       dockerfile: dbWorker.dockerfile
