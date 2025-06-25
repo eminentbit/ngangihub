@@ -66,7 +66,7 @@ app.use(
   })
 );
 
-app.use(csrf());
+// app.use(csrf());
 app.use("/", limiter);
 app.use(helmet());
 

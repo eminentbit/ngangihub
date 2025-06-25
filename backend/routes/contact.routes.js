@@ -5,9 +5,12 @@ import ContactMessage from "../models/ContactMessage.model.js";
 import dotenv from "dotenv";
 import { CONTACT_CONFIRMATION_EMAIL_TEMPLATE } from "../mail/emailTemplates.js";
 import { sendContact } from "../mail/emails.js";
+import limiter from "../middleware/limiter.js";
 dotenv.config();
 
 const router = express.Router();
+
+router.use("/", limiter);
 
 router.post("/", async (req, res) => {
   const { fullName, email, message } = req.body;
