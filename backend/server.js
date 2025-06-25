@@ -26,6 +26,7 @@ import { Server } from "socket.io";
 import session from "express-session";
 import getNjangiStateOverview from "./routes/get.njangi.overview.route.js";
 import getNjangiDraftId from "./routes/getNdraftId.route.js";
+import "./jobs/njangi-jobs.js";
 import { config } from "dotenv";
 import contactRouter from "./routes/contact.routes.js";
 
@@ -44,7 +45,6 @@ app.use(
     origin: [
       "http://localhost:5173",
       "http://localhost:5174",
-      "njangihub.vercel.app",
       process.env.FRONTEND_URL,
     ].filter(Boolean),
     credentials: true,
@@ -54,26 +54,21 @@ app.use(
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 
-if (!process.env.SESSION_SECRET) {
-  throw new Error("SESSION_SECRET is required");
-}
 
 app.use(
   session({
     name: "njangi_session",
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET || "your-secret-key",
     resave: false,
     saveUninitialized: false,
     cookie: {
-      httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.SAME_SITE || "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
     },
   })
 );
 
-// app.use(csrf());
+app.use(csrf());
 app.use("/", limiter);
 app.use(helmet());
 
@@ -99,6 +94,7 @@ app.use("/api/njangi-ndraft", getNjangiDraftId);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/contact", contactRouter);
 app.use("/api/user", userRoutes);
+
 
 // ─── CREATE HTTP + SOCKET.IO SERVER ────────────────────────────────────────────
 const startServer = async () => {
