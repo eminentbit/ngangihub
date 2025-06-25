@@ -44,6 +44,7 @@ app.use(
     origin: [
       "http://localhost:5173",
       "http://localhost:5174",
+      "njangihub.vercel.app",
       process.env.FRONTEND_URL,
     ].filter(Boolean),
     credentials: true,
@@ -53,15 +54,21 @@ app.use(
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 
+if (!process.env.SESSION_SECRET) {
+  throw new Error("SESSION_SECRET is required");
+}
+
 app.use(
   session({
     name: "njangi_session",
-    secret: process.env.SESSION_SECRET || "your-secret-key",
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {
+      httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+      sameSite: process.env.SAME_SITE || "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     },
   })
 );
