@@ -28,6 +28,7 @@ import getNjangiDraftId from "./routes/getNdraftId.route.js";
 import "./jobs/njangi-jobs.js";
 import { config } from "dotenv";
 import contactRouter from "./routes/contact.routes.js";
+import sessionMiddleware from "./middleware/session.js";
 
 config();
 const { csrf } = pkg;
