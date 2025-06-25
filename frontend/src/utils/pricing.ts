@@ -1,7 +1,7 @@
 const pricingTiers = [
   {
     title: "Starter",
-    price: "$19",
+    price: "11,400 FCFA",
     description: "Perfect for small community groups",
     features: [
       "Up to 15 members per group",
@@ -15,7 +15,7 @@ const pricingTiers = [
   },
   {
     title: "Pro",
-    price: "$49",
+    price: "29,400 FCFA",
     description: "For growing communities with multiple groups",
     features: [
       "Up to 50 members per group",
