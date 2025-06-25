@@ -6,7 +6,7 @@
   "scripts": {
     "test": "npx jest --detectOpenHandles",
     "start": "node server.js",
-    "serve": "node --watch --env-file=.env server",
+    "serve": "node --watch server",
     "dev": "nodemon server.js",
     "backfillAll": "node scripts/backfillAll.js",
     "emailWorker": "node bullMQ/workers/emailWorker.js",
