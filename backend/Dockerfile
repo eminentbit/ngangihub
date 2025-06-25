@@ -13,7 +13,7 @@ RUN npm install
 # Copy the rest of the application code
 COPY . .
 
-RUN npm run insertBods
+# RUN npm run insertBods
 
 # Expose the port your app runs on
 EXPOSE 3000
