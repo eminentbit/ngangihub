@@ -38,9 +38,11 @@ const LoadingStatCard: React.FC = () => (
 );
 
 // Loading Chart Component
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const LoadingChart = ({ title }: { title: string }) => (
-  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 animate-pulse">
+  <div
+    title={title}
+    className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 animate-pulse"
+  >
     <Skeleton className="h-5 w-32 mb-4" />
     <div className="space-y-3">
       <Skeleton className="h-32 w-full" />
@@ -68,11 +70,13 @@ const LoadingActivityItem: React.FC = () => (
 );
 
 // Loading Member Item
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const LoadingMemberItem = ({ title }: { title: string }) => (
-  <li className="flex items-center py-2 border-b border-gray-100 dark:border-gray-700 animate-pulse">
+  <li
+    title={title}
+    className="flex items-center py-2 border-b border-gray-100 dark:border-gray-700 animate-pulse"
+  >
     <Skeleton className="w-8 h-8 rounded-full mr-3" />
-    <div className="flex-1">
+    <div className={"flex-1"}>
       <Skeleton className="h-4 w-24 mb-1" />
       <Skeleton className="h-3 w-16" />
     </div>

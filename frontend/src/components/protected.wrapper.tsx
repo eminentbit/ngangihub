@@ -13,14 +13,14 @@ export const ProtectedWrapper = ({
   children,
   requiredRole,
 }: ProtectedRouteProps) => {
-  const { isLoading, isError } = useSession();
+  const { userLoading, userError } = useSession();
   const { isAuthenticated, user } = useAuthStore();
 
-  if (isLoading) {
+  if (userLoading) {
     return <div>Loading session...</div>; // Or a fancy spinner
   }
 
-  if (isError || !isAuthenticated || !user) {
+  if (userError || !isAuthenticated || !user) {
     return <Navigate to="/login" replace />;
   }
 

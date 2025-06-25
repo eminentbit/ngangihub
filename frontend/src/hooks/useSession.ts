@@ -36,5 +36,6 @@ export const useSession = () => {
   return {
     fetchUser: query.refetch,
     userLoading: query.isLoading,
+    userError: query.error,
   };
 };

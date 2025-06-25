@@ -33,6 +33,7 @@ export interface Group {
   status?: string;
   startDate?: Date;
   adminId: string;
+  isAdmin?: boolean;
   contributionFrequency?: string;
   contributionAmount?: number;
   totalFunds?: number;

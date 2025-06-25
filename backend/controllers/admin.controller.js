@@ -298,8 +298,8 @@ export const getStatusHistory = async (req, res) => {
       const timeline = [
         {
           status: "submitted",
-          date: new Date(group.createdAt).toLocaleDateString(),
-          time: new Date(group.createdAt).toLocaleTimeString(),
+          date: new Date(group?.createdAt).toLocaleDateString(),
+          time: new Date(group?.createdAt).toLocaleTimeString(),
           description: "Application submitted successfully",
           completed: true,
         },
@@ -309,8 +309,8 @@ export const getStatusHistory = async (req, res) => {
       if (!isDraft) {
         timeline.push({
           status: "approved",
-          date: new Date(group.createdAt).toLocaleDateString(),
-          time: new Date(group.createdAt).toLocaleTimeString(),
+          date: new Date(group?.createdAt).toLocaleDateString(),
+          time: new Date(group?.createdAt).toLocaleTimeString(),
           description: "Application approved by board",
           completed: true,
         });
