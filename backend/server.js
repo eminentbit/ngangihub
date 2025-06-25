@@ -23,7 +23,6 @@ import Message from "./models/message.model.js";
 import updateNjangiDetails from "./routes/update.njangi.details.route.js";
 import pkg from "lusca";
 import { Server } from "socket.io";
-import session from "express-session";
 import getNjangiStateOverview from "./routes/get.njangi.overview.route.js";
 import getNjangiDraftId from "./routes/getNdraftId.route.js";
 import "./jobs/njangi-jobs.js";
@@ -55,18 +54,7 @@ app.set("trust proxy", 1);
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 
-app.use(
-  session({
-    name: "njangi_session",
-    secret: process.env.SESSION_SECRET || "your-secret-key",
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-    },
-  })
-);
+app.use(sessionMiddleware);
 
 app.use(csrf());
 app.use("/", limiter);

@@ -24,6 +24,7 @@
     "bcryptjs": "^3.0.2",
     "body-parser": "^2.2.0",
     "bullmq": "^5.52.3",
+    "connect-redis": "^9.0.0",
     "cookie-parse": "^0.4.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
