@@ -1,8 +1,6 @@
 import axios from "axios";
 import userAgentParser from "user-agent-parser";
 
-import axios from "axios";
-
 /**
  * Fetch geo IP info once per session.
  * Stores result in req.session.geoInfo.
