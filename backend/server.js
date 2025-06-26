@@ -21,7 +21,6 @@ import userRoutes from "./routes/user.routes.js";
 import paymentRoutes from "./routes/payment.routes.js";
 import Message from "./models/message.model.js";
 import updateNjangiDetails from "./routes/update.njangi.details.route.js";
-import pkg from "lusca";
 import { Server } from "socket.io";
 import getNjangiStateOverview from "./routes/get.njangi.overview.route.js";
 import getNjangiDraftId from "./routes/getNdraftId.route.js";
@@ -31,7 +30,7 @@ import contactRouter from "./routes/contact.routes.js";
 import sessionMiddleware from "./middleware/session.js";
 
 config();
-const { csrf } = pkg;
+import csrf from "csurf";
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
