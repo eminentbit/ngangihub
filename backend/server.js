@@ -69,6 +69,11 @@ app.use("/api/create-njangi", createNjangiRoutes);
 // Mount CSRF protection
 app.use(csrfProtection);
 
+app.use((req, res, next) => {
+  console.log("Incoming request:", req.method, req.url);
+  next();
+});
+
 // CSRF token route — must come AFTER csrfProtection
 app.get("/api/csrf-token", (req, res) => {
   res.json({ csrfToken: req.csrfToken() });
