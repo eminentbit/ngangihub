@@ -109,7 +109,7 @@ export const login = async (req, res) => {
 
     generateTokenAndSetCookie(res, user.id);
 
-    const { ip } = await getInfo();
+    const { ip } = await getInfo(req);
     const userAgent = req.headers["user-agent"];
     const browser = getBrowserType(userAgent);
     const device = getDeviceName(userAgent);
