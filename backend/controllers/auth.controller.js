@@ -60,6 +60,7 @@ const getStatusMessage = (status, role) => {
 };
 
 export const login = async (req, res) => {
+  console.log("Logging in...");
   if (handleValidation(req, res)) return;
 
   const { email, password } = req.body;
