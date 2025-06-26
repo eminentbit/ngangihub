@@ -1,5 +1,5 @@
 import axios from "axios";
-import UAParser from "ua-parser-js";
+import { UAParser } from "ua-parser-js";
 
 /**
  * Fetch geo IP info once per session.
