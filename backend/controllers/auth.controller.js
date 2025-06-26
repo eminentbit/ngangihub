@@ -76,13 +76,17 @@ export const login = async (req, res) => {
       `password ${LOGIN_QUERIES_PROJECTION}`
     );
 
+    console.log(user);
+
     if (!user) {
       const draft = await checkDraftStatus(email);
+      console.log("Draft is:", draft);
       if (draft) {
         const msgMap = {
           pending: "Your account is still pending BOD approval.",
           suspended: "Account suspended. Contact support.",
         };
+        console.log(msgMap);
         return res.status(403).json({
           success: false,
           message: msgMap[draft.status] || "Unauthorized.",
@@ -92,6 +96,8 @@ export const login = async (req, res) => {
         .status(401)
         .json({ success: false, message: "Invalid credentials" });
     }
+
+    console.log("Checking if passwords match ");
 
     const [valid, lastRecord] = await Promise.all([
       bcrypt.compare(password, user.password),
