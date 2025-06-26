@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   redis:
     image: redis:alpine
@@ -14,9 +16,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - "80:80" # <== Host port 80 → container port 80
-    volumes:
-      - ./backend:/app
+      - "80:80"
     depends_on:
       - redis
     restart: always
@@ -26,14 +26,13 @@ services:
       - REDIS_PASSWORD=mjlsbkCh2z8Ft63
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+    # ❗ DO NOT mount volumes unless you're developing
     command: ["npm", "run", "serve"]
 
   email-worker:
     build:
       context: ./backend
       dockerfile: email.worker.dockerfile
-    volumes:
-      - ./backend:/app
     depends_on:
       - redis
     restart: always
@@ -49,8 +48,6 @@ services:
     build:
       context: ./backend
       dockerfile: db.worker.dockerfile
-    volumes:
-      - ./backend:/app
     depends_on:
       - redis
     restart: always
@@ -66,8 +63,6 @@ services:
     build:
       context: ./backend
       dockerfile: cronjob.dockerfile
-    volumes:
-      - ./backend:/app
     depends_on:
       - redis
     restart: always
