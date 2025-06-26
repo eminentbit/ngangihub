@@ -137,10 +137,14 @@ export const login = async (req, res) => {
       },
     });
 
+    console.log("Finsihed adding to queue");
+
     // Send alert only if last login is old
     const now = Date.now();
     const threshold = now - SIGNIN_THRESHOLD_MS;
     const shouldAlert = !lastRecord || lastRecord.createdAt < threshold;
+
+    console.log("Checking if we should alert");
 
     if (shouldAlert) {
       emailQueue.add(CACHE_NAMES.LOGINALERT, {
@@ -153,6 +157,10 @@ export const login = async (req, res) => {
     }
 
     req.user = { id: user.id, role: user.role };
+
+    req.session = { user: req.user, ...req.session };
+
+    console.log("Put user in session");
 
     return res.status(200).json({
       success: true,
