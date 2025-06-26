@@ -16,7 +16,7 @@ config();
 
 // Helper: find pending or suspended draft user
 async function checkDraftStatus(email) {
-  if (typeof email != "string" || !validator(email)) {
+  if (typeof email != "string" || !validator.isEmail(email)) {
     return res.status(400).json({ message: "Invalid email" });
   }
   const draft = await NjangiDraft.findOne({
