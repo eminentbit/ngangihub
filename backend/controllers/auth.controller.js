@@ -76,7 +76,7 @@ export const login = async (req, res) => {
       `password ${LOGIN_QUERIES_PROJECTION}`
     );
 
-    console.log("User is:", user._id);
+    console.log("User is:", user.id);
 
     if (!user) {
       const draft = await checkDraftStatus(email);
@@ -116,12 +116,16 @@ export const login = async (req, res) => {
       return res.status(403).json({ success: false, message: statusMessage });
     }
 
+    console.log("Status Message:", statusMessage);
+
     generateTokenAndSetCookie(res, user.id);
 
     const { ip } = await getInfo(req);
     const userAgent = req.headers["user-agent"];
     const browser = getBrowserType(userAgent);
+    console.log("Browser is:", browser);
     const device = getDeviceName(userAgent);
+    console.log("Device is:", device);
 
     dbQueue.add(CACHE_NAMES.LOGINALERT, {
       tableName: MODEL_NAMES.LOGINATTEMPT,

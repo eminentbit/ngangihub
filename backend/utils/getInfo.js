@@ -1,5 +1,5 @@
 import axios from "axios";
-import userAgentParser from "user-agent-parser";
+import UAParser from "ua-parser-js";
 
 /**
  * Fetch geo IP info once per session.
@@ -38,12 +38,24 @@ export const getInfo = async (req) => {
   }
 };
 
+/**
+ * Returns the browser name based on user agent.
+ * @param {string} userAgent
+ * @returns {string}
+ */
 export function getBrowserType(userAgent) {
-  const result = userAgentParser(userAgent);
-  return result.browser.name;
+  const parser = new UAParser(userAgent);
+  const browser = parser.getBrowser();
+  return browser.name || "Unknown Browser";
 }
 
+/**
+ * Returns the device OS name based on user agent.
+ * @param {string} userAgent
+ * @returns {string}
+ */
 export function getDeviceName(userAgent) {
-  const result = userAgentParser(userAgent);
-  return result.os ? result.os.name : "Unknown Device";
+  const parser = new UAParser(userAgent);
+  const os = parser.getOS();
+  return os.name || "Unknown Device";
 }
