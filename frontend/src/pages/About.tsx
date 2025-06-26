@@ -32,9 +32,9 @@ const AboutPage: React.FC = () => {
       image: "/team/jeff.jpg",
     },
     {
-      name: "Lisa Thompson",
+      name: "Kimbi Thierry Fon",
       role: "Developer - Frontend Engineer",
-      image: "/placeholder.svg?height=300&width=300",
+      image: "/team/thierry.jpg",
     },
   ];
 
