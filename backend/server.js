@@ -66,6 +66,7 @@ app.use(helmet());
 app.use("/api/auth", authRoutes);
 
 app.use("/api/create-njangi", createNjangiRoutes);
+app.use("/api", validationRoutes);
 // Mount CSRF protection
 app.use(csrfProtection);
 
@@ -78,7 +79,6 @@ app.use((req, res, next) => {
 app.get("/api/csrf-token", (req, res) => {
   res.json({ csrfToken: req.csrfToken() });
 });
-app.use("/api", validationRoutes);
 app.use("/api/bod", actionNjangiRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/member", acceptInvite);
