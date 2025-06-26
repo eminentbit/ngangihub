@@ -99,12 +99,13 @@ export const login = async (req, res) => {
 
     console.log("Checking if passwords match ");
 
-    const [valid, lastRecord] = await Promise.all([
-      bcrypt.compare(password, user.password),
-      LastLogin.findOne({ userId: user.id }).sort({ createdAt: -1 }).lean(),
-    ]);
+    const valid = await bcrypt.compare(password, user.password);
+    console.log("Password valid:", valid);
 
-    console.log("IsValid: ", valid);
+    const lastRecord = await LastLogin.findOne({ userId: user.id })
+      .sort({ createdAt: -1 })
+      .lean();
+    console.log("Last login record:", lastRecord);
 
     if (!valid) {
       return res
