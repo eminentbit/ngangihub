@@ -62,15 +62,16 @@ app.use(sessionMiddleware);
 app.use("/", limiter);
 app.use(helmet());
 
-// ─── CSRF TOKEN ROUTE ──────────────────────────────────────────────────────────
-app.get("/api/csrf-token", (req, res) => {
-  res.json({ csrfToken: req.csrfToken() });
-});
-
 // ─── ROUTES ─────────────────────────────────────────────────────────────────────
 app.use("/api/auth", authRoutes);
 
+// Mount CSRF protection
 app.use(csrfProtection);
+
+// CSRF token route — must come AFTER csrfProtection
+app.get("/api/csrf-token", (req, res) => {
+  res.json({ csrfToken: req.csrfToken() });
+});
 app.use("/api", validationRoutes);
 app.use("/api/bod", actionNjangiRoutes);
 app.use("/api/create-njangi", createNjangiRoutes);
