@@ -76,17 +76,13 @@ export const login = async (req, res) => {
       `password ${LOGIN_QUERIES_PROJECTION}`
     );
 
-    console.log(user);
-
     if (!user) {
       const draft = await checkDraftStatus(email);
-      console.log("Draft is:", draft);
       if (draft) {
         const msgMap = {
           pending: "Your account is still pending BOD approval.",
           suspended: "Account suspended. Contact support.",
         };
-        console.log(msgMap);
         return res.status(403).json({
           success: false,
           message: msgMap[draft.status] || "Unauthorized.",
@@ -97,15 +93,10 @@ export const login = async (req, res) => {
         .json({ success: false, message: "Invalid credentials" });
     }
 
-    console.log("Checking if passwords match ");
-
-    const valid = await bcrypt.compare(password, user.password);
-    console.log("Password valid:", valid);
-
-    const lastRecord = await LastLogin.findOne({ userId: user.id })
-      .sort({ createdAt: -1 })
-      .lean();
-    console.log("Last login record:", lastRecord);
+    const [valid, lastRecord] = await Promise.all([
+      bcrypt.compare(password, user.password),
+      LastLogin.findOne({ userId: user.id }).sort({ createdAt: -1 }).lean(),
+    ]);
 
     if (!valid) {
       return res
@@ -118,39 +109,37 @@ export const login = async (req, res) => {
       return res.status(403).json({ success: false, message: statusMessage });
     }
 
-    console.log(statusMessage);
-
     generateTokenAndSetCookie(res, user.id);
 
-    // const { ip } = await getInfo(req);
-    // const userAgent = req.headers["user-agent"];
-    // const browser = getBrowserType(userAgent);
-    // const device = getDeviceName(userAgent);
+    const { ip } = await getInfo(req);
+    const userAgent = req.headers["user-agent"];
+    const browser = getBrowserType(userAgent);
+    const device = getDeviceName(userAgent);
 
-    // dbQueue.add(CACHE_NAMES.LOGINALERT, {
-    //   tableName: MODEL_NAMES.LOGINATTEMPT,
-    //   data: {
-    //     userId: user.id,
-    //     email: user.email,
-    //     ipAddress: ip,
-    //     status: user.status,
-    //   },
-    // });
+    dbQueue.add(CACHE_NAMES.LOGINALERT, {
+      tableName: MODEL_NAMES.LOGINATTEMPT,
+      data: {
+        userId: user.id,
+        email: user.email,
+        ipAddress: ip,
+        status: user.status,
+      },
+    });
 
-    // // Send alert only if last login is old
-    // const now = Date.now();
-    // const threshold = now - SIGNIN_THRESHOLD_MS;
-    // const shouldAlert = !lastRecord || lastRecord.createdAt < threshold;
+    // Send alert only if last login is old
+    const now = Date.now();
+    const threshold = now - SIGNIN_THRESHOLD_MS;
+    const shouldAlert = !lastRecord || lastRecord.createdAt < threshold;
 
-    // if (shouldAlert) {
-    //   emailQueue.add(CACHE_NAMES.LOGINALERT, {
-    //     to: user.email,
-    //     device,
-    //     browser,
-    //     lastName: user.lastName,
-    //     firstName: user.firstName,
-    //   });
-    // }
+    if (shouldAlert) {
+      emailQueue.add(CACHE_NAMES.LOGINALERT, {
+        to: user.email,
+        device,
+        browser,
+        lastName: user.lastName,
+        firstName: user.firstName,
+      });
+    }
 
     req.user = { id: user.id, role: user.role };
 
