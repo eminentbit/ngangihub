@@ -13,7 +13,7 @@ export const getInfo = async (req) => {
     return req.session.geoInfo;
   }
 
-  try {z
+  try {
     const res = await axios.get("https://ipapi.co/json");
 
     req.session.geoInfo = res.data; // Store in session

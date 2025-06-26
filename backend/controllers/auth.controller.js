@@ -65,6 +65,8 @@ export const login = async (req, res) => {
 
   const { email, password } = req.body;
 
+  console.log(email);
+
   if (!email || !validator.isEmail(email)) {
     return res.status(400).json({ message: "Invalid email address" });
   }
