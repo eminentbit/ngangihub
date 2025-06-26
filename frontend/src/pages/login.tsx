@@ -4,7 +4,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Button from "../components/Button";
 import { Mail, Lock, ArrowLeft } from "lucide-react";
-import SocialBtnLogin from "../components/social.btn.login";
+// import SocialBtnLogin from "../components/social.btn.login";
 import Loader from "../components/loader";
 import { useNavigate } from "react-router-dom";
 import { useLogin } from "../hooks/useLogin";
@@ -101,19 +101,22 @@ export default function Login() {
         className="w-full max-w-md p-6 sm:p-8 bg-white rounded-xl shadow-2xl relative"
       >
         <h2 className="mb-3 text-3xl font-bold text-center text-blue-700">
-          Welcome Back to NAAS
+          Welcome Back to NjangiHub
         </h2>
+        <div className="text-center text-gray-600 mb-6">
+          Please Login to access your account
+        </div>
 
-        <SocialBtnLogin />
+        {/* <SocialBtnLogin /> */}
 
-        <div className="flex items-center my-6">
+        {/* <div className="flex items-center my-6">
           <hr className="flex-grow border-gray-300" />
           <span className="px-3 text-gray-500 text-sm">OR</span>
           <hr className="flex-grow border-gray-300" />
-        </div>
+        </div> */}
         <div>{isError ?? "An error occured"}</div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
           {/* Email */}
           <div className="space-y-2">
             <label

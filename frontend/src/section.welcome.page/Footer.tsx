@@ -22,7 +22,9 @@ const Footer: React.FC = () => {
                 window.scrollTo(0, 0);
               }}
             >
-              <img src="/logo5.png" alt="Logo" className="h-12" />
+              <h3 className="text-3xl font-bold">
+                <span className="text-blue-400">NjangiHub</span>
+              </h3>
             </div>
             <p className="mb-4 text-gray-400">
               Modern Njangi SaaS platform for community savings and financial

@@ -10,7 +10,7 @@ import { useFormContext } from "../../context/njangi.form.context";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import Loader from "../loader";
-import FormFileInput from "../njangi.form.ui/file.input";
+// import FormFileInput from "../njangi.form.ui/file.input";
 import {
   useValidateEmail,
   useValidatePhoneNumber,
@@ -206,12 +206,12 @@ const Step1AccountInfo: React.FC = () => {
           </div>
 
           <PasswordForm errors={errors} register={register} />
-          <FormFileInput
+          {/* <FormFileInput
             label="Profile Picture (Optional)"
             error={errors.profilePic?.message}
             registration={register("profilePic")}
             accept="image/jpeg, image/png, image/jpg"
-          />
+          /> */}
           <div className="flex justify-end pt-5">
             <button
               type="submit"

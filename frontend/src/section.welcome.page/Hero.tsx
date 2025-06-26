@@ -27,7 +27,7 @@ const Hero: React.FC = () => {
             together.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-            <Button type="button" size="lg" className="group">
+            <Button type="button" size="lg" className="group" onClick={() => navigate("/about")}>
               Learn More
               <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
             </Button>
@@ -43,22 +43,19 @@ const Hero: React.FC = () => {
             </Button>
           </div>
 
-          <div className="mt-12 md:mt-16 flex flex-col items-center">
-            <p className="text-sm text-blue-200 mb-3">
+          <div className="mt-12 md:mt-16 flex flex-col items-center justify-center">
+            {/* <p className="text-sm text-blue-200 mb-3">
               Trusted by growing communities across the globe
-            </p>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            </p> */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="h-8 bg-white bg-opacity-20 rounded px-4 flex items-center justify-center text-white font-semibold">
-                250+ Groups
+                7+ Groups
               </div>
               <div className="h-8 bg-white bg-opacity-20 rounded px-4 flex items-center justify-center text-white font-semibold">
-                12K+ Users
+                10+ Users
               </div>
               <div className="h-8 bg-white bg-opacity-20 rounded px-4 flex items-center justify-center text-white font-semibold">
-                $2M+ Saved
-              </div>
-              <div className="h-8 bg-white bg-opacity-20 rounded px-4 flex items-center justify-center text-white font-semibold">
-                15+ Countries
+                1000XAF+ Saved
               </div>
             </div>
           </div>

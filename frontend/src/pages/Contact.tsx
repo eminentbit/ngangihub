@@ -73,7 +73,7 @@ const ContactPage = () => {
       <section className="flex-grow py-12 px-4 sm:px-6 lg:px-8 max-sm:pt-20">
         <div className="max-w-2xl mx-auto bg-white p-8 sm:p-12 rounded-2xl shadow-md">
           <h2 className="text-3xl font-semibold text-indigo-600 mb-8 text-center">
-            Get in Touch with NAAS
+            Get in Touch with NjangiHub
           </h2>
 
           {feedback.message && (

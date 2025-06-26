@@ -1,8 +1,10 @@
 import React from "react";
 import Container from "../components/Container";
 import Button from "../components/Button";
+import { useNavigate } from "react-router-dom";
 
 const CTA: React.FC = () => {
+  const navigate = useNavigate();
   return (
     <section className="py-20 bg-blue-700 text-white">
       <Container>
@@ -11,22 +13,23 @@ const CTA: React.FC = () => {
             Ready to Transform Your Community Savings?
           </h2>
           <p className="text-xl text-blue-100 mb-8">
-            Join thousands of groups already using NAAS to manage their Njangi
-            more efficiently. Get started with a 14-day free trial.
+            Join some groups already using NAAS to manage their Njangi
+            more efficiently.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-            <Button
+            {/* <Button
               type="button"
               size="lg"
               className="text-blue-700 bg-blue-800"
             >
               Start Free Trial
-            </Button>
+            </Button> */}
             <Button
               type="button"
               size="lg"
               variant="outline"
               className="text-white border-white hover:bg-blue-800"
+              onClick={() => navigate("/njangi-form")}
             >
               Start Your Njangi
             </Button>
