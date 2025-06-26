@@ -158,7 +158,12 @@ export const login = async (req, res) => {
 
     req.user = { id: user.id, role: user.role };
 
-    req.session = { user: req.user, ...req.session };
+    req.session.user = {
+      id: user.id,
+      role: user.role,
+      loggedInAt: Date.now(),
+      ip: req.ip,
+    };
 
     console.log("Put user in session");
 
