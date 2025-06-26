@@ -38,6 +38,8 @@ const PORT = process.env.PORT || 3000;
 
 const app = express();
 
+const csrfProtection = csrf({ cookie: false });
+
 // ─── MIDDLEWARE ────────────────────────────────────────────────────────────────
 app.use(express.json());
 app.use(
@@ -69,7 +71,7 @@ app.get("/api/csrf-token", (req, res) => {
 // ─── ROUTES ─────────────────────────────────────────────────────────────────────
 app.use("/api/auth", authRoutes);
 
-app.use(csrf());
+app.use(csrfProtection);
 app.use("/api", validationRoutes);
 app.use("/api/bod", actionNjangiRoutes);
 app.use("/api/create-njangi", createNjangiRoutes);
