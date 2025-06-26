@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import axios from "axios";
 import { NjangiSetup } from "../types/create-njangi-types";
-import { post, securePost } from "../utils/axiosClient";
+import { post } from "../utils/axiosClient";
 
 const CREATE_NJANGI_API = import.meta.env.VITE_CREATE_NJANGI_API_URL;
 

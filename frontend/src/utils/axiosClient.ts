@@ -128,18 +128,21 @@ export const deleteRequest = async (url: string, config = {}) => {
 
 // GET helper
 export const get = async (url: string, config = {}) => {
-  const res = await axiosClient.get(url, config);
+  const finalConfig = {
+    withCredentials: true,
+    ...config,
+  };
+  const res = await axiosClient.post(url, finalConfig);
   return res.data;
 };
 
 // POST helper
-export const post = async (
-  url: string,
-  data: unknown,
-  config = { withCredentials: true }
-) => {
-  const res = await axiosClient.post(url, data, config);
+export const post = async (url: string, data: unknown, config = {}) => {
+  const finalConfig = {
+    withCredentials: true,
+    ...config,
+  };
+  const res = await axiosClient.post(url, data, finalConfig);
   return res.data;
 };
-
 export default axiosClient;
