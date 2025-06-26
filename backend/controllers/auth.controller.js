@@ -98,6 +98,8 @@ export const login = async (req, res) => {
       LastLogin.findOne({ userId: user.id }).sort({ createdAt: -1 }).lean(),
     ]);
 
+    console.log("IsValid: ", valid);
+
     if (!valid) {
       return res
         .status(401)
@@ -109,37 +111,39 @@ export const login = async (req, res) => {
       return res.status(403).json({ success: false, message: statusMessage });
     }
 
+    console.log(statusMessage);
+
     generateTokenAndSetCookie(res, user.id);
 
-    const { ip } = await getInfo(req);
-    const userAgent = req.headers["user-agent"];
-    const browser = getBrowserType(userAgent);
-    const device = getDeviceName(userAgent);
+    // const { ip } = await getInfo(req);
+    // const userAgent = req.headers["user-agent"];
+    // const browser = getBrowserType(userAgent);
+    // const device = getDeviceName(userAgent);
 
-    dbQueue.add(CACHE_NAMES.LOGINALERT, {
-      tableName: MODEL_NAMES.LOGINATTEMPT,
-      data: {
-        userId: user.id,
-        email: user.email,
-        ipAddress: ip,
-        status: user.status,
-      },
-    });
+    // dbQueue.add(CACHE_NAMES.LOGINALERT, {
+    //   tableName: MODEL_NAMES.LOGINATTEMPT,
+    //   data: {
+    //     userId: user.id,
+    //     email: user.email,
+    //     ipAddress: ip,
+    //     status: user.status,
+    //   },
+    // });
 
-    // Send alert only if last login is old
-    const now = Date.now();
-    const threshold = now - SIGNIN_THRESHOLD_MS;
-    const shouldAlert = !lastRecord || lastRecord.createdAt < threshold;
+    // // Send alert only if last login is old
+    // const now = Date.now();
+    // const threshold = now - SIGNIN_THRESHOLD_MS;
+    // const shouldAlert = !lastRecord || lastRecord.createdAt < threshold;
 
-    if (shouldAlert) {
-      emailQueue.add(CACHE_NAMES.LOGINALERT, {
-        to: user.email,
-        device,
-        browser,
-        lastName: user.lastName,
-        firstName: user.firstName,
-      });
-    }
+    // if (shouldAlert) {
+    //   emailQueue.add(CACHE_NAMES.LOGINALERT, {
+    //     to: user.email,
+    //     device,
+    //     browser,
+    //     lastName: user.lastName,
+    //     firstName: user.firstName,
+    //   });
+    // }
 
     req.user = { id: user.id, role: user.role };
 
