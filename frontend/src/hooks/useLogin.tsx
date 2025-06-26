@@ -2,7 +2,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useAuthStore } from "../store/create.auth.store";
 import { useNavigate } from "react-router-dom";
-import { securePost } from "../utils/axiosClient";
+import { post } from "../utils/axiosClient";
 import { AxiosError } from "axios";
 
 export const useLogin = (setError?: (message: string) => void) => {
@@ -12,7 +12,7 @@ export const useLogin = (setError?: (message: string) => void) => {
 
   return useMutation({
     mutationFn: async (credentials: { email: string; password: string }) => {
-      const res = await securePost("/auth/login", credentials);
+      const res = await post("/auth/login", credentials);
       if (res.status !== 200) {
         throw new Error("Login failed");
       }

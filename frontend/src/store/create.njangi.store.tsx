@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import axios from "axios";
 import { NjangiSetup } from "../types/create-njangi-types";
-import { securePost } from "../utils/axiosClient";
+import { post, securePost } from "../utils/axiosClient";
 
 const CREATE_NJANGI_API = import.meta.env.VITE_CREATE_NJANGI_API_URL;
 
@@ -31,7 +31,7 @@ export const useCreateNjangiStore = create<CreateNjangiState>((set) => ({
     set({ isLoading: true, errors: null, success: false });
     localStorage.setItem("tempAdminEmail", submissionData.accountSetup.email);
     try {
-      const response = await securePost(`${CREATE_NJANGI_API}`, submissionData);
+      const response = await post(`${CREATE_NJANGI_API}`, submissionData);
 
       // persist draftId to localStorage
       const draftId = response.data.draftId;
