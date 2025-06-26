@@ -1,5 +1,6 @@
 # Use Node.js LTS version as the base image
-FROM node:23-slim
+# Dockerfile
+FROM node:20-alpine
 
 # Set working directory
 WORKDIR /app
