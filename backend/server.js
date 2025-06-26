@@ -74,6 +74,10 @@ app.use((req, res, next) => {
   next();
 });
 
+app.get("/api", (req, res) => {
+  res.status(200).json({ message: "App working well" });
+});
+
 // CSRF token route — must come AFTER csrfProtection
 app.get("/api/csrf-token", (req, res) => {
   res.json({ csrfToken: req.csrfToken() });
