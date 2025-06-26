@@ -58,7 +58,6 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use(sessionMiddleware);
 
-app.use(csrf());
 app.use("/", limiter);
 app.use(helmet());
 
@@ -68,10 +67,12 @@ app.get("/api/csrf-token", (req, res) => {
 });
 
 // ─── ROUTES ─────────────────────────────────────────────────────────────────────
-app.use("/api/create-njangi", createNjangiRoutes);
-app.use("/api/bod", actionNjangiRoutes);
-app.use("/api", validationRoutes);
 app.use("/api/auth", authRoutes);
+
+app.use(csrf());
+app.use("/api", validationRoutes);
+app.use("/api/bod", actionNjangiRoutes);
+app.use("/api/create-njangi", createNjangiRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/member", acceptInvite);
 app.use("/api/njangi", njangiRoutes);
