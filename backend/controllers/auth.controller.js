@@ -60,9 +60,12 @@ const getStatusMessage = (status, role) => {
 };
 
 export const login = async (req, res) => {
+  console.log("Logging in...");
   if (handleValidation(req, res)) return;
 
   const { email, password } = req.body;
+
+  console.log(email);
 
   if (!email || !validator.isEmail(email)) {
     return res.status(400).json({ message: "Invalid email address" });
@@ -108,7 +111,7 @@ export const login = async (req, res) => {
 
     generateTokenAndSetCookie(res, user.id);
 
-    const { ip } = await getInfo();
+    const { ip } = await getInfo(req);
     const userAgent = req.headers["user-agent"];
     const browser = getBrowserType(userAgent);
     const device = getDeviceName(userAgent);

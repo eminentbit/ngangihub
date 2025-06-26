@@ -324,11 +324,14 @@ export const sendSigninAttemptEmail = async (
   device,
   browser,
   lastName,
-  firstName
+  firstName,
+  city,
+  region,
+  country,
+  ip
 ) => {
   const recipient = [email];
 
-  const { ip, city, region, country } = await getInfo();
   console.log(ip);
 
   try {

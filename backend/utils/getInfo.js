@@ -1,18 +1,49 @@
 import axios from "axios";
-import userAgentParser from "user-agent-parser";
+import UAParser from "ua-parser-js";
 
-export const getInfo = async () => {
-  const res = await axios.get("http://ipinfo.io/json");
+/**
+ * Fetch geo IP info once per session.
+ * Stores result in req.session.geoInfo.
+ * @param {Request} req - Express request object
+ * @returns {Promise<Object|null>}
+ */
+export const getInfo = async (req) => {
+  if (req.session?.geoInfo) {
+    console.log("📦 Returning cached geo info from session");
+    return req.session.geoInfo;
+  }
 
-  return res.data;
+  try {
+    const res = await axios.get("https://ipapi.co/json", {
+      timeout: 3000, // prevent hanging
+    });
+
+    req.session.geoInfo = res.data;
+    console.log("🌍 Fetched geo info and saved to session");
+
+    return res.data;
+  } catch (err) {
+    console.error("❌ Failed to fetch geo info:", err.message);
+
+    // Fallback with only IP
+    const fallback = {
+      ip:
+        req.headers["x-forwarded-for"] ||
+        req.connection?.remoteAddress ||
+        "unknown",
+    };
+    console.log("⚠️ Using fallback geo info:", fallback);
+
+    return fallback;
+  }
 };
 
 export function getBrowserType(userAgent) {
-  const result = userAgentParser(userAgent);
-  return result.browser.name;
+  const parser = new UAParser(userAgent);
+  return parser.getBrowser().name || "Unknown Browser";
 }
 
 export function getDeviceName(userAgent) {
-  const result = userAgentParser(userAgent);
-  return result.os ? result.os.name : "Unknown Device";
+  const parser = new UAParser(userAgent);
+  return parser.getOS().name || "Unknown Device";
 }

@@ -27,9 +27,29 @@ const worker = new Worker(
 
     switch (jobName) {
       case CACHE_NAMES.LOGINALERT: {
-        const { to, device, browser, lastName, firstName } = data;
+        const {
+          to,
+          device,
+          browser,
+          lastName,
+          firstName,
+          city,
+          region,
+          country_name,
+          ip,
+        } = data;
 
-        await sendSigninAttemptEmail(to, device, browser, lastName, firstName);
+        await sendSigninAttemptEmail(
+          to,
+          device,
+          browser,
+          lastName,
+          firstName,
+          city,
+          region,
+          country_name,
+          ip
+        );
         break;
       }
 
