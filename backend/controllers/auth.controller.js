@@ -16,7 +16,7 @@ config();
 
 // Helper: find pending or suspended draft user
 async function checkDraftStatus(email) {
-  if (typeof email != "string" || !validator(email)) {
+  if (typeof email != "string" || !validator.isEmail(email)) {
     return res.status(400).json({ message: "Invalid email" });
   }
   const draft = await NjangiDraft.findOne({
@@ -76,8 +76,11 @@ export const login = async (req, res) => {
       `password ${LOGIN_QUERIES_PROJECTION}`
     );
 
+    console.log("User is:", user._id);
+
     if (!user) {
       const draft = await checkDraftStatus(email);
+      console.log("Draft isL", draft);
       if (draft) {
         const msgMap = {
           pending: "Your account is still pending BOD approval.",
@@ -93,10 +96,14 @@ export const login = async (req, res) => {
         .json({ success: false, message: "Invalid credentials" });
     }
 
+    console.log("Checking if password is valid");
+
     const [valid, lastRecord] = await Promise.all([
       bcrypt.compare(password, user.password),
       LastLogin.findOne({ userId: user.id }).sort({ createdAt: -1 }).lean(),
     ]);
+
+    console.log("isValid: ", valid);
 
     if (!valid) {
       return res
