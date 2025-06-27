@@ -2,6 +2,7 @@
 
 import  { Schema, model } from "mongoose";
 import MODEL_NAMES from "../utils/model.names.js";
+import { type } from "os";
 
 const userSchema = new Schema(
   {
@@ -14,6 +15,7 @@ const userSchema = new Schema(
     groups: [{ type: Schema.Types.ObjectId, ref: "Group" }],
     role: { type: String, enum: ["admin", "member", "bod"], default: "member" },
     creditScore: { type: Number, default: 0 },
+    location: { type: String },
     status: {
       type: String,
       enum: ["active", "pending", "invited", "suspended"],

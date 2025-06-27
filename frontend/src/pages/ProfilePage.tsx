@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/create.auth.store";
 import { secureGet, securePut } from "../utils/axiosClient";
 import { UserCircle } from "lucide-react";
+import toast from "react-hot-toast";
 
 const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
@@ -91,13 +92,19 @@ const ProfilePage: React.FC = () => {
         location: profile.location,
         groupName: profile.groupName,
       };
+
+      console.log("Data from edit: " + payload)
       const res = await securePut("/user/profile", payload);
       setUser(res.data.user);
       setOriginalProfile(profile);
       setIsEditing(false);
+      toast.success("Profile Picture Updated Successfully!", {
+        duration: 5000,
+        position: "top-right"
+      })
     } catch (err) {
       console.error("Save failed", err);
-      // Optionally show a toast or error message
+      toast.error("Falied to update profile! Please Try Again!")
     } finally {
       setIsSaving(false);
     }

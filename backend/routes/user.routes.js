@@ -9,6 +9,7 @@ import {
 import limiter from "../middleware/limiter.js";
 import verifyToken from "../middleware/verify.token.js";
 import { requestLoan } from "../controllers/loan.controller.js";
+import { editProfile } from "../controllers/edit.profile.controlller.js";
 
 const router = Router();
 
@@ -29,5 +30,7 @@ router.get("/groups", verifyToken, getGroups);
 router.post("/request-loan", verifyToken, requestLoan);
 
 router.get("/contributions/overview", verifyToken, getUserContributionOverview);
+
+router.put("/user/profile", verifyToken, editProfile)
 
 export default router;
