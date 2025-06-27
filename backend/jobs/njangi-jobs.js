@@ -4,6 +4,7 @@ import { sendDueReminder } from "../mail/emails.js";
 import User from "../models/user.model.js";
 import { config } from "dotenv";
 import { updateCreditScores } from "../services/loan.service.js";
+import { processPayout } from "../services/process.payment.js";
 config();
 
 export function getNextDueDate(lastDate, frequency) {
@@ -85,4 +86,28 @@ cron.schedule("0 8 * * *", async () => {
 cron.schedule("0 2 * * *", () => {
   console.log("Running credit score update job...");
   updateCreditScores();
+});
+
+cron.schedule("0 2 * * *", async () => {
+  console.log("Checking Njangi payouts...");
+
+  const groups = await NjangiGroup.find({ status: "approved" });
+
+  for (const group of groups) {
+    try {
+      const { position, totalRounds } = group.getPositionAndRounds();
+
+      // If all members already paid out
+      if (position > totalRounds) continue;
+
+      const now = new Date();
+      const nextPaymentDate = group.getNextPaymentDate();
+
+      if (nextPaymentDate <= now) {
+        await processPayout(group);
+      }
+    } catch (error) {
+      console.error("Error processing group:", group._id, error);
+    }
+  }
 });

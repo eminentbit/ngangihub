@@ -31,20 +31,20 @@ export const useCreateNjangiStore = create<CreateNjangiState>((set) => ({
     set({ isLoading: true, errors: null, success: false });
     localStorage.setItem("tempAdminEmail", submissionData.accountSetup.email);
     try {
-      const response = await post(`${CREATE_NJANGI_API}`, submissionData);
+      const data = await post(`${CREATE_NJANGI_API}`, submissionData);
 
       // persist draftId to localStorage
-      const draftId = response.data.draftId;
+      const draftId = data.draftId;
       if (draftId) {
         localStorage.setItem("draftId", draftId);
       }
       set({
         isLoading: false,
         success: true,
-        createdNjangiId: response.data.njangiId,
+        createdNjangiId: data.njangiId,
         draftId,
-        njangiStatusURL: response.data.njangiURL,
-        message: response.data.message,
+        njangiStatusURL: data.njangiURL,
+        message: data.message,
       });
     } catch (errors) {
       set({

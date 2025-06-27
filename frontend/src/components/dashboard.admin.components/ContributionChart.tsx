@@ -154,6 +154,14 @@ const ContributionChart = () => {
     );
   }
 
+  if (Array.isArray(data) && data.length === 0) {
+    return (
+      <div className="flex justify-center items-center h-full w-full">
+        <span className="text-gray-500 text-center">No Contribution Made</span>
+      </div>
+    );
+  }
+
   // Error state
   if (error) {
     return (
