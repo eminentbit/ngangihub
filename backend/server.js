@@ -46,11 +46,11 @@ app.use(
     origin: [
       "http://localhost:5173",
       "http://localhost:5174",
-      "https://njangihub.loopos.org",
       process.env.FRONTEND_URL,
-    ].filter(Boolean),
+    ],
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    optionsSuccessStatus: 200,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   })
 );
 app.set("trust proxy", 1);
