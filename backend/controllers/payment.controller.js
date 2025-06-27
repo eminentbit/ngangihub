@@ -249,9 +249,13 @@ export const checkPaymentStatus = async (req, res) => {
       },
     });
 
-    const status = response.data.status.toUpperCase();
+    console.log(response.data);
 
-    if (status !== "SUCCESSFUL") {
+    const status = response.data.status;
+
+    const message = "SUCCESS".toLowerCase();
+
+    if (status.includes(message)) {
       return res
         .status(200)
         .json({ status, message: "Payment not successful yet." });
