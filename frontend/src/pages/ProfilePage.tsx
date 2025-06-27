@@ -93,18 +93,18 @@ const ProfilePage: React.FC = () => {
         groupName: profile.groupName,
       };
 
-      console.log("Data from edit: " + payload)
+      console.log("Data from edit: " + payload);
       const res = await securePut("/user/profile", payload);
       setUser(res.data.user);
       setOriginalProfile(profile);
       setIsEditing(false);
       toast.success("Profile Picture Updated Successfully!", {
         duration: 5000,
-        position: "top-right"
-      })
+        position: "top-right",
+      });
     } catch (err) {
       console.error("Save failed", err);
-      toast.error("Falied to update profile! Please Try Again!")
+      toast.error("Falied to update profile! Please Try Again!");
     } finally {
       setIsSaving(false);
     }
@@ -265,21 +265,6 @@ const ProfilePage: React.FC = () => {
                   Group Info
                 </h2>
                 <dl className="mt-4 space-y-4 text-gray-600">
-                  <dt className="font-semibold">Group Name</dt>
-                  {isEditing ? (
-                    <dd>
-                      <input
-                        type="text"
-                        name="groupName"
-                        value={profile.groupName}
-                        onChange={handleInputChange}
-                        className="w-full border border-gray-300 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
-                      />
-                    </dd>
-                  ) : (
-                    <dd>{profile.groupName}</dd>
-                  )}
-
                   <dt className="font-semibold">Role</dt>
                   <dd>{profile.role}</dd>
 

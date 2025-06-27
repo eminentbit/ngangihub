@@ -1,16 +1,13 @@
 import Transaction from "../models/transaction.model.js";
-import NjangiGroup from "../models/njangi.group.model.js";
-
-/**
- *
- * @param {import('../models/njangi.group.model.js').default} group
- */
+import User from "../models/user.model.js";
 
 export async function processPayout(group) {
   const { position } = group.getPositionAndRounds();
   const memberId = group.groupMembers[position - 1];
 
   const amount = group.contributionAmount * group.groupMembers.length;
+
+  const user = await User.findById(memberId);
 
   // (rotation-based)
   group.payoutHistory.push({
@@ -22,6 +19,12 @@ export async function processPayout(group) {
   });
 
   await group.save();
+
+  await withdrawFunds({
+    amount,
+    description: "Received Njangi payment",
+    phone: user?.phoneNumber,
+  });
 
   await Transaction.create({
     amount,
@@ -38,12 +41,12 @@ export async function processPayout(group) {
 export async function withdrawFunds({ amount, phone, description }) {
   try {
     const response = await axios.post(
-      `${API_BASE_URL}/withdraw/`,
+      `${process.env.CAMPAY_BASE_URL}/api/withdraw/`,
       {
-        amount, // e.g. 5000
-        to: phone, // e.g. "237679587525"
-        description, // e.g. "Njangi payout"
-        external_reference: uuidv4(), // Unique UUIDv4 for idempotency
+        amount,
+        to: phone,
+        description,
+        external_reference: uuidv4(),
       },
       {
         headers: {

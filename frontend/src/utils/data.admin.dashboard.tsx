@@ -49,14 +49,14 @@ export const quickActions = [
     showOnlyAdmin: true,
     onClick: () => alert("View contributions"),
   },
-  {
-    id: 2,
-    label: "Request Loan",
-    icon: <FaMoneyBillWave size={18} />,
-    color: "bg-gradient-to-tr from-yellow-400 to-yellow-600",
-    showOnlyAdmin: false,
-    onClick: () => alert("Request loan"),
-  },
+  // {
+  //   id: 2,
+  //   label: "Request Loan",
+  //   icon: <FaMoneyBillWave size={18} />,
+  //   color: "bg-gradient-to-tr from-yellow-400 to-yellow-600",
+  //   showOnlyAdmin: false,
+  //   onClick: () => alert("Request loan"),
+  // },
 ];
 
 // Latest members

@@ -5,8 +5,23 @@ import { profanityList } from "../utils/profanityList";
 // Step 1: Account Setup Schema
 export const accountSetupSchema = z
   .object({
-    firstName: z.string().min(1, "First name is required").trim(),
-    lastName: z.string().min(1, "Last name is required").trim(),
+    firstName: z
+      .string()
+      .min(1, "First name is required")
+      .trim()
+      .regex(
+        /^[A-Za-z\s'-]+$/,
+        "First name cannot contain numbers or special characters"
+      ),
+
+    lastName: z
+      .string()
+      .min(1, "Last name is required")
+      .trim()
+      .regex(
+        /^[A-Za-z\s'-]+$/,
+        "Last name cannot contain numbers or special characters"
+      ),
     phoneNum: z
       .string()
       .min(1, "Phone number is required")

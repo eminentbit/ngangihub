@@ -31,6 +31,6 @@ router.post("/request-loan", verifyToken, requestLoan);
 
 router.get("/contributions/overview", verifyToken, getUserContributionOverview);
 
-router.put("/user/profile", verifyToken, editProfile)
+router.put("/profile", verifyToken, editProfile);
 
 export default router;
