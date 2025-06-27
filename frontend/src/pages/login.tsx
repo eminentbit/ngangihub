@@ -132,6 +132,7 @@ export default function Login() {
               />
               <input
                 type="email"
+                disabled={isSubmitting}
                 id="email"
                 placeholder="example@gmail.com"
                 className="w-full pl-10 pr-4 py-2 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-400 focus:outline-none"
@@ -166,6 +167,7 @@ export default function Login() {
               />
               <input
                 type="password"
+                disabled={isSubmitting}
                 id="password"
                 placeholder="*********"
                 className="w-full pl-10 pr-4 py-2 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-400 focus:outline-none"
