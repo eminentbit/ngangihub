@@ -68,6 +68,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/create-njangi", createNjangiRoutes);
 app.use("/api", validationRoutes);
 app.use("/api/contact", contactRouter);
+app.use("/api/member", acceptInvite);
 // Mount CSRF protection
 app.use(csrfProtection);
 
@@ -82,7 +83,6 @@ app.get("/api/csrf-token", (req, res) => {
 });
 app.use("/api/bod", actionNjangiRoutes);
 app.use("/api/notifications", notificationRoutes);
-app.use("/api/member", acceptInvite);
 app.use("/api/njangi", njangiRoutes);
 app.use("/api/invites", ValidateInviteToken);
 app.use("/api/admin", validateDraftId);
