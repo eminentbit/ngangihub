@@ -10,7 +10,7 @@ const Profile = () => {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const { user } = useAuthStore();
 
-  const { isLoading } = useSession();
+  const { userLoading } = useSession();
 
   const {
     register,
@@ -28,7 +28,7 @@ const Profile = () => {
 
   // When user data loads, reset form values
   useEffect(() => {
-    if (!isLoading && user) {
+    if (!userLoading && user) {
       reset({
         firstName: user.firstName || "",
         lastName: user.lastName || "",
@@ -36,7 +36,7 @@ const Profile = () => {
         phone: user.phoneNumber || "",
       });
     }
-  }, [isLoading, user, reset]);
+  }, [userLoading, user, reset]);
 
   const onSubmit = async (data: ProfileFormData) => {
     try {
@@ -77,7 +77,7 @@ const Profile = () => {
         )}
       </AnimatePresence>
 
-      {isLoading ? (
+      {userLoading ? (
         // Skeleton loader
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

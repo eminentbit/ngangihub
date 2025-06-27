@@ -8,6 +8,7 @@ import {
 } from "../controllers/user.controller.js";
 import limiter from "../middleware/limiter.js";
 import verifyToken from "../middleware/verify.token.js";
+import { requestLoan } from "../controllers/loan.controller.js";
 
 const router = Router();
 
@@ -24,6 +25,8 @@ router.get("/group/:groupId/payments", verifyToken, getGroupPayments);
 router.get("/payment-history", verifyToken, getUserPaymentHistory);
 
 router.get("/groups", verifyToken, getGroups);
+
+router.post("/request-loan", verifyToken, requestLoan);
 
 router.get("/contributions/overview", verifyToken, getUserContributionOverview);
 

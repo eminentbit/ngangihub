@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { User } from "../types/auth.validator";
 import { securePost } from "../utils/axiosClient";
+import { clearAllCookies, clearCookie } from "../utils/cookies";
 
 type AuthState = {
   isAuthenticated: boolean;
@@ -24,6 +25,8 @@ export const useAuthStore = create(
       logout: async () => {
         set({ user: null, isAuthenticated: false });
         await securePost("/auth/logout", {});
+        clearAllCookies();
+        clearCookie("token");
       },
     }),
     {

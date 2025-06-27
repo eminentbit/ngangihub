@@ -2,21 +2,29 @@
 import { useMutation } from "@tanstack/react-query";
 import { useAuthStore } from "../store/create.auth.store";
 import { useNavigate } from "react-router-dom";
-import { securePost } from "../utils/axiosClient";
+import { post } from "../utils/axiosClient";
 import { AxiosError } from "axios";
+import { User } from "../types/auth.validator";
+
+type LoginFormData = {
+  email: string;
+  password: string;
+};
 
 export const useLogin = (setError?: (message: string) => void) => {
   const setUser = useAuthStore((s) => s.setUser);
   const setAuth = useAuthStore((s) => s.setIsAuthenticated);
   const navigate = useNavigate();
 
-  return useMutation({
-    mutationFn: async (credentials: { email: string; password: string }) => {
-      const res = await securePost("/auth/login", credentials);
-      if (res.status !== 200) {
-        throw new Error("Login failed");
+  return useMutation<User, AxiosError, LoginFormData>({
+    mutationFn: async (credentials) => {
+      const data = await post("/auth/login", credentials);
+
+      if (!data.success || !data.user) {
+        throw new Error(data.message || "Login failed");
       }
-      return res.data.user;
+
+      return data.user;
     },
     onSuccess: (user) => {
       setAuth(true);

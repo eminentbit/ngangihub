@@ -32,6 +32,9 @@ const transactionSchema = new Schema({
     enum: ["pending", "completed", "failed"],
     default: "pending",
   },
+  campay_reference: {
+    type: String,
+  },
   reference: {
     type: String,
   },

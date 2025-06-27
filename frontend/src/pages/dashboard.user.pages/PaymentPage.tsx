@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   CreditCard,
   Users,
@@ -17,6 +17,9 @@ import Sidebar from "../../components/dashboard.admin.components/Sidebar";
 import PaymentModal from "../../components/dashboard.user.components/PaymentModal";
 import PaymentHistoryTable from "../../components/dashboard.user.components/PaymentHistory";
 import { useFetchCampayToken, usePayWithMobile } from "../../hooks/usePayment";
+import { useNavigate } from "react-router-dom";
+import getRoleName from "../../utils/roles";
+import { useSession } from "../../hooks/useSession";
 
 // Skeleton Components
 const StatCardSkeleton = () => (
@@ -62,12 +65,38 @@ export default function PaymentsPage() {
   const [paymentMethod, setPaymentMethod] =
     useState<PaymentMethod>("mobile_money");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const navigate = useNavigate();
+  const { fetchUser } = useSession();
+
+  function handleResize() {
+    if (window.innerWidth < 768) {
+      setIsSidebarOpen(false);
+    } else {
+      setIsSidebarOpen(true);
+    }
+  }
+
+  useEffect(() => {
+    fetchUser();
+  }, [fetchUser]);
+
+  useEffect(() => {
+    if (window.innerWidth < 768) {
+      setIsSidebarOpen(false);
+    } else {
+      setIsSidebarOpen(true);
+    }
+    window.addEventListener("resize", handleResize);
+    handleResize();
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
   const { user } = useAuthStore();
 
   const { getToken } = useFetchCampayToken();
-  const { initatePayment } = usePayWithMobile();
+  const { initiatePayment } = usePayWithMobile();
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("fr-FR", {
@@ -156,14 +185,20 @@ export default function PaymentsPage() {
     try {
       await getToken();
 
-      const data = await initatePayment({
+      const data = await initiatePayment({
         amount: 10,
         description: "Test",
         from: user?.phoneNumber || "",
         groupId: group?._id,
       });
 
-      console.log(data);
+      if (import.meta.env.DEV) {
+        console.log("Payment processing: ", data);
+      }
+
+      setTimeout(() => {
+        navigate(`/${getRoleName(user?.role)}/payment-processing`);
+      }, 3000);
 
       setShowPaymentModal(false);
       setSelectedGroup(null);
@@ -209,7 +244,7 @@ export default function PaymentsPage() {
   });
 
   return (
-    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900 md:flex-row">
       <Sidebar
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
@@ -217,48 +252,48 @@ export default function PaymentsPage() {
       />
 
       <div
-        className={`flex-1 transition-all duration-300 ${
-          isSidebarOpen ? "ml-64" : "ml-16"
-        }`}
+        className={`flex-1 transition-all duration-300 w-full ${
+          isSidebarOpen ? "lg:ml-64" : "lg:ml-16"
+        } ml-0`}
       >
-        <div className="p-6 max-w-7xl mx-auto space-y-8">
+        <div className="p-2 xs:p-3 sm:p-4 md:p-6 max-w-full sm:max-w-7xl mx-auto space-y-4 sm:space-y-6 md:space-y-8">
           {/* Header Section */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-              <div className="flex items-center space-x-4">
-                <div className="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl">
-                  <Wallet className="w-8 h-8 text-white" />
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-3 xs:p-4 sm:p-6">
+            <div className="flex flex-col gap-3 sm:gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex items-center space-x-3 sm:space-x-4">
+                <div className="p-2 sm:p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl">
+                  <Wallet className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                  <h1 className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
                     Njangi Payments
                   </h1>
-                  <p className="text-gray-600 dark:text-gray-300 mt-1">
+                  <p className="text-gray-600 dark:text-gray-300 mt-1 text-xs xs:text-sm sm:text-base">
                     Welcome back, {user?.lastName} {user?.firstName}
                   </p>
                 </div>
               </div>
 
-              <div className="mt-6 lg:mt-0 flex items-center space-x-6">
-                <div className="text-center">
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
+              <div className="flex flex-col gap-2 sm:gap-0 sm:mt-6 lg:mt-0 sm:flex-row items-start sm:items-center space-x-0 sm:space-x-6 w-full sm:w-auto">
+                <div className="text-center w-full sm:w-auto">
+                  <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                     Next Payment
                   </p>
-                  <p className="text-lg font-semibold text-red-600 dark:text-red-400">
+                  <p className="text-base sm:text-lg font-semibold text-red-600 dark:text-red-400">
                     {isLoading ? (
-                      <span className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-24 animate-pulse"></span>
+                      <span className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-20 sm:w-24 animate-pulse"></span>
                     ) : (
                       stats.nextDueDate.toLocaleDateString()
                     )}
                   </p>
                 </div>
-                <div className="text-center">
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                <div className="text-center w-full sm:w-auto">
+                  <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                     Urgent Payments
                   </p>
-                  <p className="text-lg font-semibold text-orange-600 dark:text-orange-400">
+                  <p className="text-base sm:text-lg font-semibold text-orange-600 dark:text-orange-400">
                     {isLoading ? (
-                      <span className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-8 animate-pulse"></span>
+                      <span className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-8 sm:w-12 animate-pulse"></span>
                     ) : (
                       sortedGroups.filter((g) =>
                         ["overdue", "due", "due_soon"].includes(
@@ -273,7 +308,7 @@ export default function PaymentsPage() {
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-4 gap-2 xs:gap-3 sm:gap-4 md:gap-6">
             {isLoading ? (
               <>
                 <StatCardSkeleton />
@@ -366,19 +401,19 @@ export default function PaymentsPage() {
 
           {/* My Groups Section */}
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-              <div className="flex items-center justify-between">
+            <div className="p-3 xs:p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
+              <div className="flex flex-col xs:flex-row xs:items-center xs:justify-between gap-2">
                 <div>
-                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  <h2 className="text-base xs:text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
                     My Njangi Groups
                   </h2>
-                  <p className="text-gray-600 dark:text-gray-300 mt-1">
+                  <p className="text-gray-600 dark:text-gray-300 mt-1 text-xs xs:text-sm sm:text-base">
                     Manage your group contributions and payments
                   </p>
                 </div>
                 {!isLoading && (
                   <div className="text-right">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                    <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                       {sortedGroups.length} active groups
                     </p>
                   </div>
@@ -386,40 +421,40 @@ export default function PaymentsPage() {
               </div>
             </div>
 
-            <div className="p-6">
+            <div className="p-3 xs:p-4 sm:p-6">
               {isLoading ? (
-                <div className="space-y-4">
+                <div className="space-y-3 xs:space-y-4">
                   <GroupCardSkeleton />
                   <GroupCardSkeleton />
                   <GroupCardSkeleton />
                 </div>
               ) : sortedGroups.length === 0 ? (
-                <div className="text-center py-12">
-                  <Users className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                <div className="text-center py-8 xs:py-12">
+                  <Users className="w-12 xs:w-16 h-12 xs:h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+                  <h3 className="text-base xs:text-lg font-medium text-gray-900 dark:text-white mb-2">
                     No Active Groups
                   </h3>
-                  <p className="text-gray-500 dark:text-gray-400">
+                  <p className="text-xs xs:text-sm text-gray-500 dark:text-gray-400">
                     You're not currently a member of any Njangi groups.
                   </p>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-3 xs:space-y-4">
                   {sortedGroups.map((group) => {
                     const status = getPaymentStatus(group);
                     return (
                       <div
                         key={group._id}
-                        className="border border-gray-200 dark:border-gray-700 rounded-xl p-6 hover:shadow-md transition-all duration-200 hover:border-gray-300 dark:hover:border-gray-600"
+                        className="border border-gray-200 dark:border-gray-700 rounded-xl p-3 xs:p-4 sm:p-6 hover:shadow-md transition-all duration-200 hover:border-gray-300 dark:hover:border-gray-600"
                       >
-                        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                        <div className="flex flex-col gap-3 xs:gap-4 lg:flex-row lg:items-center lg:justify-between">
                           <div className="flex-1">
-                            <div className="flex items-center space-x-3 mb-3">
-                              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                            <div className="flex flex-col xs:flex-row xs:items-center xs:space-x-3 mb-2 xs:mb-3 gap-1 xs:gap-0">
+                              <h3 className="text-sm xs:text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
                                 {group.name}
                               </h3>
                               <span
-                                className={`inline-flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(
+                                className={`inline-flex items-center space-x-1 px-2 xs:px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(
                                   status
                                 )}`}
                               >
@@ -428,7 +463,7 @@ export default function PaymentsPage() {
                               </span>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-1 xs:gap-2 sm:gap-4 text-xs xs:text-sm">
                               <div className="space-y-1">
                                 <p className="text-gray-600 dark:text-gray-300">
                                   <span className="font-medium">Members:</span>{" "}
@@ -477,7 +512,7 @@ export default function PaymentsPage() {
                             </div>
                           </div>
 
-                          <div className="mt-6 lg:mt-0 lg:ml-8 flex flex-col sm:flex-row gap-3">
+                          <div className="mt-3 xs:mt-4 lg:mt-0 lg:ml-8 flex flex-col gap-2 xs:flex-row xs:gap-3">
                             {status === "overdue" && (
                               <button
                                 type="button"

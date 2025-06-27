@@ -241,7 +241,7 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
                     <Calendar className="h-4 w-4" />
                     <span>Created On</span>
                   </div>
-                  <p className="text-2xl font-bold">{group.createdAt}</p>
+                  <p className="text-2xl font-bold">{group?.createdAt}</p>
                 </div>
               </div>
 
@@ -301,7 +301,7 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
                       <span className="text-gray-500 dark:text-gray-400">
                         Created:
                       </span>
-                      <span className="font-medium">{group.createdAt}</span>
+                      <span className="font-medium">{group?.createdAt}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-500 dark:text-gray-400">

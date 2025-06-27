@@ -7,6 +7,12 @@ const redis = createRedisClient();
 
 const emailQueue = new Queue(CACHE_NAMES.EMAILQUEUE, {
   connection: redis,
+  defaultJobOptions: {
+    removeOnComplete: true,
+    removeOnFail: true,
+    attempts: 3,
+    backoff: { type: "exponential", delay: 5000 },
+  },
 });
 
 redis.on("connect", () => {

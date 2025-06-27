@@ -23,6 +23,7 @@ import LatestMembersModal from "../../components/dashboard.admin.components/Late
 import { useAuthStore } from "../../store/create.auth.store";
 import toast from "react-hot-toast";
 import { Skeleton } from "../../components/skeleton-loaders/skeleton-card-loader";
+import getActivityIcon from "../../utils/activityIcon";
 
 // Loading Stat Card Component
 const LoadingStatCard: React.FC = () => (
@@ -37,9 +38,11 @@ const LoadingStatCard: React.FC = () => (
 );
 
 // Loading Chart Component
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const LoadingChart = ({ title }: { title: string }) => (
-  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 animate-pulse">
+  <div
+    title={title}
+    className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 animate-pulse"
+  >
     <Skeleton className="h-5 w-32 mb-4" />
     <div className="space-y-3">
       <Skeleton className="h-32 w-full" />
@@ -67,11 +70,13 @@ const LoadingActivityItem: React.FC = () => (
 );
 
 // Loading Member Item
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const LoadingMemberItem = ({ title }: { title: string }) => (
-  <li className="flex items-center py-2 border-b border-gray-100 dark:border-gray-700 animate-pulse">
+  <li
+    title={title}
+    className="flex items-center py-2 border-b border-gray-100 dark:border-gray-700 animate-pulse"
+  >
     <Skeleton className="w-8 h-8 rounded-full mr-3" />
-    <div className="flex-1">
+    <div className={"flex-1"}>
       <Skeleton className="h-4 w-24 mb-1" />
       <Skeleton className="h-3 w-16" />
     </div>
@@ -170,6 +175,8 @@ export const AdminDashboardPage: React.FC = () => {
     }))
   );
   const { activities, loading } = useGroupActivities(groups?.[0]?._id ?? "");
+
+  console.log("Activities", activities);
 
   // Sort by join date (descending)
   const sortedMembers = allMembers
@@ -392,16 +399,16 @@ export const AdminDashboardPage: React.FC = () => {
                         key={index}
                         className="flex items-start gap-3 transform transition-all duration-200 hover:scale-[1.02]"
                       >
-                        <div className="mt-1">{item.icon}</div>
+                        <div className="mt-1">{getActivityIcon(item.type)}</div>
                         <div>
                           <span className="font-semibold text-gray-800 dark:text-gray-100">
-                            {item.user}{" "}
+                            {item.description} {}{" "}
                           </span>
                           <span className="text-gray-700 dark:text-gray-300">
                             {item.action}
                           </span>
                           <div className="text-xs text-gray-400">
-                            {item.time}
+                            {new Date(item.createdAt).toDateString()}
                           </div>
                         </div>
                       </li>

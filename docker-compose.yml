@@ -1,40 +1,6 @@
+version: "3.8"
+
 services:
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    # ports:
-    #   - "80:80" # Expose port 80
-    env_file:
-      - ./frontend/.env
-    # Remove the volume mount for the source code
-    # volumes:
-    #   - ./frontend:/app
-    volumes:
-      - frontend_node_modules:/app/node_modules
-
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    ports:
-      - "5000:5000"
-    env_file:
-      - ./backend/.env
-    environment:
-      - NODE_ENV=production
-      - REDIS_URL=redis://:mjlsbkCh2z8Ft63@redis:6379/0
-    depends_on:
-      - redis
-    volumes:
-      - ./backend:/app
-      - backend_node_modules:/app/node_modules
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
   redis:
     image: redis:alpine
     ports:
@@ -45,44 +11,68 @@ services:
       - REDIS_PASSWORD=mjlsbkCh2z8Ft63
     command: ["redis-server", "--requirepass", "mjlsbkCh2z8Ft63"]
 
-  worker:
+  backend:
     build:
       context: ./backend
-      dockerfile: worker.dockerfile
-    volumes:
-      - .:/app
-      - /app/node_modules
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
     depends_on:
       - redis
     restart: always
+    env_file:
+      - backend/.env
     environment:
       - REDIS_PASSWORD=mjlsbkCh2z8Ft63
-      - REDIS_HOST: redis
-      - REDIS_PORT: 6379
-    command: ["redis-server", "--requirepass", "mjlsbkCh2z8Ft63"]
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    # ❗ DO NOT mount volumes unless you're developing
+    command: ["npm", "run", "serve"]
+
+  email-worker:
+    build:
+      context: ./backend
+      dockerfile: email.worker.dockerfile
+    depends_on:
+      - redis
+    restart: always
+    env_file:
+      - backend/.env
+    environment:
+      - REDIS_PASSWORD=mjlsbkCh2z8Ft63
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    command: ["npm", "run", "emailWorker"]
+
+  db-worker:
+    build:
+      context: ./backend
+      dockerfile: db.worker.dockerfile
+    depends_on:
+      - redis
+    restart: always
+    env_file:
+      - backend/.env
+    environment:
+      - REDIS_PASSWORD=mjlsbkCh2z8Ft63
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    command: ["npm", "run", "dbWorker"]
 
   cronjob:
     build:
       context: ./backend
       dockerfile: cronjob.dockerfile
-    volumes:
-      - .:/app
-      - /app/node_modules
-    restart: always
-
-  reverse-proxy:
-    image: nginx:latest
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./deployment/nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./deployment/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
-      - frontend
-      - backend
+      - redis
+    restart: always
+    env_file:
+      - backend/.env
+    environment:
+      - REDIS_PASSWORD=mjlsbkCh2z8Ft63
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    command: ["npm", "run", "cronJob"]
 
 volumes:
-  frontend_node_modules:
-  backend_node_modules:
   redis_data:

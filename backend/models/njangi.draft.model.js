@@ -1,8 +1,8 @@
 // models/NjangiDraft.js
-import mongoose from "mongoose";
+import  { model, Schema } from "mongoose";
 import MODEL_NAMES from "../utils/model.names.js";
 
-const njangiDraftSchema = new mongoose.Schema(
+const njangiDraftSchema = new Schema(
   {
     accountSetup: {
       firstName: String,
@@ -61,7 +61,7 @@ const njangiDraftSchema = new mongoose.Schema(
       default: Date.now,
     },
     submittedBy: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: MODEL_NAMES.USER,
       required: false,
     },
@@ -70,6 +70,6 @@ const njangiDraftSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const NjangiDraft = mongoose.model(MODEL_NAMES.NJANGIDRAFT, njangiDraftSchema);
+const NjangiDraft = model(MODEL_NAMES.NJANGIDRAFT, njangiDraftSchema);
 
 export default NjangiDraft;

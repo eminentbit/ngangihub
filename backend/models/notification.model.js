@@ -1,17 +1,29 @@
-import mongoose from "mongoose";
+import { Schema, model } from "mongoose";
 import MODEL_NAMES from "../utils/model.names.js";
 
-const notificationSchema = new mongoose.Schema(
+const notificationSchema = new Schema(
   {
-    recipient: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: MODEL_NAMES.USER,
-      required: true,
-    },
+    recipients: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: MODEL_NAMES.USER,
+        required: true,
+      },
+    ],
     type: {
       type: String,
       required: true,
-      enum: ["message", "follow", "like", "comment", "mention", "system"],
+      enum: [
+        "message",
+        "follow",
+        "like",
+        "comment",
+        "mention",
+        "system",
+        "payment",
+        "loan",
+        "reminder",
+      ],
     },
     content: {
       type: String,
@@ -23,7 +35,7 @@ const notificationSchema = new mongoose.Schema(
     },
     // relatedItem: {
     //   itemId: {
-    //     type: mongoose.Schema.Types.ObjectId,
+    //     type: Schema.Types.ObjectId,
     //     refPath: "relatedItem.itemType",
     //   },
     //   itemType: {
@@ -31,8 +43,9 @@ const notificationSchema = new mongoose.Schema(
     //     enum: ["Post", "Comment", "User"],
     //   },
     // },
+    isDeleted: { type: Boolean },
     sender: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: MODEL_NAMES.USER,
     },
   },
@@ -41,9 +54,6 @@ const notificationSchema = new mongoose.Schema(
   }
 );
 
-const NjangiNotification = mongoose.model(
-  MODEL_NAMES.NOTIFICATION,
-  notificationSchema
-);
+const NjangiNotification = model(MODEL_NAMES.NOTIFICATION, notificationSchema);
 
 export default NjangiNotification;

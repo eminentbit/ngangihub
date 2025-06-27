@@ -7,7 +7,7 @@
  * Make sure to set the MONGODB_URL environment variable before running the script.
  */
 
-import mongoose from "mongoose";
+import { connect, connection } from "mongoose";
 import { config } from "dotenv";
 import User from "../models/user.model.js";
 import Invite from "../models/invite.model.js";
@@ -17,7 +17,7 @@ config();
 
 const backfillAll = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URL);
+    await connect(process.env.MONGODB_URL);
     console.log("✅ Connected to DB");
 
     // 1. Add "bio" to User if missing
@@ -43,7 +43,7 @@ const backfillAll = async () => {
   } catch (error) {
     console.error("❌ Error during multi-model backfill:", error);
   } finally {
-    mongoose.connection.close();
+    connection.close();
   }
 };
 

@@ -21,19 +21,23 @@ import userRoutes from "./routes/user.routes.js";
 import paymentRoutes from "./routes/payment.routes.js";
 import Message from "./models/message.model.js";
 import updateNjangiDetails from "./routes/update.njangi.details.route.js";
-import pkg from "lusca";
 import { Server } from "socket.io";
-import session from "express-session";
 import getNjangiStateOverview from "./routes/get.njangi.overview.route.js";
 import getNjangiDraftId from "./routes/getNdraftId.route.js";
+import "./jobs/njangi-jobs.js";
 import { config } from "dotenv";
+import contactRouter from "./routes/contact.routes.js";
+import sessionMiddleware from "./middleware/session.js";
+
 config();
-const { csrf } = pkg;
+import csrf from "csurf";
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
 
 const app = express();
+
+const csrfProtection = csrf({ cookie: false });
 
 // ─── MIDDLEWARE ────────────────────────────────────────────────────────────────
 app.use(express.json());
@@ -42,42 +46,44 @@ app.use(
     origin: [
       "http://localhost:5173",
       "http://localhost:5174",
+      "https://njangihub.loopos.org/",
       process.env.FRONTEND_URL,
     ].filter(Boolean),
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
   })
 );
+app.set("trust proxy", 1);
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 
-app.use(
-  session({
-    name: "njangi_session",
-    secret: process.env.SESSION_SECRET || "your-secret-key",
-    resave: false,
-    saveUninitialized: true,
-    cookie: {
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-    },
-  })
-);
+app.use(sessionMiddleware);
 
-app.use(csrf());
 app.use("/", limiter);
 app.use(helmet());
 
-// ─── CSRF TOKEN ROUTE ──────────────────────────────────────────────────────────
+// ─── ROUTES ─────────────────────────────────────────────────────────────────────
+app.use("/api/auth", authRoutes);
+
+app.use("/api/create-njangi", createNjangiRoutes);
+// Mount CSRF protection
+app.use(csrfProtection);
+
+app.use((req, res, next) => {
+  console.log("Incoming request:", req.method, req.url);
+  next();
+});
+
+app.get("/api", (req, res) => {
+  res.status(200).json({ message: "App working well" });
+});
+
+// CSRF token route — must come AFTER csrfProtection
 app.get("/api/csrf-token", (req, res) => {
   res.json({ csrfToken: req.csrfToken() });
 });
-
-// ─── ROUTES ─────────────────────────────────────────────────────────────────────
-app.use("/api/create-njangi", createNjangiRoutes);
-app.use("/api/bod", actionNjangiRoutes);
 app.use("/api", validationRoutes);
-app.use("/api/auth", authRoutes);
+app.use("/api/bod", actionNjangiRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/member", acceptInvite);
 app.use("/api/njangi", njangiRoutes);
@@ -88,6 +94,7 @@ app.use("/api/state-dashboard", updateNjangiDetails);
 app.use("/api/admin", adminRoutes);
 app.use("/api/njangi-ndraft", getNjangiDraftId);
 app.use("/api/payment", paymentRoutes);
+app.use("/api/contact", contactRouter);
 app.use("/api/user", userRoutes);
 
 // ─── CREATE HTTP + SOCKET.IO SERVER ────────────────────────────────────────────

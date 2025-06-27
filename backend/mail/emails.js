@@ -13,10 +13,13 @@ import {
   PASSWORD_CHANGED_TEMPLATE,
   SIGNIN_ATTEMPT_TEMPLATE,
   ADMIN_PAYMENT_NOTIFICATION_TEMPLATE,
+  NJANGI_PAYMENT_REMINDER_TEMPLATE,
+  CONTACT_CONFIRMATION_EMAIL_TEMPLATE,
 } from "./emailTemplates.js";
 import NjangiGroup from "../models/njangi.group.model.js";
 import { getInfo } from "../utils/getInfo.js";
 import User from "../models/user.model.js";
+import NjangiNotification from "../models/notification.model.js";
 
 const replacePlaceholders = (template, data) => {
   return Object.entries(data).reduce((html, [key, value]) => {
@@ -321,11 +324,15 @@ export const sendSigninAttemptEmail = async (
   device,
   browser,
   lastName,
-  firstName
+  firstName,
+  city,
+  region,
+  country,
+  ip
 ) => {
   const recipient = [email];
 
-  const { ip, city, region, country } = await getInfo();
+  console.log(ip);
 
   try {
     const response = transporter.sendMail({
@@ -418,6 +425,13 @@ export const notifyAdminOfPayment = async (memberId, amount, groupId) => {
     const admin = await User.findById(group.adminId);
     const recipients = [admin.email];
 
+    await NjangiNotification.create({
+      sender: admin.id,
+      content: `${member.lastName} ${member.firstName} made a payment of ${amount} FCFA`,
+      type: "payment",
+      recipients: group.groupMembers,
+    });
+
     const emailContent = replacePlaceholders(
       ADMIN_PAYMENT_NOTIFICATION_TEMPLATE,
       {
@@ -427,9 +441,7 @@ export const notifyAdminOfPayment = async (memberId, amount, groupId) => {
       }
     );
 
-    console.log(emailContent);
-
-    const response = await transporter.sendMail({
+    transporter.sendMail({
       from: sender,
       to: recipients,
       subject: `Payment Received - ${groupName}`,
@@ -440,4 +452,18 @@ export const notifyAdminOfPayment = async (memberId, amount, groupId) => {
     console.error("Failed to notify admin of payment:", error);
     throw new Error("Admin notification failed");
   }
+};
+
+export const sendContact = async (fullName, message, email) => {
+  const recipients = [email];
+
+  const mailOptions = {
+    from: sender,
+    to: recipients,
+    subject: "NAAS Contact Confirmation",
+    html: CONTACT_CONFIRMATION_EMAIL_TEMPLATE({ fullName, message }),
+  };
+
+  // Send the email
+  await transporter.sendMail(mailOptions);
 };

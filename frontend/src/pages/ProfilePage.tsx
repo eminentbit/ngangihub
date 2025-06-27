@@ -29,7 +29,7 @@ const ProfilePage: React.FC = () => {
       const init = {
         fullName: `${user.firstName} ${user.lastName}`,
         email: user.email || "N/A",
-        phone: user.phone || "N/A",
+        phone: user.phoneNumber || "N/A",
         location: user.location || "N/A",
         groupName: user.groupName || "N/A",
         role: user.role || "N/A",

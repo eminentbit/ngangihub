@@ -349,7 +349,7 @@ const GroupInfoPage = () => {
                         <FaCalendarAlt className="text-blue-500 text-2xl mr-3" />
                         <div>
                           <p className="text-xl font-semibold dark:text-gray-100">
-                            {new Date(group.createdAt).toLocaleDateString()}
+                            {new Date(group?.createdAt).toLocaleDateString()}
                           </p>
                           <p className="text-sm text-gray-600 dark:text-gray-300">
                             Created On

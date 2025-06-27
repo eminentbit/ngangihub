@@ -1,9 +1,9 @@
 // Account set up
 
-import mongoose from "mongoose";
+import  { Schema, model } from "mongoose";
 import MODEL_NAMES from "../utils/model.names.js";
 
-const userSchema = new mongoose.Schema(
+const userSchema = new Schema(
   {
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
@@ -11,8 +11,9 @@ const userSchema = new mongoose.Schema(
     phoneNumber: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     profilePicUrl: { type: String },
-    groups: [{ type: mongoose.Schema.Types.ObjectId, ref: "Group" }],
+    groups: [{ type: Schema.Types.ObjectId, ref: "Group" }],
     role: { type: String, enum: ["admin", "member", "bod"], default: "member" },
+    creditScore: { type: Number, default: 0 },
     status: {
       type: String,
       enum: ["active", "pending", "invited", "suspended"],
@@ -45,6 +46,6 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const User = mongoose.model(MODEL_NAMES.USER, userSchema);
+const User = model(MODEL_NAMES.USER, userSchema);
 
 export default User;

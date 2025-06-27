@@ -1,15 +1,15 @@
-import mongoose from "mongoose";
+import  { model, Schema } from "mongoose";
 import MODEL_NAMES from "../utils/model.names.js";
 
-const bodAttendanceSchema = new mongoose.Schema(
+const bodAttendanceSchema = new Schema(
   {
     bodMember: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: MODEL_NAMES.USER,
       required: true,
     },
     meetingId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: MODEL_NAMES.BODMEETING,
       required: true,
     },
@@ -27,7 +27,7 @@ const bodAttendanceSchema = new mongoose.Schema(
   }
 );
 
-const BODAttendance = mongoose.model(
+const BODAttendance = model(
   MODEL_NAMES.BODATTENDANCE,
   bodAttendanceSchema
 );

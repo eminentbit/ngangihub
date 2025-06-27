@@ -16,7 +16,9 @@ import {
   addMemberToGroup,
   cancelInvite,
   removeMember,
-} from "../controllers/admin.controllers.js";
+  getAdminGroupPaymentStatus,
+  notifyDefaulters,
+} from "../controllers/admin.controller.js";
 import verifyToken from "../middleware/verify.token.js";
 import { verifyIfAdmin } from "../middleware/verify.role.js";
 const router = express.Router();
@@ -49,6 +51,10 @@ router.get("/submission-stats/", getSubmissionStats);
 router.get("/recent-activity", getRecentActivity);
 
 router.get("/status-history", getStatusHistory);
+
+router.get("/group-payment-status", verifyToken, getAdminGroupPaymentStatus);
+
+router.post("/notify-defaulters", verifyToken, verifyIfAdmin, notifyDefaulters);
 
 router.get(
   "/group/:groupId/recent-activities",
@@ -88,6 +94,6 @@ router.delete(
   verifyToken,
   verifyIfAdmin,
   removeMember
-)
+);
 
 export default router;

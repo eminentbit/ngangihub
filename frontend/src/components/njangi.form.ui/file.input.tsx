@@ -12,11 +12,7 @@ interface FormFileInputProps {
 }
 
 const FormFileInput = forwardRef<HTMLInputElement, FormFileInputProps>(
-  (
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    { label, error, registration, accept = "image/*", className, ...props },
-    ref
-  ) => {
+  ({ label, error, registration, accept = "image/*", className }, ref) => {
     const [preview, setPreview] = useState<string | null>(null);
     const [isDragging, setIsDragging] = useState(false);
 

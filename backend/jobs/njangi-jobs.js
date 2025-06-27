@@ -3,6 +3,7 @@ import NjangiGroup from "../models/njangi.group.model.js";
 import { sendDueReminder } from "../mail/emails.js";
 import User from "../models/user.model.js";
 import { config } from "dotenv";
+import { updateCreditScores } from "../services/loan.service.js";
 config();
 
 export function getNextDueDate(lastDate, frequency) {
@@ -79,4 +80,9 @@ cron.schedule("0 8 * * *", async () => {
   }
 
   console.log("✅ Njangi due reminder job finished.");
+});
+
+cron.schedule("0 2 * * *", () => {
+  console.log("Running credit score update job...");
+  updateCreditScores();
 });

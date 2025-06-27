@@ -90,12 +90,12 @@ function GroupItem({ group, setChatModalGroupId }: GroupItemProps) {
           <div className="ml-auto">
             <span
               className={`inline-block text-xs font-semibold px-4 py-1 rounded-full transition-all ${
-                group.isAdmin
+                group?.isAdmin
                   ? "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200 group-hover:bg-blue-200 dark:group-hover:bg-blue-800"
                   : "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-200 group-hover:bg-gray-200 dark:group-hover:bg-gray-600"
               }`}
             >
-              {group.isAdmin ? "Admin" : "Member"}
+              {group?.isAdmin ? "Admin" : "Member"}
             </span>
           </div>
         </div>

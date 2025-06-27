@@ -14,4 +14,4 @@ RUN npm install
 COPY . .
 
 # Command to run the worker application
-CMD ["npm", "run", "worker"]
+CMD ["npm", "run", "emailWorker"]

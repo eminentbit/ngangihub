@@ -75,5 +75,3 @@ export const usePaymentHistory = () => {
     error: query.error,
   };
 };
-
-

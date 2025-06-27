@@ -1,15 +1,15 @@
-import mongoose from "mongoose";
+import { model, Schema } from "mongoose";
 import MODEL_NAMES from "../utils/model.names.js";
 
-const njangiLoanSchema = new mongoose.Schema(
+const njangiLoanSchema = new Schema(
   {
     groupId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: MODEL_NAMES.GROUP,
       required: true,
     },
     memberId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: MODEL_NAMES.USER,
       required: true,
     },
@@ -34,6 +34,6 @@ const njangiLoanSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const NjangiLoan = mongoose.model(MODEL_NAMES.NJANGILOAN, njangiLoanSchema);
+const NjangiLoan = model(MODEL_NAMES.NJANGILOAN, njangiLoanSchema);
 
 export default NjangiLoan;

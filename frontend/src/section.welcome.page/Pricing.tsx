@@ -1,7 +1,7 @@
-import React from "react";
-import Container from "../components/Container";
-import PricingTier from "../components/PricingTier";
-import pricingTiers from "../utils/pricing";
+import React from 'react';
+import Container from '../components/Container';
+import PricingTier from '../components/PricingTier';
+import pricingTiers from '../utils/pricing';
 
 const Pricing: React.FC = () => {
   return (
@@ -12,7 +12,7 @@ const Pricing: React.FC = () => {
             Simple, Transparent Pricing
           </h2>
           <p className="text-xl text-gray-600">
-            Choose the plan that's right for your community
+            Choose the plan that’s right for your community
           </p>
         </div>
 
