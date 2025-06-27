@@ -63,7 +63,7 @@ const ChatInterface = ({ groupId, groupName, onClose }: ChatInterfaceProps) => {
 
     // When successfully connected, join the room:
     socket.on("connect", () => {
-      socket.emit("joinRoom", { groupId, userId: user?.id });
+      socket.emit("joinRoom", { groupId, userId: user?._id || user?.id });
     });
 
     // Listen for incoming messages from the server
@@ -72,7 +72,9 @@ const ChatInterface = ({ groupId, groupName, onClose }: ChatInterfaceProps) => {
         ...prev,
         {
           ...msg,
-          isCurrentUser: msg.senderId == user?._id,
+          isCurrentUser:
+            msg.senderId?.toString() === user?._id?.toString() ||
+            msg.senderId?.toString() === user?.id?.toString(),
         },
       ]);
     });
@@ -83,7 +85,9 @@ const ChatInterface = ({ groupId, groupName, onClose }: ChatInterfaceProps) => {
       setMessages(
         history.map((msg) => ({
           ...msg,
-          isCurrentUser: msg.senderId == user?._id,
+          isCurrentUser:
+            msg.senderId?.toString() === user?._id?.toString() ||
+            msg.senderId?.toString() === user?.id?.toString(),
         }))
       );
     });
@@ -108,7 +112,7 @@ const ChatInterface = ({ groupId, groupName, onClose }: ChatInterfaceProps) => {
     console.log(name, user?.email);
 
     const newMsg: Message = {
-      senderId: user?.id || "",
+      senderId: user?._id || user?.id || "",
       senderName: name!,
       content: message,
       timestamp: new Date().toISOString(),

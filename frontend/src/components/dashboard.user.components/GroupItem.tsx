@@ -141,7 +141,7 @@ function GroupItem({ group, setChatModalGroupId }: GroupItemProps) {
           href={`/${getRoleName(user?.role)}/group/${group._id}`}
           className="text-blue-500 hover:text-blue-600 dark:hover:text-blue-400 hover:underline transition-colors font-medium"
         >
-          View Details →
+          {user?.role == "admin" && "View Details →"}
         </a>
       </div>
 

@@ -24,7 +24,7 @@ const AboutPage: React.FC = () => {
     {
       name: "Fanyi Charllson Fanyi",
       role: "Developer - Full Stack Engineer",
-      image: "/team/charllson.jpg",
+      image: "/team/charllson.png",
     },
     {
       name: "Kouotou Jeff Lionel",
