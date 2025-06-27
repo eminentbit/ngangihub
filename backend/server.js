@@ -67,6 +67,7 @@ app.use("/api/auth", authRoutes);
 
 app.use("/api/create-njangi", createNjangiRoutes);
 app.use("/api", validationRoutes);
+app.use("/api/contact", contactRouter);
 // Mount CSRF protection
 app.use(csrfProtection);
 
@@ -90,7 +91,6 @@ app.use("/api/state-dashboard", updateNjangiDetails);
 app.use("/api/admin", adminRoutes);
 app.use("/api/njangi-ndraft", getNjangiDraftId);
 app.use("/api/payment", paymentRoutes);
-app.use("/api/contact", contactRouter);
 app.use("/api/user", userRoutes);
 
 // ─── CREATE HTTP + SOCKET.IO SERVER ────────────────────────────────────────────
